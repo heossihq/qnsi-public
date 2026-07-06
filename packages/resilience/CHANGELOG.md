@@ -1,4 +1,4 @@
-# @cuilabs/qnsp-resilience
+# @heossi/qnsi-resilience
 
 ## 0.1.1
 

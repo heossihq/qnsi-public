@@ -2,7 +2,7 @@
 title: Cryptographic Algorithm Sunset
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Cryptographic Algorithm Sunset
 
@@ -55,10 +55,10 @@ Schedule for deprecating cryptographic algorithms.
 ### From RSA to Dilithium
 ```bash
 # Create new Dilithium key
-qnsp kms keys create --algorithm dilithium-3
+qnsi kms keys create --algorithm dilithium-3
 
 # Re-sign with new key
-qnsp kms sign --key-id $NEW_KEY --input data.bin
+qnsi kms sign --key-id $NEW_KEY --input data.bin
 ```
 
 ### From ECDSA to Dilithium

@@ -2,11 +2,11 @@
 title: Key Revocation
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Key Revocation
 
-QNSP supports immediate key revocation for security incidents.
+QNSI supports immediate key revocation for security incidents.
 
 ## Revocation vs rotation
 

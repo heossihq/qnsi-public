@@ -2,11 +2,11 @@
 title: Alerts
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Alerts
 
-Configure alerts for QNSP platform events.
+Configure alerts for QNSI platform events.
 
 > **Scope:** The YAML fragments below are **illustrative** patterns. They are not a guarantee that each rule is deployed in production. For cloud-portal bootstrap outages (`/api/session/bootstrap` 503), see `docs/operations/portal-bootstrap-observability.md` in the monorepo — **ai-orchestrator** auto-remediation and optional `ALERT_WEBHOOK_URL` are **not** wired to that path unless you add explicit alarms or integrations.
 
@@ -16,7 +16,7 @@ Configure alerts for QNSP platform events.
 Trigger when metric crosses threshold:
 ```yaml
 - alert: HighErrorRate
-  expr: rate(qnsp_errors_total[5m]) > 0.01
+  expr: rate(qnsi_errors_total[5m]) > 0.01
   for: 5m
   labels:
     severity: critical
@@ -27,15 +27,15 @@ Trigger on unusual patterns:
 ```yaml
 - alert: UnusualTraffic
   expr: |
-    qnsp_requests_total > 
-    avg_over_time(qnsp_requests_total[7d]) * 2
+    qnsi_requests_total > 
+    avg_over_time(qnsi_requests_total[7d]) * 2
 ```
 
 ### Availability alerts
 Trigger on service unavailability:
 ```yaml
 - alert: ServiceDown
-  expr: up{job="qnsp"} == 0
+  expr: up{job="qnsi"} == 0
   for: 1m
 ```
 

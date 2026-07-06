@@ -40,7 +40,7 @@ All PRs run these automatically:
 
 ### Security Services Require Security Team Review
 
-Files in these paths require `@cuilabs/security-team` approval:
+Files in these paths require `@heossi/security-team` approval:
 - `apps/auth-service/**`
 - `apps/vault-service/**`
 - `apps/kms-service/**`
@@ -50,7 +50,7 @@ Files in these paths require `@cuilabs/security-team` approval:
 
 ### Coverage Baseline Changes
 
-Changes to `scripts/coverage-baseline.json` require `@cuilabs/platform-leads` approval.
+Changes to `scripts/coverage-baseline.json` require `@heossi/platform-leads` approval.
 
 ## Error Semantics
 

@@ -2,11 +2,11 @@
 title: SLOs and SLAs
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # SLOs and SLAs
 
-Service Level Objectives (SLOs) and Service Level Agreements (SLAs) for QNSP Cloud services provided by CUI Labs (Pte.) Ltd.
+Service Level Objectives (SLOs) and Service Level Agreements (SLAs) for QNSI Cloud services provided by HEOSSI (PTE.) LTD
 
 ## Overview
 
@@ -17,7 +17,7 @@ For the full SLA document with availability commitments, credit schedules, and e
 
 ## Service Level Objectives (SLOs)
 
-SLO targets below reflect current operational targets for QNSP Cloud hosted production. These are engineering goals, not contractual guarantees.
+SLO targets below reflect current operational targets for QNSI Cloud hosted production. These are engineering goals, not contractual guarantees.
 
 ### Availability Targets
 

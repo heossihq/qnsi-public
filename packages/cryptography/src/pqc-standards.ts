@@ -255,7 +255,9 @@ const PQC_FIPS_LABEL_BY_ALGORITHM: Partial<Record<PqcAlgorithm, string>> = {
 /**
  * Comprehensive mapping from internal algorithm names to NIST/standards display names.
  * Exported as the canonical reference for all SDKs and services.
- * Covers all 90 PQC algorithms currently supported by QNSP.
+ * NIST display-name labels for all 90 catalogued algorithm identifiers, including HQC
+ * (label reference only — HQC is currently disabled for CVE-2025-48946; the runtime-supported
+ * set is 87, see crypto-policy ALGORITHM_TO_NIST).
  */
 export const ALGORITHM_NIST_NAMES: Readonly<Record<string, string>> =
 	PQC_FIPS_LABEL_BY_ALGORITHM as Record<string, string>;

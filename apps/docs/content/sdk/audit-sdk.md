@@ -1,38 +1,38 @@
 ---
-title: Audit SDK (@cuilabs/qnsp-audit-sdk)
+title: Audit SDK (@heossi/qnsi-audit-sdk)
 version: 0.3.6
 last_updated: 2026-04-30
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/audit-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-audit-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-audit-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.audit./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.audit./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Audit SDK (`@cuilabs/qnsp-audit-sdk`)
+# Audit SDK (`@heossi/qnsi-audit-sdk`)
 
 The TypeScript client for `audit-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. All audit events are signed with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @cuilabs/qnsp-audit-sdk
+pnpm install @heossi/qnsi-audit-sdk
 ```
 
 ## Create a client
 
 ```ts
-import { AuditClient } from "@cuilabs/qnsp-audit-sdk";
+import { AuditClient } from "@heossi/qnsi-audit-sdk";
 
 const audit = new AuditClient({
 	baseUrl: "http://localhost:8103",
@@ -202,15 +202,15 @@ console.log(retentionMetrics.totalBytesReclaimed);
 
 ## PQC Algorithm Information
 
-The Audit SDK exports the full 90-algorithm NIST name mapping covering all PQC families supported by QNSP: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), HQC, BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
+The Audit SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@cuilabs/qnsp-audit-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-audit-sdk";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("dilithium-3"); // "ML-DSA-65"
 
-// Full mapping covers all 90 PQC algorithms. Representative entries:
+// Full mapping covers all 87 PQC algorithms. Representative entries:
 console.log(ALGORITHM_TO_NIST);
 // {
 //   "kyber-512": "ML-KEM-512",        // FIPS 203
@@ -223,7 +223,6 @@ console.log(ALGORITHM_TO_NIST);
 //   "sphincs-shake-256f-simple": "SLH-DSA-SHAKE-256f",
 //   "falcon-512": "FN-DSA-512",       // FIPS 206 (draft)
 //   "falcon-1024": "FN-DSA-1024",
-//   "hqc-128": "HQC-128",             // NIST selected (March 2025)
 //   "bike-l1": "BIKE-L1",             // NIST Round 4
 //   "mceliece-348864": "Classic-McEliece-348864",  // ISO standard
 //   "frodokem-640-aes": "FrodoKEM-640-AES",        // ISO standard
@@ -233,7 +232,7 @@ console.log(ALGORITHM_TO_NIST);
 //   "cross-rsdp-128-balanced": "CROSS-RSDP-128-balanced",
 //   "ov-Is": "UOV-Is",
 //   "snova-24-5-4": "SNOVA-24-5-4",
-//   ... // 93 algorithms total
+//   ... // 87 algorithms total
 // }
 ```
 

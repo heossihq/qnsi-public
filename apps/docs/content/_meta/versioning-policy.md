@@ -2,11 +2,11 @@
 title: Versioning Policy
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Versioning Policy
 
-QNSP APIs use path-based versioning (e.g., `/v1/`).
+QNSI APIs use path-based versioning (e.g., `/v1/`).
 
 ## Stability guarantees
 

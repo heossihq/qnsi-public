@@ -2,18 +2,18 @@
 title: Security Advisories
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Security Advisories
 
-This page lists security advisories published by CUI Labs (Pte.) Ltd. for QNSP Cloud services and SDKs.
+This page lists security advisories published by HEOSSI (PTE.) LTD for QNSI Cloud services and SDKs.
 
 ## Advisory Format
 
 Each advisory includes:
 
-- **Advisory ID**: Unique identifier (QNSP-YYYY-NNNN)
+- **Advisory ID**: Unique identifier (QNSI-YYYY-NNNN)
 - **Severity**: Critical, High, Medium, or Low
 - **Affected Components**: Services, SDKs, or APIs affected
 - **Description**: Summary of the vulnerability
@@ -45,7 +45,7 @@ No advisories published yet.
 
 If you have discovered a security vulnerability, please report it responsibly:
 
-- **Email**: qnsp-security@cuilabs.io
+- **Email**: qnsi-security@heossi.com
 - **Policy**: See [Vulnerability Disclosure Policy](/security/vulnerability-disclosure)
 
 ## Related Documentation
@@ -56,6 +56,6 @@ If you have discovered a security vulnerability, please report it responsibly:
 
 ---
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552

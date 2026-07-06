@@ -2,11 +2,11 @@
 title: Hybrid Handshakes
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Hybrid Handshakes
 
-QNSP implements hybrid key exchange combining classical and PQC algorithms.
+QNSI implements hybrid key exchange combining classical and PQC algorithms.
 
 ## Why hybrid
 
@@ -16,7 +16,7 @@ QNSP implements hybrid key exchange combining classical and PQC algorithms.
 
 ## TLS 1.3 hybrid
 
-QNSP supports hybrid key exchange in TLS 1.3:
+QNSI supports hybrid key exchange in TLS 1.3:
 
 ### Supported groups
 - `x25519_kyber768` (recommended)

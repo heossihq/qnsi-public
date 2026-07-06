@@ -1,11 +1,11 @@
 ---
 title: Migration
-description: Step-by-step guides for migrating from classical KMS / Vault implementations to QNSP.
+description: Step-by-step guides for migrating from classical KMS / Vault implementations to QNSI.
 ---
 
 # Migration
 
-Step-by-step guides for migrating from classical KMS / Vault implementations to QNSP.
+Step-by-step guides for migrating from classical KMS / Vault implementations to QNSI.
 
 ## Pages
 
@@ -13,5 +13,5 @@ Step-by-step guides for migrating from classical KMS / Vault implementations to 
 - [Migration from AWS KMS](./from-aws-kms)
 - [Migration from AWS Secrets Manager](./from-aws-secrets-manager)
 - [Migration from HashiCorp Vault](./from-vault)
-- [Migration Journey to QNSP](./journey)
+- [Migration Journey to QNSI](./journey)
 

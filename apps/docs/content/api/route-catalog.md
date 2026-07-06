@@ -2,11 +2,11 @@
 title: API Route Catalog
 version: 0.1.0
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 ---
 
-# QNSP API Route Catalog
+# QNSI API Route Catalog
 
 This page is auto-generated from the service route source files and provides a canonical, exhaustive list of all registered HTTP endpoints. For detailed request/response schemas and usage examples, see the per-service sections in [API Reference](./reference.md).
 
@@ -272,7 +272,7 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/api/marketplace/aws/resolve-customer` | AWS Marketplace. The registration token is passed as a query parameter by AWS Marketplace to the fulfillment URL. |
 | POST | `/api/marketplace/aws/webhook` | AWS Marketplace webhook endpoint Handles subscription events from AWS Marketplace |
 | GET | `/api/marketplace/azure/entitlement/:subscriptionId` | Get subscription entitlement by Azure subscription ID. GET /api/marketplace/azure/entitlement/:subscriptionId |
-| POST | `/api/marketplace/azure/resolve` | Called when a customer clicks through from Azure Marketplace to the QNSP landing page. The marketplace token is passed as a query parameter. |
+| POST | `/api/marketplace/azure/resolve` | Called when a customer clicks through from Azure Marketplace to the QNSI landing page. The marketplace token is passed as a query parameter. |
 | POST | `/api/marketplace/azure/webhook` | Must respond with HTTP 200 to acknowledge receipt. For ChangePlan/ChangeQuantity, must PATCH the operation within 10 seconds. |
 | GET | `/api/marketplace/vercel/oauth/callback` | OAuth callback (user-initiated install flow) ======================================================================= |
 | GET | `/api/marketplace/vercel/sso` | SSO deep link ======================================================================= |

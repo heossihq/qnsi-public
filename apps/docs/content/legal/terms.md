@@ -2,25 +2,25 @@
 title: Terms of Service and Privacy Policy
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # Terms of Service and Privacy Policy
 
-This page provides a summary of the QNSP Terms of Service. The complete, legally binding terms are available at:
+This page provides a summary of the QNSI Terms of Service. The complete, legally binding terms are available at:
 
-**Full Terms of Service and Privacy Policy:** https://qnsp.cuilabs.io/terms
+**Full Terms of Service and Privacy Policy:** https://qnsi.heossi.com/terms
 
 ## Agreement
 
-By using QNSP Cloud services, you agree to be bound by:
-- [Terms of Service](https://qnsp.cuilabs.io/terms#terms-of-service)
-- [Privacy Policy](https://qnsp.cuilabs.io/terms#privacy-policy)
-- [Acceptable Use Policy](https://qnsp.cuilabs.io/terms)
+By using QNSI Cloud services, you agree to be bound by:
+- [Terms of Service](https://qnsi.heossi.com/terms#terms-of-service)
+- [Privacy Policy](https://qnsi.heossi.com/terms#privacy-policy)
+- [Acceptable Use Policy](https://qnsi.heossi.com/terms)
 - [Service Level Agreement](/legal/sla) (for eligible tiers)
 
 ## Service description
 
-QNSP provides:
+QNSI provides:
 - Key management services
 - Secrets management
 - Encrypted storage
@@ -71,12 +71,12 @@ These Terms are governed by the laws of Singapore. The courts of Singapore have 
 
 ## Contact
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
 UEN: 202532790K
 
-General inquiries: contact@cuilabs.io
+General inquiries: contact@heossi.com
 
-Full Terms of Service and Privacy Policy: https://qnsp.cuilabs.io/terms
+Full Terms of Service and Privacy Policy: https://qnsi.heossi.com/terms

@@ -2,7 +2,7 @@
 title: Getting Started Overview
 version: 0.0.3
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0 (SDK packages) / BSL-1.1 (core platform)
 source_files:
   - /package.json
@@ -11,14 +11,14 @@ source_files:
 
 # Overview
 
-QNSP is an API-first platform providing tenant-scoped security primitives: identity, key management, secrets, encrypted storage, audit, and crypto posture workflows.
+QNSI is an API-first platform providing tenant-scoped security primitives: identity, key management, secrets, encrypted storage, audit, and crypto posture workflows.
 
-QNSP was conceived, architected, and engineered starting in Dec 2020. The current monorepo was bootstrapped in Nov 2025.
+QNSI was conceived, architected, and engineered starting in Dec 2020. The current monorepo was bootstrapped in Nov 2025.
 
-> **Monorepo**: `@cuilabs/qnsp-monorepo` v0.0.1  
+> **Monorepo**: `@heossi/qnsi-monorepo` v0.0.1  
 > **Node.js**: ≥24.12.0 | **pnpm**: ≥10.25.0
 
-## What QNSP Provides
+## What QNSI Provides
 
 - **Identity & Auth**: PQC-signed JWTs (ML-DSA), refresh tokens, service accounts, RBAC, WebAuthn passkeys, social OAuth (GitHub, Google, LinkedIn, Microsoft), enterprise OIDC/SAML federation, linked external identities
 - **KMS**: Key generation, rotation, BYOK import
@@ -31,10 +31,10 @@ QNSP was conceived, architected, and engineered starting in Dec 2020. The curren
 
 There are two common starting paths:
 
-- **Build-first**: create a tenant, generate credentials, and integrate QNSP SDKs or APIs into a new workload
-- **Migration-first**: connect external sources, run discovery, analyze exposure, then cut production trust dependencies over to QNSP
+- **Build-first**: create a tenant, generate credentials, and integrate QNSI SDKs or APIs into a new workload
+- **Migration-first**: connect external sources, run discovery, analyze exposure, then cut production trust dependencies over to QNSI
 
-The migration path is documented in [Migration Journey to QNSP](/migration/journey).
+The migration path is documented in [Migration Journey to QNSI](/migration/journey).
 
 ## Service Map
 

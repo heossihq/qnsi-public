@@ -4,7 +4,7 @@
  * v3 (2026-05-14):
  *   - Batched memory measurement (N=200 instances ÷ N for stable per-instance RSS)
  *   - Multi-process concurrency via child_process.fork (real multi-core scaling)
- *   - Noble comparison: side-by-side @cuilabs/liboqs-native vs @noble/post-quantum
+ *   - Noble comparison: side-by-side @heossi/liboqs-native vs @noble/post-quantum
  *
  * v2 added cold-start, single-instance memory (deprecated by v3 batched), and
  * in-process concurrency (kept; still surfaces saturation finding).
@@ -13,7 +13,7 @@
  * Output: `apps/web/public/pqc-benchmarks/pqc-latest.json` plus historical
  * snapshot `pqc-<UTC>.json`.
  *
- * Run:  pnpm --filter @cuilabs/qnsp-web-portal run bench:pqc
+ * Run:  pnpm --filter @heossi/qnsi-web-portal run bench:pqc
  *
  * Multi-process mode: the same script forks itself with
  * `PQC_BENCH_CHILD_MODE=1` to spawn workers; each child runs N ops then
@@ -39,7 +39,7 @@ import type {
 } from "../lib/benchmark-types.js";
 
 const require = createRequire(import.meta.url);
-const liboqs = require("@cuilabs/liboqs-native") as {
+const liboqs = require("@heossi/liboqs-native") as {
 	KEM: new (algorithm: string) => KemHandle;
 	Sig: new (algorithm: string) => SigHandle;
 	version(): string;
@@ -147,7 +147,7 @@ const SIGNATURE_TARGETS: readonly SignatureTarget[] = [
 ];
 
 const MESSAGE = Buffer.from(
-	"QNSP PQC benchmark — message used for sign/verify rounds. Length is intentionally short " +
+	"QNSI PQC benchmark — message used for sign/verify rounds. Length is intentionally short " +
 		"to mirror typical control-plane payloads (auth tokens, audit signatures, billing meters).",
 	"utf8",
 );
@@ -724,10 +724,10 @@ async function main(): Promise<void> {
 			totalMemoryGiB: Math.round((totalmem() / 1024 ** 3) * 10) / 10,
 		},
 		reproducibility: {
-			publishedJson: "https://qnsp.cuilabs.io/pqc-benchmarks/pqc-latest.json",
-			publicMirror: "https://github.com/cuilabs/qnsp-public",
+			publishedJson: "https://qnsi.heossi.com/pqc-benchmarks/pqc-latest.json",
+			publicMirror: "https://github.com/heossihq/qnsi-public",
 			publicLibrary: "https://github.com/paulmillr/noble-post-quantum",
-			liveSandbox: "https://qnsp.cuilabs.io/api/sandbox/pqc-runtime",
+			liveSandbox: "https://qnsi.heossi.com/api/sandbox/pqc-runtime",
 			readerSnippet:
 				"npm i @noble/post-quantum && node --input-type=module -e \"import {ml_kem768} from '@noble/post-quantum/ml-kem.js'; const t=performance.now(); const kp=ml_kem768.keygen(); console.log('keygen ms:', (performance.now()-t).toFixed(3), '— pubkey bytes:', kp.publicKey.length);\"",
 			note: "Absolute timings depend on hardware, kernel scheduler, and thermal state. Cross-algorithm ratios are stable. Schema v3 adds multi-process scaling, batched memory measurement, and side-by-side noble comparison.",

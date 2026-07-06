@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 2,
-	"generatedAt": "2026-05-13T14:51:30.871Z",
-	"nobleVersion": "0.6.0",
+	"generatedAt": "2026-06-02T11:31:45.851Z",
+	"nobleVersion": "0.6.1",
 	"liboqsVersion": "0.15.0",
 	"vectorSource": {
 		"repo": "github.com/paulmillr/acvp-vectors",
@@ -53,7 +53,7 @@
 			"passed": 75,
 			"failed": 0,
 			"skipped": 0,
-			"durationMs": 33
+			"durationMs": 31
 		},
 		{
 			"algorithm": "ML-KEM",
@@ -173,7 +173,7 @@
 			"passed": 165,
 			"failed": 0,
 			"skipped": 0,
-			"durationMs": 60
+			"durationMs": 55
 		},
 		{
 			"algorithm": "ML-DSA",
@@ -212,7 +212,7 @@
 			"passed": 75,
 			"failed": 0,
 			"skipped": 0,
-			"durationMs": 152
+			"durationMs": 142
 		},
 		{
 			"algorithm": "SLH-DSA",
@@ -332,7 +332,7 @@
 			"passed": 120,
 			"failed": 0,
 			"skipped": 0,
-			"durationMs": 42203
+			"durationMs": 31634
 		}
 	],
 	"summary": {
@@ -346,7 +346,7 @@
 	"providers": {
 		"noble": {
 			"provider": "noble",
-			"version": "0.6.0",
+			"version": "0.6.1",
 			"implementationType": "pure-js",
 			"results": [
 				{
@@ -386,7 +386,7 @@
 					"passed": 75,
 					"failed": 0,
 					"skipped": 0,
-					"durationMs": 33
+					"durationMs": 31
 				},
 				{
 					"algorithm": "ML-KEM",
@@ -506,7 +506,7 @@
 					"passed": 165,
 					"failed": 0,
 					"skipped": 0,
-					"durationMs": 60
+					"durationMs": 55
 				},
 				{
 					"algorithm": "ML-DSA",
@@ -545,7 +545,7 @@
 					"passed": 75,
 					"failed": 0,
 					"skipped": 0,
-					"durationMs": 152
+					"durationMs": 142
 				},
 				{
 					"algorithm": "SLH-DSA",
@@ -665,7 +665,7 @@
 					"passed": 120,
 					"failed": 0,
 					"skipped": 0,
-					"durationMs": 42203
+					"durationMs": 31634
 				}
 			],
 			"summary": {
@@ -719,7 +719,7 @@
 					"passed": 75,
 					"failed": 0,
 					"skipped": 0,
-					"durationMs": 11
+					"durationMs": 12
 				},
 				{
 					"algorithm": "ML-KEM",
@@ -839,7 +839,7 @@
 					"passed": 165,
 					"failed": 0,
 					"skipped": 0,
-					"durationMs": 12
+					"durationMs": 11
 				},
 				{
 					"algorithm": "ML-DSA",
@@ -1070,11 +1070,11 @@
 				"passRate": 55.17
 			},
 			"scopeNotes": [
-				"@cuilabs/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
+				"@heossi/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
 				"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.15.0 upstream does NOT expose OQS_SIG_keypair_derand — the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
 				"The liboqs C library's own ACVP test record is maintained upstream by the Open Quantum Safe project at github.com/open-quantum-safe/liboqs."
 			]
 		}
 	},
-	"digest": "61012ebddeeb136fa511789fa14fef13e1c5171f861431bd4e97a390bf9fc9c6"
+	"digest": "102decef2e45560bc37ac75c09e2c80f9d5f468819757901b84bf925b7327e9a"
 }

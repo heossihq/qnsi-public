@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@cuilabs/qnsp-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
 
 import type { AiClientTelemetry, AiClientTelemetryConfig } from "./observability.js";
 import { createAiClientTelemetry, isAiClientTelemetry } from "./observability.js";
@@ -121,9 +121,9 @@ export class AiOrchestratorClient {
 		if (!options.apiKey || options.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP AI SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsp.cuilabs.io/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
-					"Docs: https://docs.qnsp.cuilabs.io/sdk/ai-sdk",
+					"Docs: https://docs.qnsi.heossi.com/sdk/ai-sdk",
 			);
 		}
 
@@ -918,8 +918,8 @@ export class AiOrchestratorClient {
 				if (response.status === 401) {
 					throw new AiOrchestratorError(
 						"QNSP AI Orchestrator API: Authentication failed. " +
-							"Verify your token is valid or get a new API key at https://cloud.qnsp.cuilabs.io/signup " +
-							"Docs: https://docs.qnsp.cuilabs.io/sdk/ai-sdk",
+							"Verify your token is valid or get a new API key at https://cloud.qnsi.heossi.com/signup " +
+							"Docs: https://docs.qnsi.heossi.com/sdk/ai-sdk",
 						response.status,
 					);
 				}

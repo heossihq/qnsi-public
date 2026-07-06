@@ -2,7 +2,7 @@
 title: Changelog
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Changelog
 
@@ -10,11 +10,11 @@ This changelog captures major milestones and curated, high-signal changes.
 
 ## Origins
 
-QNSP was conceived, architected, and engineered starting in **Dec 2020**.
+QNSI was conceived, architected, and engineered starting in **Dec 2020**.
 
 ## Codebase history
 
-The current QNSP monorepo was bootstrapped in **Nov 2025** as part of an internal consolidation effort.
+The current QNSI monorepo was bootstrapped in **Nov 2025** as part of an internal consolidation effort.
 Earlier iterations of the platform existed in prior internal repositories and design documents.
 
 ## Notable changes
@@ -30,7 +30,7 @@ Earlier iterations of the platform existed in prior internal repositories and de
 
 - Bootstrap the monorepo and initial workspace structure
 - Introduce automated versioning with Changesets
-- Establish package naming and scope conventions (including the `@cuilabs/qnsp-*` namespace)
+- Establish package naming and scope conventions (including the `@heossi/qnsi-*` namespace)
 
 ## Versioning
 
@@ -42,4 +42,4 @@ Changes follow semantic versioning:
 ## Notifications
 
 Subscribe to updates:
-- Cloud status dashboard: https://qnsp.cuilabs.io#overview
+- Cloud status dashboard: https://qnsi.heossi.com#overview

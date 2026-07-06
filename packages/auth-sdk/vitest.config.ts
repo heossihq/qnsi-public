@@ -1,9 +1,13 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig, mergeConfig } from "vitest/config";
+import { boundedPool } from "../../tooling/vitest/pool";
 
-export default defineConfig({
-	test: {
-		coverage: {
-			reporter: ["text", "lcov"],
+export default mergeConfig(
+	defineConfig({
+		test: {
+			coverage: {
+				reporter: ["text", "lcov"],
+			},
 		},
-	},
-});
+	}),
+	boundedPool,
+);

@@ -1,18 +1,18 @@
 ---
 title: "Quickstart"
-description: "Get started with QNSP in under 10 minutes — create a tenant, obtain an API token, and make your first secure API call from TypeScript, Python, Go, Rust, or JVM/Android."
+description: "Get started with QNSI in under 10 minutes — create a tenant, obtain an API token, and make your first secure API call from TypeScript, Python, Go, Rust, or JVM/Android."
 version: 0.2.0
 last_updated: 2026-04-30
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: BSL-1.1
 ---
 # Quickstart
 
-Get from zero to a working QNSP integration in under 10 minutes.
+Get from zero to a working QNSI integration in under 10 minutes.
 
 ## 1. Create an account
 
-Sign up at [cloud.qnsp.cuilabs.io/auth](https://cloud.qnsp.cuilabs.io/auth).
+Sign up at [cloud.qnsi.heossi.com/auth](https://cloud.qnsi.heossi.com/auth).
 
 Available paths today:
 - One-click social sign-in with **GitHub**, **Google**, **LinkedIn**, or **Microsoft**
@@ -23,22 +23,22 @@ Your workspace (tenant) is provisioned automatically on first sign-in for self-s
 
 ## 2. Generate an API key
 
-In the QNSP portal, go to **Settings → API Keys → New API Key**. Copy the key — it is shown once only.
+In the QNSI portal, go to **Settings → API Keys → New API Key**. Copy the key — it is shown once only.
 
 Store it as an environment variable:
 
 ```bash
-export QNSP_API_KEY="qnsp_live_..."
-export QNSP_TENANT_ID="<your-tenant-uuid>"
+export QNSI_API_KEY="qnsi_pqc_api_..."
+export QNSI_TENANT_ID="<your-tenant-uuid>"
 ```
 
 ## 3. Make your first API call
 
 ```bash
 curl -sS \
-  -H "Authorization: Bearer $QNSP_API_KEY" \
-  -H "x-qnsp-tenant-id: $QNSP_TENANT_ID" \
-  https://api.qnsp.cuilabs.io/vault/v1/secrets
+  -H "Authorization: Bearer $QNSI_API_KEY" \
+  -H "x-qnsp-tenant-id: $QNSI_TENANT_ID" \
+  https://api.qnsi.heossi.com/vault/v1/secrets
 ```
 
 A `200 OK` with an empty `data` array confirms authentication is working.
@@ -50,16 +50,16 @@ Pick the SDK for your language. All four families share the same wire contracts,
 ### TypeScript / Node.js
 
 ```bash
-pnpm add @cuilabs/qnsp
-pnpm add -g @cuilabs/qnsp-cli      # CLI for scripting / CI
+pnpm add @heossi/qnsi
+pnpm add -g @heossi/qnsi-cli      # CLI for scripting / CI
 ```
 
 ```typescript
-import { QnspClient } from "@cuilabs/qnsp";
+import { QnsiClient } from "@heossi/qnsi";
 
-const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
+const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
-const secret = await qnsp.vault.createSecret({
+const secret = await qnsi.vault.createSecret({
   name: "db-password",
   payloadB64: Buffer.from("s3cr3t").toString("base64"),
 });
@@ -69,16 +69,16 @@ console.log(secret.id);
 ### Python
 
 ```bash
-pip install qnsp
+pip install qnsi
 # Optional: local PQC primitives via liboqs-python
-pip install 'qnsp[crypto]'
+pip install 'qnsi[crypto]'
 ```
 
 ```python
 import os, base64
-from qnsp import QnspClient
+from qnsi import QnsiClient
 
-with QnspClient(api_key=os.environ["QNSP_API_KEY"]) as q:
+with QnsiClient(api_key=os.environ["QNSI_API_KEY"]) as q:
     secret = q.vault.create_secret(
         name="db-password",
         payload_b64=base64.b64encode(b"s3cr3t").decode(),
@@ -89,7 +89,7 @@ with QnspClient(api_key=os.environ["QNSP_API_KEY"]) as q:
 ### Go
 
 ```bash
-go get github.com/cuilabs/qnsp-public/sdks/go/qnsp@latest
+go get github.com/heossihq/qnsi-public/sdks/go/qnsi@latest
 ```
 
 ```go
@@ -98,11 +98,11 @@ import (
     "encoding/base64"
     "os"
 
-    "github.com/cuilabs/qnsp-public/sdks/go/qnsp"
-    "github.com/cuilabs/qnsp-public/sdks/go/qnsp/vault"
+    "github.com/heossihq/qnsi-public/sdks/go/qnsi"
+    "github.com/heossihq/qnsi-public/sdks/go/qnsi/vault"
 )
 
-c, _ := qnsp.NewClient(qnsp.ClientOptions{APIKey: os.Getenv("QNSP_API_KEY")})
+c, _ := qnsp.NewClient(qnsp.ClientOptions{APIKey: os.Getenv("QNSI_API_KEY")})
 defer c.Close()
 
 secret, _ := c.Vault().CreateSecret(context.Background(), vault.CreateSecretRequest{
@@ -114,17 +114,17 @@ secret, _ := c.Vault().CreateSecret(context.Background(), vault.CreateSecretRequ
 ### Rust
 
 ```bash
-cargo add qnsp
+cargo add qnsi
 # Optional: local PQC primitives via the oqs 0.11 crate
-cargo add qnsp --features crypto
+cargo add qnsi --features crypto
 ```
 
 ```rust
 use base64::{engine::general_purpose::STANDARD, Engine};
-use qnsp::{Client, ClientOptions};
-use qnsp::vault::CreateSecretRequest;
+use qnsi::{Client, ClientOptions};
+use qnsi::vault::CreateSecretRequest;
 
-let c = Client::new(ClientOptions::with_api_key(std::env::var("QNSP_API_KEY")?))?;
+let c = Client::new(ClientOptions::with_api_key(std::env::var("QNSI_API_KEY")?))?;
 let secret = c.vault().create_secret(CreateSecretRequest {
     name: "db-password".into(),
     payload_b64: STANDARD.encode(b"s3cr3t"),
@@ -138,17 +138,17 @@ let secret = c.vault().create_secret(CreateSecretRequest {
 ```kotlin
 // Gradle (Kotlin DSL): build.gradle.kts
 dependencies {
-    implementation("io.cuilabs:qnsp:0.1.0")
+    implementation("io.heossi:qnsi:0.1.0")
 }
 ```
 
 ```kotlin
-import io.cuilabs.qnsp.QnspClient
-import io.cuilabs.qnsp.CreateSecretRequest
+import io.heossi.qnsi.QnsiClient
+import io.heossi.qnsi.CreateSecretRequest
 import okio.ByteString.Companion.encodeUtf8
 
-val qnsp = QnspClient(System.getenv("QNSP_API_KEY"))
-val secret = qnsp.vault.createSecret(
+val qnsi = QnsiClient(System.getenv("QNSI_API_KEY"))
+val secret = qnsi.vault.createSecret(
     CreateSecretRequest(name = "db-password", payloadB64 = "s3cr3t".encodeUtf8().base64()),
 )
 println(secret["id"])
@@ -159,6 +159,6 @@ println(secret["id"])
 - [API Reference](./api) — Full endpoint listing
 - [SDK Overview](./sdk/overview) — All available SDKs across five languages
 - [Supported Languages](./sdk/languages) — Feature matrix: TypeScript / Python / Go / Rust / JVM-Android
-- [MCP Server](./sdk/mcp-server) — Connect AI assistants to QNSP
+- [MCP Server](./sdk/mcp-server) — Connect AI assistants to QNSI
 - [Getting Started Guide](./getting-started/overview) — Deeper walkthrough including auth flows
 - [cURL Quickstart](./getting-started/quickstart-curl) — Step-by-step API calls without an SDK

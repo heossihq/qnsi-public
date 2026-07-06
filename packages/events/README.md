@@ -1,11 +1,11 @@
-# @cuilabs/qnsp-events
+# @heossi/qnsi-events
 
-Canonical event contracts and envelope schemas for messaging inside the Quantum-Native Security Platform (QNSP).
+Canonical event contracts and envelope schemas for messaging inside the Quantum-Native Security Infrastructure (QNSI).
 
 ## Usage
 
 ```ts
-import { eventEnvelopeSchema, createEventEnvelope } from "@cuilabs/qnsp-events";
+import { eventEnvelopeSchema, createEventEnvelope } from "@heossi/qnsi-events";
 
 const envelope = createEventEnvelope({
   topic: "auth.user.created",
@@ -30,4 +30,4 @@ pnpm test      # Execute Vitest test suites
 pnpm typecheck # Run TypeScript without emitting output
 ```
 
-© 2025 QNSP - CUI LABS, Singapore
+© 2025 QNSI - HEOSSI, Singapore

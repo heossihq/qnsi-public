@@ -2,22 +2,22 @@
 title: Service Level Agreement
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Service Level Agreement
 
-This Service Level Agreement ("SLA") is entered into by and between CUI Labs (Pte.) Ltd. ("CUI Labs", "we", "us", "our"), a company incorporated in Singapore (UEN: 202532790K), and the customer ("you", "your") using QNSP Cloud services.
+This Service Level Agreement ("SLA") is entered into by and between HEOSSI (PTE.) LTD ("HEOSSI", "we", "us", "our"), a company incorporated in Singapore (UEN: 202532790K), and the customer ("you", "your") using QNSI Cloud services.
 
-This SLA governs the availability commitments for QNSP Cloud services and applies to eligible subscription tiers. This SLA is incorporated by reference into your subscription agreement and is subject to the [Terms of Service](https://qnsp.cuilabs.io/terms).
+This SLA governs the availability commitments for QNSI Cloud services and applies to eligible subscription tiers. This SLA is incorporated by reference into your subscription agreement and is subject to the [Terms of Service](https://qnsi.heossi.com/terms).
 
 ## 1. Definitions
 
-- **"Availability"** means the percentage of time during a calendar month that the QNSP Cloud services are operational and accessible, calculated as described in Section 3.
-- **"Downtime"** means periods when the QNSP Cloud services are unavailable, excluding SLA Exclusions defined in Section 5.
+- **"Availability"** means the percentage of time during a calendar month that the QNSI Cloud services are operational and accessible, calculated as described in Section 3.
+- **"Downtime"** means periods when the QNSI Cloud services are unavailable, excluding SLA Exclusions defined in Section 5.
 - **"Error"** means any API request that returns a 5xx server error code.
 - **"Monthly Uptime Percentage"** means the total number of minutes in a calendar month minus the number of minutes of Downtime, divided by the total number of minutes in that month.
-- **"Request"** means an API call to any QNSP Cloud service endpoint.
+- **"Request"** means an API call to any QNSI Cloud service endpoint.
 - **"Service Credit"** means a credit calculated as described in Section 4, applied to future invoices.
 
 ## 2. SLA Eligibility
@@ -59,7 +59,7 @@ Monthly Uptime % = ((Total Minutes − Downtime Minutes) / Total Minutes) × 100
 
 ### 3.3 Covered Services
 
-The following QNSP Cloud services are covered by this SLA:
+The following QNSI Cloud services are covered by this SLA:
 
 - **Authentication Service** (auth-service)
 - **Key Management Service** (kms-service)
@@ -140,7 +140,7 @@ To request Service Credits:
 
 ## 8. SLA Changes
 
-We may modify this SLA from time to time. Changes that materially reduce your SLA coverage will be announced at least 30 days in advance. Continued use of QNSP Cloud services after such changes constitutes acceptance of the modified SLA.
+We may modify this SLA from time to time. Changes that materially reduce your SLA coverage will be announced at least 30 days in advance. Continued use of QNSI Cloud services after such changes constitutes acceptance of the modified SLA.
 
 ## 9. Relationship to Other Agreements
 
@@ -150,21 +150,21 @@ In the event of a conflict between this SLA and your subscription agreement or e
 
 ### 10.1 Disclaimer of Warranties
 
-EXCEPT AS EXPRESSLY PROVIDED IN THIS SLA, QNSP CLOUD SERVICES ARE PROVIDED ON AN "AS-IS" AND "AS-AVAILABLE" BASIS. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, CUI LABS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND UNINTERRUPTED AVAILABILITY.
+EXCEPT AS EXPRESSLY PROVIDED IN THIS SLA, QNSI CLOUD SERVICES ARE PROVIDED ON AN "AS-IS" AND "AS-AVAILABLE" BASIS. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, HEOSSI DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND UNINTERRUPTED AVAILABILITY.
 
 ### 10.2 Limitation of Liability
 
 TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW:
 
-1. CUI Labs will not be liable for any indirect, incidental, special, consequential, exemplary, or punitive damages, or any loss of profits, revenues, data, goodwill, or business interruption, regardless of the theory of liability.
+1. HEOSSI will not be liable for any indirect, incidental, special, consequential, exemplary, or punitive damages, or any loss of profits, revenues, data, goodwill, or business interruption, regardless of the theory of liability.
 
-2. CUI Labs' aggregate liability arising out of or related to this SLA will not exceed the Service Credits described herein, or the amounts paid by you for the affected services in the 12 months prior to the claim, whichever is greater.
+2. HEOSSI' aggregate liability arising out of or related to this SLA will not exceed the Service Credits described herein, or the amounts paid by you for the affected services in the 12 months prior to the claim, whichever is greater.
 
 3. Service Credits are your sole and exclusive remedy for any failure to meet the SLA commitments.
 
 ### 10.3 Essential Basis
 
-You acknowledge that the limitations of liability in this SLA are an essential basis of the bargain between you and CUI Labs, and that CUI Labs would not provide the services without such limitations.
+You acknowledge that the limitations of liability in this SLA are an essential basis of the bargain between you and HEOSSI, and that HEOSSI would not provide the services without such limitations.
 
 ## 11. Governing Law and Dispute Resolution
 
@@ -178,13 +178,13 @@ You agree that the courts of Singapore shall have exclusive jurisdiction over an
 
 ### 11.3 Dispute Resolution
 
-Before initiating any legal proceedings, you agree to attempt to resolve disputes informally by contacting us at contact@cuilabs.io. We will attempt to resolve the dispute within 30 days of receipt of your notice.
+Before initiating any legal proceedings, you agree to attempt to resolve disputes informally by contacting us at contact@heossi.com. We will attempt to resolve the dispute within 30 days of receipt of your notice.
 
 ## 12. General Provisions
 
 ### 12.1 Entire Agreement
 
-This SLA, together with the Terms of Service and any applicable subscription agreement, constitutes the entire agreement between you and CUI Labs regarding SLA commitments.
+This SLA, together with the Terms of Service and any applicable subscription agreement, constitutes the entire agreement between you and HEOSSI regarding SLA commitments.
 
 ### 12.2 Severability
 
@@ -200,7 +200,7 @@ You may not assign this SLA without our prior written consent. We may assign thi
 
 ---
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
@@ -210,4 +210,4 @@ UEN: 202532790K
 
 **Document Version:** 1.0.0
 
-For questions about this SLA, contact: contact@cuilabs.io
+For questions about this SLA, contact: contact@heossi.com

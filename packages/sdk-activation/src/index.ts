@@ -1,5 +1,5 @@
 /**
- * @cuilabs/qnsp-sdk-activation
+ * @heossi/qnsi-sdk-activation
  *
  * SDK activation and usage metering for QNSP platform SDKs.
  * Ensures all SDK usage is tied to a registered QNSP account.

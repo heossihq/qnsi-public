@@ -1,7 +1,7 @@
-# `@cuilabs/liboqs-native`
+# `@heossi/liboqs-native`
 
 This workspace package hosts the liboqs Node-API addon used whenever services
-set `PQC_LIBOQS_MODULE=@cuilabs/liboqs-native`.
+set `PQC_LIBOQS_MODULE=@heossi/liboqs-native`.
 
 Key characteristics:
 
@@ -11,7 +11,7 @@ Key characteristics:
   `node-gyp-build`, compiling from source with the local toolchain.
 - **Pure JS surface** – consumers always import `dist/index.js`, which exports
   the `KEM`, `Sig`, `getSupported*`, and `version` helpers expected by
-  `@cuilabs/qnsp-cryptography`.
+  `@heossi/qnsi-cryptography`.
 
 ## Directory layout
 
@@ -30,8 +30,8 @@ packages/liboqs-native/
 
 1. Build liboqs and set `OQS_INCLUDE_PATH` / `OQS_LIB_PATH` as described in
    `docs/guides/liboqs-native-build.md`.
-2. Run `pnpm --filter @cuilabs/liboqs-native prebuild` to populate `prebuilds/`.
-3. Verify the addon with `pnpm --filter @cuilabs/qnsp-cryptography smoke`.
+2. Run `pnpm --filter @heossi/liboqs-native prebuild` to populate `prebuilds/`.
+3. Verify the addon with `pnpm --filter @heossi/qnsi-cryptography smoke`.
 4. During deployment copy (or download) the prebuilds into this package before
    running `pnpm install`. If no prebuild exists the install step compiles the
    addon transparently.
@@ -48,4 +48,4 @@ attestation data.
 Licensed under the Business Source License 1.1 (BUSL-1.1) with Change License GPL-2.0-or-later. See [`LICENSE`](./LICENSE) and the repository-level [`LICENSE.md`](../../LICENSE.md).
 
 
-© 2025 QNSP - CUI LABS, Singapore
+© 2025 QNSP - HEOSSI, Singapore

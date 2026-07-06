@@ -2,11 +2,11 @@
 title: Security Assumptions
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Security Assumptions
 
-Cryptographic assumptions underlying QNSP's PQC primitives.
+Cryptographic assumptions underlying QNSI's PQC primitives.
 
 ## Lattice-based (Kyber, Dilithium)
 
@@ -57,7 +57,7 @@ Cryptographic assumptions underlying QNSP's PQC primitives.
 - Regular security analysis review
 - Algorithm agility for migration
 
-## QNSP's position
+## QNSI's position
 
 - Use NIST Level 3 by default
 - Monitor cryptanalysis developments

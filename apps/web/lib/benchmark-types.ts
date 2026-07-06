@@ -144,7 +144,7 @@ export interface MultiProcessConcurrencyMeasurement {
 
 /**
  * Side-by-side comparison: same operation, same iterations, on the same
- * hardware, executed by @cuilabs/liboqs-native (native C) vs @noble/post-quantum
+ * hardware, executed by @heossi/liboqs-native (native C) vs @noble/post-quantum
  * (pure JavaScript). The ratio quantifies the native-vs-pure-JS performance
  * delta — a concrete number for "how much slower is the browser SDK".
  *

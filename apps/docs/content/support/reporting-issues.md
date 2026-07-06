@@ -2,15 +2,15 @@
 title: Reporting Issues
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-vault-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-vault-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.vault./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.vault./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
@@ -18,23 +18,23 @@ copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
 
 # Reporting Issues
 
-This document describes how to report bugs, errors, security vulnerabilities, and feature requests for QNSP Cloud services.
+This document describes how to report bugs, errors, security vulnerabilities, and feature requests for QNSI Cloud services.
 
 ## Report Types
 
 | Type | Channel | Response |
 |------|---------|----------|
-| **Security Vulnerability** | qnsp-security@cuilabs.io | See [Vulnerability Disclosure](/security/vulnerability-disclosure) |
-| **Service Outage** | [Status Page](https://qnsp.cuilabs.io#overview) + Support Portal | Per [Support Policy](/support/support-policy) |
+| **Security Vulnerability** | qnsi-security@heossi.com | See [Vulnerability Disclosure](/security/vulnerability-disclosure) |
+| **Service Outage** | [Status Page](https://qnsi.heossi.com#overview) + Support Portal | Per [Support Policy](/support/support-policy) |
 | **Bug Report** | Support Portal or GitHub | Acknowledged within 48 hours |
 | **Feature Request** | Support Portal or GitHub | Reviewed monthly |
-| **Documentation Issue** | GitHub or contact@cuilabs.io | Acknowledged within 72 hours |
+| **Documentation Issue** | GitHub or contact@heossi.com | Acknowledged within 72 hours |
 
 ## Security Vulnerabilities
 
 **DO NOT** report security vulnerabilities through public channels.
 
-**Contact:** qnsp-security@cuilabs.io
+**Contact:** qnsi-security@heossi.com
 
 See our [Vulnerability Disclosure Policy](/security/vulnerability-disclosure) for:
 - Responsible disclosure guidelines
@@ -47,12 +47,12 @@ See our [Vulnerability Disclosure Policy](/security/vulnerability-disclosure) fo
 
 1. **Support Portal** (recommended for customers):
    ```
-   https://cloud.qnsp.cuilabs.io/support
+   https://cloud.qnsi.heossi.com/support
    ```
 
 2. **GitHub Issues** (for SDK/client bugs):
    ```
-   https://github.com/cuilabs/qnsp-public/issues
+   https://github.com/heossihq/qnsi-public/issues
    ```
 
 ### What to Include
@@ -63,7 +63,7 @@ A complete bug report should include:
 |-------|-------------|----------|
 | **Summary** | Brief description of the issue | Yes |
 | **Environment** | Production, staging, or development | Yes |
-| **Tenant ID** | Your QNSP tenant identifier | Yes |
+| **Tenant ID** | Your QNSI tenant identifier | Yes |
 | **Service** | Affected service (KMS, Vault, Storage, etc.) | Yes |
 | **Steps to Reproduce** | Detailed steps to replicate the issue | Yes |
 | **Expected Behavior** | What you expected to happen | Yes |
@@ -71,7 +71,7 @@ A complete bug report should include:
 | **Request IDs** | From API error responses (X-Request-ID header) | If available |
 | **Error Messages** | Full error text or codes | If available |
 | **Logs/Screenshots** | Relevant evidence (redact sensitive data) | If available |
-| **SDK Version** | If using QNSP SDKs | If applicable |
+| **SDK Version** | If using QNSI SDKs | If applicable |
 | **Workaround** | Any workaround you've found | If known |
 
 ### Bug Report Template
@@ -111,7 +111,7 @@ A complete bug report should include:
 ```
 
 ## SDK Version (if applicable)
-[e.g., @cuilabs/qnsp-vault-sdk@1.2.3]
+[e.g., @heossi/qnsi-vault-sdk@1.2.3]
 
 ## Additional Context
 [Any other relevant information]
@@ -123,7 +123,7 @@ A complete bug report should include:
 
 Before reporting, check the status page:
 ```
-https://qnsp.cuilabs.io#overview
+https://qnsi.heossi.com#overview
 ```
 
 ### If Service is Degraded
@@ -148,13 +148,13 @@ https://qnsp.cuilabs.io#overview
 
 1. **Support Portal** (for customers):
    ```
-   https://cloud.qnsp.cuilabs.io/support
+   https://cloud.qnsi.heossi.com/support
    ```
    Select "Feature Request" as the ticket type.
 
 2. **GitHub Discussions** (for community input):
    ```
-   https://github.com/cuilabs/qnsp-public/discussions
+   https://github.com/heossihq/qnsi-public/discussions
    ```
 
 ### What to Include
@@ -211,7 +211,7 @@ https://qnsp.cuilabs.io#overview
 
 ### Reporting Documentation Bugs
 
-- **Typos, errors, outdated content**: GitHub issue or contact@cuilabs.io
+- **Typos, errors, outdated content**: GitHub issue or contact@heossi.com
 - **Missing documentation**: Feature request process
 - **Clarification needed**: Support portal or GitHub discussions
 
@@ -249,7 +249,7 @@ If your issue is not being addressed satisfactorily:
 1. **Reply to Ticket**: Request escalation in the ticket
 2. **Account Manager**: Contact your account manager (Enterprise tiers)
 3. **Emergency Escalation**: For Severity 1 issues:
-   - Email: qnsp-incident@cuilabs.io
+   - Email: qnsi-incident@heossi.com
    - Include "URGENT" in subject line
 
 See [Support Policy](/support/support-policy) for escalation procedures by tier.
@@ -269,7 +269,7 @@ See [Support Policy](/support/support-policy) for escalation procedures by tier.
 
 ## Disclaimer
 
-CUI Labs (Pte.) Ltd. reserves the right to:
+HEOSSI (PTE.) LTD reserves the right to:
 - Prioritize issues based on severity and impact
 - Decline feature requests that don't align with product direction
 - Close issues that cannot be reproduced or lack sufficient information
@@ -279,8 +279,8 @@ Issue reporting does not create any obligation beyond the commitments in your su
 
 ---
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
-For general inquiries: contact@cuilabs.io
+For general inquiries: contact@heossi.com

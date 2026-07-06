@@ -2,15 +2,21 @@
 title: Performance Monitoring
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Performance Monitoring
 
-Monitor and optimize QNSP performance.
+Monitor and optimize QNSI performance.
 
-## Key performance indicators
+## Performance targets
 
-### Latency
+> The figures below are **target service-level objectives (SLOs)**, not measured
+> production telemetry. Live latency and throughput are observed per deployment via
+> the observability stack (OTEL collector + per-service metrics); query those for
+> actual values. Published, reproducible cryptographic benchmarks (ML-KEM/ML-DSA
+> operation timings) are at `https://qnsi.heossi.com/benchmarks`.
+
+### Latency (target SLO)
 | Endpoint | P50 | P95 | P99 |
 |----------|-----|-----|-----|
 | Auth | 50ms | 100ms | 200ms |
@@ -32,20 +38,20 @@ Monitor and optimize QNSP performance.
 ### Request latency
 ```
 histogram_quantile(0.99, 
-  rate(qnsp_request_duration_seconds_bucket[5m])
+  rate(qnsi_request_duration_seconds_bucket[5m])
 )
 ```
 
 ### Error rate
 ```
-rate(qnsp_errors_total[5m]) / 
-rate(qnsp_requests_total[5m])
+rate(qnsi_errors_total[5m]) / 
+rate(qnsi_requests_total[5m])
 ```
 
 ### Saturation
 ```
-qnsp_active_connections / 
-qnsp_max_connections
+qnsi_active_connections / 
+qnsi_max_connections
 ```
 
 ## Performance dashboards
@@ -73,7 +79,7 @@ Pre-built Grafana dashboards:
 
 Run performance tests:
 ```bash
-qnsp benchmark \
+qnsi benchmark \
   --operation encrypt \
   --concurrency 10 \
   --duration 60s

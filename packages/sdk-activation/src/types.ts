@@ -34,6 +34,17 @@ export const SdkIdentifierSchema = z.enum([
 	"langchain-qnsp",
 	"llamaindex-qnsp",
 	"autogen-qnsp",
+	// QNSI identifiers (2026-07-04 full-rename Phase A1). Dual-accept: the qnsp*
+	// values above stay forever so already-published SDK versions keep activating;
+	// SDKs switch to sending these from their next publish (0.5.0+).
+	"qnsi",
+	"qnsi-python",
+	"qnsi-go",
+	"qnsi-rust",
+	"qnsi-jvm",
+	"langchain-qnsi",
+	"llamaindex-qnsi",
+	"autogen-qnsi",
 	"mcp-server",
 ]);
 

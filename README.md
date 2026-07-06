@@ -1,14 +1,14 @@
-# QNSP Public Surface
+# QNSI Public Surface
 
-This repository is an automatically published subset of the private QNSP monorepo.
+This repository is an automatically published subset of the private QNSI monorepo.
 
 Included:
 
 - Documentation markdown content: `apps/docs/content/`
 - Public TypeScript SDK and CLI sources under `packages/` (Apache-2.0 licensed per package)
-- Python SDK source under `sdks/python/qnsp/` (published to PyPI as `qnsp`)
-- Go SDK source under `sdks/go/qnsp/` (consumed via `go get github.com/cuilabs/qnsp-public/sdks/go/qnsp`)
-- Rust SDK source under `sdks/rust/qnsp/` (published to crates.io as `qnsp`)
+- Python SDK source under `sdks/python/qnsi/` (published to PyPI as `qnsi`)
+- Go SDK source under `sdks/go/qnsi/` (consumed via `go get github.com/heossihq/qnsi-public/sdks/go/qnsi`)
+- Rust SDK source under `sdks/rust/qnsi/` (published to crates.io as `qnsi`)
 
 Excluded:
 
@@ -18,5 +18,5 @@ Excluded:
 
 Source revision:
 
-- `ec79cef6efe4dd1d3f664c311fbf2648c1320b62`
+- `fd54f3e7d88a23c073b4237e1c45363e374af82b`
 

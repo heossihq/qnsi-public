@@ -2,11 +2,11 @@
 title: Multi-Region and Data Residency
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Multi-Region and Data Residency
 
-QNSP supports multi-region deployment with data residency controls.
+QNSI supports multi-region deployment with data residency controls.
 
 ## Region model
 

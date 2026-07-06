@@ -1,39 +1,39 @@
 ---
-title: AI SDK (@cuilabs/qnsp-ai-sdk)
+title: AI SDK (@heossi/qnsi-ai-sdk)
 version: 0.1.11
 last_updated: 2026-04-30
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/ai-sdk/src/client.ts
   - /packages/ai-sdk/src/types.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-ai-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-ai-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.ai./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.ai./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# AI SDK (`@cuilabs/qnsp-ai-sdk`)
+# AI SDK (`@heossi/qnsi-ai-sdk`)
 
 The TypeScript client for `ai-orchestrator`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Model artifacts and inference data are encrypted with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @cuilabs/qnsp-ai-sdk
+pnpm install @heossi/qnsi-ai-sdk
 ```
 
 ## Create a client
 
 ```ts
-import { AiOrchestratorClient } from "@cuilabs/qnsp-ai-sdk";
+import { AiOrchestratorClient } from "@heossi/qnsi-ai-sdk";
 
 const ai = new AiOrchestratorClient({
 	baseUrl: "http://localhost:8094",
@@ -66,7 +66,7 @@ const workload = await ai.submitWorkload({
 	name: "inference-job",
 	priority: "high",
 	schedulingPolicy: "on-demand",
-	containerImage: "qnsp/inference-runtime:latest",
+	containerImage: "qnsi/inference-runtime:latest",
 	command: ["python", "-m", "inference"],
 	env: {
 		MODEL_PATH: "/models/llama-7b",
@@ -94,7 +94,7 @@ const deployment = await ai.deployModel({
 	tenantId: "<tenant_uuid>",
 	modelName: "llama-7b-fine-tuned",
 	artifactId: "<artifact_uuid>",
-	runtimeImage: "qnsp/inference-runtime:latest",
+	runtimeImage: "qnsi/inference-runtime:latest",
 	manifest: {
 		version: "1.0.0",
 		framework: "pytorch",
@@ -171,7 +171,7 @@ await ai.cancelWorkload({
 The SDK validates tier access for premium features:
 
 ```ts
-import { AiOrchestratorClient, TierError } from "@cuilabs/qnsp-ai-sdk";
+import { AiOrchestratorClient, TierError } from "@heossi/qnsi-ai-sdk";
 
 try {
 	const ai = new AiOrchestratorClient({
@@ -206,7 +206,7 @@ const model = await ai.registerModel({
 	modelType: "classification",
 	servingConfig: {
 		framework: "pytorch",
-		runtimeImage: "qnsp/pytorch-serve:2.0",
+		runtimeImage: "qnsi/pytorch-serve:2.0",
 		minInstances: 1,
 		maxInstances: 10,
 	},

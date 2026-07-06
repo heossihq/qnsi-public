@@ -1,8 +1,8 @@
 ---
-title: MCP Server (@cuilabs/qnsp-mcp)
+title: MCP Server (@heossi/qnsi-mcp)
 version: 0.1.3
 last_updated: 2026-04-30
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/mcp-server/package.json
@@ -11,16 +11,16 @@ source_files:
   - /apps/cloud/app/api/mcp/route.ts
 ---
 
-# MCP Server (`@cuilabs/qnsp-mcp`)
+# MCP Server (`@heossi/qnsi-mcp`)
 
-QNSP ships an official Model Context Protocol server for AI assistants. It exposes tenant-scoped tools for KMS, vault, audit, crypto posture, search, billing, and platform health using the same billing-backed entitlement model as the rest of the platform.
+QNSI ships an official Model Context Protocol server for AI assistants. It exposes tenant-scoped tools for KMS, vault, audit, crypto posture, search, billing, and platform health using the same billing-backed entitlement model as the rest of the platform.
 
-The MCP server is not just a convenience wrapper. It is one of the supported consumption surfaces for moving agentic workflows onto QNSP during migration and steady-state operations.
+The MCP server is not just a convenience wrapper. It is one of the supported consumption surfaces for moving agentic workflows onto QNSI during migration and steady-state operations.
 
 ## Package
 
-- npm package: `@cuilabs/qnsp-mcp`
-- binary: `qnsp-mcp`
+- npm package: `@heossi/qnsi-mcp`
+- binary: `qnsi-mcp`
 - current version: `0.1.3`
 - runtime: Node.js `>= 24.12.0`
 
@@ -31,56 +31,56 @@ The MCP server is not just a convenience wrapper. It is one of the supported con
 Use this when connecting a local MCP-compatible client such as Codex, Claude Desktop, Cursor, or other MCP-capable tooling.
 
 ```bash
-pnpm add -g @cuilabs/qnsp-mcp
+pnpm add -g @heossi/qnsi-mcp
 
-export QNSP_API_KEY="qnsp_pqc_api_..."
-export QNSP_PLATFORM_URL="https://api.qnsp.cuilabs.io"
+export QNSI_API_KEY="qnsi_pqc_api_..."
+export QNSI_PLATFORM_URL="https://api.qnsi.heossi.com"
 
-qnsp-mcp
+qnsi-mcp
 ```
 
 Required environment variables:
 
-- `QNSP_API_KEY`
+- `QNSI_API_KEY`
 
 Optional environment variables:
 
-- `QNSP_PLATFORM_URL`
-  Default: `https://api.qnsp.cuilabs.io`
+- `QNSI_PLATFORM_URL`
+  Default: `https://api.qnsi.heossi.com`
 
 ### 2. Hosted Streamable HTTP endpoint
 
-QNSP Cloud also exposes the MCP server over HTTP:
+QNSI Cloud also exposes the MCP server over HTTP:
 
 ```text
-https://cloud.qnsp.cuilabs.io/api/mcp
+https://cloud.qnsi.heossi.com/api/mcp
 ```
 
 This is the right choice when your MCP client supports remote HTTP transports instead of local stdio.
 
 ## Tool surface
 
-The MCP server currently registers **15 tenant-scoped tools**. All tools live under the `qnsp_` namespace prefix so they never collide with other MCP servers an agent may have enabled simultaneously.
+The MCP server currently registers **15 tenant-scoped tools**. All tools live under the `qnsi_` namespace prefix so they never collide with other MCP servers an agent may have enabled simultaneously.
 
 | Tool | Area | Description | Minimum tier |
 |---|---|---|---|
-| `qnsp_kms_generate_key` | KMS | Generate a PQC keypair (ML-KEM, ML-DSA, SLH-DSA, Falcon) from the 93-algorithm catalog. | Dev |
-| `qnsp_kms_list_keys` | KMS | List keys in the current tenant. | Dev |
-| `qnsp_kms_get_key` | KMS | Retrieve a key's public metadata. | Dev |
-| `qnsp_kms_rotate_key` | KMS | Rotate a key; previous version retained for verification. | Dev |
-| `qnsp_vault_create_secret` | Vault | Store a secret under PQC envelope encryption. | Pro |
-| `qnsp_vault_get_secret` | Vault | Retrieve a vault secret. | Pro |
-| `qnsp_vault_list_secrets` | Vault | List secrets in the tenant. | Pro |
-| `qnsp_crypto_scan` | Crypto posture | Trigger a cryptographic discovery job (CBOM). | Dev |
-| `qnsp_crypto_inventory` | Crypto posture | List recent inventory jobs and results. | Dev |
-| `qnsp_crypto_readiness` | Crypto posture | PQC-readiness scorecard for the tenant. | Dev |
-| `qnsp_audit_query` | Audit | Query the immutable, hash-chained audit log. | Dev |
-| `qnsp_search_query` | Search | Searchable symmetric-encryption (SSE-X) query. | Business |
-| `qnsp_tenant_info` | Tenant | Show current tenant configuration. | Dev |
-| `qnsp_billing_status` | Billing | Show tier, limits, and upgrade URL. | Any |
-| `qnsp_platform_health` | Platform | Platform liveness and regional posture. | Any |
+| `qnsi_kms_generate_key` | KMS | Generate a PQC keypair (ML-KEM, ML-DSA, SLH-DSA, Falcon) from the 93-algorithm catalog. | Dev |
+| `qnsi_kms_list_keys` | KMS | List keys in the current tenant. | Dev |
+| `qnsi_kms_get_key` | KMS | Retrieve a key's public metadata. | Dev |
+| `qnsi_kms_rotate_key` | KMS | Rotate a key; previous version retained for verification. | Dev |
+| `qnsi_vault_create_secret` | Vault | Store a secret under PQC envelope encryption. | Pro |
+| `qnsi_vault_get_secret` | Vault | Retrieve a vault secret. | Pro |
+| `qnsi_vault_list_secrets` | Vault | List secrets in the tenant. | Pro |
+| `qnsi_crypto_scan` | Crypto posture | Trigger a cryptographic discovery job (CBOM). | Dev |
+| `qnsi_crypto_inventory` | Crypto posture | List recent inventory jobs and results. | Dev |
+| `qnsi_crypto_readiness` | Crypto posture | PQC-readiness scorecard for the tenant. | Dev |
+| `qnsi_audit_query` | Audit | Query the immutable, hash-chained audit log. | Dev |
+| `qnsi_search_query` | Search | Searchable symmetric-encryption (SSE-X) query. | Business |
+| `qnsi_tenant_info` | Tenant | Show current tenant configuration. | Dev |
+| `qnsi_billing_status` | Billing | Show tier, limits, and upgrade URL. | Any |
+| `qnsi_platform_health` | Platform | Platform liveness and regional posture. | Any |
 
-If the tenant's plan does not include the feature the tool needs, the call returns a structured "upgrade required" message with a deep link to `https://cloud.qnsp.cuilabs.io/billing` — the same billing gate that protects the portal and SDKs. The edge-gateway enforces entitlements server-side as well, so the client-side check is a UX optimization and not the security boundary.
+If the tenant's plan does not include the feature the tool needs, the call returns a structured "upgrade required" message with a deep link to `https://cloud.qnsi.heossi.com/billing` — the same billing gate that protects the portal and SDKs. The edge-gateway enforces entitlements server-side as well, so the client-side check is a UX optimization and not the security boundary.
 
 ## Where MCP fits in the customer journey
 
@@ -90,15 +90,15 @@ The migration journey is:
 
 The MCP server primarily sits in **Migrate**, **Validate**, and **Operate**:
 
-- agents can consume QNSP trust services directly through MCP tools
+- agents can consume QNSI trust services directly through MCP tools
 - migration workflows can inspect crypto posture and inventory from agent frameworks
 - post-cutover operations can query audit, health, readiness, and governed trust services through one assistant-facing surface
 
-The MCP server does not replace discovery connectors or host agents. It complements them by giving AI assistants a governed interface into the same tenant-scoped QNSP platform.
+The MCP server does not replace discovery connectors or host agents. It complements them by giving AI assistants a governed interface into the same tenant-scoped QNSI platform.
 
 ## Authentication and entitlements
 
-The MCP server activates against QNSP using your API key before serving tool calls.
+The MCP server activates against QNSI using your API key before serving tool calls.
 
 During activation it resolves:
 
@@ -123,11 +123,11 @@ For shared or durable enterprise automation, prefer a service-account-backed or 
 ```json
 {
   "mcpServers": {
-    "qnsp": {
-      "command": "qnsp-mcp",
+    "qnsi": {
+      "command": "qnsi-mcp",
       "env": {
-        "QNSP_API_KEY": "qnsp_pqc_api_...",
-        "QNSP_PLATFORM_URL": "https://api.qnsp.cuilabs.io"
+        "QNSI_API_KEY": "qnsi_pqc_api_...",
+        "QNSI_PLATFORM_URL": "https://api.qnsi.heossi.com"
       }
     }
   }
@@ -139,10 +139,10 @@ For shared or durable enterprise automation, prefer a service-account-backed or 
 Use the hosted endpoint if your client supports remote MCP transports:
 
 ```text
-https://cloud.qnsp.cuilabs.io/api/mcp
+https://cloud.qnsi.heossi.com/api/mcp
 ```
 
-Authentication is still tenant-scoped and must use a valid QNSP API key or session-backed MCP auth flow, depending on the client integration.
+Authentication is still tenant-scoped and must use a valid QNSI API key or session-backed MCP auth flow, depending on the client integration.
 
 ## Operational notes
 
@@ -156,8 +156,8 @@ Authentication is still tenant-scoped and must use a valid QNSP API key or sessi
 Build and test the MCP package locally:
 
 ```bash
-pnpm --filter @cuilabs/qnsp-mcp build
-pnpm --filter @cuilabs/qnsp-mcp test
+pnpm --filter @heossi/qnsi-mcp build
+pnpm --filter @heossi/qnsi-mcp test
 ```
 
 ## Related docs

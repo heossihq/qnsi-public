@@ -2,11 +2,11 @@
 title: Health Checks
 version: 0.0.2
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Health Checks
 
-QNSP services expose health endpoints for monitoring.
+QNSI services expose health endpoints for monitoring.
 
 ## Endpoints
 
@@ -22,10 +22,10 @@ GET /edge/<service>/health
 Example health checks:
 ```bash
 # Check platform-api health
-curl https://api.qnsp.cuilabs.io/proxy/platform/health
+curl https://api.qnsi.heossi.com/proxy/platform/health
 
 # Check all services health
-curl https://api.qnsp.cuilabs.io/proxy/health
+curl https://api.qnsi.heossi.com/proxy/health
 ```
 
 **Note**: Health check endpoints (GET/HEAD) bypass bot protection and rate limiting to allow monitoring systems to probe services reliably.

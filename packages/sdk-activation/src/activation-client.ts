@@ -24,7 +24,7 @@ import {
 } from "./types.js";
 
 const ACTIVATION_PATH = "/billing/v1/sdk/activate";
-const DEFAULT_PLATFORM_URL = "https://api.qnsp.cuilabs.io";
+const DEFAULT_PLATFORM_URL = "https://api.qnsi.heossi.com";
 const ACTIVATION_TIMEOUT_MS = 15_000;
 const REFRESH_BUFFER_SECONDS = 300; // Refresh 5 minutes before expiry
 
@@ -55,13 +55,13 @@ interface ActivationState {
  * Configuration for SDK activation.
  */
 export interface SdkActivationConfig {
-	/** QNSP API key (required — get one at https://cloud.qnsp.cuilabs.io/signup) */
+	/** QNSP API key (required — get one at https://cloud.qnsi.heossi.com/auth?mode=signup) */
 	readonly apiKey: string;
 	/** SDK package identifier */
 	readonly sdkId: SdkIdentifier;
 	/** SDK version string */
 	readonly sdkVersion: string;
-	/** Override platform URL (defaults to https://api.qnsp.cuilabs.io) */
+	/** Override platform URL (defaults to https://api.qnsi.heossi.com) */
 	readonly platformUrl?: string | undefined;
 	/** Override activation timeout in ms (defaults to 15000) */
 	readonly timeoutMs?: number | undefined;
@@ -105,9 +105,9 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 		throw new SdkActivationError_(
 			"INVALID_API_KEY",
 			`QNSP ${config.sdkId}: apiKey is required. ` +
-				"Get your free API key at https://cloud.qnsp.cuilabs.io/signup — " +
+				"Get your free API key at https://cloud.qnsi.heossi.com/auth?mode=signup — " +
 				"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
-				`Docs: https://docs.qnsp.cuilabs.io/sdk/${config.sdkId}`,
+				`Docs: https://docs.qnsi.heossi.com/sdk/${config.sdkId}`,
 			401,
 		);
 	}
@@ -172,7 +172,7 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 			throw new SdkActivationError_(
 				"INVALID_API_KEY",
 				`QNSP ${config.sdkId}: Invalid API key. ` +
-					"Get your API key at https://cloud.qnsp.cuilabs.io/api-keys",
+					"Get your API key at https://cloud.qnsi.heossi.com/api-keys",
 				401,
 			);
 		}

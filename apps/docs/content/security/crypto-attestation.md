@@ -1,18 +1,18 @@
 # Cryptographic Attestation
 
-QNSP provides **forensic-grade cryptographic attestation** that goes beyond simple discovery scans. Every cryptographic operation produces verifiable evidence that can be audited, replayed, and used for compliance reporting.
+QNSI provides **forensic-grade cryptographic attestation** that goes beyond simple discovery scans. Every cryptographic operation produces verifiable evidence that can be audited, replayed, and used for compliance reporting.
 
 ## Overview
 
-Cryptographic attestation in QNSP includes:
+Cryptographic attestation in QNSI includes:
 
 - **Algorithm Lifecycle Tracking** - NIST status (Final/Draft/Deprecated) for every algorithm
 - **Policy Enforcement** - Hard gates that block non-compliant cryptographic operations
 - **CBOM Export** - Machine-verifiable Cryptographic Bill of Materials
 - **Compliance Assessment** - Automated CNSA 2.0 and FIPS 140-3 compliance checks
 - **Merkle-rooted Audit Logs** - Tamper-evident audit trails with signed checkpoints
-- **Dual-provider NIST ACVP conformance** - Live evidence at [/verify/conformance](https://qnsp.cuilabs.io/verify/conformance) showing both PQC providers passing the official NIST ACVP test vectors. `@noble/post-quantum`: 435/435 across FIPS 203/204/205. `@cuilabs/liboqs-native` 0.15.1: 240/240 ML-KEM ACVP tests via `OQS_KEM_keypair_derand` + `OQS_KEM_encaps_derand` bindings. SHA-3-256 tamper digest binds every evidence file.
-- **Auditable entropy chain** - End-to-end documentation at [/trust/entropy](https://qnsp.cuilabs.io/trust/entropy) citing NIST SP 800-90A/B/C, OpenSSL DRBG, Linux `getrandom`, CPU TRNG (RDRAND/RDSEED/Nitro), and per-vendor HSM FIPS 140-3 DRBG records.
+- **Dual-provider NIST ACVP conformance** - Live evidence at [/verify/conformance](https://qnsi.heossi.com/verify/conformance) showing both PQC providers passing the official NIST ACVP test vectors. `@noble/post-quantum`: 435/435 across FIPS 203/204/205. `@heossi/liboqs-native` 0.15.1: 240/240 ML-KEM ACVP tests via `OQS_KEM_keypair_derand` + `OQS_KEM_encaps_derand` bindings. SHA-3-256 tamper digest binds every evidence file.
+- **Auditable entropy chain** - End-to-end documentation at [/trust/entropy](https://qnsi.heossi.com/trust/entropy) citing NIST SP 800-90A/B/C, OpenSSL DRBG, Linux `getrandom`, CPU TRNG (RDRAND/RDSEED/Nitro), and per-vendor HSM FIPS 140-3 DRBG records.
 
 ## Crypto Policy Engine
 
@@ -44,7 +44,7 @@ interface CryptoPolicyConfig {
 
 ### Policy Presets
 
-QNSP provides four policy presets:
+QNSI provides four policy presets:
 
 **Default Policy** - PQC preferred, classical fallback allowed
 - All NIST-final PQC algorithms allowed
@@ -71,7 +71,7 @@ QNSP provides four policy presets:
 
 ## Algorithm Registry
 
-QNSP maintains a comprehensive registry of cryptographic algorithms with lifecycle status:
+QNSI maintains a comprehensive registry of cryptographic algorithms with lifecycle status:
 
 ### NIST-Final Algorithms (FIPS 203/204/205)
 

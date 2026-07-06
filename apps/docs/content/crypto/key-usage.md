@@ -2,11 +2,11 @@
 title: Key Usage
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Key Usage
 
-QNSP enforces strict key usage policies.
+QNSI enforces strict key usage policies.
 
 ## Usage constraints
 

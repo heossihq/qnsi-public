@@ -1,39 +1,39 @@
 ---
-title: Search SDK (@cuilabs/qnsp-search-sdk)
+title: Search SDK (@heossi/qnsi-search-sdk)
 version: 0.2.10
 last_updated: 2026-04-30
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/search-sdk/src/client.ts
   - /packages/search-sdk/src/types.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-search-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-search-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.search./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.search./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Search SDK (`@cuilabs/qnsp-search-sdk`)
+# Search SDK (`@heossi/qnsi-search-sdk`)
 
 The TypeScript client for `search-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Search indexes are encrypted with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @cuilabs/qnsp-search-sdk
+pnpm install @heossi/qnsi-search-sdk
 ```
 
 ## Create a client
 
 ```ts
-import { SearchClient } from "@cuilabs/qnsp-search-sdk";
+import { SearchClient } from "@heossi/qnsi-search-sdk";
 
 const search = new SearchClient({
 	baseUrl: "http://localhost:8101",

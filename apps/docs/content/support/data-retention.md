@@ -2,20 +2,20 @@
 title: Data Retention and Backup Policy
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Data Retention and Backup Policy
 
-This document describes how CUI Labs (Pte.) Ltd. ("CUI Labs") retains and protects customer data in QNSP Cloud services.
+This document describes how HEOSSI (PTE.) LTD ("HEOSSI") retains and protects customer data in QNSI Cloud services.
 
-This policy is subject to the [Terms of Service](https://qnsp.cuilabs.io/terms), [Privacy Policy](https://qnsp.cuilabs.io/terms#privacy-policy), and Singapore's Personal Data Protection Act 2012 (PDPA).
+This policy is subject to the [Terms of Service](https://qnsi.heossi.com/terms), [Privacy Policy](https://qnsi.heossi.com/terms#privacy-policy), and Singapore's Personal Data Protection Act 2012 (PDPA).
 
 ## 1. Data Categories
 
 ### 1.1 Customer Data
 
-Data you store in QNSP services:
+Data you store in QNSI services:
 - Encrypted files and objects (Storage Service)
 - Secrets and credentials (Vault Service)
 - Encryption keys (KMS Service)
@@ -81,7 +81,7 @@ Extended retention is available via the following add-ons:
 
 ### 3.1 Automated Backups
 
-QNSP Cloud performs automated backups:
+QNSI Cloud performs automated backups:
 
 | Component | Frequency | Retention |
 |-----------|-----------|-----------|
@@ -175,11 +175,11 @@ For large-scale exports:
 
 ## 7. Legal Holds
 
-QNSP supports legal hold requirements:
+QNSI supports legal hold requirements:
 - Suspend automatic deletion for specified data
 - Preserve audit logs beyond normal retention
 - Available for Business and Enterprise tiers
-- Contact legal@cuilabs.io for legal hold requests
+- Contact legal@heossi.com for legal hold requests
 
 ## 8. Compliance
 
@@ -199,19 +199,19 @@ Data retention practices support compliance with:
 
 ## 9. Disclaimers
 
-1. While CUI Labs implements industry-standard backup and recovery procedures, no system can guarantee 100% data durability. You are responsible for maintaining your own backups of critical data.
+1. While HEOSSI implements industry-standard backup and recovery procedures, no system can guarantee 100% data durability. You are responsible for maintaining your own backups of critical data.
 
 2. Recovery Point Objectives (RPO) and Recovery Time Objectives (RTO) are targets, not guarantees. Actual recovery times may vary based on incident severity and data volume.
 
 3. Data retention periods may be extended to comply with legal obligations, including legal holds, regulatory requirements, or law enforcement requests.
 
-4. CUI Labs processes personal data in accordance with Singapore's Personal Data Protection Act 2012 (PDPA) and other applicable privacy laws.
+4. HEOSSI processes personal data in accordance with Singapore's Personal Data Protection Act 2012 (PDPA) and other applicable privacy laws.
 
 5. This Data Retention Policy is governed by the laws of Singapore.
 
 ---
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
@@ -221,4 +221,4 @@ UEN: 202532790K
 
 **Document Version:** 1.0.0
 
-For questions about data retention, contact: qnsp-ops@cuilabs.io
+For questions about data retention, contact: qnsi-ops@heossi.com

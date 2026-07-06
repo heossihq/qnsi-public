@@ -1,41 +1,41 @@
 ---
-title: Billing SDK (@cuilabs/qnsp-billing-sdk)
+title: Billing SDK (@heossi/qnsi-billing-sdk)
 version: 0.2.6
 last_updated: 2026-04-30
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/billing-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-billing-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-billing-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.billing./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.billing./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Billing SDK (`@cuilabs/qnsp-billing-sdk`)
+# Billing SDK (`@heossi/qnsi-billing-sdk`)
 
 The TypeScript client for `billing-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Provides usage metering, invoice management, revenue analytics, and payment recovery.
 
 ## Install
 
 ```bash
-pnpm install @cuilabs/qnsp-billing-sdk
+pnpm install @heossi/qnsi-billing-sdk
 ```
 
 ## Create a client
 
 ```ts
-import { BillingClient } from "@cuilabs/qnsp-billing-sdk";
+import { BillingClient } from "@heossi/qnsi-billing-sdk";
 
 const billing = new BillingClient({
-	baseUrl: "https://api.qnsp.cuilabs.io",
+	baseUrl: "https://api.qnsi.heossi.com",
 	apiKey: "<access_token>",
 });
 ```

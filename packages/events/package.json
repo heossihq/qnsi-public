@@ -1,5 +1,5 @@
 {
-	"name": "@cuilabs/qnsp-events",
+	"name": "@heossi/qnsi-events",
 	"version": "0.1.4",
 	"license": "Apache-2.0",
 	"engines": {
@@ -9,7 +9,7 @@
 		"access": "public"
 	},
 	"type": "module",
-	"description": "Event envelope schemas and cloud-native messaging contracts for the QNSP post-quantum security platform. Get a free API key at cloud.qnsp.cuilabs.io.",
+	"description": "Event envelope schemas and cloud-native messaging contracts for the QNSP post-quantum security platform. Get a free API key at cloud.qnsi.heossi.com.",
 	"keywords": [
 		"qnsp",
 		"pqc",
@@ -24,14 +24,14 @@
 		"quantum-safe",
 		"zero-trust"
 	],
-	"homepage": "https://cloud.qnsp.cuilabs.io",
+	"homepage": "https://cloud.qnsi.heossi.com",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cuilabs/qnsp-public",
+		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/events"
 	},
 	"bugs": {
-		"url": "https://github.com/cuilabs/qnsp-public/issues"
+		"url": "https://github.com/heossihq/qnsi-public/issues"
 	},
 	"exports": {
 		"./package.json": "./package.json",
@@ -57,7 +57,7 @@
 	},
 	"dependencies": {
 		"@opentelemetry/api": "^1.9.1",
-		"@cuilabs/qnsp-observability": "workspace:*",
+		"@heossi/qnsi-observability": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {

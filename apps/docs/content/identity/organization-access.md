@@ -2,7 +2,7 @@
 title: Organization Access (C2)
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/tenant-service/src/services/tenant-service.ts
@@ -15,7 +15,7 @@ source_files:
 
 # Organization Access (C2)
 
-QNSP uses a **C2 organization access model**:
+QNSI uses a **C2 organization access model**:
 
 - A tenant is **claimed** by verifying control of a domain via DNS.
 - Users with emails on a verified domain can submit a **request to join**.
@@ -32,8 +32,8 @@ Tenant admins start a challenge. The tenant-service returns a DNS TXT record nam
 
 Response includes:
 
-- `txtName` (example: `_qnsp-verify.example.com`)
-- `txtValue` (example: `qnsp-domain-verification=<token>`)
+- `txtName` (example: `_qnsi-verify.example.com`)
+- `txtValue` (example: `qnsi-domain-verification=<token>`)
 
 ### Verify
 

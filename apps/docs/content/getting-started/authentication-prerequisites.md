@@ -2,11 +2,11 @@
 title: Authentication Prerequisites
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Authentication Prerequisites
 
-Most protected QNSP endpoints require authentication via a Bearer token.
+Most protected QNSI endpoints require authentication via a Bearer token.
 Some endpoints are public (for example health checks).
 
 ## Obtaining credentials

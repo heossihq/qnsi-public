@@ -2,7 +2,7 @@
 title: API Errors
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/auth-service/src/server.ts
@@ -11,7 +11,7 @@ source_files:
 
 # API Errors
 
-Error responses across QNSP APIs.
+Error responses across QNSI APIs.
 
 ## Error Format
 

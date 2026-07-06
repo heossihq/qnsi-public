@@ -2,11 +2,11 @@
 title: Terraform Provider
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Terraform Provider
 
-Manage QNSP resources with Terraform.
+Manage QNSI resources with Terraform.
 
 The Terraform provider is not shipped in this repo.
 

@@ -2,7 +2,7 @@
 title: Encryption at Rest
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/storage-service/src/config/env.ts
@@ -11,7 +11,7 @@ source_files:
 
 # Encryption at Rest
 
-All data in QNSP Storage (port 8092) is encrypted at rest.
+All data in QNSI Storage (port 8092) is encrypted at rest.
 
 ## Default Encryption
 

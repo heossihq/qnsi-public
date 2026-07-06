@@ -2,22 +2,22 @@
 title: SDK Error Handling
 version: 0.2.0
 last_updated: 2026-04-30
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/auth-sdk/src/errors.ts
   - /packages/vault-sdk/src/errors.ts
-  - /sdks/python/qnsp/src/qnsp/_errors.py
-  - /sdks/go/qnsp/internal/qnspcore/errors.go
-  - /sdks/rust/qnsp/src/errors.rs
+  - /sdks/python/qnsi/src/qnsi/_errors.py
+  - /sdks/go/qnsi/internal/qnsicore/errors.go
+  - /sdks/rust/qnsi/src/errors.rs
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-vault-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-vault-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.vault./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.vault./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
@@ -25,13 +25,13 @@ source_files:
 
 # SDK Error Handling
 
-Every QNSP SDK distinguishes four kinds of failure so callers can branch on the failure mode without parsing error strings:
+Every QNSI SDK distinguishes four kinds of failure so callers can branch on the failure mode without parsing error strings:
 
 | Kind | When it fires |
 |---|---|
-| Network | DNS, TLS, timeout, or connection failure reaching the QNSP edge gateway |
+| Network | DNS, TLS, timeout, or connection failure reaching the QNSI edge gateway |
 | Auth | API key rejected at activation (HTTP 401/403 from `/billing/v1/sdk/activate`) |
-| API | A QNSP service returned a 4xx/5xx with a structured body |
+| API | A QNSI service returned a 4xx/5xx with a structured body |
 | Webhook | Signature mismatch, timestamp out of skew, malformed payload, missing fields |
 
 The class names differ per language but the taxonomy is identical, so the same `try`/`catch`/`Result` shape ports across stacks.
@@ -39,46 +39,46 @@ The class names differ per language but the taxonomy is identical, so the same `
 ## TypeScript / Node.js
 
 ```typescript
-import { VaultClient } from "@cuilabs/qnsp-vault-sdk";
-import { QnspApiError, QnspNetworkError } from "@cuilabs/qnsp-vault-sdk/errors";
+import { VaultClient } from "@heossi/qnsi-vault-sdk";
+import { QnsiApiError, QnsiNetworkError } from "@heossi/qnsi-vault-sdk/errors";
 
-const vault = new VaultClient({ baseUrl: "https://api.qnsp.cuilabs.io/proxy/vault", apiKey: "<token>" });
+const vault = new VaultClient({ baseUrl: "https://api.qnsi.heossi.com/proxy/vault", apiKey: "<token>" });
 
 try {
   await vault.getSecret({ tenantId: "<uuid>", id: "missing" });
 } catch (err) {
-  if (err instanceof QnspApiError) console.log("HTTP", err.statusCode, err.code);
-  else if (err instanceof QnspNetworkError) console.log("could not reach QNSP:", err.message);
+  if (err instanceof QnsiApiError) console.log("HTTP", err.statusCode, err.code);
+  else if (err instanceof QnsiNetworkError) console.log("could not reach QNSI:", err.message);
   else throw err;
 }
 ```
 
-Each `@cuilabs/qnsp-*-sdk` package exports its own typed error classes from `./errors`.
+Each `@heossi/qnsi-*-sdk` package exports its own typed error classes from `./errors`.
 
 ## Python
 
 ```python
-from qnsp import QnspApiError, QnspNetworkError, QnspAuthError, QnspError
+from qnsi import QnsiApiError, QnsiNetworkError, QnsiAuthError, QnsiError
 
-with QnspClient(api_key=os.environ["QNSP_API_KEY"]) as q:
+with QnsiClient(api_key=os.environ["QNSI_API_KEY"]) as q:
     try:
         q.vault.get_secret("missing")
-    except QnspApiError as exc:
+    except QnsiApiError as exc:
         print("HTTP", exc.status_code, exc.code, exc.body)
-    except QnspNetworkError as exc:
-        print("could not reach QNSP:", exc)
-    except QnspAuthError as exc:
+    except QnsiNetworkError as exc:
+        print("could not reach QNSI:", exc)
+    except QnsiAuthError as exc:
         print("api key rejected:", exc.code, exc.message)
 ```
 
-All errors descend from `QnspError`. See [`sdks/python/qnsp/src/qnsp/_errors.py`](https://github.com/cuilabs/qnsp-public/blob/main/sdks/python/qnsp/src/qnsp/_errors.py).
+All errors descend from `QnsiError`. See [`sdks/python/qnsi/src/qnsi/_errors.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/_errors.py).
 
 ## Go
 
 ```go
 import (
     "errors"
-    "github.com/cuilabs/qnsp-public/sdks/go/qnsp"
+    "github.com/heossihq/qnsi-public/sdks/go/qnsi"
 )
 
 if _, err := c.Vault().GetSecret(ctx, "missing"); err != nil {
@@ -89,56 +89,56 @@ if _, err := c.Vault().GetSecret(ctx, "missing"); err != nil {
     case errors.As(err, &apiErr):
         fmt.Println("HTTP", apiErr.StatusCode, apiErr.Code)
     case errors.As(err, &netErr):
-        fmt.Println("could not reach QNSP:", netErr.Err)
+        fmt.Println("could not reach QNSI:", netErr.Err)
     case errors.As(err, &authErr):
         fmt.Println("api key rejected:", authErr.Code)
     }
 }
 ```
 
-All Go errors implement the unexported `qnspError()` marker so `qnsp.Error` works as a type-narrowing predicate. See [`sdks/go/qnsp/internal/qnspcore/errors.go`](https://github.com/cuilabs/qnsp-public/blob/main/sdks/go/qnsp/internal/qnspcore/errors.go).
+All Go errors implement the unexported `qnsiError()` marker so `qnsi.Error` works as a type-narrowing predicate. See [`sdks/go/qnsi/internal/qnsicore/errors.go`](https://github.com/heossihq/qnsi-public/blob/main/sdks/go/qnsi/internal/qnsicore/errors.go).
 
 ## Rust
 
 ```rust
 match c.vault().get_secret("missing").await {
-    Err(qnsp::Error::Api(e)) if e.status_code == 404 => println!("not found"),
-    Err(qnsp::Error::Network(e)) => println!("could not reach QNSP: {e}"),
-    Err(qnsp::Error::Auth(e)) => println!("api key rejected: {e:?}"),
-    Err(qnsp::Error::Webhook(e)) => println!("webhook: {e}"),
+    Err(qnsi::Error::Api(e)) if e.status_code == 404 => println!("not found"),
+    Err(qnsi::Error::Network(e)) => println!("could not reach QNSI: {e}"),
+    Err(qnsi::Error::Auth(e)) => println!("api key rejected: {e:?}"),
+    Err(qnsi::Error::Webhook(e)) => println!("webhook: {e}"),
     Err(e) => return Err(e),
     Ok(secret) => println!("{secret:?}"),
 }
 ```
 
-All errors flow through the `qnsp::Error` enum. See [`sdks/rust/qnsp/src/errors.rs`](https://github.com/cuilabs/qnsp-public/blob/main/sdks/rust/qnsp/src/errors.rs).
+All errors flow through the `qnsi::Error` enum. See [`sdks/rust/qnsi/src/errors.rs`](https://github.com/heossihq/qnsi-public/blob/main/sdks/rust/qnsi/src/errors.rs).
 
 ## JVM / Android
 
 ```kotlin
-import io.cuilabs.qnsp.QnspApiException
-import io.cuilabs.qnsp.QnspAuthException
-import io.cuilabs.qnsp.QnspNetworkException
-import io.cuilabs.qnsp.QnspWebhookException
+import io.heossi.qnsi.QnsiApiException
+import io.heossi.qnsi.QnsiAuthException
+import io.heossi.qnsi.QnsiNetworkException
+import io.heossi.qnsi.QnsiWebhookException
 
 try {
-    val secret = qnsp.vault.getSecret("missing")
-} catch (e: QnspApiException) {
+    val secret = qnsi.vault.getSecret("missing")
+} catch (e: QnsiApiException) {
     if (e.statusCode == 404) println("not found") else println("api error ${e.statusCode} ${e.code}")
-} catch (e: QnspNetworkException) {
-    println("could not reach QNSP: ${e.message}")
-} catch (e: QnspAuthException) {
+} catch (e: QnsiNetworkException) {
+    println("could not reach QNSI: ${e.message}")
+} catch (e: QnsiAuthException) {
     println("api key rejected: ${e.code}")
-} catch (e: QnspWebhookException) {
+} catch (e: QnsiWebhookException) {
     println("webhook: ${e.message}")
 }
 ```
 
-All SDK errors extend the unchecked `QnspException` base class — catch `QnspException` to handle any failure uniformly. `QnspApiException` exposes `statusCode`, the stable `code` string, and the raw `body`. See [`sdks/jvm/src/main/kotlin/io/cuilabs/qnsp/QnspErrors.kt`](https://github.com/cuilabs/qnsp-public/blob/main/sdks/jvm/src/main/kotlin/io/cuilabs/qnsp/QnspErrors.kt).
+All SDK errors extend the unchecked `QnsiException` base class — catch `QnsiException` to handle any failure uniformly. `QnsiApiException` exposes `statusCode`, the stable `code` string, and the raw `body`. See [`sdks/jvm/src/main/kotlin/com/heossi/qnsi/QnsiErrors.kt`](https://github.com/heossihq/qnsi-public/blob/main/sdks/jvm/src/main/kotlin/com/heossi/qnsi/QnsiErrors.kt).
 
 ## Status-code mapping
 
-QNSP services map to standard HTTP semantics:
+QNSI services map to standard HTTP semantics:
 
 | Status | Meaning | Common cause |
 |---|---|---|
@@ -157,7 +157,7 @@ Each SDK surfaces the structured body of an API error so you can act on `code` (
 
 ## Webhook errors
 
-Webhook verification helpers (`parse_qnsp_webhook` in Python, `qnsp.ParseWebhook` in Go, `qnsp::parse_webhook` in Rust, `QnspWebhooks.parse` on JVM, per-service equivalents in TypeScript) return a typed error whose `.reason` field describes which check failed:
+Webhook verification helpers (`parse_qnsi_webhook` in Python, `qnsi.ParseWebhook` in Go, `qnsi::parse_webhook` in Rust, `QnsiWebhooks.parse` on JVM, per-service equivalents in TypeScript) return a typed error whose `.reason` field describes which check failed:
 
 - `signature header must start with 'sha256='`
 - `signature mismatch` — HMAC verification failed

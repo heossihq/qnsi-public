@@ -1,11 +1,11 @@
 ---
 title: Command Line Interface (CLI)
-description: QNSP command line interface — authentication, key management, vault operations, and operator workflows.
+description: QNSI command line interface — authentication, key management, vault operations, and operator workflows.
 ---
 
 # Command Line Interface (CLI)
 
-QNSP command line interface — authentication, key management, vault operations, and operator workflows.
+QNSI command line interface — authentication, key management, vault operations, and operator workflows.
 
 ## Pages
 

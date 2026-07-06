@@ -33,7 +33,7 @@ import type { PqcAlgorithm } from "../provider.js";
 const execFileAsync = promisify(execFile);
 const DEFAULT_PROVIDER = "oqsprovider";
 const DEFAULT_COMMON_NAME = "qnsp.local";
-const DEFAULT_ORGANIZATION = "Quantum-Native Security Platform";
+const DEFAULT_ORGANIZATION = "Quantum-Native Security Infrastructure";
 const DEFAULT_SIGNATURE_ALGORITHM: PqcAlgorithm = "dilithium-3";
 const DEFAULT_VALIDITY_DAYS = 30;
 const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
@@ -410,8 +410,11 @@ async function resolveOqsProviderModulePath(
 	}
 
 	const candidateEnv = [
+		process.env["QNSI_OQS_PROVIDER_MODULE"],
 		process.env["QNSP_OQS_PROVIDER_MODULE"],
+		process.env["QNSI_OQS_PROVIDER_PATH"],
 		process.env["QNSP_OQS_PROVIDER_PATH"],
+		process.env["QNSI_OPENSSL_MODULES"],
 		process.env["QNSP_OPENSSL_MODULES"],
 	];
 

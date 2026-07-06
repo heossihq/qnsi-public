@@ -22,7 +22,7 @@ import {
 	registerExternalPqcProvider,
 } from "./external.js";
 
-const DEFAULT_MODULE_ID = "@cuilabs/liboqs-native";
+const DEFAULT_MODULE_ID = "@heossi/liboqs-native";
 const DEFAULT_HASH_ALGORITHM = "sha3-256";
 
 const require = createRequire(import.meta.url);
@@ -35,7 +35,7 @@ let liboqsPackageAuthor: string | undefined;
 
 try {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	const pkg = require("@cuilabs/liboqs-native/package.json") as {
+	const pkg = require("@heossi/liboqs-native/package.json") as {
 		readonly version?: string;
 		readonly liboqsVersion?: string;
 		readonly author?: string;
@@ -92,9 +92,13 @@ const KEM_ALGORITHM_MAP: Record<PqcAlgorithm, readonly string[] | null> = {
 	"bike-l1": ["BIKE-L1"],
 	"bike-l3": ["BIKE-L3"],
 	"bike-l5": ["BIKE-L5"],
-	"hqc-128": ["HQC-128"],
-	"hqc-192": ["HQC-192"],
-	"hqc-256": ["HQC-256"],
+	// HQC mapped to null = UNAVAILABLE in this build (OQS_ENABLE_KEM_HQC=OFF), pending
+	// the 2025-spec rewrite; unpatched CVE-2025-48946. null keeps the exhaustive
+	// Record<PqcAlgorithm,...> valid while detectCapabilities() skips it, so HQC is
+	// never reported as a supported algorithm. See crypto-policy.ts DISABLED_KEM_ALGORITHMS.
+	"hqc-128": null,
+	"hqc-192": null,
+	"hqc-256": null,
 	// Classic McEliece (ISO standard)
 	"mceliece-348864": ["Classic-McEliece-348864"],
 	"mceliece-460896": ["Classic-McEliece-460896"],
@@ -319,12 +323,21 @@ interface DefaultModuleNamespace {
 }
 
 /**
- * All PQC algorithms supported by QNSP via liboqs.
- * This list is derived from the keys of KEM_ALGORITHM_MAP and SIGNATURE_ALGORITHM_MAP.
+ * Algorithms that exist in the PqcAlgorithm union + retain code paths, but are NOT
+ * offered because the liboqs build cannot perform them safely. HQC: disabled upstream
+ * (OQS_ENABLE_KEM_HQC=OFF) pending the 2025-spec rewrite; unpatched CVE-2025-48946.
+ * Kept local (not imported from @heossi/qnsi-security) to avoid a cryptography→security
+ * dependency cycle; the canonical list is crypto-policy.ts DISABLED_KEM_ALGORITHMS.
  */
-const SUPPORTED_ALGORITHMS: readonly PqcAlgorithm[] = Object.keys(
-	KEM_ALGORITHM_MAP,
-) as PqcAlgorithm[];
+const DISABLED_ALGORITHMS: ReadonlySet<PqcAlgorithm> = new Set(["hqc-128", "hqc-192", "hqc-256"]);
+
+/**
+ * All PQC algorithms supported by QNSP via liboqs.
+ * Derived from the keys of KEM_ALGORITHM_MAP, minus DISABLED_ALGORITHMS.
+ */
+const SUPPORTED_ALGORITHMS: readonly PqcAlgorithm[] = (
+	Object.keys(KEM_ALGORITHM_MAP) as PqcAlgorithm[]
+).filter((algorithm) => !DISABLED_ALGORITHMS.has(algorithm));
 
 function normalizeUint8Array(value: Uint8Array): Uint8Array {
 	return value instanceof Uint8Array ? value : Uint8Array.from(value);
@@ -338,11 +351,11 @@ function resolveImportedModule(imported: LiboqsModule | DefaultModuleNamespace):
 }
 
 const LIBOQS_MISSING_MESSAGE =
-	"@cuilabs/liboqs-native is not installed. " +
-	"It is an optional dependency of @cuilabs/qnsp-cryptography that is only distributed via GitHub Packages. " +
+	"@heossi/liboqs-native is not installed. " +
+	"It is an optional dependency of @heossi/qnsi-cryptography that is only distributed via GitHub Packages. " +
 	"To enable the native liboqs provider, configure an .npmrc scope mapping " +
-	"(echo '@cuilabs:registry=https://npm.pkg.github.com' >> .npmrc) and run " +
-	"`npm install @cuilabs/liboqs-native`. " +
+	"(echo '@heossi:registry=https://npm.pkg.github.com' >> .npmrc) and run " +
+	"`npm install @heossi/liboqs-native`. " +
 	"Alternatively, use the pure-JS noble provider via " +
 	"`initializeExternalPqcProvider('noble')`, which is always available.";
 
@@ -362,7 +375,7 @@ async function defaultLoadModule(moduleId: string): Promise<LiboqsModule> {
 	try {
 		const imported: LiboqsModule | DefaultModuleNamespace =
 			moduleId === DEFAULT_MODULE_ID
-				? ((await import("@cuilabs/liboqs-native")) as LiboqsModule | DefaultModuleNamespace)
+				? ((await import("@heossi/liboqs-native")) as LiboqsModule | DefaultModuleNamespace)
 				: await runtimeImport(moduleId);
 		return resolveImportedModule(imported);
 	} catch (error) {

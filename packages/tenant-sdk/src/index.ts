@@ -1,6 +1,6 @@
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@cuilabs/qnsp-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
 
 import type {
 	TenantClientTelemetry,
@@ -12,14 +12,14 @@ import { SDK_PACKAGE_VERSION } from "./sdk-package-version.js";
 import { validateUUID } from "./validation.js";
 
 /**
- * @cuilabs/qnsp-tenant-sdk
+ * @heossi/qnsi-tenant-sdk
  *
  * TypeScript SDK client for the QNSP tenant-service API.
  * Provides a high-level interface for tenant lifecycle and subscription management.
  */
 
-/** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsp.cuilabs.io/signup */
-export const DEFAULT_BASE_URL = "https://api.qnsp.cuilabs.io";
+/** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsi.heossi.com/signup */
+export const DEFAULT_BASE_URL = "https://api.qnsi.heossi.com";
 
 export interface TenantClientConfig {
 	readonly baseUrl?: string;
@@ -150,7 +150,7 @@ export interface TenantCryptoPolicy {
 	readonly maxKeyAgeDays: number;
 	readonly enforcementMode?: "audit" | "enforce";
 	/**
-	 * Declarative entropy-source contract. See https://qnsp.cuilabs.io/trust/entropy.
+	 * Declarative entropy-source contract. See https://qnsi.heossi.com/trust/entropy.
 	 * Defaults: "csprng" (OpenSSL SP 800-90A DRBG) for default + strict tiers,
 	 * "hsm-byo" (customer FIPS 140-3 L3 HSM DRBG) for maximum + government tiers.
 	 * "qrng-mixin" available as a sales-assisted BYOH add-on.
@@ -199,10 +199,7 @@ export const CRYPTO_POLICY_ALGORITHMS: Record<CryptoPolicyTier, TierAlgorithmCon
 			"kyber-512",
 			"kyber-768",
 			"kyber-1024",
-			// HQC (NIST selected March 2025)
-			"hqc-128",
-			"hqc-192",
-			"hqc-256",
+			// HQC intentionally omitted (disabled upstream; CVE-2025-48946).
 			// BIKE (NIST Round 4 candidate)
 			"bike-l1",
 			"bike-l3",
@@ -307,7 +304,7 @@ export const CRYPTO_POLICY_ALGORITHMS: Record<CryptoPolicyTier, TierAlgorithmCon
 		defaultSignatureAlgorithm: "dilithium-3",
 	},
 	strict: {
-		kemAlgorithms: ["kyber-768", "kyber-1024", "hqc-192", "hqc-256"],
+		kemAlgorithms: ["kyber-768", "kyber-1024"],
 		signatureAlgorithms: [
 			"dilithium-3",
 			"dilithium-5",
@@ -321,7 +318,7 @@ export const CRYPTO_POLICY_ALGORITHMS: Record<CryptoPolicyTier, TierAlgorithmCon
 		defaultSignatureAlgorithm: "dilithium-3",
 	},
 	maximum: {
-		kemAlgorithms: ["kyber-1024", "hqc-256"],
+		kemAlgorithms: ["kyber-1024"],
 		signatureAlgorithms: [
 			"dilithium-5",
 			"falcon-1024",
@@ -341,8 +338,9 @@ export const CRYPTO_POLICY_ALGORITHMS: Record<CryptoPolicyTier, TierAlgorithmCon
 
 /**
  * Mapping from internal algorithm names to NIST/standards display names.
- * Covers all 90 PQC algorithms supported by QNSP.
- * Canonical source: @cuilabs/qnsp-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
+ * Covers all 87 runtime-supported PQC algorithms (24 KEMs + 63 signatures).
+ * HQC's 3 variants are excluded (disabled in the liboqs build for CVE-2025-48946).
+ * Canonical source: @heossi/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
  */
 export const ALGORITHM_TO_NIST: Record<string, string> = {
 	// FIPS 203 — ML-KEM
@@ -370,10 +368,7 @@ export const ALGORITHM_TO_NIST: Record<string, string> = {
 	// FN-DSA (FIPS 206 draft)
 	"falcon-512": "FN-DSA-512",
 	"falcon-1024": "FN-DSA-1024",
-	// HQC (NIST selected March 2025)
-	"hqc-128": "HQC-128",
-	"hqc-192": "HQC-192",
-	"hqc-256": "HQC-256",
+	// HQC intentionally omitted (disabled upstream; CVE-2025-48946).
 	// BIKE (NIST Round 4)
 	"bike-l1": "BIKE-L1",
 	"bike-l3": "BIKE-L3",
@@ -760,34 +755,58 @@ export interface CreateWorkflowTemplateRequest {
 	readonly isDefault?: boolean;
 }
 
+/**
+ * An onboarding workflow instance, matching the tenant-service response from
+ * POST /tenant/v1/onboarding/workflows and GET /tenant/v1/onboarding/workflows/:workflowId.
+ */
 export interface OnboardingInstance {
 	readonly id: string;
 	readonly tenantId: string;
-	readonly templateId: string;
-	readonly templateName: string;
-	readonly status: "not_started" | "in_progress" | "completed" | "abandoned";
+	readonly newTenantId: string | null;
+	readonly templateId: string | null;
+	readonly tenantName: string;
+	readonly tenantSlug: string;
+	readonly plan: string;
+	readonly region: string | null;
+	readonly ownerEmail: string;
+	readonly ownerName: string | null;
+	readonly metadata: Record<string, unknown> | null;
+	readonly status: string;
+	readonly priority: string;
 	readonly progress: {
 		readonly completedSteps: number;
 		readonly totalSteps: number;
 		readonly percentComplete: number;
 	};
 	readonly steps: readonly {
-		readonly stepId: string;
+		readonly id: string;
+		readonly stepType: string;
 		readonly name: string;
-		readonly status: OnboardingStepStatus;
-		readonly startedAt?: string;
-		readonly completedAt?: string;
-		readonly failureReason?: string;
+		readonly order: number;
+		readonly status: string;
+		readonly startedAt?: string | null;
+		readonly completedAt?: string | null;
+		readonly errorMessage?: string | null;
 	}[];
-	readonly startedAt: string;
-	readonly completedAt?: string;
-	readonly estimatedCompletionAt?: string;
+	readonly startedAt?: string | null;
+	readonly completedAt?: string | null;
+	readonly createdAt: string;
 }
 
+/**
+ * Request body for {@link TenantSdk.startOnboarding}, matching the tenant-service
+ * workflow-trigger schema (provisions a new tenant).
+ */
 export interface StartOnboardingRequest {
-	readonly tenantId: string;
+	readonly tenantName: string;
+	readonly tenantSlug: string;
+	readonly ownerEmail: string;
+	readonly plan?: string;
+	readonly region?: string;
+	readonly ownerName?: string;
 	readonly templateId?: string;
 	readonly metadata?: Record<string, unknown>;
+	readonly priority?: "low" | "normal" | "high";
 }
 
 export interface OnboardingStats {
@@ -914,9 +933,9 @@ export class TenantClient {
 		if (!config.apiKey || config.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP Tenant SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsp.cuilabs.io/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
-					"Docs: https://docs.qnsp.cuilabs.io/sdk/tenant-sdk",
+					"Docs: https://docs.qnsi.heossi.com/sdk/tenant-sdk",
 			);
 		}
 
@@ -1627,35 +1646,41 @@ export class TenantClient {
 	}
 
 	/**
-	 * Start onboarding for a tenant.
+	 * Trigger an onboarding workflow (provisions a new tenant). Maps to the real backend route
+	 * POST /tenant/v1/onboarding/workflows; the calling tenant is resolved from the activated
+	 * API key (sweep 2026-06-13 F1 — the prior `/tenants/:id/onboarding/start` path did not exist).
 	 */
 	async startOnboarding(request: StartOnboardingRequest): Promise<OnboardingInstance> {
-		validateUUID(request.tenantId, "tenantId");
 		await this.ensureActivated();
 
-		return this.request<OnboardingInstance>(
-			"POST",
-			`/tenant/v1/tenants/${request.tenantId}/onboarding/start`,
-			{
-				body: {
-					...(request.templateId !== undefined ? { templateId: request.templateId } : {}),
-					...(request.metadata !== undefined ? { metadata: request.metadata } : {}),
-				},
-				operation: "startOnboarding",
+		return this.request<OnboardingInstance>("POST", "/tenant/v1/onboarding/workflows", {
+			body: {
+				tenantName: request.tenantName,
+				tenantSlug: request.tenantSlug,
+				ownerEmail: request.ownerEmail,
+				...(request.plan !== undefined ? { plan: request.plan } : {}),
+				...(request.region !== undefined ? { region: request.region } : {}),
+				...(request.ownerName !== undefined ? { ownerName: request.ownerName } : {}),
+				...(request.templateId !== undefined ? { templateId: request.templateId } : {}),
+				...(request.metadata !== undefined ? { metadata: request.metadata } : {}),
+				...(request.priority !== undefined ? { priority: request.priority } : {}),
 			},
-		);
+			operation: "startOnboarding",
+		});
 	}
 
 	/**
-	 * Get onboarding status for a tenant.
+	 * Get an onboarding workflow's status by its workflow id. Maps to the real backend route
+	 * GET /tenant/v1/onboarding/workflows/:workflowId (sweep 2026-06-13 F2 — the prior
+	 * `/tenants/:id/onboarding/status` path did not exist; the backend is workflow-keyed).
 	 */
-	async getOnboardingStatus(tenantId: string): Promise<OnboardingInstance> {
-		validateUUID(tenantId, "tenantId");
+	async getOnboardingStatus(workflowId: string): Promise<OnboardingInstance> {
+		validateUUID(workflowId, "workflowId");
 		await this.ensureActivated();
 
 		return this.request<OnboardingInstance>(
 			"GET",
-			`/tenant/v1/tenants/${tenantId}/onboarding/status`,
+			`/tenant/v1/onboarding/workflows/${encodeURIComponent(workflowId)}`,
 			{
 				operation: "getOnboardingStatus",
 			},

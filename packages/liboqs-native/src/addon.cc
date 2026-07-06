@@ -300,7 +300,7 @@ public:
 	 * Note: liboqs 0.15.0 does NOT expose OQS_SIG_keypair_derand; the C library
 	 * lacks a seed-controlled keypair API for ML-DSA / SLH-DSA. Upstream PR
 	 * pending — until then, ACVP signature-keyGen tests are deferred. See
-	 * https://qnsp.cuilabs.io/verify/conformance scopeNotes.
+	 * https://qnsi.heossi.com/verify/conformance scopeNotes.
 	 */
 	Napi::Value Details(const Napi::CallbackInfo& info) {
 		auto env = info.Env();

@@ -2,11 +2,11 @@
 title: SIEM Integrations
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: 2025 CUI Labs. All rights reserved.
+copyright: 2025 HEOSSI. All rights reserved.
 ---
 # SIEM Integrations
 
-Integrate QNSP audit logs with Security Information and Event Management systems.
+Integrate QNSI audit logs with Security Information and Event Management systems.
 
 ## Supported SIEMs
 
@@ -50,7 +50,7 @@ filter {
 output {
   elasticsearch {
     hosts => ["elasticsearch:9200"]
-    index => "qnsp-audit-%{+YYYY.MM.dd}"
+    index => "qnsi-audit-%{+YYYY.MM.dd}"
   }
 }
 ```

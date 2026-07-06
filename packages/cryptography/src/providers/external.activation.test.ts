@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Replace the activation handshake with a vi.fn so these tests assert the
 // branching in initializeExternalPqcProvider without a network round-trip.
-vi.mock("@cuilabs/qnsp-sdk-activation", () => ({
+vi.mock("@heossi/qnsi-sdk-activation", () => ({
 	activateSdk: vi.fn(async () => ({ activated: true })),
 }));
 
-import { activateSdk } from "@cuilabs/qnsp-sdk-activation";
+import { activateSdk } from "@heossi/qnsi-sdk-activation";
 
 import { createTestPqcProvider } from "../testing/providers.js";
 import {

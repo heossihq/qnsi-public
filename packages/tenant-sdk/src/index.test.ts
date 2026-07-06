@@ -1,4 +1,4 @@
-import { clearActivationCache } from "@cuilabs/qnsp-sdk-activation";
+import { clearActivationCache } from "@heossi/qnsi-sdk-activation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TenantClient } from "./index.js";
 
@@ -232,6 +232,84 @@ describe("TenantClient Security Tests", () => {
 			await expect(client.getTenant("123e4567-e89b-12d3-a456-426614174000")).rejects.toThrow(
 				"Rate limit exceeded after 2 retries",
 			);
+		});
+	});
+
+	describe("Onboarding workflows (sweep 2026-06-13 F1/F2)", () => {
+		function activationOnce(): void {
+			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				status: 200,
+				headers: new Headers(),
+				json: async () => ({
+					activated: true,
+					tenantId: "a1b2c3d4-e5f6-4789-8abc-def012345678",
+					tier: "dev-pro",
+					activationToken: "tok_test",
+					expiresInSeconds: 3600,
+					activatedAt: new Date().toISOString(),
+					limits: {
+						storageGB: 50,
+						apiCalls: 100_000,
+						enclavesEnabled: false,
+						aiTrainingEnabled: false,
+						aiInferenceEnabled: true,
+						sseEnabled: true,
+						vaultEnabled: true,
+					},
+				}),
+			});
+		}
+
+		it("startOnboarding POSTs the real /tenant/v1/onboarding/workflows route (not the dead /onboarding/start)", async () => {
+			const client = new TenantClient({
+				baseUrl: "https://api.example.com",
+				apiKey: "test-api-key",
+			});
+			activationOnce();
+			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				status: 201,
+				headers: new Headers(),
+				json: async () => ({ id: "wf-1", status: "in_progress", steps: [] }),
+			});
+
+			await client.startOnboarding({
+				tenantName: "Acme",
+				tenantSlug: "acme-co",
+				ownerEmail: "owner@acme.co",
+			});
+
+			const lastCall = mockFetch.mock.calls.at(-1) as [string, { method?: string; body?: string }];
+			expect(String(lastCall[0])).toContain("/tenant/v1/onboarding/workflows");
+			expect(String(lastCall[0])).not.toContain("/onboarding/start");
+			expect(lastCall[1]?.method).toBe("POST");
+			const body = JSON.parse(lastCall[1]?.body ?? "{}");
+			expect(body.tenantName).toBe("Acme");
+			expect(body.tenantSlug).toBe("acme-co");
+			expect(body.ownerEmail).toBe("owner@acme.co");
+		});
+
+		it("getOnboardingStatus GETs the real /tenant/v1/onboarding/workflows/:id route (not the dead /onboarding/status)", async () => {
+			const client = new TenantClient({
+				baseUrl: "https://api.example.com",
+				apiKey: "test-api-key",
+			});
+			activationOnce();
+			mockFetch.mockResolvedValueOnce({
+				ok: true,
+				status: 200,
+				headers: new Headers(),
+				json: async () => ({ id: "wf-1", status: "in_progress", steps: [] }),
+			});
+
+			await client.getOnboardingStatus("123e4567-e89b-12d3-a456-426614174000");
+
+			const lastCall = mockFetch.mock.calls.at(-1) as [string, { method?: string }];
+			expect(String(lastCall[0])).toContain(
+				"/tenant/v1/onboarding/workflows/123e4567-e89b-12d3-a456-426614174000",
+			);
+			expect(String(lastCall[0])).not.toContain("/onboarding/status");
 		});
 	});
 });

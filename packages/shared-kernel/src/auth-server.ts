@@ -1,5 +1,5 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
-import type { PqcAlgorithm, PqcProvider } from "@cuilabs/qnsp-cryptography";
+import type { PqcAlgorithm, PqcProvider } from "@heossi/qnsi-cryptography";
 import { z } from "zod";
 import {
 	type AccessToken,

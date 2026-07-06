@@ -2,11 +2,12 @@
 title: Getting Help
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+description: Get support for QNSI Cloud through documentation, community channels, the support portal, and email contacts for operations, security, billing, and incidents.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # Getting Help
 
-How to get support for QNSP Cloud services from CUI Labs (Pte.) Ltd.
+How to get support for QNSI Cloud services from HEOSSI (PTE.) LTD
 
 For complete support details, see the [Support Policy](/support/support-policy). For reporting bugs, security issues, or feature requests, see [Reporting Issues](/support/reporting-issues).
 
@@ -20,20 +21,20 @@ Start here for self-service help:
 
 ### Community
 - GitHub Discussions
-- Stack Overflow tag: `qnsp`
+- Stack Overflow tag: `qnsi`
 
 ### Support Portal
 For customers with support plans:
 ```
-https://cloud.qnsp.cuilabs.io/support
+https://cloud.qnsi.heossi.com/support
 ```
 
 ### Email
-- **General Inquiries:** contact@cuilabs.io
-- **Operations & Reliability:** qnsp-ops@cuilabs.io
-- **Security & Compliance:** qnsp-security@cuilabs.io
-- **Billing & Accounts:** qnsp-billing@cuilabs.io
-- **24/7 Incident Escalation:** qnsp-incident@cuilabs.io
+- **General Inquiries:** contact@heossi.com
+- **Operations & Reliability:** qnsi-ops@heossi.com
+- **Security & Compliance:** qnsi-security@heossi.com
+- **Billing & Accounts:** qnsi-billing@heossi.com
+- **24/7 Incident Escalation:** qnsi-incident@heossi.com
 
 ## Support Tiers Summary
 
@@ -53,7 +54,7 @@ Include:
 1. **Summary:** Brief description of the issue
 2. **Severity:** Your assessment of impact
 3. **Environment:** Production, staging, or development
-4. **Tenant ID:** Your QNSP tenant identifier
+4. **Tenant ID:** Your QNSI tenant identifier
 5. **Request IDs:** From API error responses
 6. **Steps to Reproduce:** Detailed steps
 7. **Expected vs. Actual:** What you expected and what happened
@@ -68,9 +69,9 @@ If your issue is not being resolved:
 
 ## Status
 
-QNSP Cloud service health:
+QNSI Cloud service health:
 ```
-https://qnsp.cuilabs.io#overview
+https://qnsi.heossi.com#overview
 ```
 
 ## Related Documentation

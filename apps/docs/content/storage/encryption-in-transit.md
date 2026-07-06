@@ -2,7 +2,8 @@
 title: Encryption in Transit
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: QNSI encrypts all data in transit with TLS 1.3, hybrid PQC key exchange, mTLS between services, strong cipher suites, and automatic certificate rotation.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Encryption in Transit
 
@@ -56,7 +57,7 @@ Data never in plaintext on server.
 
 ### Browser-side PQC encryption
 
-The `@cuilabs/qnsp-browser` package provides client-side PQC encryption directly in the browser using `@noble/post-quantum` (pure JavaScript, zero native dependencies). This enables true end-to-end encryption where data is encrypted before it leaves the browser.
+The `@heossi/qnsi-browser` package provides client-side PQC encryption directly in the browser using `@noble/post-quantum` (pure JavaScript, zero native dependencies). This enables true end-to-end encryption where data is encrypted before it leaves the browser.
 
 Supported algorithms (18 FIPS-standardized):
 - **ML-KEM** (FIPS 203): kyber-512, kyber-768, kyber-1024 — key encapsulation
@@ -66,7 +67,7 @@ Supported algorithms (18 FIPS-standardized):
 CSE workflow:
 1. Generate ML-KEM key pair via `generateEncryptionKeyPair("kyber-768")`
 2. Encrypt data with `encryptBeforeUpload(data, publicKey, "kyber-768")` — uses ML-KEM + AES-256-GCM
-3. Upload encrypted envelope to QNSP storage
+3. Upload encrypted envelope to QNSI storage
 4. Download and decrypt with `decryptAfterDownload(envelope, privateKey)`
 
-See the [`@cuilabs/qnsp-browser` documentation](/sdk/browser-sdk) for full API reference and integration examples.
+See the [`@heossi/qnsi-browser` documentation](/sdk/browser-sdk) for full API reference and integration examples.

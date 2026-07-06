@@ -19,7 +19,7 @@
  * the library implementation. The vectors below are *determinism vectors*
  * tied to a specific noble version.
  *
- * Run:  pnpm --filter @cuilabs/qnsp-web-portal run bench:gen-conformance
+ * Run:  pnpm --filter @heossi/qnsi-web-portal run bench:gen-conformance
  *
  * Re-run only when intentionally upgrading @noble/post-quantum and
  * commit the new JSON together with the package.json bump.
@@ -184,7 +184,7 @@ function generate(): void {
 		nistConformanceReference:
 			"https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/post-quantum-cryptography",
 		disclaimer:
-			"These are determinism vectors for QNSP's pinned @noble/post-quantum version. Re-running keygen with each seed using the same library version must produce keys whose SHA-256 matches the expected values. Independent NIST conformance is established by the upstream @noble/post-quantum project against NIST ACVP test vectors.",
+			"These are determinism vectors for QNSI's pinned @noble/post-quantum version. Re-running keygen with each seed using the same library version must produce keys whose SHA-256 matches the expected values. Independent NIST conformance is established by the upstream @noble/post-quantum project against NIST ACVP test vectors.",
 		vectors,
 	};
 

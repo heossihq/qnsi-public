@@ -38,7 +38,7 @@ function gateError(feature: string, tier: string): ToolResult {
 				type: "text",
 				text:
 					`This feature requires a higher tier. Current tier: ${tier}. ` +
-					`Upgrade at https://cloud.qnsp.cuilabs.io/billing to access ${feature}.`,
+					`Upgrade at https://cloud.qnsi.heossi.com/billing to access ${feature}.`,
 			},
 		],
 		isError: true,
@@ -281,7 +281,7 @@ export async function billingStatus(
 		tenantId: ctx.gate.tenantId,
 		tier: ctx.gate.tier,
 		limits: ctx.gate.limits,
-		upgradeUrl: "https://cloud.qnsp.cuilabs.io/billing",
+		upgradeUrl: "https://cloud.qnsi.heossi.com/billing",
 	});
 }
 

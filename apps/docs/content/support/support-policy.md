@@ -2,14 +2,14 @@
 title: Support Policy
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Support Policy
 
-This document describes the support services available to QNSP Cloud customers provided by CUI Labs (Pte.) Ltd. ("CUI Labs"), a company incorporated in Singapore (UEN: 202532790K).
+This document describes the support services available to QNSI Cloud customers provided by HEOSSI (PTE.) LTD ("HEOSSI"), a company incorporated in Singapore (UEN: 202532790K).
 
-This Support Policy is subject to the [Terms of Service](https://qnsp.cuilabs.io/terms) and the applicable [Service Level Agreement](/legal/sla).
+This Support Policy is subject to the [Terms of Service](https://qnsi.heossi.com/terms) and the applicable [Service Level Agreement](/legal/sla).
 
 ## 1. Support Tiers
 
@@ -18,7 +18,7 @@ This Support Policy is subject to the [Terms of Service](https://qnsp.cuilabs.io
 | Attribute | Details |
 |-----------|---------|
 | **Availability** | Best effort |
-| **Channels** | Documentation, GitHub Discussions, Stack Overflow (`qnsp` tag) |
+| **Channels** | Documentation, GitHub Discussions, Stack Overflow (`qnsi` tag) |
 | **Response Time** | No guaranteed response time |
 | **Scope** | Self-service troubleshooting |
 
@@ -111,30 +111,30 @@ Response times are measured from ticket submission to first substantive response
 
 Primary channel for all support requests:
 ```
-https://cloud.qnsp.cuilabs.io/support
+https://cloud.qnsi.heossi.com/support
 ```
 
 ### 5.2 Email
 
-- **General Inquiries:** contact@cuilabs.io
-- **Operations & Reliability:** qnsp-ops@cuilabs.io
-- **Security & Compliance:** qnsp-security@cuilabs.io
-- **Billing & Accounts:** qnsp-billing@cuilabs.io
-- **Developer Experience:** qnsp-devrel@cuilabs.io
-- **24/7 Incident Escalation:** qnsp-incident@cuilabs.io
+- **General Inquiries:** contact@heossi.com
+- **Operations & Reliability:** qnsi-ops@heossi.com
+- **Security & Compliance:** qnsi-security@heossi.com
+- **Billing & Accounts:** qnsi-billing@heossi.com
+- **Developer Experience:** qnsi-devrel@heossi.com
+- **24/7 Incident Escalation:** qnsi-incident@heossi.com
 
 ### 5.3 Documentation
 
 Self-service resources:
 ```
-https://docs.qnsp.cuilabs.io
+https://docs.qnsi.heossi.com
 ```
 
 ### 5.4 Status Page
 
 Real-time service status:
 ```
-https://qnsp.cuilabs.io#overview
+https://qnsi.heossi.com#overview
 ```
 
 ## 6. Creating a Support Ticket
@@ -144,7 +144,7 @@ When submitting a support request, include:
 1. **Summary:** Brief description of the issue
 2. **Severity:** Your assessment of impact (see Section 3)
 3. **Environment:** Production, staging, or development
-4. **Tenant ID:** Your QNSP tenant identifier
+4. **Tenant ID:** Your QNSI tenant identifier
 5. **Request IDs:** From API error responses
 6. **Steps to Reproduce:** Detailed steps to replicate the issue
 7. **Expected vs. Actual:** What you expected and what happened
@@ -162,7 +162,7 @@ If your issue is not being resolved satisfactorily:
 
 ### 8.1 In Scope
 
-- QNSP Cloud service functionality
+- QNSI Cloud service functionality
 - API usage and integration guidance
 - SDK usage and troubleshooting
 - Configuration and best practices
@@ -172,7 +172,7 @@ If your issue is not being resolved satisfactorily:
 ### 8.2 Out of Scope
 
 - Custom application development
-- Third-party integration debugging (beyond QNSP boundaries)
+- Third-party integration debugging (beyond QNSI boundaries)
 - Customer infrastructure issues
 - Training (available separately)
 - Consulting beyond standard guidance (available as add-on)
@@ -189,15 +189,15 @@ If your issue is not being resolved satisfactorily:
 
 1. Support services are provided on a commercially reasonable efforts basis. Response times are targets, not guarantees, except where explicitly stated in a signed enterprise agreement.
 
-2. Support does not include custom development, third-party integration debugging beyond QNSP boundaries, or training (available separately).
+2. Support does not include custom development, third-party integration debugging beyond QNSI boundaries, or training (available separately).
 
-3. CUI Labs reserves the right to modify support tiers, response times, and pricing with 30 days' notice to affected customers.
+3. HEOSSI reserves the right to modify support tiers, response times, and pricing with 30 days' notice to affected customers.
 
 4. This Support Policy is governed by the laws of Singapore.
 
 ---
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
@@ -207,4 +207,4 @@ UEN: 202532790K
 
 **Document Version:** 1.0.0
 
-For support inquiries, contact: contact@cuilabs.io
+For support inquiries, contact: contact@heossi.com

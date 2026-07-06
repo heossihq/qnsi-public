@@ -8,7 +8,7 @@ afterEach(() => {
 describe("ApiClient", () => {
 	it("constructs with required config", () => {
 		const client = new ApiClient({
-			baseUrl: "https://api.qnsp.cuilabs.io",
+			baseUrl: "https://api.qnsi.heossi.com",
 			apiKey: "test-key",
 			tenantId: "test-tenant",
 		});
@@ -17,7 +17,7 @@ describe("ApiClient", () => {
 
 	it("strips trailing slash from baseUrl", () => {
 		const client = new ApiClient({
-			baseUrl: "https://api.qnsp.cuilabs.io/",
+			baseUrl: "https://api.qnsi.heossi.com/",
 			apiKey: "test-key",
 			tenantId: "test-tenant",
 		});
@@ -32,7 +32,7 @@ describe("ApiClient", () => {
 			}),
 		);
 		const client = new ApiClient({
-			baseUrl: "https://api.qnsp.cuilabs.io/",
+			baseUrl: "https://api.qnsi.heossi.com/",
 			apiKey: "test-key",
 			tenantId: "tenant-123",
 		});

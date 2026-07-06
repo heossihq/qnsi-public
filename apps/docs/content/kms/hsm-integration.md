@@ -2,11 +2,11 @@
 title: HSM Integration
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # HSM Integration
 
-QNSP KMS integrates with Hardware Security Modules for root key protection.
+QNSI KMS integrates with Hardware Security Modules for root key protection.
 
 ## Supported HSMs
 
@@ -53,11 +53,21 @@ hsm:
 |-----------|---------|
 | Unwrap key | 5-10 ms |
 | Generate key | 10-20 ms |
-| Sign (in HSM) | 5-15 ms |
+| Sign — classical algorithms, in HSM (ECDSA, Ed25519, RSA) | 5-15 ms |
+
+Post-quantum signatures (ML-DSA, Falcon, SPHINCS+) are **not** executed inside the HSM:
+PKCS#11 HSMs do not expose PQC signing mechanisms. QNSI performs PQC signing in the
+service's PQC provider (liboqs), with the signing key sealed at rest under an
+HSM-wrapped key-encryption key — so the HSM protects the key material, but the PQC
+signature itself is computed outside the HSM and its latency depends on the algorithm,
+not the HSM round-trip.
 
 ## Compliance
 
-HSM integration supports:
-- FIPS 140-2 Level 3
+When a hardware HSM is provisioned, HSM integration supports:
+- FIPS 140-3 Level 3 (e.g. AWS CloudHSM `hsm2m.medium` — CMVP certificate #4703)
 - PCI DSS
 - Common Criteria
+
+The default baseline uses a software PKCS#11 module (SoftHSM); a hardware HSM is
+provisioned per tenant on an enterprise engagement or via BYOHSM (bring-your-own HSM).

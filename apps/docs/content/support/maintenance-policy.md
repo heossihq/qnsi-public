@@ -2,14 +2,14 @@
 title: Maintenance Policy
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Maintenance Policy
 
-This document describes how CUI Labs (Pte.) Ltd. ("CUI Labs") performs scheduled and emergency maintenance for QNSP Cloud services.
+This document describes how HEOSSI (PTE.) LTD ("HEOSSI") performs scheduled and emergency maintenance for QNSI Cloud services.
 
-This Maintenance Policy is subject to the [Terms of Service](https://qnsp.cuilabs.io/terms) and the applicable [Service Level Agreement](/legal/sla).
+This Maintenance Policy is subject to the [Terms of Service](https://qnsi.heossi.com/terms) and the applicable [Service Level Agreement](/legal/sla).
 
 ## 1. Maintenance Types
 
@@ -66,10 +66,10 @@ Enterprise Elite and Specialized customers may request custom maintenance window
 
 Maintenance notifications are communicated through:
 
-1. **Status Page:** https://qnsp.cuilabs.io#overview
+1. **Status Page:** https://qnsi.heossi.com#overview
 2. **Email:** Sent to account administrators
 3. **Cloud Portal:** Banner notifications
-4. **API Header:** `X-QNSP-Maintenance-Scheduled` header on responses (when applicable)
+4. **API Header:** `X-QNSI-Maintenance-Scheduled` header on responses (when applicable)
 
 ### 4.1 Subscribing to Notifications
 
@@ -79,7 +79,7 @@ To receive maintenance notifications:
 
 ## 5. Zero-Downtime Deployment
 
-QNSP Cloud is designed for zero-downtime deployments:
+QNSI Cloud is designed for zero-downtime deployments:
 
 ### 5.1 Rolling Deployments
 
@@ -146,17 +146,17 @@ Business and Enterprise customers may request deferral of non-critical maintenan
 
 ## 10. Disclaimers
 
-1. While CUI Labs strives to minimize service disruption, maintenance may occasionally cause brief unavailability or performance degradation.
+1. While HEOSSI strives to minimize service disruption, maintenance may occasionally cause brief unavailability or performance degradation.
 
 2. Scheduled maintenance during announced windows is excluded from SLA availability calculations as described in the [Service Level Agreement](/legal/sla).
 
-3. CUI Labs reserves the right to perform emergency maintenance without advance notice when required to address security threats or prevent service degradation.
+3. HEOSSI reserves the right to perform emergency maintenance without advance notice when required to address security threats or prevent service degradation.
 
 4. This Maintenance Policy is governed by the laws of Singapore.
 
 ---
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
@@ -166,4 +166,4 @@ UEN: 202532790K
 
 **Document Version:** 1.0.0
 
-For questions about maintenance, contact: qnsp-ops@cuilabs.io
+For questions about maintenance, contact: qnsi-ops@heossi.com

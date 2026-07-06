@@ -2,7 +2,7 @@
 title: Hold Your Own Key (HYOK)
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: 2025 CUI Labs. All rights reserved.
+copyright: 2025 HEOSSI. All rights reserved.
 ---
 # Hold Your Own Key (HYOK)
 
@@ -10,14 +10,14 @@ HYOK allows customers to retain key material in their own infrastructure.
 
 ## Overview
 
-- Key material never enters QNSP
+- Key material never enters QNSI
 - Customer HSM performs cryptographic operations
-- QNSP orchestrates but doesn't hold keys
+- QNSI orchestrates but doesn't hold keys
 
 ## Architecture
 
 ```
-QNSP Service → Customer HSM Proxy → Customer HSM
+QNSI Service → Customer HSM Proxy → Customer HSM
                                          ↓
                                    Key Material
 ```

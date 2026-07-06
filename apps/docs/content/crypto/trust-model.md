@@ -2,7 +2,7 @@
 title: Cryptographic Trust Model
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/kms-service/src/config/env.ts
@@ -11,7 +11,7 @@ source_files:
 
 # Cryptographic Trust Model
 
-QNSP's cryptographic trust model defines what is trusted and how trust is established.
+QNSI's cryptographic trust model defines what is trusted and how trust is established.
 
 ## Root of Trust
 

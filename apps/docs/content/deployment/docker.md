@@ -2,7 +2,7 @@
 title: Docker Deployment
 version: 0.0.2
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /docker-compose.yml
@@ -11,7 +11,7 @@ source_files:
 
 # Docker Deployment
 
-Run QNSP services with Docker for development and testing.
+Run QNSI services with Docker for development and testing.
 
 ## Service Ports
 
@@ -35,48 +35,48 @@ From `apps/*/src/config/env.ts`:
 services:
   postgres:
     image: postgres:18
-    container_name: qnsp-postgres
+    container_name: qnsi-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: qnsp
-      POSTGRES_PASSWORD: qnsp-password
+      POSTGRES_USER: qnsi
+      POSTGRES_PASSWORD: qnsi-password
     ports:
       - "5432:5432"
     volumes:
-      - qnsp-postgres-data:/var/lib/postgresql
+      - qnsi-postgres-data:/var/lib/postgresql
     networks:
-      - qnsp-net
+      - qnsi-net
 
   redis:
     image: redis:7
-    container_name: qnsp-redis
+    container_name: qnsi-redis
     restart: unless-stopped
     command: redis-server --save 60 1 --loglevel warning
     ports:
       - "6379:6379"
     volumes:
-      - qnsp-redis-data:/data
+      - qnsi-redis-data:/data
     networks:
-      - qnsp-net
+      - qnsi-net
 
   clamav:
     image: clamav/clamav:1.5.1
-    container_name: qnsp-clamav
+    container_name: qnsi-clamav
     platform: linux/amd64
     restart: unless-stopped
     ports:
       - "3310:3310"
     networks:
-      - qnsp-net
+      - qnsi-net
 
 volumes:
-  qnsp-postgres-data:
+  qnsi-postgres-data:
     external: true
-  qnsp-redis-data:
+  qnsi-redis-data:
     external: true
 
 networks:
-  qnsp-net:
+  qnsi-net:
     external: true
 ```
 

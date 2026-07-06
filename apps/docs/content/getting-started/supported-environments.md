@@ -2,11 +2,11 @@
 title: Supported Environments
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Supported Environments
 
-QNSP services recognize three environment types via `NODE_ENV`:
+QNSI services recognize three environment types via `NODE_ENV`:
 
 ## Environment types
 
@@ -20,7 +20,7 @@ QNSP services recognize three environment types via `NODE_ENV`:
 
 | Environment | Base URL |
 |-------------|----------|
-| Production | `https://api.qnsp.cuilabs.io` |
+| Production | `https://api.qnsi.heossi.com` |
 | Local | `http://localhost:<port>` |
 
 Staging endpoints (if available) are provided separately per deployment.

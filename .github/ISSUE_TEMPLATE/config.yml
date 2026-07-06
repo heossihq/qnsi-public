@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability reporting
-    url: mailto:security@cuilabs.io
+    url: mailto:security@heossi.com
     about: Report security vulnerabilities privately. Do not file vulnerabilities in public GitHub Issues.
   - name: QNSP Research & disclosure policy
-    url: https://github.com/cuilabs/qnsp/security/policy
+    url: https://github.com/heossihq/qnsi/security/policy
     about: Vulnerability disclosure process, safe harbor, and advisories.

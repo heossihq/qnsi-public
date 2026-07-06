@@ -2,11 +2,11 @@
 title: Key Generation
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Key Generation
 
-QNSP generates cryptographic keys using secure random sources.
+QNSI generates cryptographic keys using secure random sources.
 
 ## Random sources
 

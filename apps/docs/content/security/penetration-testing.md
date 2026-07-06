@@ -2,13 +2,13 @@
 title: Penetration Testing
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Penetration Testing
 
 Security testing policies and procedures.
 
-## QNSP testing
+## QNSI testing
 
 ### Internal testing
 - Continuous automated scanning
@@ -28,7 +28,7 @@ Customers may test their own tenant:
 - Authorization testing
 
 ### Requirements
-1. Notify qnsp-security@cuilabs.io 5 days in advance
+1. Notify qnsi-security@heossi.com 5 days in advance
 2. Provide testing scope and timeline
 3. Use only your tenant
 4. No DoS/DDoS testing
@@ -37,7 +37,7 @@ Customers may test their own tenant:
 ### Prohibited activities
 - Testing other tenants
 - Infrastructure attacks
-- Social engineering QNSP staff
+- Social engineering QNSI staff
 - Physical security testing
 
 ## Bug bounty
@@ -57,7 +57,7 @@ Customers may test their own tenant:
 | Low | $100 - $500 |
 
 ### Reporting
-Submit to qnsp-security@cuilabs.io with:
+Submit to qnsi-security@heossi.com with:
 - Detailed description
 - Steps to reproduce
 - Impact assessment

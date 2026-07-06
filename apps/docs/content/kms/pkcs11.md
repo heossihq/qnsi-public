@@ -2,11 +2,11 @@
 title: PKCS#11 Interface
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # PKCS#11 Interface
 
-QNSP KMS uses PKCS#11 for HSM communication.
+QNSI KMS uses PKCS#11 for HSM communication.
 
 ## Overview
 
@@ -43,7 +43,7 @@ Keys stored with attributes:
 
 ## Error handling
 
-| PKCS#11 Error | QNSP Response |
+| PKCS#11 Error | QNSI Response |
 |---------------|---------------|
 | `CKR_KEY_NOT_FOUND` | 404 Key not found |
 | `CKR_DEVICE_ERROR` | 503 HSM unavailable |
@@ -56,4 +56,4 @@ Some HSMs provide extensions:
 - Key backup
 - Cluster management
 
-QNSP uses standard PKCS#11 where possible.
+QNSI uses standard PKCS#11 where possible.

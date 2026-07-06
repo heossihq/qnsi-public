@@ -2,12 +2,12 @@
 title: Environment Variables
 version: 0.0.2
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 
 # Environment Variables
 
-This document lists all environment variables used across QNSP services.
+This document lists all environment variables used across QNSI services.
 
 ## Web Portal (`apps/web`)
 
@@ -34,8 +34,8 @@ This document lists all environment variables used across QNSP services.
 - `TP_GATE_JWT_SECRET` - JWT secret for preview invite tokens (required)
 - `TP_GATE_PASS` - Optional access code for preview signup (optional)
 - `PREVIEW_TOKEN_TTL_DAYS` - Preview token time-to-live in days (default: 14)
-- `SALES_EMAIL` - Sales team email for preview signup notifications (default: qnsp-sales@cuilabs.io)
-- `CLOUD_PORTAL_URL` - Cloud portal URL for redirect (default: https://cloud.qnsp.cuilabs.io)
+- `SALES_EMAIL` - Sales team email for preview signup notifications (default: qnsi-sales@heossi.com)
+- `CLOUD_PORTAL_URL` - Cloud portal URL for redirect (default: https://cloud.qnsi.heossi.com)
 
 ### Email (SMTP)
 - `SMTP_HOST` - SMTP server host (required)
@@ -43,7 +43,7 @@ This document lists all environment variables used across QNSP services.
 - `SMTP_SECURE` - Use SSL/TLS (default: true)
 - `SMTP_USER` - SMTP username (required)
 - `SMTP_PASSWORD` - SMTP password (required)
-- `EMAIL_FROM_ADDRESS` - From email address (default: qnsp-noreply@cuilabs.io)
+- `EMAIL_FROM_ADDRESS` - From email address (default: noreply@heossi.com)
 
 ### Observability
 - `WEB_OBSERVABILITY_METRICS_INTERVAL_MS` - Metrics collection interval (default: 60000)
@@ -61,7 +61,7 @@ This document lists all environment variables used across QNSP services.
 
 ### Invite and access gate (optional)
 - `TP_GATE_JWT_SECRET` - JWT secret for preview invite tokens (required)
-- `CLOUD_PORTAL_URL` - Cloud portal base URL (default: https://cloud.qnsp.cuilabs.io)
+- `CLOUD_PORTAL_URL` - Cloud portal base URL (default: https://cloud.qnsi.heossi.com)
 
 ### OAuth and Identity Federation
 - `CLOUD_OAUTH_SESSION_SECRET` - CSRF/session protection secret for social OAuth start/callback flows
@@ -104,7 +104,7 @@ This document lists all environment variables used across QNSP services.
 - `AUTH_FEDERATION_SAML_METADATA_REFRESH_INTERVAL_MS` - SAML metadata refresh interval in ms
 
 ### XIIS Integration
-- `XIIS_CONTROL_PLANE_URL` - XIIS control plane base URL used by QNSP frontends for live trust, evidence, and verifier integrations
+- `XIIS_CONTROL_PLANE_URL` - XIIS control plane base URL used by QNSI frontends for live trust, evidence, and verifier integrations
 - `XIIS_CONTROL_PLANE_API_TOKEN` - XIIS control plane bearer token used to authenticate release assurance, attestation verification, environment verification, and remote provider checks
 
 ### AWS Marketplace
@@ -131,8 +131,8 @@ This document lists all environment variables used across QNSP services.
 - `SMTP_SECURE` - Use SSL/TLS (default: true)
 - `SMTP_USER` - SMTP username (required)
 - `SMTP_PASSWORD` - SMTP password (required)
-- `EMAIL_FROM_ADDRESS` - From email address (default: qnsp-noreply@cuilabs.io)
-- `CLOUD_PORTAL_URL` - Cloud portal URL (default: https://cloud.qnsp.cuilabs.io)
+- `EMAIL_FROM_ADDRESS` - From email address (default: noreply@heossi.com)
+- `CLOUD_PORTAL_URL` - Cloud portal URL (default: https://cloud.qnsi.heossi.com)
 
 ## Common Service Variables
 

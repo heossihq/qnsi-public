@@ -2,15 +2,15 @@
 title: SDK Authentication
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-auth-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.auth./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.auth./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
@@ -22,14 +22,14 @@ SDKs authenticate by sending `Authorization: Bearer <token>`.
 ## Credential types
 
 ### User login (auth-service)
-Use `@cuilabs/qnsp-auth-sdk` to obtain an access token.
+Use `@heossi/qnsi-auth-sdk` to obtain an access token.
 
 ```typescript
-import { AuthClient } from "@cuilabs/qnsp-auth-sdk";
+import { AuthClient } from "@heossi/qnsi-auth-sdk";
 
 const auth = new AuthClient({
 	baseUrl: "http://localhost:8081",
-	apiKey: process.env.QNSP_API_KEY,
+	apiKey: process.env.QNSI_API_KEY,
 });
 
 const token = await auth.login({
@@ -53,7 +53,7 @@ For server-to-server integrations that need a durable machine identity, request 
 use it as a Bearer token.
 
 ```typescript
-import { requestServiceToken } from "@cuilabs/qnsp-auth-sdk";
+import { requestServiceToken } from "@heossi/qnsi-auth-sdk";
 
 const token = await requestServiceToken({
 	authServiceUrl: "http://localhost:8081",
@@ -66,7 +66,7 @@ const token = await requestServiceToken({
 ### Using a token with other SDKs
 
 ```typescript
-import { VaultClient } from "@cuilabs/qnsp-vault-sdk";
+import { VaultClient } from "@heossi/qnsi-vault-sdk";
 
 const vault = new VaultClient({
 	baseUrl: "http://localhost:8090",
@@ -83,4 +83,4 @@ If you use refresh tokens, call `auth.refreshToken(...)` and update the `apiKey`
 - Tenant API keys: tenant-scoped workload access to product APIs
 - PATs: user-scoped programmatic access for CLI and debugging
 - Service accounts: durable machine identities for enterprise automation
-- Ops/control credentials: internal QNSP-only control-plane access, never customer-facing
+- Ops/control credentials: internal QNSI-only control-plane access, never customer-facing

@@ -2,11 +2,11 @@
 title: Hybrid Cryptography Strategy
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Hybrid Cryptography Strategy
 
-QNSP uses hybrid cryptography combining classical and post-quantum algorithms.
+QNSI uses hybrid cryptography combining classical and post-quantum algorithms.
 
 ## Why hybrid
 

@@ -1,6 +1,6 @@
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@cuilabs/qnsp-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
 import { type RequestInit as UndiciRequestInit, fetch as undiciFetch } from "undici";
 
 import type { SearchClientTelemetry, SearchClientTelemetryConfig } from "./observability.js";
@@ -49,8 +49,8 @@ import type {
 } from "./types.js";
 import { validateUUID } from "./validation.js";
 
-/** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsp.cuilabs.io/signup */
-export const DEFAULT_BASE_URL = "https://api.qnsp.cuilabs.io";
+/** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsi.heossi.com/signup */
+export const DEFAULT_BASE_URL = "https://api.qnsi.heossi.com";
 
 export interface SearchClientOptions {
 	readonly baseUrl?: string;
@@ -90,9 +90,9 @@ export class SearchClient {
 		if (!options.apiKey || options.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP Search SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsp.cuilabs.io/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
-					"Docs: https://docs.qnsp.cuilabs.io/sdk/search-sdk",
+					"Docs: https://docs.qnsi.heossi.com/sdk/search-sdk",
 			);
 		}
 		const baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");

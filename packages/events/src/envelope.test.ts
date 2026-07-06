@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { createEventEnvelope, eventEnvelopeSchema } from "./envelope.js";
 
-describe("@cuilabs/qnsp-events", () => {
+describe("@heossi/qnsi-events", () => {
 	it("creates a strongly typed envelope", () => {
 		const envelope = createEventEnvelope({
 			topic: "auth.user.created",

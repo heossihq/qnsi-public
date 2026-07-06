@@ -1,18 +1,18 @@
-# @cuilabs/qnsp-cryptography
+# @heossi/qnsi-cryptography
 
-Abstractions and helpers for post-quantum cryptography within the Quantum-Native Security Platform (QNSP). The package defines provider interfaces for key encapsulation, signatures, and hashing while enabling pluggable integrations with HSMs or PQC libraries.
+Abstractions and helpers for post-quantum cryptography within the Quantum-Native Security Infrastructure (QNSI). The package defines provider interfaces for key encapsulation, signatures, and hashing while enabling pluggable integrations with HSMs or PQC libraries.
 
-> **v0.2.0 — breaking change.** `initializeExternalPqcProvider()` now requires a QNSP API key. See **[Migration from v0.1.x](#migration-from-v01x)** below.
+> **v0.2.0 — breaking change.** `initializeExternalPqcProvider()` now requires a QNSI API key. See **[Migration from v0.1.x](#migration-from-v01x)** below.
 
-## Get your free QNSP API key
+## Get your free QNSI API key
 
-A free-forever QNSP account takes 60 seconds to set up — sign in with GitHub, Google, or email at <https://cloud.qnsp.cuilabs.io/auth>. No credit card required. Free tier includes 10 GB PQC storage, 50,000 API calls/month, 20 KMS keys, and 25 vault secrets — and full access to this package.
+A free-forever QNSI account takes 60 seconds to set up — sign in with GitHub, Google, or email at <https://cloud.qnsi.heossi.com/auth>. No credit card required. Free tier includes 10 GB PQC storage, 50,000 API calls/month, 20 KMS keys, and 25 vault secrets — and full access to this package.
 
 ## Usage
 
 ```ts
-import { registerPqcProvider } from "@cuilabs/qnsp-cryptography";
-import { initializeExternalPqcProvider } from "@cuilabs/qnsp-cryptography/providers";
+import { registerPqcProvider } from "@heossi/qnsi-cryptography";
+import { initializeExternalPqcProvider } from "@heossi/qnsi-cryptography/providers";
 
 const provider = await initializeExternalPqcProvider("qnsp-hsm-provider", {
   apiKey: process.env.QNSP_API_KEY,           // required since v0.2.0
@@ -34,7 +34,7 @@ const signature = await provider.sign({
 
 ## Migration from v0.1.x
 
-v0.2.0 adds a one-shot activation handshake against `https://api.qnsp.cuilabs.io/billing/v1/sdk/activate` the first time you call `initializeExternalPqcProvider()`. The handshake validates your API key, returns your tier limits, and caches a short-lived activation token in memory — subsequent calls reuse it.
+v0.2.0 adds a one-shot activation handshake against `https://api.qnsi.heossi.com/billing/v1/sdk/activate` the first time you call `initializeExternalPqcProvider()`. The handshake validates your API key, returns your tier limits, and caches a short-lived activation token in memory — subsequent calls reuse it.
 
 **What you need to change:**
 
@@ -47,21 +47,21 @@ v0.2.0 adds a one-shot activation handshake against `https://api.qnsp.cuilabs.io
 
 That's it. No other code changes.
 
-**If you do not want activation:** the underlying primitives this package wraps are upstream open-source projects that you can use directly — no QNSP signup required. Use [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) for the pure-JS surface, or build [`liboqs`](https://github.com/open-quantum-safe/liboqs) yourself for the full 90-algorithm native surface. `@cuilabs/qnsp-cryptography` adds the activation gate, telemetry, attestation receipts, and integration with the rest of the QNSP platform — that is what the API key tracks.
+**If you do not want activation:** the underlying primitives this package wraps are upstream open-source projects that you can use directly — no QNSI signup required. Use [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) for the pure-JS surface, or build [`liboqs`](https://github.com/open-quantum-safe/liboqs) yourself for the full 87-algorithm native surface. `@heossi/qnsi-cryptography` adds the activation gate, telemetry, attestation receipts, and integration with the rest of the QNSI platform — that is what the API key tracks.
 
 ## Providers
 
-`@cuilabs/qnsp-cryptography` ships two interchangeable PQC providers. Consumers pick the
+`@heossi/qnsi-cryptography` ships two interchangeable PQC providers. Consumers pick the
 one that matches their deployment profile.
 
 ### `noble` provider (default, pure-JS, always available)
 
 The `noble` provider is backed by [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum)
 and ships as a regular `dependency`. It has no native build step, runs on every
-Node.js `>= 22` target, and is always available after `npm install @cuilabs/qnsp-cryptography`.
+Node.js `>= 22` target, and is always available after `npm install @heossi/qnsi-cryptography`.
 
 ```ts
-import { initializeExternalPqcProvider } from "@cuilabs/qnsp-cryptography/providers";
+import { initializeExternalPqcProvider } from "@heossi/qnsi-cryptography/providers";
 
 const noble = await initializeExternalPqcProvider("noble");
 const { keyPair } = await noble.generateKeyPair({ algorithm: "ml-kem-768" });
@@ -69,27 +69,27 @@ const { keyPair } = await noble.generateKeyPair({ algorithm: "ml-kem-768" });
 
 ### `liboqs` provider (optional, native, opt-in)
 
-For workloads that require the full 90-algorithm NIST PQC surface (HQC, FN-DSA,
-every SLH-DSA variant), the `liboqs` provider bridges to a native binding of the
+For workloads that require the full 87-algorithm NIST PQC surface (FN-DSA,
+every SLH-DSA variant, Classic McEliece), the `liboqs` provider bridges to a native binding of the
 [Open Quantum Safe liboqs](https://openquantumsafe.org/) library via the private
-package `@cuilabs/liboqs-native`. This native binding is published **only to
+package `@heossi/liboqs-native`. This native binding is published **only to
 GitHub Packages** (not the public npm registry) and is declared as an
-`optionalDependency` of `@cuilabs/qnsp-cryptography`: public installs that do not have a
-`@cuilabs` scope mapping will silently skip it and the rest of the package
+`optionalDependency` of `@heossi/qnsi-cryptography`: public installs that do not have a
+`@heossi` scope mapping will silently skip it and the rest of the package
 continues to work through the `noble` provider.
 
-To opt in, configure a scope mapping for the `@cuilabs` org and install the
+To opt in, configure a scope mapping for the `@heossi` org and install the
 native binding explicitly:
 
 ```bash
-echo '@cuilabs:registry=https://npm.pkg.github.com' >> .npmrc
-npm install @cuilabs/liboqs-native
+echo '@heossi:registry=https://npm.pkg.github.com' >> .npmrc
+npm install @heossi/liboqs-native
 ```
 
 Then bootstrap the provider:
 
 ```ts
-import { initializeExternalPqcProvider } from "@cuilabs/qnsp-cryptography/providers";
+import { initializeExternalPqcProvider } from "@heossi/qnsi-cryptography/providers";
 
 const liboqs = await initializeExternalPqcProvider("liboqs", {
   algorithms: ["ml-kem-768", "ml-dsa-65"], // optional: restrict to a subset
@@ -117,4 +117,4 @@ pnpm test      # Execute Vitest test suites
 pnpm typecheck # Run TypeScript without emitting output
 ```
 
-© 2025 QNSP - CUI LABS, Singapore
+© 2025 QNSI - HEOSSI, Singapore

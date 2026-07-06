@@ -1,8 +1,8 @@
 ---
-title: Browser SDK (@cuilabs/qnsp-browser)
+title: Browser SDK (@heossi/qnsi-browser)
 version: 0.1.4
 last_updated: 2026-04-30
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/browser-sdk/src/index.ts
@@ -11,27 +11,27 @@ source_files:
   - /packages/browser-sdk/src/provider-setup.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-storage-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-storage-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.storage./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.storage./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Browser SDK (`@cuilabs/qnsp-browser`)
+# Browser SDK (`@heossi/qnsi-browser`)
 
-Browser-compatible PQC encryption SDK for the QNSP platform. Provides client-side encryption (CSE), digital signatures, and key management using NIST FIPS 203/204/205 standards via `@noble/post-quantum`.
+Browser-compatible PQC encryption SDK for the QNSI platform. Provides client-side encryption (CSE), digital signatures, and key management using NIST FIPS 203/204/205 standards via `@noble/post-quantum`.
 
 No native dependencies. No `node:` imports. Works in browsers, Deno, Bun, and Node.js.
 
 ## Install
 
 ```bash
-pnpm add @cuilabs/qnsp-browser
+pnpm add @heossi/qnsi-browser
 ```
 
 ## Supported Algorithms
@@ -52,9 +52,9 @@ import {
   encryptBeforeUpload,
   decryptAfterDownload,
   generateEncryptionKeyPair,
-} from "@cuilabs/qnsp-browser";
+} from "@heossi/qnsi-browser";
 
-// Initialize the PQC provider with your QNSP API key
+// Initialize the PQC provider with your QNSI API key
 await initializePqcProvider({ apiKey: "YOUR_API_KEY" });
 
 // Generate ML-KEM key pair
@@ -80,12 +80,12 @@ import {
   detectRuntime,
   getSupportedAlgorithms,
   resetProvider,
-} from "@cuilabs/qnsp-browser";
+} from "@heossi/qnsi-browser";
 
 // Detect runtime environment
 const runtime = detectRuntime(); // "browser" | "edge" | "node"
 
-// Initialize provider with your QNSP API key
+// Initialize provider with your QNSI API key
 await initializePqcProvider({ apiKey: "YOUR_API_KEY" });
 
 // Check initialization status
@@ -103,7 +103,7 @@ resetProvider();
 
 ## Client-Side Encryption (CSE)
 
-Encrypt data in the browser before uploading to QNSP storage. Uses ML-KEM for key encapsulation and AES-256-GCM for symmetric encryption.
+Encrypt data in the browser before uploading to QNSI storage. Uses ML-KEM for key encapsulation and AES-256-GCM for symmetric encryption.
 
 ```ts
 import {
@@ -112,7 +112,7 @@ import {
   serializeCseEnvelope,
   deserializeCseEnvelope,
   type CseEnvelope,
-} from "@cuilabs/qnsp-browser";
+} from "@heossi/qnsi-browser";
 
 // Encrypt
 const envelope: CseEnvelope = await encryptBeforeUpload(
@@ -152,7 +152,7 @@ import {
   generateSigningKeyPair,
   generateEncryptionKeyPair,
   type SignedEnvelope,
-} from "@cuilabs/qnsp-browser";
+} from "@heossi/qnsi-browser";
 
 // Generate ML-DSA signing key pair
 const sigKeyPair = await generateSigningKeyPair("dilithium-3");
@@ -190,8 +190,8 @@ The noble provider uses `@noble/post-quantum` which is a pure JavaScript impleme
 ## Integration with Storage SDK
 
 ```ts
-import { initializePqcProvider, encryptBeforeUpload, generateEncryptionKeyPair } from "@cuilabs/qnsp-browser";
-import { StorageClient } from "@cuilabs/qnsp-storage-sdk";
+import { initializePqcProvider, encryptBeforeUpload, generateEncryptionKeyPair } from "@heossi/qnsi-browser";
+import { StorageClient } from "@heossi/qnsi-storage-sdk";
 
 await initializePqcProvider({ apiKey: "YOUR_API_KEY" });
 
@@ -206,7 +206,7 @@ const envelope = await encryptBeforeUpload(
   "kyber-768"
 );
 
-// Upload encrypted envelope to QNSP storage
+// Upload encrypted envelope to QNSI storage
 const storage = new StorageClient({ baseUrl, apiKey, tenantId });
 const upload = await storage.initiateUpload({
   name: file.name,
@@ -243,6 +243,6 @@ const upload = await storage.initiateUpload({
 - `CseEnvelope` — Client-side encryption envelope
 - `SignedEnvelope` — Signed data envelope
 - `RuntimeEnvironment` — `"browser" | "edge" | "node"`
-- `PqcAlgorithm` — Re-exported from `@cuilabs/qnsp-cryptography`
-- `PqcKeyPair` — Re-exported from `@cuilabs/qnsp-cryptography`
-- `PqcProvider` — Re-exported from `@cuilabs/qnsp-cryptography`
+- `PqcAlgorithm` — Re-exported from `@heossi/qnsi-cryptography`
+- `PqcKeyPair` — Re-exported from `@heossi/qnsi-cryptography`
+- `PqcProvider` — Re-exported from `@heossi/qnsi-cryptography`

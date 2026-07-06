@@ -3,11 +3,11 @@
  * Wraps fetch calls with circuit breakers to prevent cascading failures
  */
 
-import type { CircuitBreaker } from "@cuilabs/qnsp-resilience";
+import type { CircuitBreaker } from "@heossi/qnsi-resilience";
 import {
 	CircuitBreaker as CircuitBreakerImpl,
 	CircuitBreakerOpenError,
-} from "@cuilabs/qnsp-resilience";
+} from "@heossi/qnsi-resilience";
 
 export type CircuitBreakerAuditEventType = "circuit_breaker.opened";
 

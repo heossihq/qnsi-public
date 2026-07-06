@@ -2,7 +2,7 @@
 title: Documentation Scope
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0 (SDK packages) / BSL-1.1 (core platform)
 source_files:
   - /package.json
@@ -11,9 +11,9 @@ source_files:
 
 # Documentation Scope
 
-This documentation covers the **Quantum-Native Security Platform (QNSP)** developer-facing APIs, SDKs, and integration patterns.
+This documentation covers the **Quantum-Native Security Infrastructure (QNSI)** developer-facing APIs, SDKs, and integration patterns.
 
-> **Monorepo**: `@cuilabs/qnsp-monorepo` v0.0.1  
+> **Monorepo**: `@heossi/qnsi-monorepo` v0.0.1  
 > **Node.js**: ≥24.12.0 | **pnpm**: ≥10.25.0
 
 ## In scope

@@ -1,6 +1,6 @@
-# @cuilabs/qnsp-shared-kernel
+# @heossi/qnsi-shared-kernel
 
-Shared domain primitives, schemas, and utilities used across the Quantum-Native Security Platform (QNSP).
+Shared domain primitives, schemas, and utilities used across the Quantum-Native Security Infrastructure (QNSI).
 
 ## Exports
 
@@ -12,7 +12,7 @@ Shared domain primitives, schemas, and utilities used across the Quantum-Native 
 
 ### Error hierarchy
 
-- `ApplicationError`, `DomainError`, `UnauthorizedError`, `ForbiddenError` — standardized error hierarchy used by every `@cuilabs/qnsp-*` SDK.
+- `ApplicationError`, `DomainError`, `UnauthorizedError`, `ForbiddenError` — standardized error hierarchy used by every `@heossi/qnsi-*` SDK.
 
 ### Health
 
@@ -32,7 +32,7 @@ Shared domain primitives, schemas, and utilities used across the Quantum-Native 
 Example:
 
 ```ts
-import { isFeatureEnabled, TierError } from "@cuilabs/qnsp-shared-kernel";
+import { isFeatureEnabled, TierError } from "@heossi/qnsi-shared-kernel";
 
 if (!isFeatureEnabled("enclaves", currentTier)) {
   throw new TierError("enclaves", currentTier, "enterprise-standard");
@@ -40,7 +40,7 @@ if (!isFeatureEnabled("enclaves", currentTier)) {
 ```
 
 The tier catalogue is **inlined** in this package. It has no runtime dependency
-on the internal `@cuilabs/qnsp-pricing` commercial model; drift between the two is
+on the internal `@heossi/qnsi-pricing` commercial model; drift between the two is
 prevented at build time by `src/tier-limits.drift.test.ts`, which asserts
 byte-exact equality against the internal source of truth.
 
@@ -53,4 +53,4 @@ pnpm test      # Execute Vitest test suites
 pnpm typecheck # Run TypeScript without emitting output
 ```
 
-© 2025 QNSP - CUI LABS, Singapore
+© 2025 QNSI - HEOSSI, Singapore

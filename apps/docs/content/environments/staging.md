@@ -2,15 +2,15 @@
 title: Staging Environment
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-auth-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.auth./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.auth./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
@@ -36,14 +36,14 @@ Base URL: provided per deployment
 
 ### SDK
 ```typescript
-import { requestServiceToken } from "@cuilabs/qnsp-auth-sdk";
-import { VaultClient } from "@cuilabs/qnsp-vault-sdk";
+import { requestServiceToken } from "@heossi/qnsi-auth-sdk";
+import { VaultClient } from "@heossi/qnsi-vault-sdk";
 
-const baseUrl = process.env["QNSP_BASE_URL"] ?? "";
+const baseUrl = process.env["QNSI_BASE_URL"] ?? "";
 const token = await requestServiceToken({
   authServiceUrl: baseUrl,
-  serviceId: process.env["QNSP_SERVICE_ID"] ?? "",
-  serviceSecret: process.env["QNSP_SERVICE_SECRET"] ?? "",
+  serviceId: process.env["QNSI_SERVICE_ID"] ?? "",
+  serviceSecret: process.env["QNSI_SERVICE_SECRET"] ?? "",
   audience: "internal-service",
 });
 if (!token) {
@@ -56,10 +56,10 @@ await vault.createSecret({ tenantId: "<tenant_uuid>", name: "example-secret", pa
 
 ### CLI
 ```bash
-export QNSP_EDGE_GATEWAY_URL=<staging_base_url>
-export QNSP_TENANT_ID=<tenant_uuid>
-export QNSP_SERVICE_ID=<service_id>
-export QNSP_SERVICE_SECRET=<service_secret>
+export QNSI_EDGE_GATEWAY_URL=<staging_base_url>
+export QNSI_TENANT_ID=<tenant_uuid>
+export QNSI_SERVICE_ID=<service_id>
+export QNSI_SERVICE_SECRET=<service_secret>
 ```
 
 ## Characteristics

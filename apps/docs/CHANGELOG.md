@@ -1,4 +1,4 @@
-# @cuilabs/qnsp-docs-site
+# @heossi/qnsi-docs-site
 
 ## 0.2.2
 
@@ -21,7 +21,7 @@
 
   ## Cloud Portal
 
-  - Replaced hardcoded algorithm name mappings in PQC status route with canonical toNistAlgorithmName from @cuilabs/qnsp-tenant-sdk
+  - Replaced hardcoded algorithm name mappings in PQC status route with canonical toNistAlgorithmName from @heossi/qnsi-tenant-sdk
   - Replaced hardcoded algorithmToNist map in storage-client.tsx with canonical toNistAlgorithmName
   - Updated crypto policy tier descriptions to use NIST standard names (ML-KEM, ML-DSA, SLH-DSA, FN-DSA)
   - Updated KMS page algorithm badges to include FN-DSA and HQC families
@@ -45,7 +45,7 @@
 
   - Fixed docs/business/FINAL-PRICING-STRUCTURE.md: all 11 "10 SDKs" → "12 SDKs" references across all pricing tiers
   - Fixed docs/business/EXECUTIVE-SUMMARY.md: "10 SDK/client packages" → "12 SDK/client packages"
-  - Fixed docs/business/QNSP-PITCH-DECK.md: "14 microservices" → "18 microservices", "60+ algorithms across 10 families" → "90 algorithms across 14 families"
+  - Fixed docs/business/QNSI-PITCH-DECK.md: "14 microservices" → "18 microservices", "60+ algorithms across 10 families" → "90 algorithms across 14 families"
   - Fixed docs/business/qnsp-whitepaper.md: all "20+ microservices" → "18 microservices", "60+ algorithms across 10 families" → "90 algorithms across 14 families", Falcon → FN-DSA naming
   - Fixed docs/business/company-profile.md: "17+ microservices" → "18 microservices", "60+ algorithms across 10 families" → "90 algorithms across 14 families"
   - Fixed docs/business/enterprise-sales-playbook.md: "60+ algorithms across 10 families" → "90 algorithms across 14 families"
@@ -62,11 +62,11 @@
   - Fixed docs/\_archive/marketing/LAUNCH-POSTS-FINAL.md: all "10 SDKs" → "12 SDKs", "14 microservices" → "18 microservices"
   - Updated docs/specs/product-knowledge.md evidence trail
 
-- c4d6bbb: Add comprehensive FAQ system with improved UX. Docs site includes 50+ questions based on codebase analysis. Marketing page features collapsible FAQ (12 questions, minimized by default) and contact information moved to Engage section with four contact options: contact@cuilabs.io (general inquiries), enterprise@cuilabs.io (enterprise sales), security@cuilabs.io (security issues - private reporting), and GitHub Issues (bug reports - public). FAQ can be expanded on-demand to keep the page clean while providing quick access to answers. Separates security vulnerability reporting (private email) from general bug reports (public GitHub) following security best practices.
+- c4d6bbb: Add comprehensive FAQ system with improved UX. Docs site includes 50+ questions based on codebase analysis. Marketing page features collapsible FAQ (12 questions, minimized by default) and contact information moved to Engage section with four contact options: contact@heossi.com (general inquiries), enterprise@heossi.com (enterprise sales), security@heossi.com (security issues - private reporting), and GitHub Issues (bug reports - public). FAQ can be expanded on-demand to keep the page clean while providing quick access to answers. Separates security vulnerability reporting (private email) from general bug reports (public GitHub) following security best practices.
 - Updated dependencies [ad6d0d4]
 - Updated dependencies [b7599c7]
 - Updated dependencies [be1dd80]
-  - @cuilabs/qnsp-portal-design-system@0.0.3
+  - @heossi/qnsi-portal-design-system@0.0.3
 
 ## 0.2.1
 
@@ -90,4 +90,4 @@
 - Updated dependencies [2a530af]
 - Updated dependencies [d933225]
 - Updated dependencies [8cd2896]
-  - @cuilabs/qnsp-portal-design-system@0.0.2
+  - @heossi/qnsi-portal-design-system@0.0.2

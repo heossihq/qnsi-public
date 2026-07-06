@@ -4,9 +4,9 @@
 		"ignoreDeprecations": "6.0",
 		"rootDir": "src",
 		"paths": {
-			"@cuilabs/qnsp-shared-kernel": ["packages/shared-kernel/dist/index.d.ts"],
-			"@cuilabs/qnsp-shared-kernel/errors": ["packages/shared-kernel/dist/errors/index.d.ts"],
-			"@cuilabs/qnsp-shared-kernel/errors/http-client": [
+			"@heossi/qnsi-shared-kernel": ["packages/shared-kernel/dist/index.d.ts"],
+			"@heossi/qnsi-shared-kernel/errors": ["packages/shared-kernel/dist/errors/index.d.ts"],
+			"@heossi/qnsi-shared-kernel/errors/http-client": [
 				"packages/shared-kernel/dist/errors/http-client.d.ts"
 			]
 		},

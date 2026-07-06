@@ -255,7 +255,7 @@ program.parseAsync(process.argv).catch((error) => {
 
 function createClient(options: GlobalOptions | undefined) {
 	const baseUrl =
-		options?.baseUrl ?? process.env["QNSP_AI_BASE_URL"] ?? "https://api.qnsp.cuilabs.io";
+		options?.baseUrl ?? process.env["QNSP_AI_BASE_URL"] ?? "https://api.qnsi.heossi.com";
 	const token = options?.token ?? process.env["QNSP_AI_TOKEN"];
 	if (!baseUrl) {
 		throw new Error("AI orchestrator base URL is required (--base-url or QNSP_AI_BASE_URL)");

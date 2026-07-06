@@ -1,6 +1,6 @@
 {
-	"name": "@cuilabs/qnsp-mcp",
-	"version": "0.1.4",
+	"name": "@heossi/qnsi-mcp",
+	"version": "0.1.5",
 	"description": "QNSP MCP Server: post-quantum cryptography tools for AI assistants. Manage PQC keys, encrypted vault, crypto inventory, and compliance — all tier-gated via QNSP billing.",
 	"publishConfig": {
 		"access": "public"
@@ -16,7 +16,7 @@
 		"LICENSE"
 	],
 	"bin": {
-		"qnsp-mcp": "./dist/index.js"
+		"qnsi-mcp": "./dist/index.js"
 	},
 	"exports": {
 		".": {
@@ -44,7 +44,7 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.29.0",
-		"@cuilabs/qnsp": "workspace:*",
+		"@heossi/qnsi": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
@@ -83,11 +83,11 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cuilabs/qnsp-public",
+		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/mcp-server"
 	},
-	"homepage": "https://cloud.qnsp.cuilabs.io",
+	"homepage": "https://cloud.qnsi.heossi.com",
 	"bugs": {
-		"url": "https://github.com/cuilabs/qnsp-public/issues"
+		"url": "https://github.com/heossihq/qnsi-public/issues"
 	}
 }

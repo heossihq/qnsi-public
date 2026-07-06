@@ -2,11 +2,11 @@
 title: On-Premises Deployment
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # On-Premises Deployment
 
-Deploy QNSP in your own data center.
+Deploy QNSI in your own data center.
 
 ## Requirements
 
@@ -37,7 +37,7 @@ Configuration examples below are illustrative and depend on your deployment bund
 ```yaml
 # values.yaml
 global:
-  domain: qnsp.internal.example.com
+  domain: qnsi.internal.example.com
   tls:
     enabled: true
     certManager: true
@@ -48,7 +48,7 @@ hsm:
 
 database:
   host: postgres.internal
-  name: qnsp
+  name: qnsi
 
 storage:
   type: s3

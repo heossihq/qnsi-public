@@ -1,12 +1,12 @@
 {
-	"name": "@cuilabs/qnsp-auth-sdk",
+	"name": "@heossi/qnsi-auth-sdk",
 	"version": "0.3.6",
 	"publishConfig": {
 		"access": "public"
 	},
 	"type": "module",
 	"license": "Apache-2.0",
-	"description": "TypeScript SDK for QNSP post-quantum authentication: PQC-signed JWTs, WebAuthn passkeys, MFA, and OIDC federation. Zero-config — defaults to cloud.qnsp.cuilabs.io. Free API key required.",
+	"description": "TypeScript SDK for QNSP post-quantum authentication: PQC-signed JWTs, WebAuthn passkeys, MFA, and OIDC federation. Zero-config — defaults to cloud.qnsi.heossi.com. Free API key required.",
 	"exports": {
 		"./package.json": "./package.json",
 		".": {
@@ -26,7 +26,7 @@
 		"@opentelemetry/exporter-metrics-otlp-http": "^0.214.0",
 		"@opentelemetry/resources": "^2.6.1",
 		"@opentelemetry/sdk-metrics": "^2.6.1",
-		"@cuilabs/qnsp-sdk-activation": "workspace:*",
+		"@heossi/qnsi-sdk-activation": "workspace:*",
 		"undici": "^8.0.1",
 		"zod": "^4.3.6"
 	},
@@ -61,12 +61,12 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cuilabs/qnsp-public",
+		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/auth-sdk"
 	},
-	"homepage": "https://cloud.qnsp.cuilabs.io",
+	"homepage": "https://cloud.qnsi.heossi.com",
 	"bugs": {
-		"url": "https://github.com/cuilabs/qnsp-public/issues"
+		"url": "https://github.com/heossihq/qnsi-public/issues"
 	},
 	"files": [
 		"dist/**/*",

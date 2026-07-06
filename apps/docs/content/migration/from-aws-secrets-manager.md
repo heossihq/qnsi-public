@@ -2,16 +2,16 @@
 title: Migration from AWS Secrets Manager
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Migration from AWS Secrets Manager
 
-Migrate secrets from AWS Secrets Manager to QNSP.
+Migrate secrets from AWS Secrets Manager to QNSI.
 
 ## Prerequisites
 
 - AWS CLI configured
-- QNSP CLI configured
+- QNSI CLI configured
 - IAM permissions for Secrets Manager
 
 ## Migration steps
@@ -32,7 +32,7 @@ for secret in $(aws secretsmanager list-secrets --query 'SecretList[].Name' --ou
 done
 ```
 
-### 3. Import to QNSP
+### 3. Import to QNSI
 Import secrets by creating them via the Vault API or the Vault SDK.
 
 ## Automated migration
@@ -53,11 +53,11 @@ AWS Secrets Manager rotation needs reconfiguration:
 
 ## Application updates
 
-Update applications to use QNSP SDK:
+Update applications to use QNSI SDK:
 ```javascript
 // Before (AWS SDK)
 const secret = await secretsManager.getSecretValue({SecretId: 'my-secret'});
 
-// After (QNSP SDK)
+// After (QNSI SDK)
 // Use the Vault SDK and request secret values by ID.
 ```

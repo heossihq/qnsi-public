@@ -2,11 +2,11 @@
 title: External Secrets Operator
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # External Secrets Operator
 
-Integrate QNSP with External Secrets Operator.
+Integrate QNSI with External Secrets Operator.
 
 ## Prerequisites
 
@@ -25,11 +25,11 @@ helm install external-secrets external-secrets/external-secrets \
 apiVersion: external-secrets.io/v1beta1
 kind: ClusterSecretStore
 metadata:
-  name: qnsp
+  name: qnsi
 spec:
   provider:
     webhook:
-      url: "https://api.qnsp.cuilabs.io/vault/v1/secrets/{{ .remoteRef.key }}/value"
+      url: "https://api.qnsi.heossi.com/vault/v1/secrets/{{ .remoteRef.key }}/value"
       headers:
         Authorization:
           - "Bearer {{ .auth.token }}"
@@ -38,7 +38,7 @@ spec:
       secrets:
         - name: credentials
           secretRef:
-            name: qnsp-credentials
+            name: qnsi-credentials
             namespace: external-secrets
 ```
 
@@ -47,7 +47,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: qnsp-credentials
+  name: qnsi-credentials
   namespace: external-secrets
 stringData:
   token: "your-access-token"
@@ -64,7 +64,7 @@ metadata:
 spec:
   refreshInterval: 5m
   secretStoreRef:
-    name: qnsp
+    name: qnsi
     kind: ClusterSecretStore
   target:
     name: db-credentials

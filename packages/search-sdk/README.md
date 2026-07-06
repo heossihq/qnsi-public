@@ -1,22 +1,22 @@
-# @cuilabs/qnsp-search-sdk
+# @heossi/qnsi-search-sdk
 
-TypeScript SDK for QNSP search-service (indexing, querying, SSE token helpers); equivalent shapes ship in Python, Go, and Rust.
+TypeScript SDK for QNSI search-service (indexing, querying, SSE token helpers); equivalent shapes ship in Python, Go, and Rust.
 
-Part of the [Quantum-Native Security Platform (QNSP)](https://qnsp.cuilabs.io).
+Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.com).
 
 ## Installation
 
 ```bash
-pnpm add @cuilabs/qnsp-search-sdk
+pnpm add @heossi/qnsi-search-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { SearchClient } from "@cuilabs/qnsp-search-sdk";
+import { SearchClient } from "@heossi/qnsi-search-sdk";
 
 const search = new SearchClient({
-  baseUrl: "https://api.qnsp.cuilabs.io",
+  baseUrl: "https://api.qnsi.heossi.com",
   apiKey: "YOUR_API_KEY",
 });
 
@@ -29,14 +29,14 @@ const results = await search.query("my-index", { text: "post-quantum encryption"
 
 ## Documentation
 
-- [SDK Reference](https://docs.qnsp.cuilabs.io/sdk/search-sdk)
-- [API Documentation](https://docs.qnsp.cuilabs.io/api)
-- [Getting Started](https://docs.qnsp.cuilabs.io/quickstart)
+- [SDK Reference](https://docs.qnsi.heossi.com/sdk/search-sdk)
+- [API Documentation](https://docs.qnsi.heossi.com/api)
+- [Getting Started](https://docs.qnsi.heossi.com/quickstart)
 
 ## Requirements
 
-- Node.js >= 24.12.0 (`engines` in `package.json`; QNSP monorepo baseline)
-- A QNSP account and API key — [sign up free](https://cloud.qnsp.cuilabs.io/auth) with GitHub, Google, or email
+- Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
+- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

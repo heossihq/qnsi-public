@@ -2,13 +2,13 @@
 title: Privacy Policy
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # Privacy Policy
 
-This page provides a summary of the QNSP Privacy Policy. CUI Labs (Pte.) Ltd. processes personal data in accordance with Singapore's Personal Data Protection Act 2012 (PDPA) and other applicable privacy laws.
+This page provides a summary of the QNSI Privacy Policy. HEOSSI (PTE.) LTD processes personal data in accordance with Singapore's Personal Data Protection Act 2012 (PDPA) and other applicable privacy laws.
 
-**Full Privacy Policy:** https://qnsp.cuilabs.io/terms#privacy-policy
+**Full Privacy Policy:** https://qnsi.heossi.com/terms#privacy-policy
 
 ## Data we collect
 
@@ -74,14 +74,14 @@ This Privacy Policy is governed by the laws of Singapore, including the Personal
 
 ## Contact
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
 UEN: 202532790K
 
-Privacy inquiries: contact@cuilabs.io
+Privacy inquiries: contact@heossi.com
 
-Data Protection Officer: contact@cuilabs.io
+Data Protection Officer: contact@heossi.com
 
-Full Privacy Policy: https://qnsp.cuilabs.io/terms#privacy-policy
+Full Privacy Policy: https://qnsi.heossi.com/terms#privacy-policy

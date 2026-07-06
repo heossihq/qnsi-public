@@ -6,7 +6,7 @@
  */
 
 import { randomInt } from "node:crypto";
-import { normalizeError, type QNSPError, WarningError } from "@cuilabs/qnsp-shared-kernel/errors";
+import { normalizeError, type QNSPError, WarningError } from "@heossi/qnsi-shared-kernel/errors";
 
 export interface ErrorContext {
 	readonly service: string;

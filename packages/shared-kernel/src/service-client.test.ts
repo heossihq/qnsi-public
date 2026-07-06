@@ -2,7 +2,7 @@
  * Unit tests for ServiceClient with circuit breakers
  */
 
-import { CircuitBreaker, CircuitBreakerOpenError } from "@cuilabs/qnsp-resilience";
+import { CircuitBreaker, CircuitBreakerOpenError } from "@heossi/qnsi-resilience";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ServiceClient, ServiceClientError } from "./service-client.js";
 

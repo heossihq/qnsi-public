@@ -2,18 +2,18 @@
 title: Migration Checklist
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2026 CUI Labs. All rights reserved.
+copyright: © 2026 HEOSSI. All rights reserved.
 ---
 # Migration Checklist
 
-Use this checklist alongside [Migration Journey to QNSP](/migration/journey). The checklist is execution-oriented; the journey document explains the target operating model and the logic behind each stage.
+Use this checklist alongside [Migration Journey to QNSI](/migration/journey). The checklist is execution-oriented; the journey document explains the target operating model and the logic behind each stage.
 
 ## 1. Connect
 
-- [ ] Set up the QNSP tenant, roles, and credentials
+- [ ] Set up the QNSI tenant, roles, and credentials
 - [ ] Decide which discovery path is required per source: cloud/API connector, agent, or both
 - [ ] Connect managed providers such as AWS, Azure, GCP, HashiCorp Vault, or CDN/TLS sources
-- [ ] Install QNSP agents where sources are private, self-hosted, or only reachable from inside the environment
+- [ ] Install QNSI agents where sources are private, self-hosted, or only reachable from inside the environment
 - [ ] Confirm the connected source list reflects the intended migration scope
 
 ## 2. Discover
@@ -29,7 +29,7 @@ Use this checklist alongside [Migration Journey to QNSP](/migration/journey). Th
 - [ ] Review Quantum Exposure
 - [ ] Review Policy Violations
 - [ ] Review the Migration Plan produced from discovered assets
-- [ ] Separate platform-native assets from external assets still outside QNSP
+- [ ] Separate platform-native assets from external assets still outside QNSI
 - [ ] Mark unknown, deprecated, or insufficiently evidenced cryptographic usage for follow-up
 
 ## 4. Govern
@@ -38,20 +38,20 @@ Use this checklist alongside [Migration Journey to QNSP](/migration/journey). Th
 - [ ] Set algorithm, HSM, lifecycle, and transition requirements
 - [ ] Decide which controls run in audit mode vs enforce mode
 - [ ] Define exceptions and transition rules for systems that cannot cut over immediately
-- [ ] Align certificate lifecycle and rotation policy with the QNSP target state
+- [ ] Align certificate lifecycle and rotation policy with the QNSI target state
 
 ## 5. Migrate
 
-- [ ] Create or import keys into QNSP KMS
-- [ ] Migrate secrets into QNSP Vault
-- [ ] Move certificate lifecycle management under QNSP policy
-- [ ] Reconfigure workloads to call QNSP SDKs, APIs, or platform services
+- [ ] Create or import keys into QNSI KMS
+- [ ] Migrate secrets into QNSI Vault
+- [ ] Move certificate lifecycle management under QNSI policy
+- [ ] Reconfigure workloads to call QNSI SDKs, APIs, or platform services
 - [ ] Batch migration work into controllable cutover groups
 - [ ] Use migration automation or managed agents where available in the tenant plan
 
 ## 6. Validate
 
-- [ ] Verify production workloads are consuming QNSP trust services
+- [ ] Verify production workloads are consuming QNSI trust services
 - [ ] Confirm legacy providers are no longer serving production trust decisions
 - [ ] Generate and review readiness evidence
 - [ ] Generate and review CBOM, QBOM, and SBOM as separate evidence products
@@ -68,4 +68,4 @@ Use this checklist alongside [Migration Journey to QNSP](/migration/journey). Th
 
 ## Migration success rule
 
-- [ ] Production trust dependencies are consumed from QNSP and continuously validated, not merely mirrored into QNSP
+- [ ] Production trust dependencies are consumed from QNSI and continuously validated, not merely mirrored into QNSI

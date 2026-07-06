@@ -2,11 +2,12 @@
 title: Cloud Deployment
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: Deploy QNSI as a managed cloud service across multiple regions with shared, dedicated, and private VPC tiers offering varying isolation and SLA levels.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Cloud Deployment
 
-QNSP is available as a managed cloud service.
+QNSI is available as a managed cloud service.
 
 ## Regions
 
@@ -36,7 +37,7 @@ QNSP is available as a managed cloud service.
 
 ## Getting started
 
-1. Sign up at https://cloud.qnsp.cuilabs.io
+1. Sign up at https://cloud.qnsi.heossi.com
 2. Create tenant
 3. Configure authentication
 4. Start integrating
@@ -45,8 +46,8 @@ QNSP is available as a managed cloud service.
 
 ### Public endpoints
 ```
-api.qnsp.cuilabs.io
-api.<region>.qnsp.cuilabs.io
+api.qnsi.heossi.com
+api.<region>.qnsi.heossi.com
 ```
 
 ### Private Link (AWS)

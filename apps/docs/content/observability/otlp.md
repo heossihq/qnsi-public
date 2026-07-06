@@ -2,11 +2,11 @@
 title: OpenTelemetry (OTLP)
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: 2025 CUI Labs. All rights reserved.
+copyright: 2025 HEOSSI. All rights reserved.
 ---
 # OpenTelemetry (OTLP)
 
-QNSP supports OpenTelemetry Protocol for telemetry export.
+QNSI supports OpenTelemetry Protocol for telemetry export.
 
 ## OTLP endpoints
 
@@ -20,16 +20,16 @@ POST /otlp/v1/logs
 
 ## Configuration
 
-### Export to QNSP collector
+### Export to QNSI collector
 ```yaml
 exporters:
   otlp:
-    endpoint: <qnsp_base_url>
+    endpoint: <qnsi_base_url>
     headers:
-      authorization: Bearer ${QNSP_TOKEN}
+      authorization: Bearer ${QNSI_TOKEN}
 ```
 
-Exporting from QNSP to your collector is deployment-specific.
+Exporting from QNSI to your collector is deployment-specific.
 
 ## Supported signals
 
@@ -41,18 +41,18 @@ Exporting from QNSP to your collector is deployment-specific.
 
 ## Resource attributes
 
-QNSP adds resource attributes:
+QNSI adds resource attributes:
 ```
-service.name: qnsp-kms-service
+service.name: qnsi-kms-service
 service.version: 1.2.3
 deployment.environment: production
 cloud.region: ap-southeast-1
-qnsp.tenant_id: tenant-uuid
+qnsi.tenant_id: tenant-uuid
 ```
 
 ## Semantic conventions
 
-QNSP follows OpenTelemetry semantic conventions:
+QNSI follows OpenTelemetry semantic conventions:
 - HTTP: `http.method`, `http.status_code`
 - Database: `db.system`, `db.operation`
 - Messaging: `messaging.system`

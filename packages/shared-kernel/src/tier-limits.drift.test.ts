@@ -3,22 +3,22 @@
  *
  * Proves the inlined SDK-facing tier catalogue in `tier-limits.ts` is
  * byte-exact with the 7-field projection of the internal
- * `@cuilabs/qnsp-pricing`'s TIER_PRICING source of truth.
+ * `@heossi/qnsi-pricing`'s TIER_PRICING source of truth.
  *
- * This test is the sole reason `@cuilabs/qnsp-pricing` is a devDependency of
- * @cuilabs/qnsp-shared-kernel. At publish time the resolved package.json drops
- * devDependencies, so nothing from `@cuilabs/qnsp-pricing` ever reaches consumers
+ * This test is the sole reason `@heossi/qnsi-pricing` is a devDependency of
+ * @heossi/qnsi-shared-kernel. At publish time the resolved package.json drops
+ * devDependencies, so nothing from `@heossi/qnsi-pricing` ever reaches consumers
  * installing from npm.
  *
  * If this test fails, either:
  *   1. The internal pricing model changed → update `tier-limits.ts` to match.
- *   2. The SDK projection was edited directly → update `@cuilabs/qnsp-pricing` or
+ *   2. The SDK projection was edited directly → update `@heossi/qnsi-pricing` or
  *      revert the SDK change.
  *
  * Either way, the two catalogues must stay in lockstep at build time.
  */
 
-import { type PricingTier, TIER_PRICING } from "@cuilabs/qnsp-pricing";
+import { type PricingTier, TIER_PRICING } from "@heossi/qnsi-pricing";
 import { describe, expect, it } from "vitest";
 
 import { TIER_LIMITS, type TierLimits } from "./tier-limits.js";
@@ -35,7 +35,7 @@ const SDK_FIELDS = [
 ] as const satisfies ReadonlyArray<keyof TierLimits>;
 
 describe("tier-limits drift guard", () => {
-	it("covers every PricingTier present in @cuilabs/qnsp-pricing", () => {
+	it("covers every PricingTier present in @heossi/qnsi-pricing", () => {
 		const pricingTiers = Object.keys(TIER_PRICING) as PricingTier[];
 		for (const tier of pricingTiers) {
 			expect(TIER_LIMITS, `TIER_LIMITS is missing tier '${tier}'`).toHaveProperty(tier);
@@ -44,7 +44,7 @@ describe("tier-limits drift guard", () => {
 
 	it.each(
 		Object.keys(TIER_PRICING) as PricingTier[],
-	)("projects @cuilabs/qnsp-pricing -> TIER_LIMITS byte-exact for tier '%s'", (tier) => {
+	)("projects @heossi/qnsi-pricing -> TIER_LIMITS byte-exact for tier '%s'", (tier) => {
 		const pricingLimits = TIER_PRICING[tier].limits;
 		const sdkLimits = TIER_LIMITS[tier];
 
@@ -52,7 +52,7 @@ describe("tier-limits drift guard", () => {
 			expect(
 				sdkLimits[field],
 				`drift detected: TIER_LIMITS['${tier}'].${field} (${sdkLimits[field]}) ` +
-					`!= @cuilabs/qnsp-pricing TIER_PRICING['${tier}'].limits.${field} (${pricingLimits[field]}). ` +
+					`!= @heossi/qnsi-pricing TIER_PRICING['${tier}'].limits.${field} (${pricingLimits[field]}). ` +
 					`Update packages/shared-kernel/src/tier-limits.ts to match.`,
 			).toBe(pricingLimits[field]);
 		}

@@ -2,7 +2,8 @@
 title: CLI Commands
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: 2025 CUI Labs. All rights reserved.
+description: Complete command reference for the QNSI CLI, covering global options plus auth, KMS, vault, and audit commands with service URLs and output format flags.
+copyright: 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/cli/src/index.ts
@@ -14,7 +15,7 @@ source_files:
 
 # CLI Commands
 
-Complete command reference for the QNSP CLI.
+Complete command reference for the QNSI CLI.
 
 ## Global Options
 
@@ -47,12 +48,12 @@ From `packages/cli/src/commands/auth.ts`:
 
 ### Request service token
 ```bash
-qnsp auth token [--service-id <id>] [--service-secret <secret>] [--audience <audience>]
+qnsi auth token [--service-id <id>] [--service-secret <secret>] [--audience <audience>]
 ```
 
 **Options:**
-- `--service-id` - Service account ID (or use QNSP_SERVICE_ID)
-- `--service-secret` - Service account secret (or use QNSP_SERVICE_SECRET)
+- `--service-id` - Service account ID (or use QNSI_SERVICE_ID)
+- `--service-secret` - Service account secret (or use QNSI_SERVICE_SECRET)
 - `--audience` - Token audience (default: internal-service)
 
 ## KMS Commands
@@ -61,7 +62,7 @@ From `packages/cli/src/commands/kms.ts`:
 
 ### List keys
 ```bash
-qnsp kms keys list [--limit <number>] [--cursor <cursor>]
+qnsi kms keys list [--limit <number>] [--cursor <cursor>]
 ```
 
 **Options:**
@@ -70,12 +71,12 @@ qnsp kms keys list [--limit <number>] [--cursor <cursor>]
 
 ### Get key
 ```bash
-qnsp kms keys get <keyId>
+qnsi kms keys get <keyId>
 ```
 
 ### Create key
 ```bash
-qnsp kms keys create [--name <name>] [--algorithm <algorithm>] [--purpose <purpose>]
+qnsi kms keys create [--name <name>] [--algorithm <algorithm>] [--purpose <purpose>]
 ```
 
 **Options:**
@@ -89,7 +90,7 @@ From `packages/cli/src/commands/vault.ts`:
 
 ### List secrets
 ```bash
-qnsp vault secrets list [--limit <number>]
+qnsi vault secrets list [--limit <number>]
 ```
 
 **Options:**
@@ -97,12 +98,12 @@ qnsp vault secrets list [--limit <number>]
 
 ### Get secret
 ```bash
-qnsp vault secrets get <secretId>
+qnsi vault secrets get <secretId>
 ```
 
 **Example:**
 ```bash
-qnsp vault secrets get 6f9f1ce1-2c5b-4fb6-b37b-8ffef8f0b6c9
+qnsi vault secrets get 6f9f1ce1-2c5b-4fb6-b37b-8ffef8f0b6c9
 ```
 
 ## Storage Commands
@@ -111,7 +112,7 @@ From `packages/cli/src/commands/storage.ts`:
 
 ### List objects
 ```bash
-qnsp storage objects list [--limit <number>] [--cursor <cursor>] [--prefix <prefix>]
+qnsi storage objects list [--limit <number>] [--cursor <cursor>] [--prefix <prefix>]
 ```
 
 ## Audit Commands
@@ -120,7 +121,7 @@ From `packages/cli/src/commands/audit.ts`:
 
 ### List events
 ```bash
-qnsp audit events list [options]
+qnsi audit events list [options]
 ```
 
 **Options:**
@@ -132,7 +133,7 @@ qnsp audit events list [options]
 
 **Example:**
 ```bash
-qnsp audit events list --limit 100 --source-service kms-service --since 2025-12-24T00:00:00Z
+qnsi audit events list --limit 100 --source-service kms-service --since 2025-12-24T00:00:00Z
 ```
 
 ## Search Commands
@@ -141,7 +142,7 @@ From `packages/cli/src/commands/search.ts`:
 
 ### Query
 ```bash
-qnsp search query --query <query> [--limit <number>]
+qnsi search query --query <query> [--limit <number>]
 ```
 
 ## Tenant Commands
@@ -150,7 +151,7 @@ From `packages/cli/src/commands/tenant.ts`:
 
 ### Get tenant (strictly tenant-scoped)
 ```bash
-qnsp tenant get <tenantId>
+qnsi tenant get <tenantId>
 ```
 
 `tenant list` and `tenant create` are intentionally disabled in the CLI.
@@ -161,22 +162,22 @@ From `packages/cli/src/commands/billing.ts`:
 
 ### List add-ons
 ```bash
-qnsp billing addons list
+qnsi billing addons list
 ```
 
 ### Catalog
 ```bash
-qnsp billing addons catalog
+qnsi billing addons catalog
 ```
 
 ### Enable add-on
 ```bash
-qnsp billing addons enable --addon-id <id>
+qnsi billing addons enable --addon-id <id>
 ```
 
 ### Usage
 ```bash
-qnsp billing usage [--start <date>] [--end <date>]
+qnsi billing usage [--start <date>] [--end <date>]
 ```
 
 ## Access Control Commands
@@ -185,17 +186,17 @@ From `packages/cli/src/commands/access-control.ts`:
 
 ### Policies list
 ```bash
-qnsp access policies list [--limit <number>] [--cursor <cursor>]
+qnsi access policies list [--limit <number>] [--cursor <cursor>]
 ```
 
 ### Policies get
 ```bash
-qnsp access policies get <policyId>
+qnsi access policies get <policyId>
 ```
 
 ### Policies create
 ```bash
-qnsp access policies create --name <name> --effect <effect> --actions <actions> --resources <resources>
+qnsi access policies create --name <name> --effect <effect> --actions <actions> --resources <resources>
 ```
 
 ## Observability Commands
@@ -204,12 +205,12 @@ From `packages/cli/src/commands/observability.ts`:
 
 ### List SLOs
 ```bash
-qnsp observability slos list [--limit <number>] [--cursor <cursor>]
+qnsi observability slos list [--limit <number>] [--cursor <cursor>]
 ```
 
 ### OTLP status
 ```bash
-qnsp observability otlp status
+qnsi observability otlp status
 ```
 
 ## Security Commands
@@ -218,11 +219,11 @@ From `packages/cli/src/commands/security.ts`:
 
 ### Alerts list
 ```bash
-qnsp security alerts list [--severity <severity>] [--status <status>] [--limit <number>] [--cursor <cursor>]
+qnsi security alerts list [--severity <severity>] [--status <status>] [--limit <number>] [--cursor <cursor>]
 ```
 
 ### Breaches list
 ```bash
-qnsp security breaches list [--limit <number>] [--cursor <cursor>]
+qnsi security breaches list [--limit <number>] [--cursor <cursor>]
 
 ```

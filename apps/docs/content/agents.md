@@ -1,44 +1,44 @@
 ---
 title: "Host Agents"
-description: "Deploy the QNSP Host Agent to discover cryptographic assets across your server fleet and report them to the QNSP platform."
+description: "Deploy the QNSI Host Agent to discover cryptographic assets across your server fleet and report them to the QNSI platform."
 version: 0.1.0
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
-  - /apps/qnsp-agent/src/index.ts
-  - /apps/qnsp-agent/src/config.ts
-  - /apps/qnsp-agent/src/scanner.ts
-  - /apps/qnsp-agent/src/reporter.ts
+  - /apps/qnsi-agent/src/index.ts
+  - /apps/qnsi-agent/src/config.ts
+  - /apps/qnsi-agent/src/scanner.ts
+  - /apps/qnsi-agent/src/reporter.ts
   - /apps/crypto-inventory-service/src/routes/agents.ts
   - /apps/crypto-inventory-service/src/services/agent-auth.ts
 ---
 
 # Host Agents
 
-The QNSP Host Agent is a lightweight CLI daemon that discovers cryptographic assets on your servers — SSH keys, TLS certificates, PKCS#12/JKS keystores, and active TLS endpoints — and reports them to the QNSP platform for inventory, exposure analysis, and PQC migration planning.
+The QNSI Host Agent is a lightweight CLI daemon that discovers cryptographic assets on your servers — SSH keys, TLS certificates, PKCS#12/JKS keystores, and active TLS endpoints — and reports them to the QNSI platform for inventory, exposure analysis, and PQC migration planning.
 
-Host Agents are one of the two primary discovery modes in QNSP:
+Host Agents are one of the two primary discovery modes in QNSI:
 
 - **Cloud/API connectors** for managed providers with usable APIs
-- **QNSP agents** for private, self-hosted, host-local, cluster-local, and on-prem environments
+- **QNSI agents** for private, self-hosted, host-local, cluster-local, and on-prem environments
 
 Use agents when the assets are not fully reachable through provider APIs or when you need evidence from inside the customer environment.
 
 ## Prerequisites
 
 - Node.js 20 or later
-- An active QNSP tenant
+- An active QNSI tenant
 - `host-agent-ingestion` feature enabled for your tenant (contact your account team if not enabled)
 - `tenant_admin` role to register agents
 
 ## Quick Start
 
-In the migration journey, agents support the **Connect** and **Discover** stages. They do not replace application cutover. Migration is only complete once production trust dependencies are consumed from QNSP services and continuously validated by QNSP.
+In the migration journey, agents support the **Connect** and **Discover** stages. They do not replace application cutover. Migration is only complete once production trust dependencies are consumed from QNSI services and continuously validated by QNSI.
 
 ### 1. Register an agent
 
-In the QNSP portal, navigate to **Crypto Posture → Host Agents → Register Agent**.
+In the QNSI portal, navigate to **Crypto Posture → Host Agents → Register Agent**.
 
 Give the agent a name (e.g. `web-01-prod`) and click **Register Agent**. You will receive:
 
@@ -53,7 +53,7 @@ curl -sS -X POST \
   -H "Content-Type: application/json" \
   -H "x-qnsp-tenant-id: $TENANT_ID" \
   -d '{"name": "web-01-prod"}' \
-  https://api.qnsp.cuilabs.io/proxy/crypto/v1/agents
+  https://api.qnsi.heossi.com/proxy/crypto/v1/agents
 ```
 
 Response:
@@ -77,59 +77,59 @@ Response:
 ### 2. Install the agent
 
 ```bash
-npm install -g @cuilabs/qnsp-agent
+npm install -g @heossi/qnsi-agent
 ```
 
-Requires Node.js 20+. The package installs the `qnsp-agent` binary globally.
+Requires Node.js 20+. The package installs the `qnsi-agent` binary globally.
 
 ### 3. Configure the agent
 
 Run the interactive setup wizard:
 
 ```bash
-qnsp-agent configure
+qnsi-agent configure
 ```
 
 Or set environment variables directly:
 
 ```bash
-export QNSP_AGENT_ID=<agent-uuid>
-export QNSP_AGENT_SECRET=<64-char-hex-secret>
-export QNSP_ENDPOINT=https://api.qnsp.cuilabs.io
-export QNSP_TENANT_ID=<tenant-uuid>
+export QNSI_AGENT_ID=<agent-uuid>
+export QNSI_AGENT_SECRET=<64-char-hex-secret>
+export QNSI_ENDPOINT=https://api.qnsi.heossi.com
+export QNSI_TENANT_ID=<tenant-uuid>
 ```
 
-Or create a config file at `~/.qnsp-agent/config.env`:
+Or create a config file at `~/.qnsi-agent/config.env`:
 
 ```env
-QNSP_AGENT_ID=<agent-uuid>
-QNSP_AGENT_SECRET=<64-char-hex-secret>
-QNSP_ENDPOINT=https://api.qnsp.cuilabs.io
-QNSP_TENANT_ID=<tenant-uuid>
+QNSI_AGENT_ID=<agent-uuid>
+QNSI_AGENT_SECRET=<64-char-hex-secret>
+QNSI_ENDPOINT=https://api.qnsi.heossi.com
+QNSI_TENANT_ID=<tenant-uuid>
 ```
 
 ### 4. Run a scan
 
 ```bash
 # Run once and exit
-qnsp-agent run
+qnsi-agent run
 
 # Run continuously on the configured interval (default: 5 minutes)
-qnsp-agent daemon
+qnsi-agent daemon
 ```
 
 ## Configuration Reference
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `QNSP_AGENT_ID` | ✅ | — | Agent UUID from the QNSP portal |
-| `QNSP_AGENT_SECRET` | ✅ | — | 64-char hex secret from registration |
-| `QNSP_ENDPOINT` | ✅ | — | `https://api.qnsp.cuilabs.io` |
-| `QNSP_TENANT_ID` | ✅ | — | Your tenant UUID |
-| `QNSP_SCAN_PATHS` | ❌ | `/etc/ssl,/etc/pki,/etc/ssh,/home,/root,...` | Comma-separated paths to scan |
-| `QNSP_INTERVAL_SECS` | ❌ | `300` | Report interval in daemon mode (30–86400) |
-| `QNSP_LOG_LEVEL` | ❌ | `info` | `silent`, `error`, `warn`, `info`, `debug` |
-| `QNSP_HOSTNAME` | ❌ | `os.hostname()` | Override the reported hostname |
+| `QNSI_AGENT_ID` | ✅ | — | Agent UUID from the QNSI portal |
+| `QNSI_AGENT_SECRET` | ✅ | — | 64-char hex secret from registration |
+| `QNSI_ENDPOINT` | ✅ | — | `https://api.qnsi.heossi.com` |
+| `QNSI_TENANT_ID` | ✅ | — | Your tenant UUID |
+| `QNSI_SCAN_PATHS` | ❌ | `/etc/ssl,/etc/pki,/etc/ssh,/home,/root,...` | Comma-separated paths to scan |
+| `QNSI_INTERVAL_SECS` | ❌ | `300` | Report interval in daemon mode (30–86400) |
+| `QNSI_LOG_LEVEL` | ❌ | `info` | `silent`, `error`, `warn`, `info`, `debug` |
+| `QNSI_HOSTNAME` | ❌ | `os.hostname()` | Override the reported hostname |
 
 ## What the Agent Discovers
 
@@ -150,22 +150,22 @@ For each asset, the agent reports: type, file path, algorithm, key size (where a
 
 ```ini
 [Unit]
-Description=QNSP Host Agent
+Description=QNSI Host Agent
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/qnsp-agent daemon
-EnvironmentFile=/etc/qnsp-agent/config.env
+ExecStart=/usr/local/bin/qnsi-agent daemon
+EnvironmentFile=/etc/qnsi-agent/config.env
 Restart=always
 RestartSec=30
-User=qnsp-agent
+User=qnsi-agent
 
 [Install]
 WantedBy=multi-user.target
 ```
 
 ```bash
-sudo systemctl enable --now qnsp-agent
+sudo systemctl enable --now qnsi-agent
 ```
 
 ### launchd (macOS)
@@ -177,18 +177,18 @@ sudo systemctl enable --now qnsp-agent
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>io.cuilabs.qnsp-agent</string>
+  <string>io.heossi.qnsi-agent</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/usr/local/bin/qnsp-agent</string>
+    <string>/usr/local/bin/qnsi-agent</string>
     <string>daemon</string>
   </array>
   <key>EnvironmentVariables</key>
   <dict>
-    <key>QNSP_AGENT_ID</key>     <string>YOUR_AGENT_ID</string>
-    <key>QNSP_AGENT_SECRET</key> <string>YOUR_AGENT_SECRET</string>
-    <key>QNSP_ENDPOINT</key>     <string>https://api.qnsp.cuilabs.io</string>
-    <key>QNSP_TENANT_ID</key>    <string>YOUR_TENANT_ID</string>
+    <key>QNSI_AGENT_ID</key>     <string>YOUR_AGENT_ID</string>
+    <key>QNSI_AGENT_SECRET</key> <string>YOUR_AGENT_SECRET</string>
+    <key>QNSI_ENDPOINT</key>     <string>https://api.qnsi.heossi.com</string>
+    <key>QNSI_TENANT_ID</key>    <string>YOUR_TENANT_ID</string>
   </dict>
   <key>RunAtLoad</key>
   <true/>
@@ -221,23 +221,23 @@ The agent secret is shown **once** at registration. If lost, rotate it via **Cry
 curl -sS -X POST \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "x-qnsp-tenant-id: $TENANT_ID" \
-  https://api.qnsp.cuilabs.io/proxy/crypto/v1/agents/<agent-id>/rotate
+  https://api.qnsi.heossi.com/proxy/crypto/v1/agents/<agent-id>/rotate
 ```
 
 ## CLI Commands
 
 ```
-qnsp-agent run         Scan the host and submit a report, then exit
-qnsp-agent daemon      Run continuously on the configured interval
-qnsp-agent configure   Interactive setup wizard
-qnsp-agent status      Print current configuration (no secrets printed)
-qnsp-agent version     Print version
-qnsp-agent help        Print help
+qnsi-agent run         Scan the host and submit a report, then exit
+qnsi-agent daemon      Run continuously on the configured interval
+qnsi-agent configure   Interactive setup wizard
+qnsi-agent status      Print current configuration (no secrets printed)
+qnsi-agent version     Print version
+qnsi-agent help        Print help
 ```
 
 ## Troubleshooting
 
-**`Invalid agent configuration`** — One or more required environment variables are missing or invalid. Run `qnsp-agent status` to see the current config (secrets are not printed).
+**`Invalid agent configuration`** — One or more required environment variables are missing or invalid. Run `qnsi-agent status` to see the current config (secrets are not printed).
 
 **`Report rejected (401)`** — The agent secret is wrong or the agent ID does not exist. Re-register or rotate the secret.
 

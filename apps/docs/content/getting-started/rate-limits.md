@@ -2,7 +2,8 @@
 title: Rate Limits Overview
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: How QNSI enforces rate limits at the edge gateway using per-tenant, per-route token buckets, default RPS settings, and standard rate-limit response headers.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/edge-gateway/src/config/env.ts
@@ -11,7 +12,7 @@ source_files:
 
 # Rate Limits Overview
 
-QNSP enforces rate limits at the edge gateway to protect platform stability.
+QNSI enforces rate limits at the edge gateway to protect platform stability.
 
 ## Default Rate Limit
 

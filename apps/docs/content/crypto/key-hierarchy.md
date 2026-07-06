@@ -2,7 +2,8 @@
 title: Key Hierarchy
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: QNSI uses a four-level key hierarchy of root keys, tenant master keys, key encryption keys, and data encryption keys for defense in depth and key derivation.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/kms-service/src/config/env.ts
@@ -11,7 +12,7 @@ source_files:
 
 # Key Hierarchy
 
-QNSP uses a hierarchical key structure for defense in depth.
+QNSI uses a hierarchical key structure for defense in depth.
 
 ## Hierarchy Levels
 

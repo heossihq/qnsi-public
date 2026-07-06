@@ -1,5 +1,5 @@
 {
-	"name": "@cuilabs/qnsp-resilience",
+	"name": "@heossi/qnsi-resilience",
 	"version": "0.1.2",
 	"license": "Apache-2.0",
 	"publishConfig": {
@@ -20,14 +20,14 @@
 		"typescript",
 		"nodejs"
 	],
-	"homepage": "https://cloud.qnsp.cuilabs.io",
+	"homepage": "https://cloud.qnsi.heossi.com",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cuilabs/qnsp-public",
+		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/resilience"
 	},
 	"bugs": {
-		"url": "https://github.com/cuilabs/qnsp-public/issues"
+		"url": "https://github.com/heossihq/qnsi-public/issues"
 	},
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",

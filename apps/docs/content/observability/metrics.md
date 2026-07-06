@@ -2,7 +2,7 @@
 title: Metrics
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/observability-service/src/config/env.ts
@@ -12,7 +12,7 @@ source_files:
 
 # Metrics
 
-QNSP exposes metrics for monitoring platform health and performance.
+QNSI exposes metrics for monitoring platform health and performance.
 
 ## Observability Service Configuration
 
@@ -36,32 +36,32 @@ From `apps/observability-service/src/config/env.ts`:
 
 ### Counters
 Monotonically increasing values:
-- `qnsp_requests_total`
-- `qnsp_errors_total`
-- `qnsp_auth_attempts_total`
+- `qnsi_requests_total`
+- `qnsi_errors_total`
+- `qnsi_auth_attempts_total`
 
 ### Gauges
 Point-in-time values:
-- `qnsp_active_connections`
-- `qnsp_cache_size_bytes`
-- `qnsp_queue_depth`
+- `qnsi_active_connections`
+- `qnsi_cache_size_bytes`
+- `qnsi_queue_depth`
 
 ### Histograms
 Distribution of values:
-- `qnsp_request_duration_seconds`
-- `qnsp_encryption_duration_seconds`
-- `qnsp_response_size_bytes`
+- `qnsi_request_duration_seconds`
+- `qnsi_encryption_duration_seconds`
+- `qnsi_response_size_bytes`
 
 ## Key metrics
 
 | Metric | Type | Description |
 |--------|------|-------------|
-| `qnsp_requests_total` | counter | Total requests by service, method, status |
-| `qnsp_request_duration_seconds` | histogram | Request latency |
-| `qnsp_errors_total` | counter | Errors by type |
-| `qnsp_rate_limit_hits_total` | counter | Rate limit triggers |
-| `qnsp_auth_success_total` | counter | Successful authentications |
-| `qnsp_kms_operations_total` | counter | KMS operations by type |
+| `qnsi_requests_total` | counter | Total requests by service, method, status |
+| `qnsi_request_duration_seconds` | histogram | Request latency |
+| `qnsi_errors_total` | counter | Errors by type |
+| `qnsi_rate_limit_hits_total` | counter | Rate limit triggers |
+| `qnsi_auth_success_total` | counter | Successful authentications |
+| `qnsi_kms_operations_total` | counter | KMS operations by type |
 
 ## Labels
 
@@ -85,7 +85,7 @@ POST /otlp/v1/logs
 
 ## PDP and edge enforcement (production signals)
 
-From `apps/pdp-service/src/pdp-metrics.ts` and `apps/edge-gateway/src/observability.ts` (typically exported via OTLP with CloudWatch namespace **`QNSP`** when using the ADOT awsemf pipeline in `infra/terraform/modules/otlp_gateway`):
+From `apps/pdp-service/src/pdp-metrics.ts` and `apps/edge-gateway/src/observability.ts` (typically exported via OTLP with CloudWatch namespace **`QNSI`** when using the ADOT awsemf pipeline in `infra/terraform/modules/otlp_gateway`):
 
 | Metric | Type | Notable attributes |
 |--------|------|--------------------|

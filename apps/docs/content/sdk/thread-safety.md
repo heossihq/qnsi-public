@@ -2,22 +2,22 @@
 title: Thread Safety
 version: 0.2.0
 last_updated: 2026-04-30
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-vault-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-vault-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.vault./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.vault./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 # Thread Safety
 
-QNSP ships SDKs in five languages: TypeScript/Node.js, Python, Go, Rust, and JVM/Android. Each language has its own concurrency model — the guarantees below describe what each official SDK gives you.
+QNSI ships SDKs in five languages: TypeScript/Node.js, Python, Go, Rust, and JVM/Android. Each language has its own concurrency model — the guarantees below describe what each official SDK gives you.
 
 ## Node.js / TypeScript
 
@@ -25,10 +25,10 @@ QNSP ships SDKs in five languages: TypeScript/Node.js, Python, Go, Rust, and JVM
 - One client instance per application is the recommended pattern.
 
 ```typescript
-import { VaultClient } from "@cuilabs/qnsp-vault-sdk";
+import { VaultClient } from "@heossi/qnsi-vault-sdk";
 
 // Good: shared client
-const client = new VaultClient({ baseUrl: "https://api.qnsp.cuilabs.io/proxy/vault", apiKey: "<token>" });
+const client = new VaultClient({ baseUrl: "https://api.qnsi.heossi.com/proxy/vault", apiKey: "<token>" });
 
 async function handler1() { await client.createSecret({ tenantId: "<uuid>", name: "s1", payload: "<base64>" }); }
 async function handler2() { await client.createSecret({ tenantId: "<uuid>", name: "s2", payload: "<base64>" }); }
@@ -37,61 +37,61 @@ async function handler2() { await client.createSecret({ tenantId: "<uuid>", name
 ```typescript
 // Bad: new client per request — wastes connections
 async function handler() {
-  const client = new VaultClient({ baseUrl: "https://api.qnsp.cuilabs.io/proxy/vault", apiKey: "<token>" });
+  const client = new VaultClient({ baseUrl: "https://api.qnsi.heossi.com/proxy/vault", apiKey: "<token>" });
   await client.createSecret({ tenantId: "<uuid>", name: "s", payload: "<base64>" });
 }
 ```
 
-## Python (`qnsp` v0.2.0+)
+## Python (`qnsi` v0.2.0+)
 
-- `QnspClient` is **not** thread-safe by default. The internal activation cache and `httpx.Client` connection pool are shared by all sub-clients (`vault`, `kms`, `audit`); concurrent calls from multiple threads are safe at the HTTP layer (`httpx.Client` is thread-safe), but cache invalidation is not synchronised.
-- Recommended pattern: one `QnspClient` per process, served via a global or via `contextvars` for per-request scoping.
+- `QnsiClient` is **not** thread-safe by default. The internal activation cache and `httpx.Client` connection pool are shared by all sub-clients (`vault`, `kms`, `audit`); concurrent calls from multiple threads are safe at the HTTP layer (`httpx.Client` is thread-safe), but cache invalidation is not synchronised.
+- Recommended pattern: one `QnsiClient` per process, served via a global or via `contextvars` for per-request scoping.
 - For multi-process workloads (gunicorn, uvicorn workers), construct one client per worker after the fork.
 
 ```python
-from qnsp import QnspClient
+from qnsi import QnsiClient
 
-qnsp = QnspClient(api_key=os.environ["QNSP_API_KEY"])  # process-wide singleton
+qnsi = QnsiClient(api_key=os.environ["QNSI_API_KEY"])  # process-wide singleton
 
 async def handle():
-    await asyncio.to_thread(qnsp.vault.create_secret, name="s", payload_b64="...")
+    await asyncio.to_thread(qnsi.vault.create_secret, name="s", payload_b64="...")
 ```
 
-A native-async variant (`AsyncQnspClient` over `httpx.AsyncClient`) is on the v0.3.0 roadmap.
+A native-async variant (`AsyncQnsiClient` over `httpx.AsyncClient`) is on the v0.3.0 roadmap.
 
-## Go (`github.com/cuilabs/qnsp-public/sdks/go/qnsp` v0.1.0+)
+## Go (`github.com/heossihq/qnsi-public/sdks/go/qnsi` v0.1.0+)
 
-- `qnsp.Client` is **safe for concurrent use** by multiple goroutines. The internal `*Activator` uses a `sync.Mutex` around the activation cache; `*http.Client` is goroutine-safe by Go's standard library guarantees.
-- Recommended pattern: one `qnsp.Client` per program, passed to handlers / workers.
+- `qnsi.Client` is **safe for concurrent use** by multiple goroutines. The internal `*Activator` uses a `sync.Mutex` around the activation cache; `*http.Client` is goroutine-safe by Go's standard library guarantees.
+- Recommended pattern: one `qnsi.Client` per program, passed to handlers / workers.
 
 ```go
-c, _ := qnsp.NewClient(qnsp.ClientOptions{APIKey: os.Getenv("QNSP_API_KEY")})
+c, _ := qnsp.NewClient(qnsp.ClientOptions{APIKey: os.Getenv("QNSI_API_KEY")})
 defer c.Close()
 
 go func() { c.Vault().CreateSecret(ctx, vault.CreateSecretRequest{...}, "") }()
 go func() { c.KMS().Sign(ctx, "key-id", []byte("hello"), "") }()
 ```
 
-## Rust (`qnsp` v0.1.0+)
+## Rust (`qnsi` v0.1.0+)
 
-- `qnsp::Client` is `Clone` + `Send` + `Sync`. Internal state lives behind `Arc<Activation>`; the activation cache uses `std::sync::Mutex`. `reqwest::Client` is itself a cheap `Clone` over an `Arc<Inner>`.
-- Recommended pattern: build one `qnsp::Client` at startup, `clone()` it freely (cheap), and pass clones into spawned tasks.
+- `qnsi::Client` is `Clone` + `Send` + `Sync`. Internal state lives behind `Arc<Activation>`; the activation cache uses `std::sync::Mutex`. `reqwest::Client` is itself a cheap `Clone` over an `Arc<Inner>`.
+- Recommended pattern: build one `qnsi::Client` at startup, `clone()` it freely (cheap), and pass clones into spawned tasks.
 
 ```rust
-let c = qnsp::Client::new(opts)?;
+let c = qnsi::Client::new(opts)?;
 let c2 = c.clone();
 tokio::spawn(async move { c2.vault().create_secret(req, None).await });
 ```
 
-## JVM / Android (`io.cuilabs:qnsp` v0.1.0+)
+## JVM / Android (`io.heossi:qnsi` v0.1.0+)
 
-- `QnspClient` is thread-safe and built to be shared. It owns one OkHttp `OkHttpClient` (an internally pooled, thread-safe HTTP client) and one activation cache guarded by a `synchronized` block.
-- Recommended pattern: construct one `QnspClient` at startup (e.g. a Spring singleton `@Bean`) and inject it everywhere. `OkHttpClient` is explicitly designed to be shared across threads.
+- `QnsiClient` is thread-safe and built to be shared. It owns one OkHttp `OkHttpClient` (an internally pooled, thread-safe HTTP client) and one activation cache guarded by a `synchronized` block.
+- Recommended pattern: construct one `QnsiClient` at startup (e.g. a Spring singleton `@Bean`) and inject it everywhere. `OkHttpClient` is explicitly designed to be shared across threads.
 
 ```kotlin
-val qnsp = QnspClient(System.getenv("QNSP_API_KEY"))
+val qnsi = QnsiClient(System.getenv("QNSI_API_KEY"))
 // share the single instance across threads / coroutines:
-executor.submit { qnsp.vault.createSecret(req) }
+executor.submit { qnsi.vault.createSecret(req) }
 ```
 
 ## Connection pooling
@@ -115,7 +115,7 @@ In all SDKs the refresh is **not** strictly serialised across concurrent callers
 ## Cleanup
 
 - TypeScript: SDK clients do not require explicit cleanup.
-- Python: `QnspClient` is a context manager; use `with QnspClient(...) as q:` or call `.close()` to release the `httpx.Client` connection pool.
+- Python: `QnsiClient` is a context manager; use `with QnsiClient(...) as q:` or call `.close()` to release the `httpx.Client` connection pool.
 - Go: call `Client.Close()` (currently a no-op but reserved).
 - Rust: `Drop` releases the `Arc`-shared state automatically.
 - JVM/Android: no explicit cleanup required; the underlying OkHttp connection pool idles out automatically.

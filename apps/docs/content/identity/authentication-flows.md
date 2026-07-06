@@ -2,11 +2,11 @@
 title: Authentication Flows
 version: 0.0.2
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Authentication Flows
 
-QNSP supports multiple authentication flows depending on identity type.
+QNSI supports multiple authentication flows depending on identity type.
 
 ## User authentication
 
@@ -31,7 +31,7 @@ Returns access token + refresh token.
 One-click sign-up and sign-in via GitHub, Google, LinkedIn, or Microsoft. Handled entirely by the Cloud Portal BFF — no direct auth-service API calls required from the client.
 
 1. User navigates to `GET /api/auth/oauth/{provider}`
-2. BFF generates a CSRF state (HMAC-SHA256 nonce) and sets `qnsp_oauth_state` cookie (HttpOnly, SameSite=Lax, 10 min TTL)
+2. BFF generates a CSRF state (HMAC-SHA256 nonce) and sets `qnsi_oauth_state` cookie (HttpOnly, SameSite=Lax, 10 min TTL)
 3. For authenticated linking flows, the BFF also sets short-lived intent cookies so the callback knows whether this is:
    - a login/signup flow, or
    - a link-external-identity flow from profile settings
@@ -44,7 +44,7 @@ One-click sign-up and sign-in via GitHub, Google, LinkedIn, or Microsoft. Handle
 6. BFF verifies the CSRF state against the cookie, exchanges the `code` for an access token, and fetches the user profile from the provider API
 7. **Returning user**: identity lookup via `GET /auth/oauth/identity` → session issued
 8. **New user**: tenant + user provisioned via billing-service, identity linked via `POST /auth/oauth/identity`, then session issued
-9. **Authenticated link flow**: the provider identity is bound to the current QNSP user without provisioning a new tenant or rotating the active session
+9. **Authenticated link flow**: the provider identity is bound to the current QNSI user without provisioning a new tenant or rotating the active session
 10. BFF calls `POST /auth/oauth/session` for login/signup flows → receives PQC-signed JWT (ML-DSA) + refresh token
 11. Session cookies written; user redirected to `/dashboard` or back to `/profile?tab=accounts` for link flows
 
@@ -64,12 +64,12 @@ One-click sign-up and sign-in via GitHub, Google, LinkedIn, or Microsoft. Handle
 | `CLOUD_OAUTH_MICROSOFT_CLIENT_SECRET` | Microsoft OAuth app client secret |
 | `CLOUD_OAUTH_MICROSOFT_CALLBACK_URL` | Optional Microsoft callback override |
 | `CLOUD_OAUTH_SESSION_SECRET` | HMAC secret for CSRF state signing |
-| `CLOUD_PORTAL_URL` | Callback base URL (default: `https://cloud.qnsp.cuilabs.io`) |
+| `CLOUD_PORTAL_URL` | Callback base URL (default: `https://cloud.qnsi.heossi.com`) |
 
-**Sign up / sign in at:** [cloud.qnsp.cuilabs.io/auth](https://cloud.qnsp.cuilabs.io/auth)
+**Sign up / sign in at:** [cloud.qnsi.heossi.com/auth](https://cloud.qnsi.heossi.com/auth)
 
 ### Enterprise Federation (OIDC / SAML)
-QNSP supports workforce federation for:
+QNSI supports workforce federation for:
 - Microsoft Entra ID
 - Okta
 - Auth0
@@ -79,12 +79,12 @@ QNSP supports workforce federation for:
 
 Flow:
 1. User selects **Continue with your company SSO**
-2. QNSP performs tenant discovery by verified email domain first, then tenant/workspace identifier
-3. If multiple workforce providers exist for the tenant, QNSP presents a provider selector instead of guessing
-4. QNSP starts the provider-specific OIDC or SAML flow
+2. QNSI performs tenant discovery by verified email domain first, then tenant/workspace identifier
+3. If multiple workforce providers exist for the tenant, QNSI presents a provider selector instead of guessing
+4. QNSI starts the provider-specific OIDC or SAML flow
 5. Auth-service validates the callback/assertion and either:
-   - issues QNSP tokens for sign-in, or
-   - links the external identity to the currently authenticated QNSP user when the flow was initiated from profile settings
+   - issues QNSI tokens for sign-in, or
+   - links the external identity to the currently authenticated QNSI user when the flow was initiated from profile settings
 
 ### Linked External Identities
 Authenticated users can manage linked identities from **Profile → Linked Accounts** in the Cloud Portal.
@@ -93,7 +93,7 @@ Supported linking paths:
 - Social OAuth: GitHub, Google, LinkedIn, Microsoft
 - Workforce SSO: Entra ID, Okta, Auth0, Google Workspace, AWS IAM Identity Center, and configured tenant SAML/OIDC providers
 
-Unlinking removes the external identity binding without deleting the QNSP user account or tenant membership.
+Unlinking removes the external identity binding without deleting the QNSI user account or tenant membership.
 
 ## Service authentication
 

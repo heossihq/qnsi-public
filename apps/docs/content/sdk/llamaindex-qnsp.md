@@ -1,8 +1,8 @@
 ---
-title: LlamaIndex Integration (@cuilabs/qnsp-llamaindex-qnsp)
+title: LlamaIndex Integration (@heossi/qnsi-llamaindex-qnsp)
 version: 0.2.5
 last_updated: 2026-04-30
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/llamaindex-qnsp/package.json
@@ -10,35 +10,35 @@ source_files:
   - /packages/llamaindex-qnsp/src/vector-store.ts
 ---
 
-# LlamaIndex Integration (`@cuilabs/qnsp-llamaindex-qnsp`)
+# LlamaIndex Integration (`@heossi/qnsi-llamaindex-qnsp`)
 
-QNSP exposes an encrypted vector-store adapter for LlamaIndex backed by QNSP search and storage services.
+QNSI exposes an encrypted vector-store adapter for LlamaIndex backed by QNSI search and storage services.
 
 ## Install
 
 ```bash
-pnpm add @cuilabs/qnsp-llamaindex-qnsp llamaindex
+pnpm add @heossi/qnsi-llamaindex-qnsp llamaindex
 ```
 
 ## Usage
 
 ```ts
-import { QnspVectorStore } from "@cuilabs/qnsp-llamaindex-qnsp";
+import { QnsiVectorStore } from "@heossi/qnsi-llamaindex-qnsp";
 
-const store = new QnspVectorStore({
-	apiKey: process.env.QNSP_API_KEY!,
+const store = new QnsiVectorStore({
+	apiKey: process.env.QNSI_API_KEY!,
 });
 ```
 
 ## What it provides
 
 - vector insertion and deletion
-- encrypted search queries through QNSP search
-- document persistence through QNSP storage
+- encrypted search queries through QNSI search
+- document persistence through QNSI storage
 
 ## Authentication
 
-The adapter activates through `@cuilabs/qnsp-sdk-activation`, derives tenant identity from the API key, and uses billing as the source of truth for availability and limits.
+The adapter activates through `@heossi/qnsi-sdk-activation`, derives tenant identity from the API key, and uses billing as the source of truth for availability and limits.
 
 ## Related docs
 

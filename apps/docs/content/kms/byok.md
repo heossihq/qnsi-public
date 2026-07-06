@@ -2,17 +2,17 @@
 title: Bring Your Own Key (BYOK)
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: 2025 CUI Labs. All rights reserved.
+copyright: 2025 HEOSSI. All rights reserved.
 ---
 # Bring Your Own Key (BYOK)
 
-BYOK allows customers to import their own key material into QNSP KMS.
+BYOK allows customers to import their own key material into QNSI KMS.
 
 ## Overview
 
 - Customer generates key material externally
 - Key material wrapped for import
-- QNSP stores and uses the imported key
+- QNSI stores and uses the imported key
 - Customer retains a copy
 
 ## Import process
@@ -51,4 +51,4 @@ Imported keys follow normal lifecycle:
 
 - Customer responsible for source key security
 - Transport protection via wrapping
-- No key material export from QNSP
+- No key material export from QNSI

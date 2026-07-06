@@ -5,3 +5,4 @@ export * from "./db-resync.js";
 export * from "./db-retry.js";
 export * from "./db-ssl.js";
 export * from "./db-wrapper.js";
+export * from "./tenant-purge.js";

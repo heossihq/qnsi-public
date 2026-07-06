@@ -2,7 +2,7 @@
 title: CLI Installation
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/cli/package.json
@@ -11,7 +11,7 @@ source_files:
 
 # CLI Installation
 
-Install the QNSP command-line interface.
+Install the QNSI command-line interface.
 
 ## Package Information
 
@@ -19,11 +19,11 @@ From `packages/cli/package.json`:
 
 ```json
 {
-  "name": "@cuilabs/qnsp-cli",
+  "name": "@heossi/qnsi-cli",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "bin": {
-    "qnsp": "./dist/index.js"
+    "qnsi": "./dist/index.js"
   }
 }
 ```
@@ -32,29 +32,29 @@ From `packages/cli/package.json`:
 
 ### pnpm (recommended)
 ```bash
-pnpm add -g @cuilabs/qnsp-cli
+pnpm add -g @heossi/qnsi-cli
 ```
 
 ### Verify installation
 ```bash
-qnsp --version
+qnsi --version
 # Output: 0.1.0
 
-qnsp --help
+qnsi --help
 ```
 
 ## Upgrade
 
 ```bash
-pnpm update -g @cuilabs/qnsp-cli
+pnpm update -g @heossi/qnsi-cli
 # or
-brew upgrade qnsp
+brew upgrade qnsi
 ```
 
 ## Uninstall
 
 ```bash
-pnpm remove -g @cuilabs/qnsp-cli
+pnpm remove -g @heossi/qnsi-cli
 # or
-brew uninstall qnsp
+brew uninstall qnsi
 ```

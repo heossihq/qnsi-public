@@ -30,10 +30,10 @@ export interface ComplianceFrameworkDetail {
 	readonly lastAssessedAt: string;
 	readonly evidenceSummary?: {
 		readonly auditEventsLast24h: number;
-		readonly kmsOperationsLast24h: number;
-		readonly activeAccessPolicies: number;
+		readonly kmsOperationsLast24h: number | null;
+		readonly activeAccessPolicies: number | null;
 		readonly auditCheckpointsExist: boolean;
-		readonly securityAlertsLast24h: number;
+		readonly securityAlertsLast24h: number | null;
 	};
 }
 
@@ -53,10 +53,10 @@ export interface ComplianceReport {
 	readonly evidenceSummary?:
 		| {
 				readonly auditEventsLast24h: number;
-				readonly kmsOperationsLast24h: number;
-				readonly activeAccessPolicies: number;
+				readonly kmsOperationsLast24h: number | null;
+				readonly activeAccessPolicies: number | null;
 				readonly auditCheckpointsExist: boolean;
-				readonly securityAlertsLast24h: number;
+				readonly securityAlertsLast24h: number | null;
 		  }
 		| undefined;
 	readonly assessmentMethod: string;
@@ -75,10 +75,15 @@ interface PlatformCapabilities {
 
 interface EvidenceMetrics {
 	readonly auditEventsLast24h: number;
-	readonly kmsOperationsLast24h: number;
-	readonly activeAccessPolicies: number;
+	/**
+	 * Audit #26: these three are null when not measurable. The previous code reported a
+	 * fabricated `1` whenever the service's /health answered — a liveness probe is not an
+	 * operations/policy/alert count, and no current service surface exposes those counts.
+	 */
+	readonly kmsOperationsLast24h: number | null;
+	readonly activeAccessPolicies: number | null;
 	readonly auditCheckpointsExist: boolean;
-	readonly securityAlertsLast24h: number;
+	readonly securityAlertsLast24h: number | null;
 }
 
 async function collectEvidenceMetrics(
@@ -92,42 +97,37 @@ async function collectEvidenceMetrics(
 ): Promise<EvidenceMetrics> {
 	const defaults: EvidenceMetrics = {
 		auditEventsLast24h: 0,
-		kmsOperationsLast24h: 0,
-		activeAccessPolicies: 0,
+		kmsOperationsLast24h: null,
+		activeAccessPolicies: null,
 		auditCheckpointsExist: false,
-		securityAlertsLast24h: 0,
+		securityAlertsLast24h: null,
 	};
 
+	// Audit #26: the kms/access/security-monitoring health probes were removed here —
+	// liveness answers were being converted into fabricated "1" counts. Only surfaces
+	// that genuinely report the metric are probed.
 	const probes = await Promise.allSettled([
 		serviceUrls.auditServiceUrl
 			? fetchJsonMetric(serviceUrls.auditServiceUrl, "/audit/v1/stats", timeoutMs)
 			: Promise.resolve(null),
-		serviceUrls.kmsServiceUrl
-			? fetchJsonMetric(serviceUrls.kmsServiceUrl, "/kms/v1/health", timeoutMs)
-			: Promise.resolve(null),
-		serviceUrls.accessControlServiceUrl
-			? fetchJsonMetric(serviceUrls.accessControlServiceUrl, "/health", timeoutMs)
-			: Promise.resolve(null),
 		serviceUrls.auditServiceUrl
 			? fetchJsonMetric(serviceUrls.auditServiceUrl, "/audit/v1/checkpoints/latest", timeoutMs)
-			: Promise.resolve(null),
-		serviceUrls.securityMonitoringServiceUrl
-			? fetchJsonMetric(serviceUrls.securityMonitoringServiceUrl, "/health", timeoutMs)
 			: Promise.resolve(null),
 	]);
 
 	const auditStats = probes[0].status === "fulfilled" ? probes[0].value : null;
-	const kmsHealth = probes[1].status === "fulfilled" ? probes[1].value : null;
-	const accessHealth = probes[2].status === "fulfilled" ? probes[2].value : null;
-	const checkpointData = probes[3].status === "fulfilled" ? probes[3].value : null;
-	const secMonHealth = probes[4].status === "fulfilled" ? probes[4].value : null;
+	const checkpointData = probes[1].status === "fulfilled" ? probes[1].value : null;
 
 	return {
+		// Real: the audit stats endpoint genuinely reports totalEvents.
 		auditEventsLast24h: extractNumericField(auditStats, "totalEvents", defaults.auditEventsLast24h),
-		kmsOperationsLast24h: kmsHealth ? 1 : defaults.kmsOperationsLast24h,
-		activeAccessPolicies: accessHealth ? 1 : defaults.activeAccessPolicies,
+		// Honest unavailability: kms/access/security health endpoints prove liveness only —
+		// they expose no operation/policy/alert counts, so these are null — never a count
+		// invented from a liveness signal (audit #26).
+		kmsOperationsLast24h: null,
+		activeAccessPolicies: null,
 		auditCheckpointsExist: checkpointData !== null && typeof checkpointData === "object",
-		securityAlertsLast24h: secMonHealth ? 1 : defaults.securityAlertsLast24h,
+		securityAlertsLast24h: null,
 	};
 }
 

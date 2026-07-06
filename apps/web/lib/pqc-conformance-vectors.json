@@ -1,11 +1,11 @@
 {
 	"schemaVersion": 1,
-	"generatedAt": "2026-05-01T19:18:51.647Z",
-	"gitSha": "479550c5522d6c7aece1ac67010d6b3338650aed",
+	"generatedAt": "2026-06-02T11:33:39.832Z",
+	"gitSha": "beeca2e9fdd8b1cafa5da34c3770d034f86c4852",
 	"generator": "apps/web/scripts/generate-conformance-vectors.ts",
 	"library": {
 		"name": "@noble/post-quantum",
-		"version": "0.6.0",
+		"version": "0.6.1",
 		"source": "https://github.com/paulmillr/noble-post-quantum"
 	},
 	"standards": {
@@ -14,7 +14,7 @@
 		"FIPS 205": "Stateless Hash-Based Digital Signature Standard (NIST, finalized August 2024)"
 	},
 	"nistConformanceReference": "https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/post-quantum-cryptography",
-	"disclaimer": "These are determinism vectors for QNSP's pinned @noble/post-quantum version. Re-running keygen with each seed using the same library version must produce keys whose SHA-256 matches the expected values. Independent NIST conformance is established by the upstream @noble/post-quantum project against NIST ACVP test vectors.",
+	"disclaimer": "These are determinism vectors for QNSI's pinned @noble/post-quantum version. Re-running keygen with each seed using the same library version must produce keys whose SHA-256 matches the expected values. Independent NIST conformance is established by the upstream @noble/post-quantum project against NIST ACVP test vectors.",
 	"vectors": [
 		{
 			"algorithm": "ml-kem-512",

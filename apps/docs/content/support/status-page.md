@@ -2,17 +2,17 @@
 title: Status Page
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Status Page
 
-Monitor QNSP service status.
+Monitor QNSI service status.
 
 ## Cloud status dashboard
 
-QNSP Cloud service health is displayed on the QNSP website ("Cloud Status (Production)").
+QNSI Cloud service health is displayed on the QNSI website ("Cloud Status (Production)").
 
-- QNSP website: https://qnsp.cuilabs.io#overview
+- QNSI website: https://qnsi.heossi.com#overview
 
 The dashboard data is fetched from the website's status endpoint:
 
@@ -51,5 +51,5 @@ During incidents:
 
 ## Notes
 
-- The public dashboard reflects QNSP Cloud (hosted production) only.
+- The public dashboard reflects QNSI Cloud (hosted production) only.
 - Private/VPC/sovereign and air-gapped deployments are monitored within customer-controlled environments.

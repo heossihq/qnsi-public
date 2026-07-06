@@ -1,22 +1,22 @@
-# @cuilabs/qnsp-auth-sdk
+# @heossi/qnsi-auth-sdk
 
-TypeScript SDK client for the QNSP auth-service API; equivalent shapes ship in Python, Go, and Rust. Provides authentication, token management, WebAuthn, MFA, and federation.
+TypeScript SDK client for the QNSI auth-service API; equivalent shapes ship in Python, Go, and Rust. Provides authentication, token management, WebAuthn, MFA, and federation.
 
-Part of the [Quantum-Native Security Platform (QNSP)](https://qnsp.cuilabs.io).
+Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.com).
 
 ## Installation
 
 ```bash
-pnpm add @cuilabs/qnsp-auth-sdk
+pnpm add @heossi/qnsi-auth-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { AuthClient } from "@cuilabs/qnsp-auth-sdk";
+import { AuthClient } from "@heossi/qnsi-auth-sdk";
 
 const auth = new AuthClient({
-  baseUrl: "https://api.qnsp.cuilabs.io",
+  baseUrl: "https://api.qnsi.heossi.com",
   apiKey: "YOUR_API_KEY",
 });
 
@@ -31,15 +31,15 @@ const refreshed = await auth.refreshToken({ refreshToken: tokens.refreshToken!.t
 
 ## OAuth / Social Sign-In
 
-QNSP supports one-click sign-up and sign-in via GitHub and Google. OAuth is handled by the QNSP Cloud Portal BFF — no SDK code required for the OAuth flow itself.
+QNSI supports one-click sign-up and sign-in via GitHub and Google. OAuth is handled by the QNSI Cloud Portal BFF — no SDK code required for the OAuth flow itself.
 
-**Sign up or sign in at:** [cloud.qnsp.cuilabs.io/auth](https://cloud.qnsp.cuilabs.io/auth)
+**Sign up or sign in at:** [cloud.qnsi.heossi.com/auth](https://cloud.qnsi.heossi.com/auth)
 
 Supported providers:
 - **GitHub** — authorizes via `github.com/login/oauth/authorize`, scopes: `user:email read:user`
 - **Google** — authorizes via `accounts.google.com/o/oauth2/v2/auth`, scopes: `openid email profile`
 
-After OAuth sign-in completes, QNSP issues a PQC-signed JWT (ML-DSA) and a refresh token — identical to password-based sessions. Use the `AuthClient` for all subsequent token operations (refresh, revoke, introspect).
+After OAuth sign-in completes, QNSI issues a PQC-signed JWT (ML-DSA) and a refresh token — identical to password-based sessions. Use the `AuthClient` for all subsequent token operations (refresh, revoke, introspect).
 
 ```typescript
 const refreshed = await auth.refreshToken({ refreshToken: storedRefreshToken });
@@ -55,14 +55,14 @@ const session = await auth.completePasskeyAuthentication({ tenantId: "your-tenan
 
 ## Documentation
 
-- [SDK Reference](https://docs.qnsp.cuilabs.io/sdk/auth-sdk)
-- [API Documentation](https://docs.qnsp.cuilabs.io/api)
-- [Getting Started](https://docs.qnsp.cuilabs.io/quickstart)
+- [SDK Reference](https://docs.qnsi.heossi.com/sdk/auth-sdk)
+- [API Documentation](https://docs.qnsi.heossi.com/api)
+- [Getting Started](https://docs.qnsi.heossi.com/quickstart)
 
 ## Requirements
 
-- Node.js >= 24.12.0 (`engines` in `package.json`; QNSP monorepo baseline)
-- A QNSP account and API key — [sign up free](https://cloud.qnsp.cuilabs.io/auth) with GitHub, Google, or email
+- Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
+- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

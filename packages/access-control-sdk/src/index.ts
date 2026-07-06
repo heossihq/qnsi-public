@@ -1,6 +1,6 @@
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@cuilabs/qnsp-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
 
 import type {
 	AccessControlClientTelemetry,
@@ -15,7 +15,7 @@ import { SDK_PACKAGE_VERSION } from "./sdk-package-version.js";
 import { validateUUID } from "./validation.js";
 
 /**
- * @cuilabs/qnsp-access-control-sdk
+ * @heossi/qnsi-access-control-sdk
  *
  * TypeScript SDK client for the QNSP access-control-service API.
  * Provides a high-level interface for policy management and capability token operations.
@@ -24,8 +24,9 @@ import { validateUUID } from "./validation.js";
 
 /**
  * Mapping from internal algorithm names to NIST/standards display names.
- * Covers all 90 PQC algorithms supported by QNSP.
- * Canonical source: @cuilabs/qnsp-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
+ * Covers all 87 runtime-supported PQC algorithms (24 KEMs + 63 signatures).
+ * HQC's 3 variants are excluded (disabled in the liboqs build for CVE-2025-48946).
+ * Canonical source: @heossi/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
  */
 export const ALGORITHM_TO_NIST: Record<string, string> = {
 	// FIPS 203 — ML-KEM
@@ -54,9 +55,6 @@ export const ALGORITHM_TO_NIST: Record<string, string> = {
 	"falcon-512": "FN-DSA-512",
 	"falcon-1024": "FN-DSA-1024",
 	// HQC (NIST selected March 2025)
-	"hqc-128": "HQC-128",
-	"hqc-192": "HQC-192",
-	"hqc-256": "HQC-256",
 	// BIKE (NIST Round 4)
 	"bike-l1": "BIKE-L1",
 	"bike-l3": "BIKE-L3",
@@ -142,8 +140,8 @@ export function toNistAlgorithmName(algorithm: string): string {
 	return ALGORITHM_TO_NIST[algorithm] ?? algorithm;
 }
 
-/** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsp.cuilabs.io/signup */
-export const DEFAULT_BASE_URL = "https://api.qnsp.cuilabs.io";
+/** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsi.heossi.com/signup */
+export const DEFAULT_BASE_URL = "https://api.qnsi.heossi.com";
 
 export interface AccessControlClientConfig {
 	readonly baseUrl?: string;
@@ -809,9 +807,9 @@ export class AccessControlClient {
 		if (!config.apiKey || config.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP Access Control SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsp.cuilabs.io/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
-					"Docs: https://docs.qnsp.cuilabs.io/sdk/access-control-sdk",
+					"Docs: https://docs.qnsi.heossi.com/sdk/access-control-sdk",
 			);
 		}
 

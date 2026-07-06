@@ -1,5 +1,5 @@
 {
-	"name": "@cuilabs/liboqs-native",
+	"name": "@heossi/liboqs-native",
 	"version": "0.15.1",
 	"type": "commonjs",
 	"license": "BUSL-1.1",
@@ -28,7 +28,7 @@
 		"lint": "biome check src tools vendor/path-key-shim.js",
 		"prepare": "pnpm run check-dist",
 		"prepublishOnly": "pnpm run build && pnpm run build:native",
-		"test": "echo 'Run smoke tests via @cuilabs/qnsp-cryptography'",
+		"test": "echo 'Run smoke tests via @heossi/qnsi-cryptography'",
 		"typecheck": "tsc --project tsconfig.json --noEmit",
 		"install": "node ./tools/install.js"
 	},

@@ -2,11 +2,11 @@
 title: Incident Response
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Incident Response
 
-How QNSP handles security incidents.
+How QNSI handles security incidents.
 
 ## Incident classification
 
@@ -65,8 +65,8 @@ How QNSP handles security incidents.
 ## Reporting incidents
 
 Report security concerns:
-- Email: qnsp-security@cuilabs.io
-- Portal: https://cloud.qnsp.cuilabs.io/security
+- Email: qnsi-security@heossi.com
+- Portal: https://cloud.qnsi.heossi.com/security
 
 ## Customer responsibilities
 

@@ -2,7 +2,7 @@
 title: Tenant Isolation
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/edge-gateway/src/config/env.ts
@@ -11,7 +11,7 @@ source_files:
 
 # Tenant Isolation
 
-QNSP enforces strict tenant isolation at multiple layers.
+QNSI enforces strict tenant isolation at multiple layers.
 
 ## Isolation Model
 

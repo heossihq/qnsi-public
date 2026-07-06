@@ -2,7 +2,7 @@
 title: Audit Event Model
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/audit-service/src/config/env.ts
@@ -10,7 +10,7 @@ source_files:
 
 # Audit Event Model
 
-QNSP Audit Service captures all security-relevant events with cryptographic integrity.
+QNSI Audit Service captures all security-relevant events with cryptographic integrity.
 
 ## Service Configuration
 
@@ -23,7 +23,7 @@ From `apps/audit-service/src/config/env.ts`:
 | Max batch size | `AUDIT_MAX_BATCH_SIZE` | 100 |
 | Max payload | `AUDIT_MAX_PAYLOAD_BYTES` | 512 KB |
 | Retention | `AUDIT_RETENTION_DAYS` | 2555 (7 years) |
-| Chain context | `AUDIT_CHAIN_CONTEXT` | `qnsp:audit` |
+| Chain context | `AUDIT_CHAIN_CONTEXT` | `qnsi:audit` |
 | Verify signatures | `AUDIT_VERIFY_SIGNATURES` | `true` |
 
 ## Merkle Checkpointing
@@ -57,7 +57,7 @@ From `apps/audit-service/src/config/env.ts`:
   "result": "success",
   "context": {
     "requestId": "request-uuid",
-    "userAgent": "QNSP-SDK/1.0.0",
+    "userAgent": "QNSI-SDK/1.0.0",
     "source": "api"
   },
   "changes": {

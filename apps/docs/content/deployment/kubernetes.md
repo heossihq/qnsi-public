@@ -2,11 +2,11 @@
 title: Kubernetes Deployment
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Kubernetes Deployment
 
-Deploy QNSP on Kubernetes.
+Deploy QNSI on Kubernetes.
 
 ## Supported distributions
 
@@ -28,14 +28,14 @@ For production Kubernetes deployments (EKS/GKE/AKS/OpenShift), contact support f
 The following layout is illustrative and depends on your deployment bundle.
 
 ```
-qnsp/
-├── qnsp-edge-gateway
-├── qnsp-auth-service
-├── qnsp-kms-service
-├── qnsp-vault-service
-├── qnsp-storage-service
-├── qnsp-audit-service
-└── qnsp-search-service
+qnsi/
+├── qnsi-edge-gateway
+├── qnsi-auth-service
+├── qnsi-kms-service
+├── qnsi-vault-service
+├── qnsi-storage-service
+├── qnsi-audit-service
+└── qnsi-search-service
 ```
 
 ## Resource configuration

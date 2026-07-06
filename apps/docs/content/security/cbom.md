@@ -1,6 +1,6 @@
 # Cryptographic Bill of Materials (CBOM)
 
-The Cryptographic Bill of Materials (CBOM) is a machine-verifiable inventory of all cryptographic components, algorithms, and key materials used across the QNSP platform.
+The Cryptographic Bill of Materials (CBOM) is a machine-verifiable inventory of all cryptographic components, algorithms, and key materials used across the QNSI platform.
 
 ## What is CBOM?
 
@@ -14,19 +14,19 @@ CBOM extends the concept of Software Bill of Materials (SBOM) to cryptographic a
 
 ## CBOM Specification
 
-QNSP CBOM follows the `QNSP-CBOM-1.0` specification.
+QNSI CBOM follows the `QNSI-CBOM-1.0` specification.
 
 ### Document Structure
 
 ```json
 {
-  "specVersion": "QNSP-CBOM-1.0",
+  "specVersion": "QNSI-CBOM-1.0",
   "version": "1.0.0",
   "generatedAt": "2025-12-31T06:30:00.000Z",
-  "generatedBy": "QNSP CBOM Service",
+  "generatedBy": "QNSI CBOM Service",
   "documentHash": "sha3-256:abc123...",
   "platform": {
-    "name": "QNSP",
+    "name": "QNSI",
     "version": "1.0.0",
     "environment": "production"
   },
@@ -138,22 +138,22 @@ Checks include:
 ### Generate CBOM
 
 ```bash
-curl -X GET https://api.qnsp.cuilabs.io/platform/v1/crypto/cbom \
+curl -X GET https://api.qnsi.heossi.com/platform/v1/crypto/cbom \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ### Download CBOM File
 
 ```bash
-curl -X GET https://api.qnsp.cuilabs.io/platform/v1/crypto/cbom/download \
+curl -X GET https://api.qnsi.heossi.com/platform/v1/crypto/cbom/download \
   -H "Authorization: Bearer $TOKEN" \
-  -o qnsp-cbom-2025-12-31.json
+  -o qnsi-cbom-2025-12-31.json
 ```
 
 ### Get Compliance Summary
 
 ```bash
-curl -X GET https://api.qnsp.cuilabs.io/platform/v1/crypto/compliance \
+curl -X GET https://api.qnsi.heossi.com/platform/v1/crypto/compliance \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -192,7 +192,7 @@ To verify a signed CBOM:
 Export CBOM for regulatory compliance documentation:
 
 ```bash
-curl -X GET https://api.qnsp.cuilabs.io/platform/v1/crypto/cbom/download \
+curl -X GET https://api.qnsi.heossi.com/platform/v1/crypto/cbom/download \
   -H "Authorization: Bearer $TOKEN" \
   -o "cbom-$(date +%Y-%m-%d).json"
 ```
@@ -202,7 +202,7 @@ curl -X GET https://api.qnsp.cuilabs.io/platform/v1/crypto/cbom/download \
 Check for deprecated or vulnerable algorithms:
 
 ```bash
-curl -X GET https://api.qnsp.cuilabs.io/platform/v1/crypto/compliance \
+curl -X GET https://api.qnsi.heossi.com/platform/v1/crypto/compliance \
   -H "Authorization: Bearer $TOKEN" | jq '.compliance[].findings'
 ```
 
@@ -211,7 +211,7 @@ curl -X GET https://api.qnsp.cuilabs.io/platform/v1/crypto/compliance \
 Identify classical algorithms that need migration:
 
 ```bash
-curl -X GET https://api.qnsp.cuilabs.io/platform/v1/crypto/attestation \
+curl -X GET https://api.qnsi.heossi.com/platform/v1/crypto/attestation \
   -H "Authorization: Bearer $TOKEN" | jq '.deprecatedAlgorithmsInUse'
 ```
 

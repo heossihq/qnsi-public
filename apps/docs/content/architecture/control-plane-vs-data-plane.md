@@ -2,11 +2,11 @@
 title: Control Plane vs Data Plane
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Control Plane vs Data Plane
 
-QNSP separates control plane operations from data plane operations.
+QNSI separates control plane operations from data plane operations.
 
 ## Control plane
 

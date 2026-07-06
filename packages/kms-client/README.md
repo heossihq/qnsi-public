@@ -1,22 +1,22 @@
-# @cuilabs/qnsp-kms-client
+# @heossi/qnsi-kms-client
 
-KMS client for QNSP key management service. Post-quantum key generation, rotation, and cryptographic operations.
+KMS client for QNSI key management service. Post-quantum key generation, rotation, and cryptographic operations.
 
-Part of the [Quantum-Native Security Platform (QNSP)](https://qnsp.cuilabs.io).
+Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.com).
 
 ## Installation
 
 ```bash
-pnpm add @cuilabs/qnsp-kms-client
+pnpm add @heossi/qnsi-kms-client
 ```
 
 ## Quick Start
 
 ```typescript
-import { HttpKmsServiceClient } from "@cuilabs/qnsp-kms-client";
+import { HttpKmsServiceClient } from "@heossi/qnsi-kms-client";
 
 const kms = new HttpKmsServiceClient(
-  "https://api.qnsp.cuilabs.io",
+  "https://api.qnsi.heossi.com",
   "YOUR_API_KEY",
 );
 
@@ -35,14 +35,14 @@ const unwrapped = await kms.unwrapKey({
 
 ## Documentation
 
-- [SDK Reference](https://docs.qnsp.cuilabs.io/sdk/kms-client)
-- [API Documentation](https://docs.qnsp.cuilabs.io/api)
-- [Getting Started](https://docs.qnsp.cuilabs.io/quickstart)
+- [SDK Reference](https://docs.qnsi.heossi.com/sdk/kms-client)
+- [API Documentation](https://docs.qnsi.heossi.com/api)
+- [Getting Started](https://docs.qnsi.heossi.com/quickstart)
 
 ## Requirements
 
-- Node.js >= 24.12.0 (`engines` in `package.json`; QNSP monorepo baseline)
-- A QNSP account and API key — [sign up free](https://cloud.qnsp.cuilabs.io/auth) with GitHub, Google, or email
+- Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
+- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

@@ -2,11 +2,11 @@
 title: Audit Log Immutability
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Audit Log Immutability
 
-QNSP audit logs are immutable and tamper-evident.
+QNSI audit logs are immutable and tamper-evident.
 
 ## Immutability guarantees
 

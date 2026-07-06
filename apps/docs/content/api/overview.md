@@ -2,7 +2,7 @@
 title: API Overview
 version: 0.0.6
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/edge-gateway/src/config/env.ts
@@ -11,13 +11,13 @@ source_files:
 
 # API Overview
 
-QNSP exposes RESTful APIs for all platform capabilities. All cryptographic operations use tenant-specific algorithm selection based on crypto policies managed through the tenant-service.
+QNSI exposes RESTful APIs for all platform capabilities. All cryptographic operations use tenant-specific algorithm selection based on crypto policies managed through the tenant-service.
 
 ## Base URL
 
 | Environment | Base URL |
 |-------------|----------|
-| Production | `https://api.qnsp.cuilabs.io` |
+| Production | `https://api.qnsi.heossi.com` |
 
 Staging endpoints (if available) are provided separately per deployment.
 
@@ -105,7 +105,7 @@ GET /platform/v1/crypto/policy
 ```
 
 - Without tenant context, returns the platform-wide policy attestation.
-- With `X-QNSP-Tenant-Id` or `X-Tenant-Id` header, returns the tenant’s **v1** policy (ETag in response headers).
+- With `X-QNSI-Tenant-Id` or `X-Tenant-Id` header, returns the tenant’s **v1** policy (ETag in response headers).
 
 ## Request format
 

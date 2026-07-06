@@ -2,7 +2,7 @@
 title: System Overview
 version: 0.1.0
 last_updated: 2026-04-23
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/edge-gateway/src/config/env.ts
@@ -20,7 +20,7 @@ source_files:
 
 # System Overview
 
-QNSP is a microservice-based platform exposing tenant-scoped security primitives via an API-first model. All services integrate with tenant-crypto-policy-client for consistent algorithm selection based on tenant billing tiers and custom crypto policies. The platform is migrating from legacy v0 tiers to v1 profiles + tiers (evidence-first model), and the live cloud path now integrates with XIIS for remote-provider trust posture, assurance verification, and release enforcement.
+QNSI is a microservice-based platform exposing tenant-scoped security primitives via an API-first model. All services integrate with tenant-crypto-policy-client for consistent algorithm selection based on tenant billing tiers and custom crypto policies. The platform is migrating from legacy v0 tiers to v1 profiles + tiers (evidence-first model), and the live cloud path now integrates with XIIS for remote-provider trust posture, assurance verification, and release enforcement.
 
 As of March 2026, the platform comprises 13 core services with expanded capabilities including risk-based authentication, just-in-time access, AI orchestration with bias monitoring, dynamic secrets, real-time audit streaming, and comprehensive observability.
 
@@ -35,7 +35,7 @@ As of March 2026, the platform comprises 13 core services with expanded capabili
 
 ## XIIS Control-Plane Integration
 
-QNSP now integrates with XIIS as an external assurance and trust-verification control plane.
+QNSI now integrates with XIIS as an external assurance and trust-verification control plane.
 
 - `apps/cloud` calls XIIS for control-plane health, remote-provider posture, assurance report verification, and release-bundle enforcement.
 - XIIS-backed data is surfaced in trust summary and exported evidence packs.
@@ -44,7 +44,7 @@ QNSP now integrates with XIIS as an external assurance and trust-verification co
 
 ## Tenant Crypto Policy Integration
 
-Services use the shared `@cuilabs/qnsp-security` tenant-crypto-policy-client to:
+Services use the shared `@heossi/qnsi-security` tenant-crypto-policy-client to:
 - Fetch tenant-specific crypto policies from tenant-service
 - Select appropriate PQC algorithms based on billing tier (v0 tiers)
 - Apply custom algorithm allowlists and forbidden lists

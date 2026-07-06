@@ -1,4 +1,4 @@
-# @cuilabs/qnsp-ai-sdk
+# @heossi/qnsi-ai-sdk
 
 ## 0.1.6
 
@@ -18,7 +18,7 @@
 - dbfd5fd: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
 - d588b14: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
 - e88fb5d: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
-- aaa11cc: docs: add GitHub and Google OAuth sign-up links and update platform sign-in references across all published SDKs; add OAuth/Social Sign-In section to @cuilabs/qnsp-auth-sdk; add README to @cuilabs/qnsp-agent
+- aaa11cc: docs: add GitHub and Google OAuth sign-up links and update platform sign-in references across all published SDKs; add OAuth/Social Sign-In section to @heossi/qnsi-auth-sdk; add README to @heossi/qnsi-agent
 - Updated dependencies [1ac5429]
 - Updated dependencies [1ac5429]
 - Updated dependencies [59ec933]
@@ -29,7 +29,7 @@
 - Updated dependencies [dbfd5fd]
 - Updated dependencies [e88fb5d]
 - Updated dependencies [aaa11cc]
-  - @cuilabs/qnsp-sdk-activation@0.1.3
+  - @heossi/qnsi-sdk-activation@0.1.3
 
 ## 0.1.2
 
@@ -68,7 +68,7 @@
 
   **SDK fixes:**
 
-  - Add `"./package.json": "./package.json"` export to `@cuilabs/qnsp-ai-sdk` and `@cuilabs/qnsp-kms-client`
+  - Add `"./package.json": "./package.json"` export to `@heossi/qnsi-ai-sdk` and `@heossi/qnsi-kms-client`
 
   **Tests:**
 
@@ -91,7 +91,7 @@
 - 7256284: SDK onboarding error messages and edge gateway universal auth enforcement
 
   - All 12 SDKs now return developer-friendly 401 error messages with signup URL
-    (https://cloud.qnsp.cuilabs.io/signup) and documentation links when API key
+    (https://cloud.qnsi.heossi.com/signup) and documentation links when API key
     is missing and backend returns 401
   - Edge gateway service proxy now enforces authentication on ALL non-health,
     non-public proxy routes (previously only tenant-service and ai-orchestrator
@@ -105,40 +105,40 @@
 
 - Add tenant crypto policy integration and PQC algorithm utilities to all SDKs.
 
-  ### @cuilabs/qnsp-tenant-sdk
+  ### @heossi/qnsi-tenant-sdk
 
   - Added crypto policy management APIs: `getTenantCryptoPolicy()`, `upsertTenantCryptoPolicy()`
   - Added algorithm query methods: `getAllowedKemAlgorithms()`, `getAllowedSignatureAlgorithms()`, `getDefaultKemAlgorithm()`, `getDefaultSignatureAlgorithm()`
   - Added `CRYPTO_POLICY_ALGORITHMS` tier configurations
   - Added `toNistAlgorithmName()` and `ALGORITHM_TO_NIST` utilities
 
-  ### @cuilabs/qnsp-storage-sdk
+  ### @heossi/qnsi-storage-sdk
 
   - Added `PqcMetadata` interface with `algorithmNist` field
   - `initiateUpload()` now returns NIST algorithm name
   - Added `toNistAlgorithmName()` utility
 
-  ### @cuilabs/qnsp-auth-sdk
+  ### @heossi/qnsi-auth-sdk
 
   - Added `PqcSignatureMetadata` interface
   - Added `toNistAlgorithmName()` and `ALGORITHM_TO_NIST` for signature algorithms
 
-  ### @cuilabs/qnsp-vault-sdk
+  ### @heossi/qnsi-vault-sdk
 
   - Enhanced `VaultSecretPqcMetadata` with `algorithmNist` field
   - Added `toNistAlgorithmName()` utility
 
-  ### @cuilabs/qnsp-kms-client
+  ### @heossi/qnsi-kms-client
 
   - Added `KmsPqcMetadata` interface
   - `wrapKey()` now returns `algorithmNist` field
   - Added `toNistAlgorithmName()` utility
 
-  ### @cuilabs/qnsp-audit-sdk
+  ### @heossi/qnsi-audit-sdk
 
   - Added `toNistAlgorithmName()` and `ALGORITHM_TO_NIST` for signature algorithms
 
-  ### @cuilabs/qnsp-access-control-sdk
+  ### @heossi/qnsi-access-control-sdk
 
   - Added `toNistAlgorithmName()` and `ALGORITHM_TO_NIST` for signature algorithms
 

@@ -113,7 +113,7 @@ export async function rotatePqcCertificate(options: RotatePqcCertOptions): Promi
 					generatedAt: existingMetadata.lastRotationAt,
 					validityDays: options.validityDays ?? 30,
 					commonName: options.commonName ?? "qnsp.local",
-					organization: options.organization ?? "Quantum-Native Security Platform",
+					organization: options.organization ?? "Quantum-Native Security Infrastructure",
 					source: "existing",
 				},
 			},

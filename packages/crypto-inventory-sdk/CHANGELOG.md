@@ -1,4 +1,4 @@
-# @cuilabs/qnsp-crypto-inventory-sdk
+# @heossi/qnsi-crypto-inventory-sdk
 
 ## 0.3.4
 
@@ -19,7 +19,7 @@
 - dbfd5fd: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
 - d588b14: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
 - e88fb5d: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
-- aaa11cc: docs: add GitHub and Google OAuth sign-up links and update platform sign-in references across all published SDKs; add OAuth/Social Sign-In section to @cuilabs/qnsp-auth-sdk; add README to @cuilabs/qnsp-agent
+- aaa11cc: docs: add GitHub and Google OAuth sign-up links and update platform sign-in references across all published SDKs; add OAuth/Social Sign-In section to @heossi/qnsi-auth-sdk; add README to @heossi/qnsi-agent
 - Updated dependencies [1ac5429]
 - Updated dependencies [1ac5429]
 - Updated dependencies [59ec933]
@@ -30,7 +30,7 @@
 - Updated dependencies [dbfd5fd]
 - Updated dependencies [e88fb5d]
 - Updated dependencies [aaa11cc]
-  - @cuilabs/qnsp-sdk-activation@0.1.3
+  - @heossi/qnsi-sdk-activation@0.1.3
 
 ## 0.3.0
 
@@ -38,16 +38,16 @@
 
 - Enforce mandatory API key at SDK construction time (BREAKING)
 
-  - All SDK clients (except @cuilabs/qnsp-browser) now require `apiKey` at
+  - All SDK clients (except @heossi/qnsi-browser) now require `apiKey` at
     construction time. Constructors throw a clear error with signup URL,
     free tier details, and documentation link if apiKey is missing or empty.
   - Removed runtime 401 no-apiKey checks — validation is now fail-fast at
     construction, not at request time.
   - Removed conditional `if (apiKey)` guards on Authorization headers —
     headers are always set since apiKey is guaranteed non-empty.
-  - @cuilabs/qnsp-kms-client: `apiToken` parameter is now required in the string
+  - @heossi/qnsi-kms-client: `apiToken` parameter is now required in the string
     overload of `HttpKmsServiceClient` constructor.
-  - @cuilabs/qnsp-browser: Added opt-in telemetry module (`configureTelemetry`,
+  - @heossi/qnsi-browser: Added opt-in telemetry module (`configureTelemetry`,
     `recordTelemetryEvent`, `flushTelemetry`) for usage analytics without
     collecting PII or cryptographic material. No API key required (local-only
     PQC crypto).
@@ -82,7 +82,7 @@
 
 ### Minor Changes
 
-- New SDK: @cuilabs/qnsp-crypto-inventory-sdk
+- New SDK: @heossi/qnsi-crypto-inventory-sdk
 
   TypeScript client for the crypto-inventory-service API. Provides:
 

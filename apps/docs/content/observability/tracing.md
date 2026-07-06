@@ -2,18 +2,18 @@
 title: Distributed Tracing
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Distributed Tracing
 
-QNSP implements distributed tracing for request flow visibility.
+QNSI implements distributed tracing for request flow visibility.
 
 ## Trace propagation
 
 W3C Trace Context headers:
 ```
 traceparent: 00-<trace-id>-<span-id>-<flags>
-tracestate: qnsp=<context>
+tracestate: qnsi=<context>
 ```
 
 ## Trace structure
@@ -37,8 +37,8 @@ Trace: abc123
 | `http.method` | HTTP method |
 | `http.url` | Request URL |
 | `http.status_code` | Response status |
-| `qnsp.tenant_id` | Tenant identifier |
-| `qnsp.operation` | Operation type |
+| `qnsi.tenant_id` | Tenant identifier |
+| `qnsi.operation` | Operation type |
 
 ## Sampling
 

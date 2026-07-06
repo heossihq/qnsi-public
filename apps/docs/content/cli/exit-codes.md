@@ -2,14 +2,15 @@
 title: CLI Exit Codes
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: 2025 CUI Labs. All rights reserved.
+description: Reference for QNSI CLI exit codes, from success and general errors to authentication, authorization, not-found, rate-limit, and network failure statuses.
+copyright: 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/cli/src/config.ts
 ---
 # CLI Exit Codes
 
-Exit codes returned by QNSP CLI commands.
+Exit codes returned by QNSI CLI commands.
 
 ## Exit Codes
 
@@ -43,7 +44,7 @@ export const EXIT_CODES = {
 
 ### Bash
 ```bash
-qnsp kms keys get "$KEY_ID"
+qnsi kms keys get "$KEY_ID"
 case $? in
   0) echo "Success" ;;
   5) echo "Key not found" ;;
@@ -54,7 +55,7 @@ esac
 
 ### Check specific code
 ```bash
-qnsp vault secrets get "$SECRET_ID"
+qnsi vault secrets get "$SECRET_ID"
 if [ $? -eq 5 ]; then
   echo "Secret doesn't exist"
 fi
@@ -64,14 +65,14 @@ fi
 
 Get detailed error information:
 ```bash
-qnsp --verbose kms keys get invalid-id 2>&1
+qnsi --verbose kms keys get invalid-id 2>&1
 # Outputs detailed error with request ID
 ```
 
 ## Machine-readable errors
 
 ```bash
-qnsp kms keys get invalid-id --output json 2>&1
+qnsi kms keys get invalid-id --output json 2>&1
 ```
 
 Returns:

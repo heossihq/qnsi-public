@@ -1,10 +1,10 @@
-# @cuilabs/qnsp-sdk-activation
+# @heossi/qnsi-sdk-activation
 
 ## 0.1.6
 
 ### Patch Changes
 
-- Expanded the `SdkActivationRequest.runtime` enum to accept `python`, `go`, and `rust` in addition to the original `browser`, `node`, and `edge` values. This unblocks the new first-party Python (`qnsp` on PyPI), Go (`github.com/cuilabs/qnsp-public/sdks/go/qnsp`), and Rust (`qnsp` on crates.io) SDKs whose activation handshake reports a language-native runtime label rather than masquerading as `node`. The existing `SdkIdentifierSchema` already includes `qnsp-python`, `qnsp-go`, and `qnsp-rust` as valid sdkIds (added in 0.1.5). Production billing-service was redeployed on 2026-04-30 to pick up the matching schema (task-def revision `qnsp-prod-billing-service:21`).
+- Expanded the `SdkActivationRequest.runtime` enum to accept `python`, `go`, and `rust` in addition to the original `browser`, `node`, and `edge` values. This unblocks the new first-party Python (`qnsp` on PyPI), Go (`github.com/heossihq/qnsi-public/sdks/go/qnsp`), and Rust (`qnsp` on crates.io) SDKs whose activation handshake reports a language-native runtime label rather than masquerading as `node`. The existing `SdkIdentifierSchema` already includes `qnsp-python`, `qnsp-go`, and `qnsp-rust` as valid sdkIds (added in 0.1.5). Production billing-service was redeployed on 2026-04-30 to pick up the matching schema (task-def revision `qnsp-prod-billing-service:21`).
 
 ## 0.1.5
 
@@ -31,4 +31,4 @@
 - 8b8c331: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
 - dbfd5fd: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
 - e88fb5d: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
-- aaa11cc: docs: add GitHub and Google OAuth sign-up links and update platform sign-in references across all published SDKs; add OAuth/Social Sign-In section to @cuilabs/qnsp-auth-sdk; add README to @cuilabs/qnsp-agent
+- aaa11cc: docs: add GitHub and Google OAuth sign-up links and update platform sign-in references across all published SDKs; add OAuth/Social Sign-In section to @heossi/qnsi-auth-sdk; add README to @heossi/qnsi-agent

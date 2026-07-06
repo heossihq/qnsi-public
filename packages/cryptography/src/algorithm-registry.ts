@@ -16,10 +16,7 @@ export const PQC_KEM_ALGORITHMS = [
 	"kyber-512",
 	"kyber-768",
 	"kyber-1024",
-	// HQC (NIST selected March 2025, draft standard expected 2026)
-	"hqc-128",
-	"hqc-192",
-	"hqc-256",
+	// HQC omitted — disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
 	// BIKE (NIST Round 4 candidate)
 	"bike-l1",
 	"bike-l3",

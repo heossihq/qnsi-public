@@ -2,7 +2,7 @@
 title: Searchable Encryption
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/search-service/src/config/env.ts
@@ -11,7 +11,7 @@ source_files:
 
 # Searchable Encryption
 
-QNSP supports searching encrypted data without decryption via Search Service (port 8101).
+QNSI supports searching encrypted data without decryption via Search Service (port 8101).
 
 ## Overview
 

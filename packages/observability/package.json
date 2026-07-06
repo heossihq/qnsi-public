@@ -1,5 +1,5 @@
 {
-	"name": "@cuilabs/qnsp-observability",
+	"name": "@heossi/qnsi-observability",
 	"version": "0.1.4",
 	"license": "Apache-2.0",
 	"engines": {
@@ -9,7 +9,7 @@
 		"access": "public"
 	},
 	"type": "module",
-	"description": "OpenTelemetry-based observability primitives for the QNSP post-quantum security platform: metrics, distributed tracing, and structured logging. Free tier at cloud.qnsp.cuilabs.io.",
+	"description": "OpenTelemetry-based observability primitives for the QNSP post-quantum security platform: metrics, distributed tracing, and structured logging. Free tier at cloud.qnsi.heossi.com.",
 	"keywords": [
 		"qnsp",
 		"observability",
@@ -24,14 +24,14 @@
 		"nodejs",
 		"quantum-safe"
 	],
-	"homepage": "https://cloud.qnsp.cuilabs.io",
+	"homepage": "https://cloud.qnsi.heossi.com",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cuilabs/qnsp-public",
+		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/observability"
 	},
 	"bugs": {
-		"url": "https://github.com/cuilabs/qnsp-public/issues"
+		"url": "https://github.com/heossihq/qnsi-public/issues"
 	},
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -54,7 +54,7 @@
 		"@opentelemetry/resources": "^2.6.1",
 		"@opentelemetry/sdk-metrics": "^2.6.1",
 		"@opentelemetry/sdk-trace-node": "^2.6.1",
-		"@cuilabs/qnsp-shared-kernel": "workspace:*",
+		"@heossi/qnsi-shared-kernel": "workspace:*",
 		"fastify": "^5.8.5"
 	},
 	"devDependencies": {

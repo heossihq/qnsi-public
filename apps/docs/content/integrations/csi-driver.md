@@ -2,11 +2,11 @@
 title: CSI Secret Driver
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # CSI Secret Driver
 
-Mount QNSP secrets as volumes in Kubernetes.
+Mount QNSI secrets as volumes in Kubernetes.
 
 ## Installation
 

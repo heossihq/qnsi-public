@@ -2,7 +2,7 @@
 title: Tenant Crypto Policy System
 version: 1.1.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 license: BSL-1.1
 source_files:
   - /packages/security/src/tenant-crypto-policy-client.ts
@@ -13,7 +13,7 @@ source_files:
 
 # Tenant Crypto Policy System
 
-The tenant crypto policy system ensures consistent algorithm selection across all QNSP services based on tenant billing tiers, custom policies, and compliance requirements.
+The tenant crypto policy system ensures consistent algorithm selection across all QNSI services based on tenant billing tiers, custom policies, and compliance requirements.
 
 ## Overview
 
@@ -24,11 +24,11 @@ Every tenant has a crypto policy that determines:
 - HSM requirements for root keys
 - Maximum key age before rotation
 
-QNSP currently supports **two policy models**:
+QNSI currently supports **two policy models**:
 - **v0 tiers** (legacy): default/strict/maximum/government
 - **v1 profiles + tiers** (evidence-first): profile constraints plus tier gates
 
-Services still use the v0 policy via `@cuilabs/qnsp-security` tenant-crypto-policy-client while migration completes. The v1 policy is stored in `tenant_crypto_policy` and is returned by `/platform/v1/crypto/policy` when an `X-Tenant-Id` header is supplied.
+Services still use the v0 policy via `@heossi/qnsi-security` tenant-crypto-policy-client while migration completes. The v1 policy is stored in `tenant_crypto_policy` and is returned by `/platform/v1/crypto/policy` when an `X-Tenant-Id` header is supplied.
 
 ## Crypto Policy V1 (Profiles + Tiers)
 
@@ -113,7 +113,7 @@ The system supports both internal and NIST standardized algorithm names:
 Services create a crypto policy client from environment variables:
 
 ```typescript
-import { createTenantCryptoPolicyClientFromEnv } from '@cuilabs/qnsp-security';
+import { createTenantCryptoPolicyClientFromEnv } from '@heossi/qnsi-security';
 
 const cryptoPolicyClient = createTenantCryptoPolicyClientFromEnv();
 ```
@@ -184,7 +184,7 @@ Authorization: Bearer <token>
 ### cryptoEntropySource
 
 Declarative entropy-source contract for the tenant. Added 2026-05-13.
-See [https://qnsp.cuilabs.io/trust/entropy](https://qnsp.cuilabs.io/trust/entropy)
+See [https://qnsi.heossi.com/trust/entropy](https://qnsi.heossi.com/trust/entropy)
 for the auditable end-to-end chain (NIST SP 800-90A/B/C citations,
 OpenSSL DRBG, Linux getrandom + CPU TRNG, HSM DRBGs).
 

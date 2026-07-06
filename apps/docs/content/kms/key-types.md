@@ -2,7 +2,7 @@
 title: Key Types
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/kms-service/src/config/env.ts
@@ -11,7 +11,7 @@ source_files:
 
 # Key Types
 
-QNSP KMS (port 8095) supports multiple key types for different use cases.
+QNSI KMS (port 8095) supports multiple key types for different use cases.
 
 ## Symmetric Keys
 

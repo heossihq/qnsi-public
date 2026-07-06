@@ -1,4 +1,4 @@
-import { activateSdk } from "@cuilabs/qnsp-sdk-activation";
+import { activateSdk } from "@heossi/qnsi-sdk-activation";
 
 import type { PqcAlgorithm, PqcProvider } from "../provider.js";
 
@@ -13,7 +13,7 @@ export interface ExternalPqcProviderMetadata {
 /**
  * Activation parameters added in v0.2.0. External consumers must pass
  * `apiKey` — get a free key (no credit card, free-forever tier) at
- * https://cloud.qnsp.cuilabs.io/auth. See README "Migration from v0.1.x".
+ * https://cloud.qnsi.heossi.com/auth. See README "Migration from v0.1.x".
  *
  * QNSP backend services (inside the trust boundary, not external consumers)
  * may pass `internal: true` to bypass the activation handshake. This flag is
@@ -23,7 +23,7 @@ export interface ExternalPqcProviderMetadata {
 export interface ExternalPqcProviderInitOptions {
 	/**
 	 * QNSP API key. Required for external consumers since v0.2.0. Free signup:
-	 * https://cloud.qnsp.cuilabs.io/auth (free-forever tier — 10 GB storage,
+	 * https://cloud.qnsi.heossi.com/auth (free-forever tier — 10 GB storage,
 	 * 50,000 API calls/month, 20 KMS keys, 25 vault secrets, no credit card).
 	 */
 	readonly apiKey?: string;
@@ -33,7 +33,7 @@ export interface ExternalPqcProviderInitOptions {
 	 * consumers must use `apiKey`.
 	 */
 	readonly internal?: boolean;
-	/** Override platform URL (defaults to https://api.qnsp.cuilabs.io). */
+	/** Override platform URL (defaults to https://api.qnsi.heossi.com). */
 	readonly platformUrl?: string;
 	readonly algorithms?: readonly PqcAlgorithm[];
 	readonly configuration?: Record<string, unknown>;
@@ -68,7 +68,7 @@ const SDK_PACKAGE_VERSION = "0.2.0";
  * a registered tenant before returning a working provider.
  *
  * Why activation: QNSP offers a free-forever tier (no credit card, 60-second
- * GitHub/Google/email signup at https://cloud.qnsp.cuilabs.io/auth). Tying SDK
+ * GitHub/Google/email signup at https://cloud.qnsi.heossi.com/auth). Tying SDK
  * usage to a tenant is the price of using the QNSP-branded SDK; the underlying
  * `@noble/post-quantum` and `@open-quantum-safe/liboqs` libraries are
  * separately Apache-2.0 / MIT and free to use directly without QNSP.
@@ -83,10 +83,10 @@ export async function initializeExternalPqcProvider(
 
 	if (!isInternal && !hasApiKey) {
 		throw new Error(
-			"@cuilabs/qnsp-cryptography v0.2.0+ requires `options.apiKey`. " +
+			"@heossi/qnsi-cryptography v0.2.0+ requires `options.apiKey`. " +
 				"Get a free API key (no credit card, free-forever tier — 10 GB storage, " +
 				"50,000 API calls/month, 20 KMS keys, 25 vault secrets) at " +
-				"https://cloud.qnsp.cuilabs.io/auth. " +
+				"https://cloud.qnsi.heossi.com/auth. " +
 				"See README 'Migration from v0.1.x' for details. " +
 				"If you only need the underlying primitives without QNSP, use " +
 				"@noble/post-quantum or @open-quantum-safe/liboqs directly.",

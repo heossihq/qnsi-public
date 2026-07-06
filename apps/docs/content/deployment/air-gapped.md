@@ -2,11 +2,11 @@
 title: Air-Gapped Deployment
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Air-Gapped Deployment
 
-Deploy QNSP in isolated networks without internet access.
+Deploy QNSI in isolated networks without internet access.
 
 ## Overview
 
@@ -49,7 +49,7 @@ global:
 
 license:
   type: offline
-  file: /etc/qnsp/license.key
+  file: /etc/qnsi/license.key
 
 updates:
   enabled: false

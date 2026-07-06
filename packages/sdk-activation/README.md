@@ -1,41 +1,41 @@
-# @cuilabs/qnsp-sdk-activation
+# @heossi/qnsi-sdk-activation
 
-SDK activation and usage metering for QNSP platform SDKs. Ensures all SDK usage is tied to a registered QNSP account.
+SDK activation and usage metering for QNSI platform SDKs. Ensures all SDK usage is tied to a registered QNSI account.
 
-Part of the [Quantum-Native Security Platform (QNSP)](https://qnsp.cuilabs.io).
+Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.com).
 
-> **Note:** This is an internal package used by other `@cuilabs/qnsp-*` SDKs. You typically do not need to install or use it directly.
+> **Note:** This is an internal package used by other `@heossi/qnsi-*` SDKs. You typically do not need to install or use it directly.
 
 ## Installation
 
 ```bash
-pnpm add @cuilabs/qnsp-sdk-activation
+pnpm add @heossi/qnsi-sdk-activation
 ```
 
 ## Quick Start
 
 ```typescript
-import { activateSdk } from "@cuilabs/qnsp-sdk-activation";
+import { activateSdk } from "@heossi/qnsi-sdk-activation";
 
-// Called internally by QNSP SDKs during initialization
+// Called internally by QNSI SDKs during initialization
 await activateSdk({
   apiKey: "YOUR_API_KEY",
   sdkId: "vault-sdk",
   sdkVersion: "0.3.0",
-  platformUrl: "https://api.qnsp.cuilabs.io",
+  platformUrl: "https://api.qnsi.heossi.com",
 });
 ```
 
 ## Documentation
 
-- [SDK Reference](https://docs.qnsp.cuilabs.io/sdk/sdk-activation)
-- [API Documentation](https://docs.qnsp.cuilabs.io/api)
-- [Getting Started](https://docs.qnsp.cuilabs.io/quickstart)
+- [SDK Reference](https://docs.qnsi.heossi.com/sdk/sdk-activation)
+- [API Documentation](https://docs.qnsi.heossi.com/api)
+- [Getting Started](https://docs.qnsi.heossi.com/quickstart)
 
 ## Requirements
 
-- Node.js >= 24.12.0 (`engines` in `package.json`; QNSP monorepo baseline)
-- A QNSP account and API key — [sign up free](https://cloud.qnsp.cuilabs.io/auth) with GitHub, Google, or email
+- Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
+- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

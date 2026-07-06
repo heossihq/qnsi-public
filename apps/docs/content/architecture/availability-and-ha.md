@@ -2,11 +2,11 @@
 title: Availability and High Availability
 version: 0.0.2
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Availability and High Availability
 
-QNSP is designed for high availability across all tiers.
+QNSI is designed for high availability across all tiers.
 
 ## Availability targets
 

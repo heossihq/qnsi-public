@@ -1,0 +1,40 @@
+[package]
+name = "qnsi"
+version = "0.3.0"
+edition = "2021"
+rust-version = "1.75"
+license = "Apache-2.0"
+description = "Official Rust SDK for the QNSI Quantum-Native Security Infrastructure — post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, KMS, and immutable audit trails."
+repository = "https://github.com/heossihq/qnsi-public"
+homepage = "https://cloud.qnsi.heossi.com"
+documentation = "https://docs.qnsi.heossi.com/sdk/rust"
+readme = "README.md"
+keywords = ["qnsi", "post-quantum", "pqc", "ml-kem", "ml-dsa"]
+categories = ["cryptography", "api-bindings"]
+
+[dependencies]
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+tokio = { version = "1", features = ["sync", "time"] }
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+base64 = "0.22"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock", "serde"] }
+uuid = { version = "1", features = ["v4"] }
+
+# Local PQC primitives — opt-in via the `crypto` feature so the base
+# crate compiles with no native dependency.
+oqs = { version = "0.11.0", optional = true, default-features = false, features = ["std"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"] }
+wiremock = "0.6"
+
+[features]
+default = []
+# Enables the `qnsi::crypto` module. Requires liboqs to be installed at
+# link time (oqs-sys can build it from source given a C toolchain + cmake).
+crypto = ["dep:oqs"]

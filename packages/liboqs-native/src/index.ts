@@ -1,5 +1,5 @@
 /**
- * @cuilabs/liboqs-native — typed loader for the liboqs N-API addon.
+ * @heossi/liboqs-native — typed loader for the liboqs N-API addon.
  *
  * The C++ addon (src/addon.cc) is compiled to a platform-specific
  * `oqs_native.node` by node-gyp and distributed via prebuildify prebuilds.
@@ -85,7 +85,7 @@ declare namespace liboqs {
 		 * Seed must be exactly `details().lengthKeypairSeed` bytes. INTENDED
 		 * FOR NIST ACVP TEST-VECTOR USE — production code should call
 		 * generateKeypair() so randomness flows through the OpenSSL DRBG
-		 * (see https://qnsp.cuilabs.io/trust/entropy).
+		 * (see https://qnsi.heossi.com/trust/entropy).
 		 */
 		generateKeypairDerand(seed: Buffer | Uint8Array): KeyPair;
 		encapsulate(publicKey: Buffer | Uint8Array): Encapsulation;

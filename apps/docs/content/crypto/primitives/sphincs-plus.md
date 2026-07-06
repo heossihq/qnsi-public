@@ -2,7 +2,7 @@
 title: SPHINCS+ (SLH-DSA)
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # SPHINCS+ (SLH-DSA)
 
@@ -32,7 +32,7 @@ SPHINCS+ is a stateless hash-based signature scheme standardized as SLH-DSA.
 `s` = small (slower, smaller signatures)
 `f` = fast (faster, larger signatures)
 
-## QNSP usage
+## QNSI usage
 
 - **Use cases**: Long-term signatures, archival
 - **Fallback**: When lattice assumptions are questioned

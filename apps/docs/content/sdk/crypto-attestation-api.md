@@ -1,10 +1,10 @@
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-crypto-inventory-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-crypto-inventory-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.crypto./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.crypto./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
@@ -16,7 +16,7 @@ The Crypto Attestation API provides programmatic access to cryptographic policy 
 ## Base URL
 
 ```
-https://api.qnsp.cuilabs.io/platform/v1/crypto
+https://api.qnsi.heossi.com/platform/v1/crypto
 ```
 
 ## Authentication
@@ -190,13 +190,13 @@ GET /platform/v1/crypto/cbom
 
 ```json
 {
-  "specVersion": "QNSP-CBOM-1.0",
+  "specVersion": "QNSI-CBOM-1.0",
   "version": "1.0.0",
   "generatedAt": "2025-12-31T06:30:00.000Z",
-  "generatedBy": "QNSP CBOM Service",
+  "generatedBy": "QNSI CBOM Service",
   "documentHash": "sha3-256:abc123...",
   "platform": {
-    "name": "QNSP",
+    "name": "QNSI",
     "version": "1.0.0",
     "environment": "production"
   },
@@ -278,7 +278,7 @@ GET /platform/v1/crypto/attestation
   "type": "crypto-attestation",
   "generatedAt": "2025-12-31T06:30:00.000Z",
   "platform": {
-    "name": "QNSP",
+    "name": "QNSI",
     "version": "1.0.0",
     "environment": "production"
   },
@@ -343,11 +343,11 @@ GET /platform/v1/crypto/policy/presets
 ### TypeScript/Node.js
 
 ```typescript
-import { CryptoInventoryClient } from '@cuilabs/qnsp-crypto-inventory-sdk';
+import { CryptoInventoryClient } from '@heossi/qnsi-crypto-inventory-sdk';
 
 const client = new CryptoInventoryClient({
-  apiKey: process.env.QNSP_API_KEY,
-  baseUrl: 'https://api.qnsp.cuilabs.io',
+  apiKey: process.env.QNSI_API_KEY,
+  baseUrl: 'https://api.qnsi.heossi.com',
   pathPrefix: '/proxy/crypto',
 });
 

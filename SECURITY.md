@@ -10,7 +10,7 @@ For private/VPC/sovereign deployments, support status is defined by your contrac
 
 Please report security vulnerabilities privately to:
 
-- Email: qnsp-security@cuilabs.io
+- Email: qnsi-security@heossi.com
 
 ### What to include
 

@@ -1,22 +1,22 @@
-# @cuilabs/qnsp-audit-sdk
+# @heossi/qnsi-audit-sdk
 
-TypeScript SDK client for the QNSP audit-service API; equivalent shapes ship in Python, Go, and Rust. Provides audit log querying and compliance reporting.
+TypeScript SDK client for the QNSI audit-service API; equivalent shapes ship in Python, Go, and Rust. Provides audit log querying and compliance reporting.
 
-Part of the [Quantum-Native Security Platform (QNSP)](https://qnsp.cuilabs.io).
+Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.com).
 
 ## Installation
 
 ```bash
-pnpm add @cuilabs/qnsp-audit-sdk
+pnpm add @heossi/qnsi-audit-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { AuditClient } from "@cuilabs/qnsp-audit-sdk";
+import { AuditClient } from "@heossi/qnsi-audit-sdk";
 
 const audit = new AuditClient({
-  baseUrl: "https://api.qnsp.cuilabs.io",
+  baseUrl: "https://api.qnsi.heossi.com",
   apiKey: "YOUR_API_KEY",
 });
 
@@ -30,14 +30,14 @@ const logs = await audit.listEvents({
 
 ## Documentation
 
-- [SDK Reference](https://docs.qnsp.cuilabs.io/sdk/audit-sdk)
-- [API Documentation](https://docs.qnsp.cuilabs.io/api)
-- [Getting Started](https://docs.qnsp.cuilabs.io/quickstart)
+- [SDK Reference](https://docs.qnsi.heossi.com/sdk/audit-sdk)
+- [API Documentation](https://docs.qnsi.heossi.com/api)
+- [Getting Started](https://docs.qnsi.heossi.com/quickstart)
 
 ## Requirements
 
-- Node.js >= 24.12.0 (`engines` in `package.json`; QNSP monorepo baseline)
-- A QNSP account and API key — [sign up free](https://cloud.qnsp.cuilabs.io/auth) with GitHub, Google, or email
+- Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
+- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

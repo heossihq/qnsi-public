@@ -10,7 +10,7 @@ async function main() {
 		await stat(entryPoint);
 	} catch {
 		console.warn(
-			`[@cuilabs/liboqs-native] Warning: no compiled bindings found at ${entryPoint}. Build the native module before publishing or running PQC smoke probes. See docs/guides/liboqs-native-build.md for instructions.`,
+			`[@heossi/liboqs-native] Warning: no compiled bindings found at ${entryPoint}. Build the native module before publishing or running PQC smoke probes. See docs/guides/liboqs-native-build.md for instructions.`,
 		);
 		return;
 	}
@@ -21,15 +21,15 @@ async function main() {
 		const hasPrebuild = contents.some((entry) => entry.isDirectory() && entry.name !== ".gitkeep");
 		if (!hasPrebuild) {
 			console.warn(
-				"[@cuilabs/liboqs-native] Warning: no prebuilt binaries detected in prebuilds/. " +
+				"[@heossi/liboqs-native] Warning: no prebuilt binaries detected in prebuilds/. " +
 					"Consumers will fall back to local compilation. " +
-					"Run `pnpm --filter @cuilabs/liboqs-native build:native` on each target platform " +
+					"Run `pnpm --filter @heossi/liboqs-native build:native` on each target platform " +
 					"or configure the CI workflow to publish prebuild artifacts.",
 			);
 		}
 	} catch {
 		console.warn(
-			"[@cuilabs/liboqs-native] Warning: unable to inspect prebuilds/ directory. " +
+			"[@heossi/liboqs-native] Warning: unable to inspect prebuilds/ directory. " +
 				"Ensure prebuild assets are generated before publishing.",
 		);
 	}

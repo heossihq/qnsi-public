@@ -2,13 +2,13 @@
 title: API Reference
 version: 0.1.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 ---
 
-# QNSP API Reference
+# QNSI API Reference
 
-This document provides a curated reference for the core QNSP service APIs. All endpoints require authentication unless otherwise noted. See [Authentication](./authentication.md) for details.
+This document provides a curated reference for the core QNSI service APIs. All endpoints require authentication unless otherwise noted. See [Authentication](./authentication.md) for details.
 
 For an exhaustive, auto-generated list of every registered endpoint derived directly from the service source code, see the [API Route Catalog](./route-catalog.md).
 

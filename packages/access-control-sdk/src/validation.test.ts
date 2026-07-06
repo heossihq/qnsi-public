@@ -7,7 +7,7 @@ import {
 } from "./observability.js";
 import { uuidSchema, validateUUID } from "./validation.js";
 
-describe("@cuilabs/qnsp-access-control-sdk validation", () => {
+describe("@heossi/qnsi-access-control-sdk validation", () => {
 	it("accepts valid UUIDs", () => {
 		const value = "00000000-0000-0000-0000-000000000000";
 
@@ -20,7 +20,7 @@ describe("@cuilabs/qnsp-access-control-sdk validation", () => {
 	});
 });
 
-describe("@cuilabs/qnsp-access-control-sdk observability type guard", () => {
+describe("@heossi/qnsi-access-control-sdk observability type guard", () => {
 	it("isAccessControlClientTelemetry distinguishes config from implementation", () => {
 		const telemetry: AccessControlClientTelemetry = {
 			record() {

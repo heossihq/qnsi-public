@@ -10,12 +10,12 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { activateSdk, type SdkActivationResponse } from "@cuilabs/qnsp/activation";
+import { activateSdk, type SdkActivationResponse } from "@heossi/qnsi/activation";
 
-const DEFAULT_PLATFORM_URL = "https://api.qnsp.cuilabs.io";
+const DEFAULT_PLATFORM_URL = "https://api.qnsi.heossi.com";
 
 // Resolve own version from package.json so activation telemetry tracks the
-// actual published version of @cuilabs/qnsp-mcp, not an inline literal that
+// actual published version of @heossi/qnsi-mcp, not an inline literal that
 // drifts every release. The compiled module lives at dist/session.js, so the
 // package.json is one directory up from dist/.
 function readOwnVersion(): string {

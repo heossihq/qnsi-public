@@ -2,7 +2,7 @@
 title: Limit Upgrades
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Limit Upgrades
 
@@ -12,7 +12,7 @@ How to increase rate limits and quotas.
 
 ### Tier upgrade
 Upgrade your plan for higher limits:
-1. Go to https://cloud.qnsp.cuilabs.io
+1. Go to https://cloud.qnsi.heossi.com
 2. Navigate to Billing > Plan
 3. Select higher tier
 4. Limits increase immediately

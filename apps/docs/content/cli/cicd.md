@@ -2,16 +2,16 @@
 title: CLI in CI/CD
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # CLI in CI/CD
 
-Using QNSP CLI in CI/CD pipelines.
+Using QNSI CLI in CI/CD pipelines.
 
 ## GitHub Actions
 
 ```yaml
-name: Deploy with QNSP
+name: Deploy with QNSI
 
 on: [push]
 
@@ -21,21 +21,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Install QNSP CLI
-        run: pnpm add -g @cuilabs/qnsp-cli
+      - name: Install QNSI CLI
+        run: pnpm add -g @heossi/qnsi-cli
       
-      - name: Configure QNSP
+      - name: Configure QNSI
         env:
-          QNSP_TENANT_ID: ${{ secrets.QNSP_TENANT_ID }}
-          QNSP_SERVICE_ID: ${{ secrets.QNSP_SERVICE_ID }}
-          QNSP_SERVICE_SECRET: ${{ secrets.QNSP_SERVICE_SECRET }}
+          QNSI_TENANT_ID: ${{ secrets.QNSI_TENANT_ID }}
+          QNSI_SERVICE_ID: ${{ secrets.QNSI_SERVICE_ID }}
+          QNSI_SERVICE_SECRET: ${{ secrets.QNSI_SERVICE_SECRET }}
         run: |
           # Optional: explicitly request a token (most commands will do this automatically)
-          qnsp auth token --service-id $QNSP_SERVICE_ID --service-secret $QNSP_SERVICE_SECRET --output json
+          qnsi auth token --service-id $QNSI_SERVICE_ID --service-secret $QNSI_SERVICE_SECRET --output json
       
       - name: Fetch secrets
         run: |
-          qnsp vault secrets get $QNSP_SECRET_ID --output json > db-password.json
+          qnsi vault secrets get $QNSI_SECRET_ID --output json > db-password.json
 ```
 
 ## GitLab CI
@@ -44,11 +44,11 @@ jobs:
 deploy:
   image: node:20
   before_script:
-    - corepack enable && corepack prepare pnpm@10.25.0 --activate && pnpm add -g @cuilabs/qnsp-cli
+    - corepack enable && corepack prepare pnpm@10.25.0 --activate && pnpm add -g @heossi/qnsi-cli
   script:
-    - qnsp vault secrets get $QNSP_SECRET_ID --output json > api-key.json
+    - qnsi vault secrets get $QNSI_SECRET_ID --output json > api-key.json
   variables:
-    QNSP_TENANT_ID: $QNSP_TENANT_ID
+    QNSI_TENANT_ID: $QNSI_TENANT_ID
 ```
 
 ## Jenkins
@@ -57,21 +57,21 @@ deploy:
 pipeline {
     agent any
     environment {
-        QNSP_TENANT_ID = credentials('qnsp-tenant-id')
-        QNSP_SERVICE_ID = credentials('qnsp-service-id')
-        QNSP_SERVICE_SECRET = credentials('qnsp-service-secret')
+        QNSI_TENANT_ID = credentials('qnsi-tenant-id')
+        QNSI_SERVICE_ID = credentials('qnsi-service-id')
+        QNSI_SERVICE_SECRET = credentials('qnsi-service-secret')
     }
     stages {
         stage('Setup') {
             steps {
                 sh 'corepack enable && corepack prepare pnpm@10.25.0 --activate'
-                sh 'pnpm add -g @cuilabs/qnsp-cli'
-                sh 'qnsp auth token --service-id $QNSP_SERVICE_ID --service-secret $QNSP_SERVICE_SECRET --output json'
+                sh 'pnpm add -g @heossi/qnsi-cli'
+                sh 'qnsi auth token --service-id $QNSI_SERVICE_ID --service-secret $QNSI_SERVICE_SECRET --output json'
             }
         }
         stage('Deploy') {
             steps {
-                sh 'qnsp vault secrets get $QNSP_SECRET_ID --output json > deploy-key.json'
+                sh 'qnsi vault secrets get $QNSI_SECRET_ID --output json > deploy-key.json'
             }
         }
     }
@@ -90,14 +90,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install QNSP CLI
+          name: Install QNSI CLI
           command: |
             corepack enable
             corepack prepare pnpm@10.25.0 --activate
-            pnpm add -g @cuilabs/qnsp-cli
+            pnpm add -g @heossi/qnsi-cli
       - run:
           name: Fetch secrets
           command: |
-            qnsp auth token --service-id $QNSP_SERVICE_ID --service-secret $QNSP_SERVICE_SECRET --output json
-            qnsp vault secrets get $QNSP_SECRET_ID --output json
+            qnsi auth token --service-id $QNSI_SERVICE_ID --service-secret $QNSI_SERVICE_SECRET --output json
+            qnsi vault secrets get $QNSI_SECRET_ID --output json
 ```

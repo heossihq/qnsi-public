@@ -1,6 +1,6 @@
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@cuilabs/qnsp-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
 
 import type {
 	BillingClientTelemetry,
@@ -12,14 +12,14 @@ import { SDK_PACKAGE_VERSION } from "./sdk-package-version.js";
 import { validateUUID } from "./validation.js";
 
 /**
- * @cuilabs/qnsp-billing-sdk
+ * @heossi/qnsi-billing-sdk
  *
  * TypeScript SDK client for the QNSP billing-service API.
  * Provides a high-level interface for usage meter ingestion and invoice management.
  */
 
-/** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsp.cuilabs.io/signup */
-export const DEFAULT_BASE_URL = "https://api.qnsp.cuilabs.io";
+/** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsi.heossi.com/signup */
+export const DEFAULT_BASE_URL = "https://api.qnsi.heossi.com";
 
 export interface BillingClientConfig {
 	readonly baseUrl?: string;
@@ -559,9 +559,9 @@ export class BillingClient {
 		if (!config.apiKey || config.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP Billing SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsp.cuilabs.io/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
-					"Docs: https://docs.qnsp.cuilabs.io/sdk/billing-sdk",
+					"Docs: https://docs.qnsi.heossi.com/sdk/billing-sdk",
 			);
 		}
 

@@ -2,22 +2,22 @@
 title: Data Processing Agreement
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 CUI Labs (Pte.) Ltd. All rights reserved.
+copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # Data Processing Agreement
 
-This page provides a summary of the QNSP Data Processing Agreement (DPA). The DPA governs how CUI Labs (Pte.) Ltd. processes personal data on your behalf as a data processor.
+This page provides a summary of the QNSI Data Processing Agreement (DPA). The DPA governs how HEOSSI (PTE.) LTD processes personal data on your behalf as a data processor.
 
 This DPA is designed to comply with Singapore's Personal Data Protection Act 2012 (PDPA), GDPR, and other applicable data protection laws.
 
 ## Purpose
 
-The DPA governs how QNSP processes personal data on your behalf.
+The DPA governs how QNSI processes personal data on your behalf.
 
 ## Roles
 
 - **You**: Data Controller
-- **QNSP**: Data Processor
+- **QNSI**: Data Processor
 
 ## Our obligations
 
@@ -79,12 +79,12 @@ This DPA is governed by the laws of Singapore. For customers subject to GDPR, th
 
 ## Contact
 
-**CUI Labs (Pte.) Ltd.**
+**HEOSSI (PTE.) LTD**
 
 Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
 UEN: 202532790K
 
-DPA requests: contact@cuilabs.io
+DPA requests: contact@heossi.com
 
-Full Terms of Service and Privacy Policy: https://qnsp.cuilabs.io/terms
+Full Terms of Service and Privacy Policy: https://qnsi.heossi.com/terms

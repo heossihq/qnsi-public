@@ -2,15 +2,15 @@
 title: PQC Authentication
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # PQC Authentication
 
-QNSP uses post-quantum cryptography for token signing.
+QNSI uses post-quantum cryptography for token signing.
 
 ## Why PQC
 
-Classical signature algorithms (RSA, ECDSA) are vulnerable to quantum attacks. QNSP uses PQC algorithms to provide long-term security.
+Classical signature algorithms (RSA, ECDSA) are vulnerable to quantum attacks. QNSI uses PQC algorithms to provide long-term security.
 
 ## Token signing
 

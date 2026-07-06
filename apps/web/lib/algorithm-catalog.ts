@@ -1,6 +1,6 @@
 /**
  * Algorithm catalog — canonical registry of every PQC algorithm family
- * QNSP ships, used by /algorithms (catalog index) and
+ * QNSI ships, used by /algorithms (catalog index) and
  * /algorithms/[family] (per-family pages).
  *
  * Source-of-truth for the FIPS-finalised families (ML-KEM, ML-DSA, SLH-DSA):
@@ -8,7 +8,7 @@
  *   - apps/web/scripts/run-nist-acvp-conformance.ts — ACVP runner
  *   - apps/web/public/pqc-evidence/acvp-latest.json — pass/fail counts
  *
- * Source-of-truth for the broader liboqs surface (HQC, BIKE, McEliece,
+ * Source-of-truth for the broader liboqs surface (BIKE, McEliece,
  * FrodoKEM, NTRU, NTRU-Prime, Falcon, MAYO, CROSS, UOV, SNOVA):
  *   - github.com/open-quantum-safe/liboqs @ 0.15.0 — src/kem/kem.h + src/sig/sig.h
  *   - tooling/liboqs-src/ (local clone for inspection)
@@ -83,7 +83,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		fipsStandard: "FIPS 203",
 		fipsStatus: "FIPS-finalised",
 		summary:
-			"NIST's primary post-quantum key encapsulation standard, finalised August 2024 as FIPS 203. ML-KEM is QNSP's default KEM in every tier and powers PQC TLS key agreement, KMS-wrapped data keys, and vault secret encryption.",
+			"NIST's primary post-quantum key encapsulation standard, finalised August 2024 as FIPS 203. ML-KEM is QNSI's default KEM in every tier and powers PQC TLS key agreement, KMS-wrapped data keys, and vault secret encryption.",
 		mechanism:
 			"ML-KEM is built on the hardness of the Module Learning With Errors (Module-LWE) problem over polynomial rings. Encapsulation generates a 32-byte shared secret and a ciphertext that can be decapsulated only by the holder of the corresponding secret key. Parameter sets ML-KEM-512 / 768 / 1024 trade key size against security category (NIST levels 1 / 3 / 5). FIPS 203 §6.2 specifies a deterministic seed-driven Encaps_internal(ek, m) and Decaps_internal(dk, c) pair, which is exactly what NIST ACVP test vectors exercise.",
 		variants: [
@@ -101,7 +101,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				publicKeyBytes: 1184,
 				secretKeyBytes: 2400,
 				ciphertextBytes: 1088,
-				note: "Production default across QNSP backend services. Recommended for hybrid PQC TLS (X25519+ML-KEM-768).",
+				note: "Production default across QNSI backend services. Recommended for hybrid PQC TLS (X25519+ML-KEM-768).",
 			},
 			{
 				name: "ML-KEM-1024",
@@ -120,7 +120,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		acvp: {
 			nobleStatus: "passing",
 			liboqsStatus: "passing",
-			note: "Both providers pass all 240 ML-KEM ACVP tests (keyGen 75 + encapsulation AFT 75 + decapsulation VAL 30 + §7.2/§7.3 key-validation 60). liboqs driven via OQS_KEM_keypair_derand + OQS_KEM_encaps_derand bindings shipped in @cuilabs/liboqs-native 0.15.1.",
+			note: "Both providers pass all 240 ML-KEM ACVP tests (keyGen 75 + encapsulation AFT 75 + decapsulation VAL 30 + §7.2/§7.3 key-validation 60). liboqs driven via OQS_KEM_keypair_derand + OQS_KEM_encaps_derand bindings shipped in @heossi/liboqs-native 0.15.1.",
 		},
 		useCases: [
 			"PQC TLS key agreement (hybrid with X25519 for production)",
@@ -152,7 +152,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		fipsStandard: "FIPS 204",
 		fipsStatus: "FIPS-finalised",
 		summary:
-			"NIST's primary post-quantum digital signature standard, finalised August 2024 as FIPS 204. ML-DSA powers JWT signing, audit-log integrity, code-signing, and authn token issuance across QNSP.",
+			"NIST's primary post-quantum digital signature standard, finalised August 2024 as FIPS 204. ML-DSA powers JWT signing, audit-log integrity, code-signing, and authn token issuance across QNSI.",
 		mechanism:
 			"ML-DSA is built on the hardness of the Module Learning With Errors (Module-LWE) and Module Short Integer Solution (Module-SIS) problems. Signatures are generated via the Fiat-Shamir transform applied to an identification protocol over polynomial rings. FIPS 204 Algorithm 1 specifies ML-DSA.KeyGen(ξ) where ξ is a 32-byte random seed, internally calling ML-DSA.KeyGen_internal(ξ). Parameter sets ML-DSA-44 / 65 / 87 target NIST security levels 2 / 3 / 5.",
 		variants: [
@@ -336,7 +336,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		},
 		useCases: [
 			"Size-constrained transport (where every byte counts — embedded, IoT, mobile)",
-			"Standalone QNSP signatures when bandwidth dominates over CPU cost",
+			"Standalone QNSI signatures when bandwidth dominates over CPU cost",
 			"Future government / defence workloads pending FIPS 206 finalisation",
 		],
 		tradeoffs: [
@@ -352,65 +352,6 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 
 	// ────────────────────────── Non-FIPS code-based KEMs ──────────────────────────
 	{
-		slug: "hqc",
-		name: "HQC",
-		longName: "Hamming Quasi-Cyclic Key Encapsulation Mechanism",
-		aliases: ["Hamming Quasi-Cyclic"],
-		type: "KEM",
-		familyKind: "code-based",
-		fipsStatus: "non-FIPS",
-		summary:
-			"Code-based KEM selected by NIST in March 2025 as a fifth-round alternate KEM standard, providing an independent cryptographic assumption (coding theory, not lattices) as defence-in-depth against ML-KEM cryptanalysis.",
-		mechanism:
-			"HQC builds on the hardness of decoding random linear codes over F2. Public keys and ciphertexts are vectors in a quasi-cyclic code; encapsulation produces a noisy codeword that only the secret key can decode. Selected by NIST specifically as an independent assumption-economy fallback to ML-KEM (lattice-based).",
-		variants: [
-			{
-				name: "HQC-128",
-				securityLevel: 1,
-				publicKeyBytes: 2249,
-				secretKeyBytes: 2289,
-				ciphertextBytes: 4481,
-			},
-			{
-				name: "HQC-192",
-				securityLevel: 3,
-				publicKeyBytes: 4522,
-				secretKeyBytes: 4562,
-				ciphertextBytes: 9026,
-			},
-			{
-				name: "HQC-256",
-				securityLevel: 5,
-				publicKeyBytes: 7245,
-				secretKeyBytes: 7285,
-				ciphertextBytes: 14469,
-			},
-		],
-		qnspSupport: {
-			providers: ["liboqs"],
-			minimumTier: "strict",
-		},
-		acvp: {
-			nobleStatus: "non-addressable",
-			liboqsStatus: "non-addressable",
-			note: "NIST ACVP vectors for HQC are not yet published.",
-		},
-		useCases: [
-			"Defence-in-depth: pair HQC with ML-KEM where the cost of a lattice-cryptanalysis break would be catastrophic",
-			"Maximum / Government tier policy that mandates dual-family coverage",
-		],
-		tradeoffs: [
-			"Significantly larger keys and ciphertexts than ML-KEM",
-			"Independent cryptographic assumption from ML-KEM (defence-in-depth)",
-			"Slower than ML-KEM by a meaningful margin in practice",
-		],
-		references: {
-			designPaper: "https://pqc-hqc.org/",
-			upstreamCode: "https://github.com/open-quantum-safe/liboqs/tree/main/src/kem/hqc",
-		},
-	},
-
-	{
 		slug: "bike",
 		name: "BIKE",
 		longName: "Bit Flipping Key Encapsulation",
@@ -419,7 +360,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		familyKind: "code-based",
 		fipsStatus: "non-FIPS",
 		summary:
-			"Code-based KEM finalist (round 4 of NIST PQC standardisation) using QC-MDPC codes. Available in liboqs for QNSP customers seeking additional code-based alternatives.",
+			"Code-based KEM finalist (round 4 of NIST PQC standardisation) using QC-MDPC codes. Available in liboqs for QNSI customers seeking additional code-based alternatives.",
 		mechanism:
 			"BIKE uses Quasi-Cyclic Moderate Density Parity Check (QC-MDPC) codes. Decryption involves iterative bit-flipping decoders. Three parameter sets target NIST security categories 1, 3, and 5.",
 		variants: [

@@ -2,11 +2,11 @@
 title: SAML Federation
 version: 0.0.2
 last_updated: 2026-04-23
-copyright: 2025 CUI Labs. All rights reserved.
+copyright: 2025 HEOSSI. All rights reserved.
 ---
 # SAML Federation
 
-QNSP supports SAML 2.0 for enterprise SSO and authenticated identity linking.
+QNSI supports SAML 2.0 for enterprise SSO and authenticated identity linking.
 
 ## Configuration
 
@@ -28,8 +28,8 @@ Register a SAML federation provider:
 
 ## Flow
 
-1. QNSP initiates a SAML flow against the configured provider and receives a signed assertion at its ACS endpoint.
-2. QNSP validates:
+1. QNSI initiates a SAML flow against the configured provider and receives a signed assertion at its ACS endpoint.
+2. QNSI validates:
    - XML signature
    - issuer
    - audience
@@ -37,7 +37,7 @@ Register a SAML federation provider:
    - `InResponseTo`
    - replay protection
    - assertion time bounds with clock-skew tolerance
-3. The validated assertion is processed by QNSP:
+3. The validated assertion is processed by QNSI:
    ```
    POST /auth/federation/saml/acs
    {
@@ -47,13 +47,13 @@ Register a SAML federation provider:
      "linkMode": false
    }
    ```
-4. QNSP either issues access + refresh tokens for sign-in or binds the SAML identity to the current authenticated QNSP user when `linkMode=true`.
+4. QNSI either issues access + refresh tokens for sign-in or binds the SAML identity to the current authenticated QNSI user when `linkMode=true`.
 
 ## Attribute mapping
 
-Map SAML attributes to QNSP:
+Map SAML attributes to QNSI:
 
-| SAML Attribute | QNSP Attribute |
+| SAML Attribute | QNSI Attribute |
 |----------------|----------------|
 | `NameID` | External ID |
 | `email` | Email |
@@ -62,7 +62,7 @@ Map SAML attributes to QNSP:
 
 ## SP metadata
 
-QNSP exposes SP metadata at:
+QNSI exposes SP metadata at:
 ```
 GET /auth/federation/:providerId/metadata?type=saml
 ```

@@ -2,15 +2,16 @@
 title: Compliance Mapping
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: Map QNSI audit events to compliance controls for SOC 2, PCI DSS, HIPAA, and GDPR, linking auth, access, KMS, and security events to specific requirements.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Compliance Mapping
 
-How QNSP audit events map to compliance requirements.
+How QNSI audit events map to compliance requirements.
 
 ## SOC 2
 
-| Control | QNSP audit events |
+| Control | QNSI audit events |
 |---------|-------------------|
 | CC6.1 Logical access | `auth.login.*`, `access.*` |
 | CC6.2 Access removal | `auth.token.revoked`, `access.policy.*` |
@@ -20,7 +21,7 @@ How QNSP audit events map to compliance requirements.
 
 ## PCI DSS
 
-| Requirement | QNSP audit events |
+| Requirement | QNSI audit events |
 |-------------|-------------------|
 | 10.1 Audit trails | All events with actor |
 | 10.2 Automated audit | `auth.*`, `kms.*`, `access.*` |
@@ -30,7 +31,7 @@ How QNSP audit events map to compliance requirements.
 
 ## HIPAA
 
-| Safeguard | QNSP audit events |
+| Safeguard | QNSI audit events |
 |-----------|-------------------|
 | Access controls | `auth.*`, `access.*` |
 | Audit controls | All events |
@@ -39,7 +40,7 @@ How QNSP audit events map to compliance requirements.
 
 ## GDPR
 
-| Article | QNSP audit events |
+| Article | QNSI audit events |
 |---------|-------------------|
 | Art. 5 Accountability | All events |
 | Art. 30 Records | Event exports |

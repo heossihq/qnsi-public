@@ -1,8 +1,8 @@
 ---
-title: AutoGen Integration (@cuilabs/qnsp-autogen-qnsp)
+title: AutoGen Integration (@heossi/qnsi-autogen-qnsp)
 version: 0.2.5
 last_updated: 2026-04-30
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/autogen-qnsp/package.json
@@ -10,23 +10,23 @@ source_files:
   - /packages/autogen-qnsp/src/executor.ts
 ---
 
-# AutoGen Integration (`@cuilabs/qnsp-autogen-qnsp`)
+# AutoGen Integration (`@heossi/qnsi-autogen-qnsp`)
 
-QNSP provides an AutoGen-oriented executor that submits code workloads to QNSP AI orchestration endpoints with tenant-scoped activation.
+QNSI provides an AutoGen-oriented executor that submits code workloads to QNSI AI orchestration endpoints with tenant-scoped activation.
 
 ## Install
 
 ```bash
-pnpm add @cuilabs/qnsp-autogen-qnsp autogen
+pnpm add @heossi/qnsi-autogen-qnsp autogen
 ```
 
 ## Usage
 
 ```ts
-import { QnspExecutor } from "@cuilabs/qnsp-autogen-qnsp";
+import { QnsiExecutor } from "@heossi/qnsi-autogen-qnsp";
 
-const executor = new QnspExecutor({
-	apiKey: process.env.QNSP_API_KEY!,
+const executor = new QnsiExecutor({
+	apiKey: process.env.QNSI_API_KEY!,
 });
 ```
 

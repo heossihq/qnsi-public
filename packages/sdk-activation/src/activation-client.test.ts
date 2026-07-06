@@ -12,7 +12,7 @@ const BASE_CONFIG: SdkActivationConfig = {
 	apiKey: "qnsp_test_key_00000000",
 	sdkId: "vault-sdk",
 	sdkVersion: "0.3.0",
-	platformUrl: "https://api.qnsp.cuilabs.io",
+	platformUrl: "https://api.qnsi.heossi.com",
 };
 
 describe("SdkActivationError_", () => {
@@ -87,7 +87,7 @@ describe("activateSdk", () => {
 						JSON.stringify({
 							activated: false,
 							code: "INVALID_API_KEY",
-							error: "Invalid API key. Get your key at https://cloud.qnsp.cuilabs.io/api-keys",
+							error: "Invalid API key. Get your key at https://cloud.qnsi.heossi.com/api-keys",
 						}),
 						{ status: 401, headers: { "content-type": "application/json" } },
 					),
@@ -98,7 +98,7 @@ describe("activateSdk", () => {
 			await activateSdk(config);
 		} catch (err) {
 			expect(err).toBeInstanceOf(SdkActivationError_);
-			expect((err as SdkActivationError_).message).toContain("cloud.qnsp.cuilabs.io/api-keys");
+			expect((err as SdkActivationError_).message).toContain("cloud.qnsi.heossi.com/api-keys");
 		}
 	});
 

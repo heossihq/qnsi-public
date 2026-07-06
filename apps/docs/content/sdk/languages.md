@@ -2,115 +2,115 @@
 title: Supported Languages
 version: 0.3.0
 last_updated: 2026-04-30
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-auth-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.auth./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.auth./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 # Supported Languages
 
-QNSP ships first-party SDKs for **TypeScript / Node.js**, **Python**, **Go**, **Rust**, and **JVM / Android** (Kotlin + Java). All five share the same wire contracts, the same algorithm names, and the same FIPS 203 / 204 / 205 posture — pick whichever fits your stack and the byte-for-byte outputs round-trip.
+QNSI ships first-party SDKs for **TypeScript / Node.js**, **Python**, **Go**, **Rust**, and **JVM / Android** (Kotlin + Java). All five share the same wire contracts, the same algorithm names, and the same FIPS 203 / 204 / 205 posture — pick whichever fits your stack and the byte-for-byte outputs round-trip.
 
 | Language | Package | Where it lives | Activation SDK ID |
 |---|---|---|---|
-| TypeScript / Node.js | `@cuilabs/qnsp` (single package) | [`packages/qnsp/`](https://github.com/cuilabs/qnsp-public/tree/main/packages/qnsp) | `qnsp` |
-| Python | `qnsp` (single package) | [`sdks/python/qnsp/`](https://github.com/cuilabs/qnsp-public/tree/main/sdks/python/qnsp) | `qnsp-python` |
-| Go | `github.com/cuilabs/qnsp-public/sdks/go/qnsp` | [`sdks/go/qnsp/`](https://github.com/cuilabs/qnsp-public/tree/main/sdks/go/qnsp) | `qnsp-go` |
-| Rust | `qnsp` on crates.io | [`sdks/rust/qnsp/`](https://github.com/cuilabs/qnsp-public/tree/main/sdks/rust/qnsp) | `qnsp-rust` |
-| JVM / Android (Kotlin + Java) | `io.cuilabs:qnsp` on Maven Central | [`sdks/jvm/`](https://github.com/cuilabs/qnsp-public/tree/main/sdks/jvm) | `qnsp-jvm` |
+| TypeScript / Node.js | `@heossi/qnsi` (single package) | [`packages/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/packages/qnsi) | `qnsi` |
+| Python | `qnsi` (single package) | [`sdks/python/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi) | `qnsi-python` |
+| Go | `github.com/heossihq/qnsi-public/sdks/go/qnsi` | [`sdks/go/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/go/qnsi) | `qnsi-go` |
+| Rust | `qnsi` on crates.io | [`sdks/rust/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/rust/qnsi) | `qnsi-rust` |
+| JVM / Android (Kotlin + Java) | `com.heossi:qnsi` on Maven Central | [`sdks/jvm/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/jvm) | `qnsi-jvm` |
 
-> **TypeScript SDK consolidated 2026-04-30.** The previous 11 per-service `@cuilabs/qnsp-*-sdk` packages on npm are deprecated in favour of `@cuilabs/qnsp`. They continue to install and work, but new code should use the unified package. See [migration guide](https://github.com/cuilabs/qnsp-public/blob/main/packages/qnsp/README.md#migration-from-per-service-sdks).
+> **TypeScript SDK consolidated 2026-04-30.** The previous 11 per-service `@heossi/qnsi-*-sdk` packages on npm are deprecated in favour of `@heossi/qnsi`. They continue to install and work, but new code should use the unified package. See [migration guide](https://github.com/heossihq/qnsi-public/blob/main/packages/qnsi/README.md#migration-from-per-service-sdks).
 
 ## Node.js / TypeScript
 
-Single `@cuilabs/qnsp` package on npm:
+Single `@heossi/qnsi` package on npm:
 
 ```bash
-pnpm add @cuilabs/qnsp
+pnpm add @heossi/qnsi
 ```
 
 ```typescript
-import { QnspClient } from "@cuilabs/qnsp";
+import { QnsiClient } from "@heossi/qnsi";
 
-const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-await qnsp.vault.createSecret({ name: "openai-key", payloadB64: "..." });
-const key = await qnsp.kms.createKey({ algorithm: "ml-dsa-65", purpose: "signing" });
-await qnsp.audit.logEvent({ eventType: "model.inference", payload: { modelId: "gpt-4o" } });
+const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+await qnsi.vault.createSecret({ name: "openai-key", payloadB64: "..." });
+const key = await qnsi.kms.createKey({ algorithm: "ml-dsa-65", purpose: "signing" });
+await qnsi.audit.logEvent({ eventType: "model.inference", payload: { modelId: "gpt-4o" } });
 ```
 
 - TypeScript native, strict mode
-- ESM (CommonJS consumers can `await import("@cuilabs/qnsp")`)
+- ESM (CommonJS consumers can `await import("@heossi/qnsi")`)
 - Node.js ≥ 22.0.0
 - One activation handshake on first call, shared across all 11 sub-clients
 - One `npm install` line, one version, one CHANGELOG, one telemetry surface
 
-For browser apps, `@cuilabs/qnsp-browser` is still the right choice (it bundles the noble PQC primitives for client-side use). The per-service `@cuilabs/qnsp-*-sdk` packages on npm are deprecated as of 2026-04-30 — they continue to install but are no longer the recommended entry point. See the [Node.js page](./node/README.md) for full quick-start and migration details.
+For browser apps, `@heossi/qnsi-browser` is still the right choice (it bundles the noble PQC primitives for client-side use). The per-service `@heossi/qnsi-*-sdk` packages on npm are deprecated as of 2026-04-30 — they continue to install but are no longer the recommended entry point. See the [Node.js page](./node/README.md) for full quick-start and migration details.
 
 ## Python
 
-Single `qnsp` package on PyPI ([changelog](https://github.com/cuilabs/qnsp-public/blob/main/sdks/python/qnsp/CHANGELOG.md)):
+Single `qnsi` package on PyPI ([changelog](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/CHANGELOG.md)):
 
 ```bash
-pip install qnsp
+pip install qnsi
 # with local PQC primitives:
-pip install 'qnsp[crypto]'
+pip install 'qnsi[crypto]'
 ```
 
 ```python
-from qnsp import QnspClient
-with QnspClient(api_key=os.environ["QNSP_API_KEY"]) as q:
+from qnsi import QnsiClient
+with QnsiClient(api_key=os.environ["QNSI_API_KEY"]) as q:
     secret = q.vault.create_secret(name="my-secret", payload_b64=...)
     key    = q.kms.create_key(algorithm="ml-dsa-65", purpose="signing")
     q.audit.log_event(event_type="model.inference", payload={...})
 ```
 
-The `qnsp[crypto]` extra wraps `liboqs-python` 0.12.0 — same algorithm-name surface as the rest of the QNSP ecosystem.
+The `qnsi[crypto]` extra wraps `liboqs-python` 0.12.0 — same algorithm-name surface as the rest of the QNSI ecosystem.
 
 See the [Python page](./python/README.md) for full quick-start.
 
 ## Go
 
-Module path is `github.com/cuilabs/qnsp-public/sdks/go/qnsp`:
+Module path is `github.com/heossihq/qnsi-public/sdks/go/qnsi`:
 
 ```bash
-go get github.com/cuilabs/qnsp-public/sdks/go/qnsp@latest
+go get github.com/heossihq/qnsi-public/sdks/go/qnsi@latest
 ```
 
 ```go
-import "github.com/cuilabs/qnsp-public/sdks/go/qnsp"
+import "github.com/heossihq/qnsi-public/sdks/go/qnsi"
 
-c, _ := qnsp.NewClient(qnsp.ClientOptions{APIKey: os.Getenv("QNSP_API_KEY")})
+c, _ := qnsp.NewClient(qnsp.ClientOptions{APIKey: os.Getenv("QNSI_API_KEY")})
 defer c.Close()
 secret, _ := c.Vault().CreateSecret(ctx, vault.CreateSecretRequest{...}, "")
 ```
 
-The `qnsp/crypto` subpackage wraps `liboqs-go` 0.12.0 — pure-Go base, native crypto requires liboqs at link time.
+The `qnsi/crypto` subpackage wraps `liboqs-go` 0.12.0 — pure-Go base, native crypto requires liboqs at link time.
 
 See the [Go page](./go/README.md) for full quick-start.
 
 ## Rust
 
-`qnsp` on crates.io:
+`qnsi` on crates.io:
 
 ```bash
-cargo add qnsp
+cargo add qnsi
 # with local PQC primitives:
-cargo add qnsp --features crypto
+cargo add qnsi --features crypto
 ```
 
 ```rust
-use qnsp::{Client, ClientOptions};
-use qnsp::vault::CreateSecretRequest;
+use qnsi::{Client, ClientOptions};
+use qnsi::vault::CreateSecretRequest;
 
-let c = Client::new(ClientOptions::with_api_key(env::var("QNSP_API_KEY")?))?;
+let c = Client::new(ClientOptions::with_api_key(env::var("QNSI_API_KEY")?))?;
 let secret = c.vault().create_secret(CreateSecretRequest { ... }, None).await?;
 ```
 
@@ -120,23 +120,23 @@ See the [Rust page](./rust/README.md) for full quick-start.
 
 ## JVM / Android
 
-`io.cuilabs:qnsp` on Maven Central — one artifact for server-side JVM (Spring / Java / Kotlin) and native Android (API 21+):
+`com.heossi:qnsi` on Maven Central — one artifact for server-side JVM (Spring / Java / Kotlin) and native Android (API 21+):
 
 ```kotlin
 // Gradle (Kotlin DSL)
 dependencies {
-    implementation("io.cuilabs:qnsp:0.1.0")
+    implementation("com.heossi:qnsi:0.3.0")
 }
 ```
 
 ```kotlin
-val qnsp = QnspClient(System.getenv("QNSP_API_KEY"))
-val secret = qnsp.vault.createSecret(
+val qnsi = QnsiClient(System.getenv("QNSI_API_KEY"))
+val secret = qnsi.vault.createSecret(
     CreateSecretRequest(name = "db-password", payloadB64 = payloadB64),
 )
 ```
 
-Built on OkHttp; Java-interop-clean API (from Java: `qnsp.getVault()...`). On-device PQC via Bouncy Castle or OS-native (Android Keystore PQC). See the [JVM / Android page](./java/README.md) for the full quick-start.
+Built on OkHttp; Java-interop-clean API (from Java: `qnsi.getVault()...`). On-device PQC via Bouncy Castle or OS-native (Android Keystore PQC). See the [JVM / Android page](./java/README.md) for the full quick-start.
 
 ## Feature matrix
 
@@ -144,19 +144,19 @@ All SDKs cover the same set of customer-facing services. Module names differ sli
 
 | Service | TypeScript | Python | Go | Rust | JVM / Android |
 |---|---|---|---|---|---|
-| Vault (`/vault/v1`) | `@cuilabs/qnsp-vault-sdk` | `qnsp.vault` | `qnsp/vault` | `qnsp::vault` | `qnsp.vault` |
-| KMS (`/kms/v1`) | `@cuilabs/qnsp-kms-client` | `qnsp.kms` | `qnsp/kms` | `qnsp::kms` | `qnsp.kms` |
-| Audit (`/audit/v1`) | `@cuilabs/qnsp-audit-sdk` | `qnsp.audit` | `qnsp/audit` | `qnsp::audit` | `qnsp.audit` |
-| Auth (`/auth/v1`) | `@cuilabs/qnsp-auth-sdk` | `qnsp.auth` | `qnsp/auth` | `qnsp::auth` | `qnsp.auth` |
-| Tenant (`/tenant/v1`) | `@cuilabs/qnsp-tenant-sdk` | `qnsp.tenant` | `qnsp/tenant` | `qnsp::tenant` | `qnsp.tenant` |
-| Access (`/access/v1`) | `@cuilabs/qnsp-access-control-sdk` | `qnsp.access` | `qnsp/access` | `qnsp::access` | `qnsp.access` |
-| Billing (`/billing/v1`) | `@cuilabs/qnsp-billing-sdk` | `qnsp.billing` | `qnsp/billing` | `qnsp::billing` | `qnsp.billing` |
-| Crypto Inventory (`/crypto/v1`) | `@cuilabs/qnsp-crypto-inventory-sdk` | `qnsp.crypto_inventory` | `qnsp/cryptoinventory` | `qnsp::crypto_inventory` | `qnsp.cryptoInventory` |
-| Storage (`/storage/storage/v1`) | `@cuilabs/qnsp-storage-sdk` | `qnsp.storage` | `qnsp/storage` | `qnsp::storage` | `qnsp.storage` |
-| Search (`/search/v1`) | `@cuilabs/qnsp-search-sdk` | `qnsp.search` | `qnsp/search` | `qnsp::search` | `qnsp.search` |
-| AI Orchestrator (`/ai/v1`) | `@cuilabs/qnsp-ai-sdk` | `qnsp.ai` | `qnsp/ai` | `qnsp::ai` | `qnsp.ai` |
-| Local PQC primitives | `@cuilabs/qnsp-cryptography` (via `@cuilabs/liboqs-native`) | `qnsp.crypto` (via `liboqs-python`) | `qnsp/crypto` (via `liboqs-go`) | `qnsp::crypto` (via `oqs` 0.11) | Bouncy Castle / OS-native |
-| Webhook signature verify + parse | per-service | `qnsp.parse_qnsp_webhook` | `qnsp.ParseWebhook` | `qnsp::parse_webhook` | `QnspWebhooks` |
+| Vault (`/vault/v1`) | `@heossi/qnsi-vault-sdk` | `qnsi.vault` | `qnsi/vault` | `qnsi::vault` | `qnsi.vault` |
+| KMS (`/kms/v1`) | `@heossi/qnsi-kms-client` | `qnsi.kms` | `qnsi/kms` | `qnsi::kms` | `qnsi.kms` |
+| Audit (`/audit/v1`) | `@heossi/qnsi-audit-sdk` | `qnsi.audit` | `qnsi/audit` | `qnsi::audit` | `qnsi.audit` |
+| Auth (`/auth/v1`) | `@heossi/qnsi-auth-sdk` | `qnsi.auth` | `qnsi/auth` | `qnsi::auth` | `qnsi.auth` |
+| Tenant (`/tenant/v1`) | `@heossi/qnsi-tenant-sdk` | `qnsi.tenant` | `qnsi/tenant` | `qnsi::tenant` | `qnsi.tenant` |
+| Access (`/access/v1`) | `@heossi/qnsi-access-control-sdk` | `qnsi.access` | `qnsi/access` | `qnsi::access` | `qnsi.access` |
+| Billing (`/billing/v1`) | `@heossi/qnsi-billing-sdk` | `qnsi.billing` | `qnsi/billing` | `qnsi::billing` | `qnsi.billing` |
+| Crypto Inventory (`/crypto/v1`) | `@heossi/qnsi-crypto-inventory-sdk` | `qnsi.crypto_inventory` | `qnsi/cryptoinventory` | `qnsi::crypto_inventory` | `qnsi.cryptoInventory` |
+| Storage (`/storage/storage/v1`) | `@heossi/qnsi-storage-sdk` | `qnsi.storage` | `qnsi/storage` | `qnsi::storage` | `qnsi.storage` |
+| Search (`/search/v1`) | `@heossi/qnsi-search-sdk` | `qnsi.search` | `qnsi/search` | `qnsi::search` | `qnsi.search` |
+| AI Orchestrator (`/ai/v1`) | `@heossi/qnsi-ai-sdk` | `qnsi.ai` | `qnsi/ai` | `qnsi::ai` | `qnsi.ai` |
+| Local PQC primitives | `@heossi/qnsi-cryptography` (via `@heossi/liboqs-native`) | `qnsi.crypto` (via `liboqs-python`) | `qnsi/crypto` (via `liboqs-go`) | `qnsi::crypto` (via `oqs` 0.11) | Bouncy Castle / OS-native |
+| Webhook signature verify + parse | per-service | `qnsi.parse_qnsi_webhook` | `qnsi.ParseWebhook` | `qnsi::parse_webhook` | `QnsiWebhooks` |
 
 All SDKs ship the same **11 customer-facing service modules** plus local PQC primitives and webhook verification. The Python SDK at v0.3.0 (2026-04-30) reached parity with the Go and Rust v0.2.0 surface; all four single-package families now match the TypeScript per-service split byte-for-byte on the wire.
 
@@ -166,4 +166,4 @@ Every customer-facing SDK calls `/billing/v1/sdk/activate` on first use to valid
 
 ## Community SDKs
 
-QNSP does not currently host community-maintained SDKs. If you build one, open a PR against [`docs/sdks/community.md`](https://github.com/cuilabs/qnsp-public/tree/main/docs/sdks) on the public mirror to add it to this list.
+QNSI does not currently host community-maintained SDKs. If you build one, open a PR against [`docs/sdks/community.md`](https://github.com/heossihq/qnsi-public/tree/main/docs/sdks) on the public mirror to add it to this list.

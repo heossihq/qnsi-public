@@ -2,11 +2,11 @@
 title: Algorithm Decommissioning
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Algorithm Decommissioning
 
-QNSP follows a structured process for retiring cryptographic algorithms.
+QNSI follows a structured process for retiring cryptographic algorithms.
 
 ## Decommissioning triggers
 

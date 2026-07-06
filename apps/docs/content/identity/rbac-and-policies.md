@@ -2,11 +2,11 @@
 title: RBAC and Policies
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # RBAC and Policies
 
-QNSP enforces access control via roles and policies.
+QNSI enforces access control via roles and policies.
 
 ## Role model
 

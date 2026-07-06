@@ -1,38 +1,39 @@
 ---
-title: KMS Client (@cuilabs/qnsp-kms-client)
+title: KMS Client (@heossi/qnsi-kms-client)
 version: 0.2.6
 last_updated: 2026-04-30
-copyright: © 2025 CUI Labs. All rights reserved.
+description: KMS Client SDK for QNSI, now consolidated into the unified @heossi/qnsi package, providing key wrapping and unwrapping with tenant-specific PQC algorithms.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/kms-client/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-kms-client` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-kms-client` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.kms./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.kms./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# KMS Client (`@cuilabs/qnsp-kms-client`)
+# KMS Client (`@heossi/qnsi-kms-client`)
 
 The TypeScript client for `kms-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Provides key wrapping and unwrapping operations with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @cuilabs/qnsp-kms-client
+pnpm install @heossi/qnsi-kms-client
 ```
 
 ## Create a client
 
 ```ts
-import { HttpKmsServiceClient } from "@cuilabs/qnsp-kms-client";
+import { HttpKmsServiceClient } from "@heossi/qnsi-kms-client";
 
 // With static API token
 const kms = new HttpKmsServiceClient("http://localhost:8095", "<access_token>");
@@ -85,15 +86,15 @@ const dataKey = Buffer.from(result.dataKey, "base64");
 
 ## PQC Algorithm Information
 
-The KMS Client exports the full 93-algorithm NIST name mapping covering all PQC families supported by QNSP: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), HQC, BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
+The KMS Client exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@cuilabs/qnsp-kms-client";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-kms-client";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"
 
-// Full mapping covers all 90 PQC algorithms. Representative entries:
+// Full mapping covers all 87 PQC algorithms. Representative entries:
 console.log(ALGORITHM_TO_NIST);
 // {
 //   "kyber-512": "ML-KEM-512",        // FIPS 203
@@ -104,7 +105,6 @@ console.log(ALGORITHM_TO_NIST);
 //   "dilithium-5": "ML-DSA-87",
 //   "sphincs-sha2-128f-simple": "SLH-DSA-SHA2-128f",  // FIPS 205
 //   "falcon-512": "FN-DSA-512",       // FIPS 206 (draft)
-//   "hqc-128": "HQC-128",             // NIST selected (March 2025)
 //   "bike-l1": "BIKE-L1",             // NIST Round 4
 //   "mceliece-348864": "Classic-McEliece-348864",  // ISO standard
 //   "frodokem-640-aes": "FrodoKEM-640-AES",        // ISO standard
@@ -113,7 +113,7 @@ console.log(ALGORITHM_TO_NIST);
 //   "cross-rsdp-128-balanced": "CROSS-RSDP-128-balanced",
 //   "ov-Is": "UOV-Is",
 //   "snova-24-5-4": "SNOVA-24-5-4",
-//   ... // 93 algorithms total
+//   ... // 87 algorithms total
 // }
 ```
 

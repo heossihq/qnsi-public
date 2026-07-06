@@ -2,7 +2,7 @@
 title: Dilithium (ML-DSA)
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /packages/cryptography/src/provider.ts
@@ -19,7 +19,7 @@ Dilithium is a lattice-based digital signature algorithm standardized as ML-DSA.
 - **Standard**: FIPS 204 (ML-DSA)
 - **Security basis**: Module Learning With Errors (MLWE)
 
-## QNSP Algorithm Identifiers
+## QNSI Algorithm Identifiers
 
 From `packages/cryptography/src/provider.ts`:
 
@@ -38,7 +38,7 @@ type PqcAlgorithm =
 | `dilithium-3` | Level 3 | 1952 bytes | 3293 bytes | 4032 bytes |
 | `dilithium-5` | Level 5 | 2592 bytes | 4595 bytes | 4896 bytes |
 
-## QNSP Defaults
+## QNSI Defaults
 
 From `apps/auth-service/src/config/env.ts`:
 

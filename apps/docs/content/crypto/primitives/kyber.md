@@ -2,7 +2,7 @@
 title: Kyber (ML-KEM)
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Kyber (ML-KEM)
 
@@ -22,7 +22,7 @@ Kyber is a lattice-based key encapsulation mechanism standardized as ML-KEM.
 | Kyber-768 | Level 3 | 1184 bytes | 1088 bytes | 32 bytes |
 | Kyber-1024 | Level 5 | 1568 bytes | 1568 bytes | 32 bytes |
 
-## QNSP usage
+## QNSI usage
 
 - **Default**: Kyber-768 (ML-KEM-768)
 - **Use cases**: TLS key exchange, key wrapping, hybrid encryption

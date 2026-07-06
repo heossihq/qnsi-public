@@ -2,7 +2,8 @@
 title: Crypto-Shredding
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: Crypto-shredding renders QNSI data permanently unrecoverable by destroying tenant keys, supporting tenant offboarding, retention expiry, and GDPR erasure.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Crypto-Shredding
 

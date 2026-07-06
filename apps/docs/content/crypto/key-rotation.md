@@ -2,7 +2,7 @@
 title: Key Rotation
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/kms-service/src/config/env.ts
@@ -11,7 +11,7 @@ source_files:
 
 # Key Rotation
 
-QNSP supports automatic and manual key rotation.
+QNSI supports automatic and manual key rotation.
 
 ## Rotation Triggers
 

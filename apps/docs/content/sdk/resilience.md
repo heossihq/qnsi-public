@@ -1,8 +1,8 @@
 ---
-title: Resilience Utilities (@cuilabs/qnsp-resilience)
+title: Resilience Utilities (@heossi/qnsi-resilience)
 version: 0.1.1
 last_updated: 2026-04-23
-copyright: © 2025-2026 CUI Labs. All rights reserved.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/resilience/package.json
@@ -10,14 +10,14 @@ source_files:
   - /packages/resilience/src/circuit-breaker.ts
 ---
 
-# Resilience Utilities (`@cuilabs/qnsp-resilience`)
+# Resilience Utilities (`@heossi/qnsi-resilience`)
 
-`@cuilabs/qnsp-resilience` is the small shared utility package used by QNSP service clients and SDK-adjacent runtime code for fault handling.
+`@heossi/qnsi-resilience` is the small shared utility package used by QNSI service clients and SDK-adjacent runtime code for fault handling.
 
 ## Install
 
 ```bash
-pnpm add @cuilabs/qnsp-resilience
+pnpm add @heossi/qnsi-resilience
 ```
 
 ## Features
@@ -30,7 +30,7 @@ pnpm add @cuilabs/qnsp-resilience
 ## Usage
 
 ```ts
-import { CircuitBreaker } from "@cuilabs/qnsp-resilience";
+import { CircuitBreaker } from "@heossi/qnsi-resilience";
 ```
 
 ## Related docs

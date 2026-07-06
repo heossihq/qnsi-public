@@ -12,8 +12,8 @@
  *   QNSP_API_KEY=your-key qnsp-mcp
  *
  * Configuration:
- *   QNSP_API_KEY          — Required. Get one at https://cloud.qnsp.cuilabs.io/api-keys
- *   QNSP_PLATFORM_URL     — Optional. Defaults to https://api.qnsp.cuilabs.io
+ *   QNSP_API_KEY          — Required. Get one at https://cloud.qnsi.heossi.com/api-keys
+ *   QNSP_PLATFORM_URL     — Optional. Defaults to https://api.qnsi.heossi.com
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -138,7 +138,7 @@ function registerTools(server: McpServer, ctx: ToolContext): void {
  */
 export function createSandboxServer(): McpServer {
 	const noopApi = new ApiClient({
-		baseUrl: "https://api.qnsp.cuilabs.io",
+		baseUrl: "https://api.qnsi.heossi.com",
 		apiKey: "sandbox",
 		tenantId: "sandbox",
 	});
@@ -165,7 +165,7 @@ function getRequiredEnv(name: string): string {
 	const value = process.env[name];
 	if (!value || value.length === 0) {
 		process.stderr.write(
-			`Error: ${name} is required. Get your free API key at https://cloud.qnsp.cuilabs.io/api-keys\n`,
+			`Error: ${name} is required. Get your free API key at https://cloud.qnsi.heossi.com/api-keys\n`,
 		);
 		process.exit(1);
 	}
@@ -174,7 +174,7 @@ function getRequiredEnv(name: string): string {
 
 async function main(): Promise<void> {
 	const apiKey = getRequiredEnv("QNSP_API_KEY");
-	const platformUrl = process.env["QNSP_PLATFORM_URL"] ?? "https://api.qnsp.cuilabs.io";
+	const platformUrl = process.env["QNSP_PLATFORM_URL"] ?? "https://api.qnsi.heossi.com";
 
 	// Activate SDK session — resolves API key → tenant ID → tier → limits
 	const session = new SessionManager({ apiKey, platformUrl });

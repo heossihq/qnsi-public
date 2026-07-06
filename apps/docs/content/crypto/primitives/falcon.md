@@ -2,7 +2,7 @@
 title: Falcon (FN-DSA)
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /packages/cryptography/src/provider.ts
@@ -35,7 +35,7 @@ const ALGORITHM_MAP = {
 
 ## Parameter Sets
 
-| Variant | QNSP Identifier | liboqs Name | Security Level |
+| Variant | QNSI Identifier | liboqs Name | Security Level |
 |---------|----------------|-------------|----------------|
 | Falcon-512 | `falcon-512` | `Falcon-512` | NIST Level 1 |
 | Falcon-1024 | `falcon-1024` | `Falcon-1024` | NIST Level 5 |
@@ -46,7 +46,7 @@ const ALGORITHM_MAP = {
 - **Standard**: FN-DSA (NIST selected)
 - **Security basis**: NTRU lattices
 
-## QNSP Usage
+## QNSI Usage
 
 Falcon is supported but **not the default** signature algorithm. From codebase analysis:
 

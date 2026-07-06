@@ -2,13 +2,13 @@
 title: Shared Responsibility
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Shared Responsibility
 
-Audit responsibilities between QNSP and customers.
+Audit responsibilities between QNSI and customers.
 
-## QNSP responsibilities
+## QNSI responsibilities
 
 ### Platform audit
 - Capture all platform events
@@ -52,15 +52,15 @@ Audit responsibilities between QNSP and customers.
 ## Shared responsibilities
 
 ### Access control
-- QNSP: Enforce RBAC on audit access
+- QNSI: Enforce RBAC on audit access
 - Customer: Define who can access audit logs
 
 ### Export security
-- QNSP: Encrypt exports in transit
+- QNSI: Encrypt exports in transit
 - Customer: Secure export destinations
 
 ### Incident response
-- QNSP: Detect platform-level incidents
+- QNSI: Detect platform-level incidents
 - Customer: Investigate tenant-level incidents
 
 ## Support

@@ -1,11 +1,11 @@
 ---
 title: Getting Started
-description: Onboarding guides — set up your QNSP account, install the SDK, and make your first PQC operation.
+description: Onboarding guides — set up your QNSI account, install the SDK, and make your first PQC operation.
 ---
 
 # Getting Started
 
-Onboarding guides — set up your QNSP account, install the SDK, and make your first PQC operation.
+Onboarding guides — set up your QNSI account, install the SDK, and make your first PQC operation.
 
 ## Pages
 

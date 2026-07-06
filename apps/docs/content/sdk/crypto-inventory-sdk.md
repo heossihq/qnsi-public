@@ -1,38 +1,38 @@
 ---
-title: Crypto Inventory SDK (@cuilabs/qnsp-crypto-inventory-sdk)
+title: Crypto Inventory SDK (@heossi/qnsi-crypto-inventory-sdk)
 version: 0.3.6
 last_updated: 2026-04-30
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/crypto-inventory-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-crypto-inventory-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-crypto-inventory-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.crypto./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.crypto./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Crypto Inventory SDK (`@cuilabs/qnsp-crypto-inventory-sdk`)
+# Crypto Inventory SDK (`@heossi/qnsi-crypto-inventory-sdk`)
 
-The TypeScript client for `crypto-inventory-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Provides cryptographic asset discovery and inventory management across the QNSP platform.
+The TypeScript client for `crypto-inventory-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Provides cryptographic asset discovery and inventory management across the QNSI platform.
 
 ## Install
 
 ```bash
-pnpm install @cuilabs/qnsp-crypto-inventory-sdk
+pnpm install @heossi/qnsi-crypto-inventory-sdk
 ```
 
 ## Create a client
 
 ```ts
-import { CryptoInventoryClient } from "@cuilabs/qnsp-crypto-inventory-sdk";
+import { CryptoInventoryClient } from "@heossi/qnsi-crypto-inventory-sdk";
 
 const inventory = new CryptoInventoryClient({
 	baseUrl: "http://localhost:8115",
@@ -160,15 +160,15 @@ await inventory.deleteAsset("<asset_uuid>");
 
 ## PQC Algorithm Information
 
-The Crypto Inventory SDK exports the full 93-algorithm NIST name mapping covering all PQC families supported by QNSP: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), HQC, BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
+The Crypto Inventory SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@cuilabs/qnsp-crypto-inventory-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-crypto-inventory-sdk";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"
 
-// Full mapping covers all 90 PQC algorithms. Representative entries:
+// Full mapping covers all 87 PQC algorithms. Representative entries:
 console.log(ALGORITHM_TO_NIST);
 // {
 //   "kyber-512": "ML-KEM-512",        // FIPS 203
@@ -179,7 +179,6 @@ console.log(ALGORITHM_TO_NIST);
 //   "dilithium-5": "ML-DSA-87",
 //   "sphincs-sha2-128f-simple": "SLH-DSA-SHA2-128f",  // FIPS 205
 //   "falcon-512": "FN-DSA-512",       // FIPS 206 (draft)
-//   "hqc-128": "HQC-128",             // NIST selected (March 2025)
 //   "bike-l1": "BIKE-L1",             // NIST Round 4
 //   "mceliece-348864": "Classic-McEliece-348864",  // ISO standard
 //   "frodokem-640-aes": "FrodoKEM-640-AES",        // ISO standard
@@ -189,7 +188,7 @@ console.log(ALGORITHM_TO_NIST);
 //   "cross-rsdp-128-balanced": "CROSS-RSDP-128-balanced",
 //   "ov-Is": "UOV-Is",
 //   "snova-24-5-4": "SNOVA-24-5-4",
-//   ... // 93 algorithms total
+//   ... // 87 algorithms total
 // }
 ```
 

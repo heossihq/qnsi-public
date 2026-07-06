@@ -1,5 +1,5 @@
 {
-	"name": "@cuilabs/qnsp-kms-client",
+	"name": "@heossi/qnsi-kms-client",
 	"version": "0.2.6",
 	"publishConfig": {
 		"access": "public"
@@ -34,7 +34,7 @@
 		"@opentelemetry/exporter-metrics-otlp-http": "^0.214.0",
 		"@opentelemetry/resources": "^2.6.1",
 		"@opentelemetry/sdk-metrics": "^2.6.1",
-		"@cuilabs/qnsp-sdk-activation": "workspace:*",
+		"@heossi/qnsi-sdk-activation": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"keywords": [
@@ -63,11 +63,11 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cuilabs/qnsp-public",
+		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/kms-client"
 	},
-	"homepage": "https://cloud.qnsp.cuilabs.io",
+	"homepage": "https://cloud.qnsi.heossi.com",
 	"bugs": {
-		"url": "https://github.com/cuilabs/qnsp-public/issues"
+		"url": "https://github.com/heossihq/qnsi-public/issues"
 	}
 }

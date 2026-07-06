@@ -2,7 +2,8 @@
 title: Token Model
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: QNSI uses a two-token model with PQC-signed JWT access tokens and refresh tokens, spanning platform, internal-service, and external-api token audiences.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /packages/shared-kernel/src/constants.ts
@@ -13,7 +14,7 @@ source_files:
 
 # Token Model
 
-QNSP uses a two-token model: access tokens and refresh tokens.
+QNSI uses a two-token model: access tokens and refresh tokens.
 
 ## Token Audiences
 

@@ -2,7 +2,7 @@
 title: WebAuthn
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/auth-service/src/config/env.ts
@@ -11,7 +11,7 @@ source_files:
 
 # WebAuthn
 
-QNSP supports WebAuthn for passwordless authentication.
+QNSI supports WebAuthn for passwordless authentication.
 
 ## Configuration
 
@@ -19,7 +19,7 @@ From `apps/auth-service/src/config/env.ts`:
 
 | Setting | Environment Variable | Default |
 |---------|---------------------|---------|
-| Relying Party Name | `WEBAUTHN_RP_NAME` | `QNSP` |
+| Relying Party Name | `WEBAUTHN_RP_NAME` | `QNSI` |
 | Relying Party ID | `WEBAUTHN_RP_ID` | `localhost` |
 | Origin | `WEBAUTHN_ORIGIN` | `https://localhost` |
 

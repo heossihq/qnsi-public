@@ -77,7 +77,7 @@ export const DEFAULT_KEM: KemId = "ml-kem-768";
 export const DEFAULT_SIG: SigId = "ml-dsa-65";
 export const DEFAULT_ML_DSA: SigId = "ml-dsa-65";
 export const DEFAULT_SLH_DSA: SigId = "slh-dsa-sha2-128f";
-export const NOBLE_VERSION = "0.6.0";
+export const NOBLE_VERSION = "0.6.1";
 
 export const ML_DSA_IDS: ReadonlySet<SigId> = new Set<SigId>([
 	"ml-dsa-44",
@@ -99,7 +99,7 @@ export function isSlhDsaId(id: string): id is SigId {
 }
 
 export const DEMO_MESSAGE = new TextEncoder().encode(
-	"QNSP sandbox demo: this message was signed at the moment of your request.",
+	"QNSI sandbox demo: this message was signed at the moment of your request.",
 );
 
 export interface OperationTiming {

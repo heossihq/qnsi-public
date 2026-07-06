@@ -1,5 +1,5 @@
 {
-	"name": "@cuilabs/qnsp-sdk-activation",
+	"name": "@heossi/qnsi-sdk-activation",
 	"version": "0.1.7",
 	"publishConfig": {
 		"access": "public"
@@ -50,11 +50,11 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cuilabs/qnsp-public",
+		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/sdk-activation"
 	},
-	"homepage": "https://cloud.qnsp.cuilabs.io",
+	"homepage": "https://cloud.qnsi.heossi.com",
 	"bugs": {
-		"url": "https://github.com/cuilabs/qnsp-public/issues"
+		"url": "https://github.com/heossihq/qnsi-public/issues"
 	}
 }

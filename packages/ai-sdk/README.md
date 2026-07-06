@@ -1,22 +1,22 @@
-# @cuilabs/qnsp-ai-sdk
+# @heossi/qnsi-ai-sdk
 
-TypeScript SDK client for the QNSP AI orchestration service; equivalent shapes ship in Python, Go, and Rust. Provides secure AI workload management, enclave inference, and encrypted training.
+TypeScript SDK client for the QNSI AI orchestration service; equivalent shapes ship in Python, Go, and Rust. Provides secure AI workload management, enclave inference, and encrypted training.
 
-Part of the [Quantum-Native Security Platform (QNSP)](https://qnsp.cuilabs.io).
+Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.com).
 
 ## Installation
 
 ```bash
-pnpm add @cuilabs/qnsp-ai-sdk
+pnpm add @heossi/qnsi-ai-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { AiOrchestratorClient } from "@cuilabs/qnsp-ai-sdk";
+import { AiOrchestratorClient } from "@heossi/qnsi-ai-sdk";
 
 const ai = new AiOrchestratorClient({
-  baseUrl: "https://api.qnsp.cuilabs.io",
+  baseUrl: "https://api.qnsi.heossi.com",
   apiKey: "YOUR_API_KEY",
 });
 
@@ -28,14 +28,14 @@ const result = await ai.runInference({
 
 ## Documentation
 
-- [SDK Reference](https://docs.qnsp.cuilabs.io/sdk/ai-sdk)
-- [API Documentation](https://docs.qnsp.cuilabs.io/api)
-- [Getting Started](https://docs.qnsp.cuilabs.io/quickstart)
+- [SDK Reference](https://docs.qnsi.heossi.com/sdk/ai-sdk)
+- [API Documentation](https://docs.qnsi.heossi.com/api)
+- [Getting Started](https://docs.qnsi.heossi.com/quickstart)
 
 ## Requirements
 
-- Node.js >= 24.12.0 (`engines` in `package.json`; QNSP monorepo baseline)
-- A QNSP account and API key — [sign up free](https://cloud.qnsp.cuilabs.io/auth) with GitHub, Google, or email
+- Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
+- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

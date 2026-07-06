@@ -1,42 +1,42 @@
 ---
-title: Auth SDK (@cuilabs/qnsp-auth-sdk)
+title: Auth SDK (@heossi/qnsi-auth-sdk)
 version: 0.3.6
 last_updated: 2026-04-30
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/auth-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@cuilabs/qnsp-auth-sdk` package is consolidated into the unified `@cuilabs/qnsp` SDK (one package per language). New integrations should use:
+> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnspClient } from "@cuilabs/qnsp";
-> const qnsp = new QnspClient({ apiKey: process.env.QNSP_API_KEY! });
-> await qnsp.auth./* method */(...);
+> import { QnsiClient } from "@heossi/qnsi";
+> const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+> await qnsi.auth./* method */(...);
 > ```
 >
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Auth SDK (`@cuilabs/qnsp-auth-sdk`)
+# Auth SDK (`@heossi/qnsi-auth-sdk`)
 
 The TypeScript client for `auth-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. All tokens are signed with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @cuilabs/qnsp-auth-sdk
+pnpm install @heossi/qnsi-auth-sdk
 ```
 
 ## Create a client
 
 ```ts
-import { AuthClient } from "@cuilabs/qnsp-auth-sdk";
+import { AuthClient } from "@heossi/qnsi-auth-sdk";
 
 const auth = new AuthClient({
-	baseUrl: "https://api.qnsp.cuilabs.io",
-	apiKey: process.env.QNSP_API_KEY,
+	baseUrl: "https://api.qnsi.heossi.com",
+	apiKey: process.env.QNSI_API_KEY,
 });
 ```
 
@@ -148,7 +148,7 @@ const oidcResult = await auth.federateOIDC({
 For internal services to authenticate with each other:
 
 ```ts
-import { requestServiceToken, getServiceAuthHeader } from "@cuilabs/qnsp-auth-sdk";
+import { requestServiceToken, getServiceAuthHeader } from "@heossi/qnsi-auth-sdk";
 
 // Get service token
 const token = await requestServiceToken({
@@ -173,15 +173,15 @@ fetch(url, {
 
 ## PQC Algorithm Information
 
-The Auth SDK exports the full 93-algorithm NIST name mapping covering all PQC families supported by QNSP: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), HQC, BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
+The Auth SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@cuilabs/qnsp-auth-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-auth-sdk";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("dilithium-3"); // "ML-DSA-65"
 
-// Full mapping covers all 90 PQC algorithms. Representative entries:
+// Full mapping covers all 87 PQC algorithms. Representative entries:
 console.log(ALGORITHM_TO_NIST);
 // {
 //   "kyber-512": "ML-KEM-512",        // FIPS 203
@@ -194,7 +194,6 @@ console.log(ALGORITHM_TO_NIST);
 //   "sphincs-shake-256f-simple": "SLH-DSA-SHAKE-256f",
 //   "falcon-512": "FN-DSA-512",       // FIPS 206 (draft)
 //   "falcon-1024": "FN-DSA-1024",
-//   "hqc-128": "HQC-128",             // NIST selected (March 2025)
 //   "bike-l1": "BIKE-L1",             // NIST Round 4
 //   "mceliece-348864": "Classic-McEliece-348864",  // ISO standard
 //   "frodokem-640-aes": "FrodoKEM-640-AES",        // ISO standard
@@ -204,7 +203,7 @@ console.log(ALGORITHM_TO_NIST);
 //   "cross-rsdp-128-balanced": "CROSS-RSDP-128-balanced",
 //   "ov-Is": "UOV-Is",
 //   "snova-24-5-4": "SNOVA-24-5-4",
-//   ... // 93 algorithms total
+//   ... // 87 algorithms total
 // }
 ```
 

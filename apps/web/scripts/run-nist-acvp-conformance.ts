@@ -1,5 +1,5 @@
 /**
- * NIST ACVP conformance runner — validates QNSP's PQC implementations
+ * NIST ACVP conformance runner — validates QNSI's PQC implementations
  * against the OFFICIAL NIST ACVP test vectors for FIPS 203 (ML-KEM),
  * FIPS 204 (ML-DSA), and FIPS 205 (SLH-DSA).
  *
@@ -49,10 +49,10 @@ import { gunzipSync } from "node:zlib";
 import { ml_dsa44, ml_dsa65, ml_dsa87 } from "@noble/post-quantum/ml-dsa.js";
 import { ml_kem512, ml_kem768, ml_kem1024 } from "@noble/post-quantum/ml-kem.js";
 
-// @cuilabs/liboqs-native is a CJS native addon (export = liboqs). Use
+// @heossi/liboqs-native is a CJS native addon (export = liboqs). Use
 // createRequire to get the shape unambiguously even though this file is ESM.
 const requireFromHere = createRequire(import.meta.url);
-const liboqs = requireFromHere("@cuilabs/liboqs-native") as {
+const liboqs = requireFromHere("@heossi/liboqs-native") as {
 	KEM: new (
 		algorithm: string,
 	) => {
@@ -96,7 +96,6 @@ import {
 // ─────────────────────────────────────────────────────────────────────
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = join(__dirname, "..", "..", "..");
 const APP_ROOT = join(__dirname, "..");
 
 const ACVP_VECTORS_REPO = "paulmillr/acvp-vectors";
@@ -118,8 +117,8 @@ const POST_TO_AUDIT =
  * against the NIST vectors. Default is "noble,liboqs" — runs both because:
  *   • noble (@noble/post-quantum) is the reference/cross-verification provider
  *     used in browsers + secondary in KMS/audit-service.
- *   • liboqs (@cuilabs/liboqs-native, the C native binding) is the PRIMARY
- *     production provider for every QNSP backend service.
+ *   • liboqs (@heossi/liboqs-native, the C native binding) is the PRIMARY
+ *     production provider for every QNSI backend service.
  * Acceptable values: "noble", "liboqs", "noble,liboqs", "both".
  */
 const PROVIDERS_ENV = process.env["ACVP_PROVIDERS"] || "noble,liboqs";
@@ -726,7 +725,7 @@ function runSlhDsaKeyGen(prompt: VectorFile, expected: VectorFile): PerOperation
 /**
  * Wraps a liboqs `KEM` so it exposes the same surface as our noble-backed
  * `MlKemImpl`. The two seed-controlled operations (`keygen(seed)`,
- * `encapsulate(pk, m)`) throw a sentinel error because the @cuilabs/
+ * `encapsulate(pk, m)`) throw a sentinel error because the @heossi/
  * liboqs-native Node addon does not yet bind `OQS_KEM_keypair_derand` /
  * `OQS_KEM_encaps_derand`. The runner upgrades that sentinel to a
  * `skipped` row with an audit-trail reason. `decapsulate(ct, dk)` is the
@@ -752,7 +751,7 @@ function makeLiboqsMlKemImpl(algorithm: string): MlKemImpl {
 	return {
 		keygen(seed: Uint8Array): { publicKey: Uint8Array; secretKey: Uint8Array } {
 			// FIPS 203 keyGen uses a 64-byte seed (d || z). Caller passes the
-			// concatenated seed; @cuilabs/liboqs-native 0.15.1 binds
+			// concatenated seed; @heossi/liboqs-native 0.15.1 binds
 			// OQS_KEM_keypair_derand directly.
 			const kem = newKem();
 			try {
@@ -1280,7 +1279,7 @@ function summariseResults(results: PerOperationResult[]): ProviderSummary {
 }
 
 async function main(): Promise<void> {
-	console.log("─ QNSP NIST ACVP conformance runner");
+	console.log("─ QNSI NIST ACVP conformance runner");
 	console.log(`  Vector source: github.com/${ACVP_VECTORS_REPO}@${ACVP_VECTORS_REF}`);
 	console.log(`  Mode: ${FAST ? "FAST (first test per SLH-DSA group only)" : "FULL"}`);
 	console.log(`  Filter: ${ONLY ?? "(none, all FIPS 203/204/205)"}`);
@@ -1339,7 +1338,7 @@ async function main(): Promise<void> {
 	if (runLiboqs) {
 		console.log("");
 		console.log("══════════════════════════════════════════════════════════════");
-		console.log(" Provider: liboqs (@cuilabs/liboqs-native) — primary production engine");
+		console.log(" Provider: liboqs (@heossi/liboqs-native) — primary production engine");
 		console.log("══════════════════════════════════════════════════════════════");
 		if (mlKemKeyGenVec) {
 			console.log("─ FIPS 203 (ML-KEM) keyGen — via OQS_KEM_keypair_derand…");
@@ -1380,10 +1379,33 @@ async function main(): Promise<void> {
 	const headlineResults = runNoble ? nobleResults : liboqsResults;
 	const headlineSummary = summariseResults(headlineResults);
 
-	// Detect noble version from package.json.
-	const noblePkg = JSON.parse(
-		readFileSync(join(REPO_ROOT, "node_modules", "@noble", "post-quantum", "package.json"), "utf8"),
-	) as { version: string };
+	// Detect noble version. @noble/post-quantum does not list ./package.json in
+	// its `exports`, and under pnpm it is NOT hoisted to a repo-root node_modules
+	// (the previous fixed-path read threw ENOENT in CI). Resolve the installed
+	// package from a subpath it DOES export (already imported above) and read
+	// package.json beside it. Evidence metadata only — fall back to "unknown", never throw.
+	const nobleVersionResolved = ((): string => {
+		try {
+			let dir = dirname(requireFromHere.resolve("@noble/post-quantum/ml-kem.js"));
+			for (let i = 0; i < 8; i++) {
+				const candidate = join(dir, "package.json");
+				if (existsSync(candidate)) {
+					const parsed = JSON.parse(readFileSync(candidate, "utf8")) as {
+						name?: string;
+						version?: string;
+					};
+					if (parsed.name === "@noble/post-quantum" && typeof parsed.version === "string") {
+						return parsed.version;
+					}
+				}
+				dir = dirname(dir);
+			}
+		} catch {
+			// fall through to "unknown"
+		}
+		return "unknown";
+	})();
+	const noblePkg = { version: nobleVersionResolved };
 
 	const liboqsVer = liboqs.version();
 
@@ -1402,7 +1424,7 @@ async function main(): Promise<void> {
 		results: liboqsResults,
 		summary: summariseResults(liboqsResults),
 		scopeNotes: [
-			"@cuilabs/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
+			"@heossi/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
 			"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.15.0 upstream does NOT expose OQS_SIG_keypair_derand — the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
 			"The liboqs C library's own ACVP test record is maintained upstream by the Open Quantum Safe project at github.com/open-quantum-safe/liboqs.",
 		],
@@ -1446,7 +1468,7 @@ async function main(): Promise<void> {
 	console.log("─ Summary (per provider)");
 	for (const [name, p] of [
 		["noble  (@noble/post-quantum, pure-JS, cross-verify)", nobleProvider],
-		["liboqs (@cuilabs/liboqs-native, native-C, production)", liboqsProvider],
+		["liboqs (@heossi/liboqs-native, native-C, production)", liboqsProvider],
 	] as const) {
 		const s = p.summary;
 		console.log(`   ${name}`);

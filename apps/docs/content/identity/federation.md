@@ -2,11 +2,11 @@
 title: Federation
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Federation
 
-QNSP supports identity federation with external providers.
+QNSI supports identity federation with external providers.
 
 ## Supported protocols
 
@@ -15,10 +15,10 @@ QNSP supports identity federation with external providers.
 
 ## Federation model
 
-External identities are linked to QNSP identities:
+External identities are linked to QNSI identities:
 
 ```
-External IdP → QNSP Identity
+External IdP → QNSI Identity
      ↓              ↓
   sub: abc123  →  user-uuid
 ```

@@ -2,11 +2,12 @@
 title: Data Lifecycle
 version: 0.0.1
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: Manage QNSI storage data across its full lifecycle with retention modes, tiering rules, archival, and deletion policies from creation through final purge.
+copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Data Lifecycle
 
-Managing data through its lifecycle in QNSP Storage.
+Managing data through its lifecycle in QNSI Storage.
 
 ## Lifecycle stages
 

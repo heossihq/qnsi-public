@@ -2,7 +2,8 @@
 title: "Quickstart: First API Call"
 version: 0.0.2
 last_updated: 2026-04-23
-copyright: © 2025 CUI Labs. All rights reserved.
+description: "Make your first QNSI API call in under 10 minutes using curl: obtain a service access token, then send an authenticated request scoped to your tenant ID."
+copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/auth-service/src/server.ts
@@ -27,7 +28,7 @@ ACCESS_TOKEN=$(curl -sS -X POST \
   -H "Authorization: Bearer $SERVICE_SECRET" \
   -H "Content-Type: application/json" \
   -d "{\"serviceId\": \"$SERVICE_ID\", \"audience\": \"internal-service\"}" \
-  https://api.qnsp.cuilabs.io/auth/service-token \
+  https://api.qnsi.heossi.com/auth/service-token \
   | jq -r '.accessToken')
 
 echo $ACCESS_TOKEN
@@ -40,7 +41,7 @@ export TENANT_ID="your-tenant-uuid"
 
 curl -sS \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
-  "https://api.qnsp.cuilabs.io/proxy/kms/v1/keys?tenantId=$TENANT_ID" \
+  "https://api.qnsi.heossi.com/proxy/kms/v1/keys?tenantId=$TENANT_ID" \
   | jq
 ```
 
@@ -50,11 +51,11 @@ Health endpoints are public and bypass bot protection for GET/HEAD requests:
 
 ```bash
 # Check all services health
-curl -sS https://api.qnsp.cuilabs.io/proxy/health | jq
+curl -sS https://api.qnsi.heossi.com/proxy/health | jq
 
 # Check specific service health
-curl -sS https://api.qnsp.cuilabs.io/proxy/platform/health | jq
-curl -sS https://api.qnsp.cuilabs.io/proxy/billing/health | jq
+curl -sS https://api.qnsi.heossi.com/proxy/platform/health | jq
+curl -sS https://api.qnsi.heossi.com/proxy/billing/health | jq
 ```
 
 The `/proxy/health` endpoint returns the health status of all services:
