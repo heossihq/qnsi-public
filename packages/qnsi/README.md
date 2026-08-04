@@ -33,6 +33,8 @@ pnpm add @heossihq/qnsi
 
 Requires Node.js ≥ 22.0.0. ESM-first; CommonJS consumers can `await import("@heossihq/qnsi")`.
 
+Five [runnable public scenarios](./examples/README.md) cover KMS sign/verify, vault lifecycle, read-only inventory and CBOM, audit ingestion, and storage round-trip behavior. Run them with a non-production tenant and review each persistent-effect boundary before execution.
+
 ## Quick start
 
 ```ts
@@ -50,7 +52,7 @@ const secret = await qnsi.vault.createSecret({
 // KMS - server-side PQC keys
 const key = await qnsi.kms.createKey({ algorithm: "ml-dsa-65", purpose: "signing" });
 const sig = await qnsi.kms.sign(key.keyId as string, new TextEncoder().encode("hello"));
-const ok  = await qnsi.kms.verify(key.keyId as string, new TextEncoder().encode("hello"), sig);
+const ok = await qnsi.kms.verify(key.keyId as string, new TextEncoder().encode("hello"), sig);
 
 // Audit - immutable, hash-chained event log
 await qnsi.audit.logEvent({
@@ -68,19 +70,19 @@ await qnsi.billing.getEntitlements();
 
 Each sub-namespace wraps one QNSI backend service:
 
-| Sub-client | Wraps | Key methods |
-|---|---|---|
-| `qnsi.vault` | `apps/vault-service` (`/vault/v1`) | `createSecret`, `getSecret`, `getSecretVersion`, `rotateSecret`, `deleteSecret`, `listSecretVersions` |
-| `qnsi.kms` | `apps/kms-service` (`/kms/v1`) | `createKey`, `listKeys`, `getKey`, `rotateKey`, `deleteKey`, `sign`, `verify`, `wrap`, `unwrap` |
-| `qnsi.audit` | `apps/audit-service` (`/audit/v1`) | `logEvent`, `ingestEvents`, `listEvents` |
-| `qnsi.auth` | `apps/auth-service` (`/auth`) | `login`, `refreshToken`, `revoke`, passkey lifecycle including `deletePasskey(credentialId, userId)`, `mfaChallenge` / `mfaVerify`, `federateSAML` / `federateOIDC`, `evaluateRisk` |
-| `qnsi.tenant` | `apps/tenant-service` (`/tenant/v1`) | `createTenant`, `getTenant`, `updateTenant`, `listTenants`, `getCryptoPolicy`, `upsertCryptoPolicy`, `getCurrentHealth`, `getCurrentQuotas` |
-| `qnsi.access` | `apps/access-control-service` (`/access/v1`) | `createRole`, `getRole`, `listRoles`, `deleteRole`, `assignRole`, `revokeRoleAssignment`, `checkPermission` |
-| `qnsi.billing` | `apps/billing-service` (`/billing/v1`) | `getEntitlements`, `ingestMeter`, `ingestMeters`, `listInvoices`, `getInvoice`, `getCreditBalance` |
-| `qnsi.cryptoInventory` | `apps/crypto-inventory-service` (`/crypto/v1`) | `listAssets`, `getAsset`, `getAssetStats`, `discoverAssets`, `getReadinessScore` |
-| `qnsi.storage` | `apps/storage-service` (`/storage/v1`) | `putObject`, `getObject` (returns `[bytes, descriptor]`), `deleteObject`, `listObjects`, `listBuckets` |
-| `qnsi.search` | `apps/search-service` (`/search/v1`) | `createIndex`, `listIndexes`, `deleteIndex`, `upsertVectors`, `query` |
-| `qnsi.ai` | `apps/ai-orchestrator` (`/ai/v1`) | model registry, deployments, workloads, inference, artifacts |
+| Sub-client             | Wraps                                          | Key methods                                                                                                                                                                         |
+| ---------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `qnsi.vault`           | `apps/vault-service` (`/vault/v1`)             | `createSecret`, `getSecret`, `getSecretVersion`, `rotateSecret`, `deleteSecret`, `listSecretVersions`                                                                               |
+| `qnsi.kms`             | `apps/kms-service` (`/kms/v1`)                 | `createKey`, `listKeys`, `getKey`, `rotateKey`, `deleteKey`, `sign`, `verify`, `wrap`, `unwrap`                                                                                     |
+| `qnsi.audit`           | `apps/audit-service` (`/audit/v1`)             | `logEvent`, `ingestEvents`, `listEvents`                                                                                                                                            |
+| `qnsi.auth`            | `apps/auth-service` (`/auth`)                  | `login`, `refreshToken`, `revoke`, passkey lifecycle including `deletePasskey(credentialId, userId)`, `mfaChallenge` / `mfaVerify`, `federateSAML` / `federateOIDC`, `evaluateRisk` |
+| `qnsi.tenant`          | `apps/tenant-service` (`/tenant/v1`)           | `createTenant`, `getTenant`, `updateTenant`, `listTenants`, `getCryptoPolicy`, `upsertCryptoPolicy`, `getCurrentHealth`, `getCurrentQuotas`                                         |
+| `qnsi.access`          | `apps/access-control-service` (`/access/v1`)   | `createRole`, `getRole`, `listRoles`, `deleteRole`, `assignRole`, `revokeRoleAssignment`, `checkPermission`                                                                         |
+| `qnsi.billing`         | `apps/billing-service` (`/billing/v1`)         | `getEntitlements`, `ingestMeter`, `ingestMeters`, `listInvoices`, `getInvoice`, `getCreditBalance`                                                                                  |
+| `qnsi.cryptoInventory` | `apps/crypto-inventory-service` (`/crypto/v1`) | `listAssets`, `getAsset`, `getAssetStats`, `discoverAssets`, `getReadinessScore`                                                                                                    |
+| `qnsi.storage`         | `apps/storage-service` (`/storage/v1`)         | `putObject`, `getObject` (returns `[bytes, descriptor]`), `deleteObject`, `listObjects`, `listBuckets`                                                                              |
+| `qnsi.search`          | `apps/search-service` (`/search/v1`)           | `createIndex`, `listIndexes`, `deleteIndex`, `upsertVectors`, `query`                                                                                                               |
+| `qnsi.ai`              | `apps/ai-orchestrator` (`/ai/v1`)              | model registry, deployments, workloads, inference, artifacts                                                                                                                        |
 
 ### Strict write contracts
 
@@ -121,11 +123,11 @@ Constant-time HMAC comparison, 5-minute replay window by default (`MAX_WEBHOOK_S
 
 All errors descend from `QnsiError`:
 
-| Class | When |
-|---|---|
-| `QnsiNetworkError` | DNS, TLS, timeout, or connection failure |
-| `QnsiAuthError` | API key rejected at activation |
-| `QnsiApiError` | A service returned 4xx/5xx with a structured body |
+| Class              | When                                                   |
+| ------------------ | ------------------------------------------------------ |
+| `QnsiNetworkError` | DNS, TLS, timeout, or connection failure               |
+| `QnsiAuthError`    | API key rejected at activation                         |
+| `QnsiApiError`     | A service returned 4xx/5xx with a structured body      |
 | `QnsiWebhookError` | HMAC mismatch, expired timestamp, malformed body, etc. |
 
 ```ts
@@ -145,10 +147,10 @@ try {
 `QnsiClient` performs a one-shot handshake against `/billing/v1/sdk/activate` on first use. The result is cached in memory; subsequent calls reuse it until ~60 s before expiry. You can inspect the current activation:
 
 ```ts
-await qnsi.tenantId();      // resolved tenant
-await qnsi.tier();          // plan tier
-await qnsi.limits();        // full limits dict
-await qnsi.hasFeature("sseEnabled");  // convenience boolean
+await qnsi.tenantId(); // resolved tenant
+await qnsi.tier(); // plan tier
+await qnsi.limits(); // full limits dict
+await qnsi.hasFeature("sseEnabled"); // convenience boolean
 
 // Force the handshake at startup so you fail fast on a bad key:
 await qnsi.ensureActivated();
@@ -160,19 +162,19 @@ If the activation token is rotated server-side, the SDK invalidates its cache an
 
 The legacy per-service packages are **deprecated** in favour of `@heossihq/qnsi`. They are not being republished under the `@heossihq` scope; new code should use this consolidated package.
 
-| Before | After |
-|---|---|
-| Legacy `VaultClient` | `import { QnsiClient } from "@heossihq/qnsi"` then `qnsi.vault` |
-| Legacy `KmsClient` | `qnsi.kms` |
-| Legacy `AuthClient` | `qnsi.auth` |
-| Legacy `TenantClient` | `qnsi.tenant` |
-| Legacy `AccessControlClient` | `qnsi.access` |
-| Legacy `BillingClient` | `qnsi.billing` |
-| Legacy `CryptoInventoryClient` | `qnsi.cryptoInventory` |
-| Legacy `StorageClient` | `qnsi.storage` |
-| Legacy `SearchClient` | `qnsi.search` |
-| Legacy `AiOrchestratorClient` | `qnsi.ai` |
-| Legacy `AuditClient` | `qnsi.audit` |
+| Before                         | After                                                           |
+| ------------------------------ | --------------------------------------------------------------- |
+| Legacy `VaultClient`           | `import { QnsiClient } from "@heossihq/qnsi"` then `qnsi.vault` |
+| Legacy `KmsClient`             | `qnsi.kms`                                                      |
+| Legacy `AuthClient`            | `qnsi.auth`                                                     |
+| Legacy `TenantClient`          | `qnsi.tenant`                                                   |
+| Legacy `AccessControlClient`   | `qnsi.access`                                                   |
+| Legacy `BillingClient`         | `qnsi.billing`                                                  |
+| Legacy `CryptoInventoryClient` | `qnsi.cryptoInventory`                                          |
+| Legacy `StorageClient`         | `qnsi.storage`                                                  |
+| Legacy `SearchClient`          | `qnsi.search`                                                   |
+| Legacy `AiOrchestratorClient`  | `qnsi.ai`                                                       |
+| Legacy `AuditClient`           | `qnsi.audit`                                                    |
 
 The constructor signature is simpler - one `apiKey` for everything, instead of a per-service config:
 

@@ -47,7 +47,7 @@
 		"build": "tsc --project tsconfig.build.json",
 		"lint": "biome check .",
 		"test": "vitest run",
-		"typecheck": "tsc --project tsconfig.json --noEmit"
+		"typecheck": "tsc --project tsconfig.json --noEmit && tsc --project examples/tsconfig.json --noEmit"
 	},
 	"dependencies": {
 		"@noble/hashes": "^2.0.1",

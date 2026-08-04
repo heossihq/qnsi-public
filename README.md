@@ -199,6 +199,8 @@ Source presence, a package release, a passing test, and production proof are dif
 | Risk, audit, or compliance         | [Audit documentation](apps/docs/content/audit/) and [framework control source](apps/audit-service/src/services/compliance-service.ts)                       | Evidence models, control mappings, retention and export contracts, and where production verification remains required |
 | Procurement or technical diligence | [Capability registry](apps/web/lib/public-capabilities.ts), [system status](https://qnsi.heossi.com/status), licenses, security policy, and export manifest | Maturity boundaries, public artifacts, operating status, licensing, disclosure process, and source provenance         |
 
+For a consolidated review, use the [enterprise reference architectures](apps/docs/content/architecture/reference-architectures.md) and [enterprise diligence index](apps/docs/content/security/enterprise-diligence.md).
+
 ## Integration surfaces
 
 The SDKs are how developers connect workloads to QNSI infrastructure. They are not the entire product.
@@ -215,6 +217,8 @@ The SDKs are how developers connect workloads to QNSI infrastructure. They are n
 | MCP                  | [`@heossihq/qnsi-mcp`](packages/mcp-server/) | `pnpm add @heossihq/qnsi-mcp`                                |
 
 The unified TypeScript package also installs the `qnsi` CLI.
+
+Five [runnable TypeScript scenarios](packages/qnsi/examples/README.md) cover KMS sign/verify, vault lifecycle, read-only inventory and CBOM, audit ingestion, and storage round-trip behavior. Use a non-production tenant and review each scenario's persistent-effect boundary before execution.
 
 ## TypeScript quick start
 
@@ -248,6 +252,7 @@ See the [developer documentation](https://docs.qnsi.heossi.com/getting-started) 
 - [`apps/web/public/pqc-evidence/`](apps/web/public/pqc-evidence/) - published conformance evidence
 - [`apps/web/public/pqc-benchmarks/`](apps/web/public/pqc-benchmarks/) - published benchmark datasets
 - [`apps/web/lib/qnsi-use-cases/`](apps/web/lib/qnsi-use-cases/) - sourced public use-case catalog and reference register
+- [`SHA256SUMS`](SHA256SUMS) - SHA-256 digest for every exported source file plus the generated README and manifest
 
 The public surface is designed to answer three questions without access to the private service implementation:
 
@@ -275,6 +280,7 @@ For security reports, follow [SECURITY.md](SECURITY.md). For contributions and i
 
 ## Export provenance
 
-Private source revision: `d8991f1145e8a77808e7409f69391dedde23afcf`
+Private source revision: `9509ae08425ba34ceb08d96a6f77b913351f5a9f`
 
 The machine-readable export inventory and generation timestamp are recorded in [`MANIFEST.json`](MANIFEST.json).
+Verify the exported tree with `sha256sum -c SHA256SUMS` from the repository root.

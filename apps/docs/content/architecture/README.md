@@ -13,9 +13,9 @@ Platform architecture - high availability, multi-region, residency, isolation, a
 - [Control Plane vs Data Plane](./control-plane-vs-data-plane)
 - [Failure Domains](./failure-domains)
 - [Multi-Region and Data Residency](./multi-region-and-residency)
+- [Enterprise Reference Architectures](./reference-architectures)
 - [Service Boundaries](./service-boundaries)
 - [System Overview](./system-overview)
 - [Tenant Crypto Policy System](./tenant-crypto-policy)
 - [Tenant Isolation](./tenant-isolation)
 - [Trust Boundaries](./trust-boundaries)
-

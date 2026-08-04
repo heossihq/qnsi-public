@@ -1,0 +1,13 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"composite": false,
+		"noEmit": true,
+		"rootDir": "..",
+		"baseUrl": ".",
+		"paths": {
+			"@heossihq/qnsi": ["../src/index.ts"]
+		}
+	},
+	"include": ["./*.ts"]
+}

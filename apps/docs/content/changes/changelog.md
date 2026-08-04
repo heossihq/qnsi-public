@@ -1,8 +1,9 @@
 ---
 title: Changelog
-last_updated: 2026-07-20
+last_updated: 2026-08-04
 copyright: © 2026 HEOSSI (PTE.) LTD. All rights reserved.
 ---
+
 # Changelog
 
 Curated, high-signal changes to the QNSI platform, SDKs, and developer surfaces.
@@ -11,6 +12,10 @@ Curated, high-signal changes to the QNSI platform, SDKs, and developer surfaces.
 > `apps/web/lib/changelog.json` and run `pnpm gen:changelog-docs`.
 
 ## Recent changes
+
+### 2026-08-04 - Enterprise evaluation and public provenance surface
+
+**Release.** Published enterprise reference architectures, role-based diligence paths, explicit deployment-qualification boundaries, five runnable TypeScript integration scenarios, and SHA-256 checksums for the reviewed public export. Discovery copy now distinguishes 11 cloud-vendor connector families from 36 normalized inventory source types, both derived from implementing source.
 
 ### 2026-07-20 - Native-PQC HSM positioning and migration guidance
 
@@ -50,7 +55,7 @@ Curated, high-signal changes to the QNSI platform, SDKs, and developer surfaces.
 
 ### 2025-11-01 - QNSI monorepo bootstrapped
 
-**Release.** Consolidated the platform into the current monorepo; established the @heossihq/qnsi-* namespace and Changesets-based semantic versioning.
+**Release.** Consolidated the platform into the current monorepo; established the @heossihq/qnsi-\* namespace and Changesets-based semantic versioning.
 
 ## Versioning
 

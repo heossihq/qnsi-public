@@ -1,0 +1,22 @@
+{
+	"name": "@heossihq/qnsi-public-examples",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"kms": "tsx 01-kms-sign-verify.ts",
+		"vault": "tsx 02-vault-lifecycle.ts",
+		"inventory": "tsx 03-inventory-readonly.ts",
+		"audit": "tsx 04-audit-event.ts",
+		"storage": "tsx 05-storage-roundtrip.ts",
+		"typecheck": "tsc --noEmit -p tsconfig.json"
+	},
+	"dependencies": {
+		"@heossihq/qnsi": "^0.6.0"
+	},
+	"devDependencies": {
+		"@types/node": "^25.5.2",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2"
+	}
+}

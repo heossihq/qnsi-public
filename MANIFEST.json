@@ -1,6 +1,15 @@
 {
   "export": {
-    "fileCount": 909,
+    "checksums": {
+      "algorithm": "SHA-256",
+      "file": "SHA256SUMS"
+    },
+    "fileCount": 921,
+    "generatedFiles": [
+      "MANIFEST.json",
+      "README.md",
+      "SHA256SUMS"
+    ],
     "publicPackages": [
       "access-control-sdk",
       "ai-sdk",
@@ -26,8 +35,8 @@
     ]
   },
   "source": {
-    "generatedAt": "2026-08-04T11:19:03.632327+00:00",
+    "generatedAt": "2026-08-04T11:57:47.539899+00:00",
     "repo": "heossihq/qnsi",
-    "sha": "d8991f1145e8a77808e7409f69391dedde23afcf"
+    "sha": "9509ae08425ba34ceb08d96a6f77b913351f5a9f"
   }
 }
