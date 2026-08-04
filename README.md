@@ -183,6 +183,6 @@ For security reports, follow [SECURITY.md](SECURITY.md). For contributions and i
 
 ## Export provenance
 
-Private source revision: `e52d89e872834c8622aabca88c78501cd304c103`
+Private source revision: `da32284092031e437ee18092c18dc46065131a00`
 
 The machine-readable export inventory and generation timestamp are recorded in [`MANIFEST.json`](MANIFEST.json).
