@@ -1,10 +1,11 @@
 ---
-title: Session Management
+title: QNSI Session Management and Token Revocation
 version: 0.0.1
-last_updated: 2026-04-23
+last_updated: 2026-07-31
+description: Understand QNSI interactive session creation, refresh, timeout, concurrent-session limits, logout, and refresh-token revocation.
 copyright: © 2025 HEOSSI. All rights reserved.
 ---
-# Session Management
+# QNSI Session Management and Token Revocation
 
 QNSI manages user sessions for interactive authentication.
 

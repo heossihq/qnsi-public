@@ -3,7 +3,7 @@ title: Getting Help
 version: 1.0.0
 last_updated: 2026-04-23
 description: Get support for QNSI Cloud through documentation, community channels, the support portal, and email contacts for operations, security, billing, and incidents.
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # Getting Help
 
@@ -76,7 +76,7 @@ https://qnsi.heossi.com#overview
 
 ## Related Documentation
 
-- [Support Policy](/support/support-policy) — Full support tier details
-- [Maintenance Policy](/support/maintenance-policy) — Scheduled maintenance
-- [SLA](/legal/sla) — Service Level Agreement
-- [Data Retention](/support/data-retention) — Backup and retention policies
+- [Support Policy](/support/support-policy) - Full support tier details
+- [Maintenance Policy](/support/maintenance-policy) - Scheduled maintenance
+- [SLA](/legal/service-level-agreement) - Service Level Agreement
+- [Data Retention](/support/data-retention) - Backup and retention policies

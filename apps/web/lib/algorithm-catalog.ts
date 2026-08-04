@@ -1,16 +1,16 @@
 /**
- * Algorithm catalog — canonical registry of every PQC algorithm family
+ * Algorithm catalog - canonical registry of every PQC algorithm family
  * QNSI ships, used by /algorithms (catalog index) and
  * /algorithms/[family] (per-family pages).
  *
  * Source-of-truth for the FIPS-finalised families (ML-KEM, ML-DSA, SLH-DSA):
- *   - FIPS 203 / 204 / 205 (Aug 2024) — official NIST specifications
- *   - apps/web/scripts/run-nist-acvp-conformance.ts — ACVP runner
- *   - apps/web/public/pqc-evidence/acvp-latest.json — pass/fail counts
+ *   - FIPS 203 / 204 / 205 (Aug 2024) - official NIST specifications
+ *   - apps/web/scripts/run-nist-acvp-conformance.ts - ACVP runner
+ *   - apps/web/public/pqc-evidence/acvp-latest.json - pass/fail counts
  *
  * Source-of-truth for the broader liboqs surface (BIKE, McEliece,
  * FrodoKEM, NTRU, NTRU-Prime, Falcon, MAYO, CROSS, UOV, SNOVA):
- *   - github.com/open-quantum-safe/liboqs @ 0.15.0 — src/kem/kem.h + src/sig/sig.h
+ *   - github.com/open-quantum-safe/liboqs @ 0.15.0 - src/kem/kem.h + src/sig/sig.h
  *   - tooling/liboqs-src/ (local clone for inspection)
  *
  * Keep ACVP-status fields aligned with /verify/conformance evidence
@@ -50,7 +50,7 @@ export interface AlgorithmFamily {
 	readonly fipsStandard?: string; // "FIPS 203", "FIPS 204", "FIPS 205", "FIPS 206 (pending)", or undefined
 	readonly fipsStatus: FipsStatus;
 	readonly summary: string; // 1-2 sentence positioning
-	readonly mechanism: string; // 1 paragraph — how it works at a high level
+	readonly mechanism: string; // 1 paragraph - how it works at a high level
 	readonly variants: readonly AlgorithmVariant[];
 	readonly qnspSupport: {
 		readonly providers: readonly ("noble" | "liboqs")[];
@@ -83,7 +83,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		fipsStandard: "FIPS 203",
 		fipsStatus: "FIPS-finalised",
 		summary:
-			"NIST's primary post-quantum key encapsulation standard, finalised August 2024 as FIPS 203. ML-KEM is QNSI's default KEM in every tier and powers PQC TLS key agreement, KMS-wrapped data keys, and vault secret encryption.",
+			"NIST's primary post-quantum key encapsulation standard, finalised August 2024 as FIPS 203. QNSI policy sources select ML-KEM across PQC-native tiers and define it for transport and envelope targets; complete production negotiation and envelope execution remain NOT VERIFIED.",
 		mechanism:
 			"ML-KEM is built on the hardness of the Module Learning With Errors (Module-LWE) problem over polynomial rings. Encapsulation generates a 32-byte shared secret and a ciphertext that can be decapsulated only by the holder of the corresponding secret key. Parameter sets ML-KEM-512 / 768 / 1024 trade key size against security category (NIST levels 1 / 3 / 5). FIPS 203 §6.2 specifies a deterministic seed-driven Encaps_internal(ek, m) and Decaps_internal(dk, c) pair, which is exactly what NIST ACVP test vectors exercise.",
 		variants: [
@@ -101,7 +101,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				publicKeyBytes: 1184,
 				secretKeyBytes: 2400,
 				ciphertextBytes: 1088,
-				note: "Production default across QNSI backend services. Recommended for hybrid PQC TLS (X25519+ML-KEM-768).",
+				note: "Policy default for eligible interoperability targets. Production hybrid negotiation must be proven from an observed deployment transcript.",
 			},
 			{
 				name: "ML-KEM-1024",
@@ -120,10 +120,10 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		acvp: {
 			nobleStatus: "passing",
 			liboqsStatus: "passing",
-			note: "Both providers pass all 240 ML-KEM ACVP tests (keyGen 75 + encapsulation AFT 75 + decapsulation VAL 30 + §7.2/§7.3 key-validation 60). liboqs driven via OQS_KEM_keypair_derand + OQS_KEM_encaps_derand bindings shipped in @heossi/liboqs-native 0.15.1.",
+			note: "Both providers pass all 240 ML-KEM ACVP tests (keyGen 75 + encapsulation AFT 75 + decapsulation VAL 30 + §7.2/§7.3 key-validation 60). liboqs driven via OQS_KEM_keypair_derand + OQS_KEM_encaps_derand bindings shipped in @heossihq/liboqs-native 0.15.1.",
 		},
 		useCases: [
-			"PQC TLS key agreement (hybrid with X25519 for production)",
+			"Hybrid TLS key-agreement target with X25519; production negotiation requires observed evidence",
 			"KMS-wrapped data keys (envelope encryption)",
 			"Vault secret-key derivation",
 			"PQC-encrypted object storage (SSE-X)",
@@ -131,7 +131,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		],
 		tradeoffs: [
 			"Smallest combined key + ciphertext footprint of the FIPS-finalised KEMs",
-			"Highest performance — sub-millisecond keygen / encaps / decaps on modern CPUs",
+			"Highest performance - sub-millisecond keygen / encaps / decaps on modern CPUs",
 			"Module-LWE security assumption is well-studied but newer than RSA / ECDH classical assumptions",
 		],
 		references: {
@@ -201,7 +201,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		tradeoffs: [
 			"Larger signatures than Falcon but faster signing and simpler implementation",
 			"Constant-time reference implementation (side-channel resistant)",
-			"Same Module-LWE security assumption as ML-KEM — assumption-economy across families",
+			"Same Module-LWE security assumption as ML-KEM - assumption-economy across families",
 		],
 		references: {
 			nistPdf: "https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf",
@@ -220,7 +220,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		fipsStandard: "FIPS 205",
 		fipsStatus: "FIPS-finalised",
 		summary:
-			"NIST's hash-based digital signature standard, finalised August 2024 as FIPS 205. SLH-DSA's security rests only on the hardness of finding hash function preimages — the most conservative assumption available — making it the natural choice for long-archival signatures and government-tier policy.",
+			"NIST's hash-based digital signature standard, finalised August 2024 as FIPS 205. SLH-DSA's security rests only on the hardness of finding hash function preimages - the most conservative assumption available - making it the natural choice for long-archival signatures and government-tier policy.",
 		mechanism:
 			"SLH-DSA combines a few-time hash signature (FORS) with a hypertree of one-time signatures (WOTS+) glued together using Merkle trees. The result is a stateless signature scheme whose security reduces solely to the security of the underlying hash function (SHA-2 or SHAKE). 12 parameter sets cover combinations of {SHA2, SHAKE} × {128, 192, 256 bits} × {fast, small}. The `f` (fast) variants prioritise signing speed; `s` (small) variants prioritise signature size.",
 		variants: [
@@ -246,7 +246,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				publicKeyBytes: 64,
 				secretKeyBytes: 128,
 				signatureBytes: 29792,
-				note: "Maximum / Government tier — smallest sig variant.",
+				note: "Maximum / Government tier - smallest sig variant.",
 			},
 			{
 				name: "SLH-DSA-SHA2-256f",
@@ -254,7 +254,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				publicKeyBytes: 64,
 				secretKeyBytes: 128,
 				signatureBytes: 49856,
-				note: "Maximum / Government tier — faster signing variant.",
+				note: "Maximum / Government tier - faster signing variant.",
 			},
 			{
 				name: "SLH-DSA-SHAKE-128s / 128f / 192s / 192f / 256s / 256f",
@@ -281,9 +281,9 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 			"Independent cross-verification of ML-DSA signatures (different security assumption)",
 		],
 		tradeoffs: [
-			"Largest signatures of any FIPS-finalised PQC scheme (8 KB – 50 KB depending on parameter set)",
-			"Slowest signing performance — milliseconds, not microseconds",
-			"Strongest security argument — relies only on hash function security",
+			"Largest signatures of any FIPS-finalised PQC scheme (8 KB - 50 KB depending on parameter set)",
+			"Slowest signing performance - milliseconds, not microseconds",
+			"Strongest security argument - relies only on hash function security",
 			"Stateless: no key-use counter to maintain (unlike LMS / XMSS)",
 		],
 		references: {
@@ -304,7 +304,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		fipsStandard: "FIPS 206 (pending)",
 		fipsStatus: "FIPS-pending",
 		summary:
-			"NIST's fourth standardised PQC signature scheme, formally FN-DSA under FIPS 206 — the initial public draft is still pending as of mid-2026. Falcon's signatures are the most compact of the lattice-based PQC schemes, making it preferred for size-constrained transport.",
+			"NIST's fourth standardised PQC signature scheme, formally FN-DSA under FIPS 206 - the initial public draft is still pending as of mid-2026. Falcon's signatures are the most compact of the lattice-based PQC schemes, making it preferred for size-constrained transport.",
 		mechanism:
 			"Falcon uses the GPV trapdoor framework over NTRU lattices, with signatures generated via a discrete Gaussian sampler over the lattice. The result is signatures roughly 1/4 the size of equivalent-security ML-DSA signatures. The implementation complexity is higher than ML-DSA (floating-point Gaussian sampling requires care to avoid side-channels and rounding errors), which is why ML-DSA shipped first.",
 		variants: [
@@ -335,13 +335,13 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 			note: "NIST has not yet published ACVP test vectors for Falcon (vectors will land alongside the FIPS 206 final standard). Falcon signatures are exercised via internal sign/verify test suites only.",
 		},
 		useCases: [
-			"Size-constrained transport (where every byte counts — embedded, IoT, mobile)",
+			"Size-constrained transport (where every byte counts - embedded, IoT, mobile)",
 			"Standalone QNSI signatures when bandwidth dominates over CPU cost",
 			"Future government / defence workloads pending FIPS 206 finalisation",
 		],
 		tradeoffs: [
 			"Smallest signatures among lattice-based PQC schemes",
-			"More complex implementation than ML-DSA — Gaussian sampling side-channels require careful engineering",
+			"More complex implementation than ML-DSA - Gaussian sampling side-channels require careful engineering",
 			"Not yet FIPS-finalised; do not use for FIPS-only government workloads until FIPS 206 lands",
 		],
 		references: {
@@ -396,12 +396,12 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 			note: "Not selected for FIPS standardisation; no NIST ACVP vectors.",
 		},
 		useCases: [
-			"Customer workloads requiring code-based alternatives beyond HQC",
+			"Customer workloads requiring a code-based alternative to lattice KEMs",
 			"Research and migration analysis",
 		],
 		tradeoffs: [
-			"Secret keys are larger than HQC at equivalent security levels",
-			"Not on the NIST PQC standardisation path — defer to HQC unless specific needs",
+			"Public/secret keys are larger than ML-KEM at equivalent security levels",
+			"Not on the NIST PQC standardisation path - prefer ML-KEM (FIPS 203) unless code-based diversity is specifically required",
 		],
 		references: {
 			designPaper: "https://bikesuite.org/",
@@ -418,7 +418,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		familyKind: "code-based",
 		fipsStatus: "non-FIPS",
 		summary:
-			"The original code-based public-key cryptosystem, in continuous study since 1978 — by far the oldest cryptographic assumption in the PQC catalogue. Trades extremely large public keys for the most-studied security assumption available.",
+			"The original code-based public-key cryptosystem, in continuous study since 1978 - by far the oldest cryptographic assumption in the PQC catalogue. Trades extremely large public keys for the most-studied security assumption available.",
 		mechanism:
 			"Classic McEliece uses binary Goppa codes. The public key is a permuted, scrambled generator matrix; the secret key is the underlying Goppa code structure. Encryption adds error vectors to a codeword; decryption uses Patterson's algorithm to correct the errors. Security has been studied continuously for 47+ years with no major breaks.",
 		variants: [
@@ -428,7 +428,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				publicKeyBytes: 261120,
 				secretKeyBytes: 6452,
 				ciphertextBytes: 96,
-				note: "5 parameter sets covering NIST security categories 1, 3, and 5. Public keys range 261 KB – 1.36 MB.",
+				note: "5 parameter sets covering NIST security categories 1, 3, and 5. Public keys range 261 KB - 1.36 MB.",
 			},
 		],
 		qnspSupport: {
@@ -444,7 +444,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 			"Stable long-term keys where the one-time public-key bandwidth is acceptable (private CA keys, root signing identities)",
 		],
 		tradeoffs: [
-			"Public keys are 100x-1000x larger than ML-KEM-1024 — fundamentally not suitable for TLS or per-session usage",
+			"Public keys are 100x-1000x larger than ML-KEM-1024 - fundamentally not suitable for TLS or per-session usage",
 			"Smallest ciphertexts in the PQC catalogue (96-240 bytes)",
 			"Best-studied PQC security assumption (47+ years of cryptanalysis)",
 		],
@@ -464,7 +464,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		familyKind: "lattice-based",
 		fipsStatus: "non-FIPS",
 		summary:
-			"Plain Learning With Errors (LWE) KEM — same lattice family as ML-KEM but without the additional ring or module structure. Larger keys and ciphertexts but built on the most conservative lattice assumption.",
+			"Plain Learning With Errors (LWE) KEM - same lattice family as ML-KEM but without the additional ring or module structure. Larger keys and ciphertexts but built on the most conservative lattice assumption.",
 		mechanism:
 			"FrodoKEM operates on plain LWE (no ring / module structure), avoiding any potential structural cryptanalysis advances against ring-LWE / module-LWE. The trade-off is significantly larger parameters. Two hash function variants (AES, SHAKE) × three security categories.",
 		variants: [
@@ -550,7 +550,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		},
 		useCases: ["Migration from legacy NTRU deployments", "Research and comparative analysis"],
 		tradeoffs: [
-			"Not on the NIST standardisation path — defer to ML-KEM for new deployments",
+			"Not on the NIST standardisation path - defer to ML-KEM for new deployments",
 			"30+ years of cryptanalytic study",
 		],
 		references: {
@@ -592,7 +592,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 			"Compatibility with OpenSSH PQ key exchange",
 			"Customers preferring prime-degree NTRU variants",
 		],
-		tradeoffs: ["Recognisable in SSH ecosystem", "Smaller liboqs surface than ML-KEM or HQC"],
+		tradeoffs: ["Recognisable in SSH ecosystem", "Smaller liboqs surface than ML-KEM"],
 		references: {
 			designPaper: "https://ntruprime.cr.yp.to/",
 			upstreamCode: "https://github.com/open-quantum-safe/liboqs/tree/main/src/kem/ntruprime",
@@ -632,7 +632,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		useCases: ["Compact signatures with small public key", "Research and migration analysis"],
 		tradeoffs: [
 			"Compact across all parameters",
-			"Newer security analysis than lattice-based — fewer cryptanalysis-years",
+			"Newer security analysis than lattice-based - fewer cryptanalysis-years",
 		],
 		references: {
 			designPaper: "https://pqmayo.org/",
@@ -761,7 +761,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		],
 		tradeoffs: [
 			"Compact public keys and signatures",
-			"Non-commutative ring structure is newer — less cryptanalysis history than UOV",
+			"Non-commutative ring structure is newer - less cryptanalysis history than UOV",
 		],
 		references: {
 			upstreamCode: "https://github.com/open-quantum-safe/liboqs/tree/main/src/sig/snova",
@@ -776,3 +776,26 @@ export function findAlgorithmFamily(slug: string): AlgorithmFamily | undefined {
 export function algorithmSlugs(): readonly string[] {
 	return ALGORITHM_CATALOG.map((f) => f.slug);
 }
+
+// ── PQC surface - THE single source for the algorithm counts ─────────────────
+// Defined on this LEAF module (it imports nothing) so every consumer - including
+// marketing-data.ts, which product-facts.ts itself imports for pricing - can pull
+// the counts without a circular import. product-facts.ts re-exports PQC as the hub.
+//
+// families    : DERIVED from ALGORITHM_CATALOG.
+// kems/sigs   : the per-tenant policy-engine surface. SoT =
+//               packages/security/src/crypto-policy.ts (backend-enforced); mirrored
+//               here because apps/web cannot bundle the native crypto package.
+//               Guarded by verify:facts and verify:fact-drift.
+// NOTE: the catalog above lists display variants only - do NOT sum them to get the
+// total (that yields 27, not 87). The 24/63 is the policy-engine surface.
+const PQC_KEMS = 24;
+const PQC_SIGNATURES = 63;
+
+export const PQC = {
+	families: ALGORITHM_CATALOG.length, // 13 (derived from the catalog)
+	kems: PQC_KEMS,
+	signatures: PQC_SIGNATURES,
+	total: PQC_KEMS + PQC_SIGNATURES, // 87
+	policyTiers: 4, // default · strict · maximum · government
+} as const;

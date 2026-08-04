@@ -2,7 +2,7 @@
  * SDK Activation Client
  *
  * Handles activation handshake with the QNSP billing-service.
- * Browser-compatible — uses global fetch, no node: imports.
+ * Browser-compatible - uses global fetch, no node: imports.
  *
  * Every SDK must call `activateSdk()` before performing operations.
  * The activation validates the API key against the QNSP backend,
@@ -55,7 +55,7 @@ interface ActivationState {
  * Configuration for SDK activation.
  */
 export interface SdkActivationConfig {
-	/** QNSP API key (required — get one at https://cloud.qnsi.heossi.com/auth?mode=signup) */
+	/** QNSP API key (required - get one at https://cloud.qnsi.heossi.com/auth?mode=signup) */
 	readonly apiKey: string;
 	/** SDK package identifier */
 	readonly sdkId: SdkIdentifier;
@@ -105,7 +105,7 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 		throw new SdkActivationError_(
 			"INVALID_API_KEY",
 			`QNSP ${config.sdkId}: apiKey is required. ` +
-				"Get your free API key at https://cloud.qnsi.heossi.com/auth?mode=signup — " +
+				"Get your free API key at https://cloud.qnsi.heossi.com/auth?mode=signup - " +
 				"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
 				`Docs: https://docs.qnsi.heossi.com/sdk/${config.sdkId}`,
 			401,
@@ -161,7 +161,7 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 				errorBody = parsed.data;
 			}
 		} catch {
-			// Ignore JSON parse errors — use status code
+			// Ignore JSON parse errors - use status code
 		}
 
 		if (errorBody) {

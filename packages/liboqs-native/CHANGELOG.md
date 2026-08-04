@@ -1,4 +1,4 @@
-# @heossi/liboqs-native
+# @heossihq/liboqs-native
 
 ## 0.0.1
 

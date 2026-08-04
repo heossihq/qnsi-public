@@ -312,7 +312,7 @@ describe("CrossVerificationService", () => {
 				publicKey: keyPair.publicKey,
 			});
 
-			// Both providers reject the tampered data — they agree, so verified=true
+			// Both providers reject the tampered data - they agree, so verified=true
 			expect(result.verified).toBe(true);
 			expect(result.attestation.crossVerificationResult).toBe("match");
 		});

@@ -1,22 +1,22 @@
-# qnsi — Rust SDK for the Quantum-Native Security Infrastructure
+# qnsi - Rust SDK for the Quantum-Native Security Infrastructure
 
 [![Crates.io](https://img.shields.io/crates/v/qnsi.svg)](https://crates.io/crates/qnsi)
 [![docs.rs](https://docs.rs/qnsi/badge.svg)](https://docs.rs/qnsi)
 [![License](https://img.shields.io/crates/l/qnsi.svg)](./LICENSE)
 
-Typed async Rust client for QNSI — post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS, immutable audit trails. Same wire contracts as the official `@heossi/qnsi` TypeScript SDK, the `qnsi` Python SDK, and the `github.com/heossihq/qnsi-public/sdks/go/qnsi` Go SDK — pick whichever language fits your stack and the byte-for-byte outputs round-trip.
+Typed async Rust client for QNSI - post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS, immutable audit trails. Same wire contracts as the official `@heossihq/qnsi` TypeScript SDK, the `qnsi` Python SDK, and the `github.com/heossihq/qnsi-public/sdks/go/qnsi` Go SDK - pick whichever language fits your stack and the byte-for-byte outputs round-trip.
 
-> **Free tier available.** Free-forever account at <https://cloud.qnsi.heossi.com/auth> — 60-second signup, no credit card. Includes 10 GB PQC storage, 50 000 API calls/month, 20 KMS keys, 25 vault secrets.
+> **Free tier available.** Free-forever account at <https://cloud.qnsi.heossi.com/auth> - 60-second signup, no credit card. Includes 10 GB PQC storage, 50 000 API calls/month, 20 KMS keys, 25 vault secrets.
 
 ## Install
 
-Base install (HTTP clients for vault, KMS, audit — no native deps):
+Base install (HTTP clients for vault, KMS, audit - no native deps):
 
 ```bash
 cargo add qnsi
 ```
 
-With local PQC primitives (`qnsi::crypto` — wraps the [`oqs`](https://crates.io/crates/oqs) crate 0.11):
+With local PQC primitives (`qnsi::crypto` - wraps the [`oqs`](https://crates.io/crates/oqs) crate 0.11):
 
 ```bash
 cargo add qnsi --features crypto
@@ -39,7 +39,7 @@ use base64::{engine::general_purpose::STANDARD, Engine};
 async fn main() -> Result<(), qnsi::Error> {
     let c = Client::new(ClientOptions::with_api_key(std::env::var("QNSI_API_KEY").unwrap()))?;
 
-    // ── Vault — PQC-encrypted secret storage ─────────────────────────
+    // ── Vault - PQC-encrypted secret storage ─────────────────────────
     let secret = c.vault().create_secret(CreateSecretRequest {
         name: "openai-api-key".into(),
         payload_b64: STANDARD.encode(b"sk-..."),
@@ -47,7 +47,7 @@ async fn main() -> Result<(), qnsi::Error> {
         metadata: None,
     }, None).await?;
 
-    // ── KMS — server-side PQC keys ──────────────────────────────────
+    // ── KMS - server-side PQC keys ──────────────────────────────────
     let key = c.kms().create_key(CreateKeyRequest {
         key_id: None,                  // auto-generated UUID if omitted
         algorithm: "ml-dsa-65".into(),
@@ -58,7 +58,7 @@ async fn main() -> Result<(), qnsi::Error> {
     let signature = c.kms().sign(key_id, b"hello", None).await?;
     assert!(c.kms().verify(key_id, b"hello", &signature).await?);
 
-    // ── Audit — immutable, hash-chained event log ───────────────────
+    // ── Audit - immutable, hash-chained event log ───────────────────
     c.audit().log_event(LogEventRequest {
         event_type: "model.inference".into(),
         payload: serde_json::Map::from_iter([
@@ -88,7 +88,7 @@ async fn main() -> Result<(), qnsi::Error> {
 }
 ```
 
-For full lifecycle control (generate once, sign or decapsulate many times), call `oqs::kem::Kem::new(qnsi::crypto::kem_algorithm("ML-KEM-768")?)` directly — the resolver functions are public.
+For full lifecycle control (generate once, sign or decapsulate many times), call `oqs::kem::Kem::new(qnsi::crypto::kem_algorithm("ML-KEM-768")?)` directly - the resolver functions are public.
 
 ## Verifying inbound webhooks
 
@@ -162,23 +162,23 @@ If the activation token is rotated server-side, the SDK invalidates its cache an
 
 Customer-facing modules (every QNSI service callable through the edge gateway today):
 
-- `qnsi::vault` — `create_secret`, `get_secret`, `get_secret_version`, `rotate_secret`, `delete_secret`, `list_secret_versions` — wraps `apps/vault-service`
-- `qnsi::kms` — `create_key`, `list_keys`, `get_key`, `rotate_key`, `delete_key`, `sign`, `verify`, `wrap`, `unwrap_` — wraps `apps/kms-service`
-- `qnsi::audit` — `log_event`, `ingest_events` (batch), `list_events` — wraps `apps/audit-service`
-- `qnsi::auth` — `login`, `refresh_token`, `revoke`, `mfa_challenge`/`mfa_verify`, `evaluate_risk`, `list_risk_policies` — wraps `apps/auth-service`
-- `qnsi::tenant` — `create_tenant`, `get_tenant`, `update_tenant`, `list_tenants`, `get_crypto_policy`, `upsert_crypto_policy`, `get_current_health`, `get_current_quotas` — wraps `apps/tenant-service`
-- `qnsi::access` — `create_role`, `get_role`, `list_roles`, `delete_role`, `assign_role`, `revoke_role_assignment`, `check_permission` — wraps `apps/access-control-service`
-- `qnsi::billing` — `get_entitlements`, `ingest_meter`, `ingest_meters`, `list_invoices`, `get_invoice`, `get_credit_balance` — wraps `apps/billing-service`
-- `qnsi::crypto_inventory` — `list_assets`, `get_asset`, `get_asset_stats`, `discover_assets`, `get_readiness_score` — wraps `apps/crypto-inventory-service` (CBOM)
-- `qnsi::storage` — `put_object`, `get_object`, `delete_object`, `list_objects`, `list_buckets` — wraps `apps/storage-service` (SSE-X)
-- `qnsi::search` — `create_index`, `list_indexes`, `delete_index`, `upsert_vectors`, `query` — wraps `apps/search-service` (vector search)
-- `qnsi::ai` — `register_model`, model lifecycle, `submit_workload`, `invoke_inference`, `register_artifact` — wraps `apps/ai-orchestrator`
+- `qnsi::vault` - `create_secret`, `get_secret`, `get_secret_version`, `rotate_secret`, `delete_secret`, `list_secret_versions` - wraps `apps/vault-service`
+- `qnsi::kms` - `create_key`, `list_keys`, `get_key`, `rotate_key`, `delete_key`, `sign`, `verify`, `wrap`, `unwrap_` - wraps `apps/kms-service`
+- `qnsi::audit` - `log_event`, `ingest_events` (batch), `list_events` - wraps `apps/audit-service`
+- `qnsi::auth` - `login`, `refresh_token`, `revoke`, `mfa_challenge`/`mfa_verify`, `evaluate_risk`, `list_risk_policies` - wraps `apps/auth-service`
+- `qnsi::tenant` - `create_tenant`, `get_tenant`, `update_tenant`, `list_tenants`, `get_crypto_policy`, `upsert_crypto_policy`, `get_current_health`, `get_current_quotas` - wraps `apps/tenant-service`
+- `qnsi::access` - `create_role`, `get_role`, `list_roles`, `delete_role`, `assign_role`, `revoke_role_assignment`, `check_permission` - wraps `apps/access-control-service`
+- `qnsi::billing` - `get_entitlements`, `ingest_meter`, `ingest_meters`, `list_invoices`, `get_invoice`, `get_credit_balance` - wraps `apps/billing-service`
+- `qnsi::crypto_inventory` - `list_assets`, `get_asset`, `get_asset_stats`, `discover_assets`, `get_readiness_score` - wraps `apps/crypto-inventory-service` (CBOM)
+- `qnsi::storage` - `put_object`, `get_object`, `delete_object`, `list_objects`, `list_buckets` - wraps `apps/storage-service` (SSE-X)
+- `qnsi::search` - `create_index`, `list_indexes`, `delete_index`, `upsert_vectors`, `query` - wraps `apps/search-service` (vector search)
+- `qnsi::ai` - `register_model`, model lifecycle, `submit_workload`, `invoke_inference`, `register_artifact` - wraps `apps/ai-orchestrator`
 
 Local primitives + integration:
 
-- `qnsi::crypto` (feature-gated on `crypto`) — ML-KEM (512/768/1024), ML-DSA (44/65/87), SLH-DSA (12 variants), Falcon (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS — every FIPS 203/204/205 finalist exposed by `oqs` 0.11
-- `qnsi::parse_webhook` / `qnsi::verify_webhook_signature` — HMAC-SHA-256 signature verification + typed `qnsi::WebhookEvent`
-- `qnsi::Client::new` — API-key activation against `/billing/v1/sdk/activate` with caching and 401 retry
+- `qnsi::crypto` (feature-gated on `crypto`) - ML-KEM (512/768/1024), ML-DSA (44/65/87), SLH-DSA (12 variants), Falcon (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS - every FIPS 203/204/205 finalist exposed by `oqs` 0.11
+- `qnsi::parse_webhook` / `qnsi::verify_webhook_signature` - HMAC-SHA-256 signature verification + typed `qnsi::WebhookEvent`
+- `qnsi::Client::new` - API-key activation against `/billing/v1/sdk/activate` with caching and 401 retry
 
 ## What's coming
 

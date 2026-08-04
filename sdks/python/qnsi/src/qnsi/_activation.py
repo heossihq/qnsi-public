@@ -1,4 +1,4 @@
-"""SDK activation — the standard end-user flow.
+"""SDK activation - the standard end-user flow.
 
 End-user customers authenticate with a `qnsp_pqc_*` API key issued from the
 cloud portal. The SDK calls `/billing/v1/sdk/activate`, which:
@@ -9,7 +9,7 @@ cloud portal. The SDK calls `/billing/v1/sdk/activate`, which:
 3. Issues a short-lived activation token cached in memory; subsequent calls
    reuse the same token until ~1 minute before its stated expiry.
 
-This mirrors `@heossi/qnsi-sdk-activation`'s `activateSdk()` in the TypeScript SDKs.
+This mirrors `@heossihq/qnsi-sdk-activation`'s `activateSdk()` in the TypeScript SDKs.
 """
 
 from __future__ import annotations
@@ -27,7 +27,35 @@ ACTIVATION_PATH = "/billing/v1/sdk/activate"
 DEFAULT_TIMEOUT_SECONDS = 15.0
 EXPIRY_BUFFER_SECONDS = 60.0
 SDK_ID = "qnsp-python"
-SDK_VERSION = "0.3.0"
+
+
+def _package_version() -> str:
+    """The version this package ACTUALLY is, read from its installed metadata.
+
+    This was a hand-typed literal, and it had drifted badly. On 2026-07-14 one package
+    carried THREE different versions:
+
+        pyproject.toml           0.4.1   (the truth - what pip installs)
+        __init__.py __version__  0.4.0
+        _activation SDK_VERSION  0.3.0   <- sent to OUR OWN backend on every activation
+
+    So every Python activation had been reporting `sdkVersion: "0.3.0"` to billing-service:
+    our adoption telemetry - which SDK versions are in the field - was simply wrong, and no
+    gate could see it because the number agreed with nothing.
+
+    Deriving it from importlib.metadata means it cannot drift again: it IS the installed
+    version. The fallback only applies when running from a source tree that was never
+    installed (in which case there is no released version to report).
+    """
+    try:
+        from importlib.metadata import PackageNotFoundError, version
+
+        return version("qnsi")
+    except (ImportError, PackageNotFoundError):  # pragma: no cover - source-tree fallback
+        return "0.0.0+local"
+
+
+SDK_VERSION = _package_version()
 
 
 @dataclass(frozen=True)
@@ -62,7 +90,7 @@ class ApiKeyActivation:
         if not api_key or not api_key.strip():
             raise ValueError(
                 "api_key is required. Get a free QNSP API key at "
-                "https://cloud.qnsi.heossi.com/auth — no credit card required."
+                "https://cloud.qnsi.heossi.com/auth - no credit card required."
             )
         self._api_key = api_key
         self._base_url = base_url.rstrip("/")

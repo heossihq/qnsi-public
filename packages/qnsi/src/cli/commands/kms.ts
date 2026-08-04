@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Command } from "commander";
 import type { CliConfig } from "../config.js";
 import { EXIT_CODES } from "../config.js";
@@ -130,11 +131,33 @@ export function registerKmsCommands(program: Command, config: CliConfig): void {
 					return process.exit(EXIT_CODES.INVALID_ARGUMENTS);
 				}
 				const headers = await getAuthHeaders(effectiveConfig);
+
+				// WIRE CONTRACT (kms-service createKeySchema):
+				//     { tenantId, keyId (REQUIRED, 1-255), keyType (root|master|data|byok),
+				//       algorithm, metadata }
+				//
+				// This sent `{ tenantId, name, algorithm, purpose }` - no keyId, no keyType, and
+				// two fields (`name`, `purpose`) the backend does not know. It returned 400
+				// EVERY TIME: the command had never created a key. Proven 2026-07-14 against
+				// production with a real API key:
+				//
+				//     fieldErrors: { keyId: ["expected string, received undefined"],
+				//                    keyType: ["expected one of root|master|data|byok"] }
+				//
+				// Identical to the MCP server's qnsp_kms_generate_key. Backend Zod objects are
+				// NON-STRICT, so `name`/`purpose` were silently STRIPPED and the two required
+				// fields simply never arrived - which is why the failure never named itself.
+				// They belong in metadata, exactly as the (proven) SDK does.
+				const metadata: Record<string, string> = {};
+				if (options.name) metadata["name"] = String(options.name);
+				if (options.purpose) metadata["purpose"] = String(options.purpose);
+
 				const body = {
 					tenantId: effectiveConfig.tenantId,
-					name: options.name ?? `key-${Date.now()}`,
+					keyId: randomUUID(),
+					keyType: "data",
 					algorithm: options.algorithm,
-					purpose: options.purpose,
+					metadata,
 				};
 
 				const response = await fetchWithBackendHandling(

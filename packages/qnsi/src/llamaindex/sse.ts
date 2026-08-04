@@ -1,12 +1,12 @@
 /**
- * SSE-X token derivation — `@heossi/qnsi/llamaindex` subpath.
+ * SSE-X token derivation - `@heossihq/qnsi/llamaindex` subpath.
  *
  * Faithful inline of the SSE-X token-derivation crypto from the former
- * `@heossi/qnsi-search-sdk` `sse.ts` (2026-05-16 consolidation). Only the
- * token-derivation functions are inlined — the former `checkSseAccess`/tier
+ * `@heossihq/qnsi-search-sdk` `sse.ts` (2026-05-16 consolidation). Only the
+ * token-derivation functions are inlined - the former `checkSseAccess`/tier
  * gate is NOT carried over here because the vector store never invoked it
  * (server enforces the SSE entitlement authoritatively), which also lets this
- * subpath avoid a `@heossi/qnsi-shared-kernel` dependency. Crypto is
+ * subpath avoid a `@heossihq/qnsi-shared-kernel` dependency. Crypto is
  * byte-for-byte preserved: HMAC-SHA3-512 over UTF-8 values, base64url output.
  */
 

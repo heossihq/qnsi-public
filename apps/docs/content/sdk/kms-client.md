@@ -1,18 +1,18 @@
 ---
-title: KMS Client (@heossi/qnsi-kms-client)
+title: KMS Client (qnsi.kms)
 version: 0.2.6
 last_updated: 2026-04-30
-description: KMS Client SDK for QNSI, now consolidated into the unified @heossi/qnsi package, providing key wrapping and unwrapping with tenant-specific PQC algorithms.
+description: KMS Client SDK for QNSI, now consolidated into the unified @heossihq/qnsi package, providing key wrapping and unwrapping with tenant-specific PQC algorithms.
 copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/kms-client/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-kms-client` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-kms-client` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.kms./* method */(...);
 > ```
@@ -20,20 +20,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# KMS Client (`@heossi/qnsi-kms-client`)
+# KMS Client (`qnsi.kms`)
 
 The TypeScript client for `kms-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Provides key wrapping and unwrapping operations with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-kms-client
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { HttpKmsServiceClient } from "@heossi/qnsi-kms-client";
+import { HttpKmsServiceClient } from "@heossihq/qnsi";
 
 // With static API token
 const kms = new HttpKmsServiceClient("http://localhost:8095", "<access_token>");
@@ -89,7 +89,7 @@ const dataKey = Buffer.from(result.dataKey, "base64");
 The KMS Client exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-kms-client";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"

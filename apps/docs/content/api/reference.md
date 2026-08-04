@@ -1585,6 +1585,90 @@ List operations on an HSM connection.
 }
 ```
 
+#### POST /kms/v1/byohsm/pqc/seal
+
+HSM-Sealed Post-Quantum Keys (HSPK): generate an ML-DSA-44, ML-DSA-65, or ML-DSA-87
+keypair and seal its private key under a qualified HSM custody root. The key is AES-256-GCM sealed
+under a random content-encryption key (CEK); the CEK is RSA-OAEP-wrapped by a
+non-extractable HSM RSA key on your BYOHSM connection. Only that HSM can recover the
+CEK, so the ML-DSA private key is cryptographically hardware-bound at rest. QNSI
+performs ML-DSA outside the HSM module; an HSM validation does not extend to that
+software operation. Stateless - the
+caller stores the returned `sealedKey`. `keyId` must reference an HSM RSA key with
+`encrypt`+`decrypt` usage created on the connection.
+
+**Authentication:** Bearer token required  
+**Required Controls:** `entitlements`, `audit`  
+**Required Add-on:** `byohsm`
+
+**Request Body:**
+```json
+{
+  "tenantId": "uuid",
+  "connectionId": "uuid",
+  "keyId": "string (HSM RSA custody key, encrypt+decrypt usage)",
+  "algorithm": "ml-dsa-44 | ml-dsa-65 | ml-dsa-87 (default ml-dsa-65)",
+  "oaepHash": "sha256 | sha1 (default sha256; use sha1 only for HSMs that require it)"
+}
+```
+
+**Response (200):**
+```json
+{
+  "algorithm": "ml-dsa-65",
+  "publicKey": "base64 (PQC public key)",
+  "sealedKey": {
+    "scheme": "hspk-hsm-cek-aes256gcm-v1",
+    "algorithm": "ml-dsa-65",
+    "hsmKeyId": "string",
+    "wrappedCek": "base64 (RSA-OAEP-wrapped content key)",
+    "iv": "base64",
+    "ciphertext": "base64 (AES-256-GCM sealed PQC private key)",
+    "authTag": "base64",
+    "publicKey": "base64",
+    "sealedAt": "ISO-8601"
+  },
+  "hsmKeyHandle": "string"
+}
+```
+
+Errors: `404` custody key not found/inactive; `422` custody key is not RSA, or the
+HSM cannot RSA-OAEP-wrap (REST providers); `403` key lacks encrypt/decrypt usage;
+`503` no vetted PKCS#11 module for the connection's provider.
+
+#### POST /kms/v1/byohsm/pqc/sign
+
+HSM-Sealed Post-Quantum Keys (HSPK): unseal a previously sealed ML-DSA private key via
+the HSM (which RSA-OAEP-unwraps the CEK) and sign `data` in QNSI software. The private
+key exists in plaintext only transiently in memory during the signature, then is zeroized.
+
+**Authentication:** Bearer token required  
+**Required Controls:** `entitlements`, `audit`  
+**Required Add-on:** `byohsm`
+
+**Request Body:**
+```json
+{
+  "tenantId": "uuid",
+  "connectionId": "uuid",
+  "keyId": "string (the same HSM RSA custody key used to seal)",
+  "sealedKey": { "scheme": "hspk-hsm-cek-aes256gcm-v1", "...": "the object returned by seal" },
+  "data": "base64 (message to sign)",
+  "oaepHash": "sha256 | sha1 (default sha256; must match the value used at seal)"
+}
+```
+
+**Response (200):**
+```json
+{
+  "algorithm": "ml-dsa-65",
+  "signature": "base64 (ML-DSA signature)"
+}
+```
+
+Errors: `404` custody key not found/inactive; `502` HSM operation failed (e.g. the
+sealed key was tampered or does not belong to this HSM root); `503` HSM unavailable.
+
 ### Key Escrow
 
 **Note:** These endpoints require the `key-escrow` add-on.
@@ -5048,4 +5132,3 @@ X-RateLimit-Reset: 1609459200
 ```
 
 When rate limited, a `429 Too Many Requests` response is returned with a `Retry-After` header.
-

@@ -21,14 +21,14 @@ const CORE_ALGORITHMS: readonly PqcAlgorithm[] = [
 ] as const;
 
 /**
- * Extended algorithms — one representative per family.
+ * Extended algorithms - one representative per family.
  * These are probed opportunistically; failures in non-strict mode are warnings.
  */
 const EXTENDED_ALGORITHMS: readonly PqcAlgorithm[] = [
 	// SLH-DSA SHA2 variants
 	"sphincs-sha2-128f-simple",
 	"sphincs-sha2-256f-simple",
-	// HQC omitted — disabled in the liboqs build (OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+	// HQC omitted - disabled in the liboqs build (OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
 	// BIKE
 	"bike-l1",
 	// Classic McEliece

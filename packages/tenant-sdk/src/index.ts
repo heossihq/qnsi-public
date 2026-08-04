@@ -1,6 +1,6 @@
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossihq/qnsi-sdk-activation";
 
 import type {
 	TenantClientTelemetry,
@@ -12,7 +12,7 @@ import { SDK_PACKAGE_VERSION } from "./sdk-package-version.js";
 import { validateUUID } from "./validation.js";
 
 /**
- * @heossi/qnsi-tenant-sdk
+ * @heossihq/qnsi-tenant-sdk
  *
  * TypeScript SDK client for the QNSP tenant-service API.
  * Provides a high-level interface for tenant lifecycle and subscription management.
@@ -195,7 +195,7 @@ export interface TierAlgorithmConfig {
 export const CRYPTO_POLICY_ALGORITHMS: Record<CryptoPolicyTier, TierAlgorithmConfig> = {
 	default: {
 		kemAlgorithms: [
-			// FIPS 203 — ML-KEM (NIST finalized)
+			// FIPS 203 - ML-KEM (NIST finalized)
 			"kyber-512",
 			"kyber-768",
 			"kyber-1024",
@@ -228,18 +228,18 @@ export const CRYPTO_POLICY_ALGORITHMS: Record<CryptoPolicyTier, TierAlgorithmCon
 			"sntrup761",
 		],
 		signatureAlgorithms: [
-			// FIPS 204 — ML-DSA (NIST finalized)
+			// FIPS 204 - ML-DSA (NIST finalized)
 			"dilithium-2",
 			"dilithium-3",
 			"dilithium-5",
-			// FIPS 205 — SLH-DSA (NIST finalized, SHA-2 variants)
+			// FIPS 205 - SLH-DSA (NIST finalized, SHA-2 variants)
 			"sphincs-sha2-128f-simple",
 			"sphincs-sha2-128s-simple",
 			"sphincs-sha2-192f-simple",
 			"sphincs-sha2-192s-simple",
 			"sphincs-sha2-256f-simple",
 			"sphincs-sha2-256s-simple",
-			// FIPS 205 — SLH-DSA (NIST finalized, SHAKE variants)
+			// FIPS 205 - SLH-DSA (NIST finalized, SHAKE variants)
 			"sphincs-shake-128f-simple",
 			"sphincs-shake-128s-simple",
 			"sphincs-shake-192f-simple",
@@ -340,25 +340,25 @@ export const CRYPTO_POLICY_ALGORITHMS: Record<CryptoPolicyTier, TierAlgorithmCon
  * Mapping from internal algorithm names to NIST/standards display names.
  * Covers all 87 runtime-supported PQC algorithms (24 KEMs + 63 signatures).
  * HQC's 3 variants are excluded (disabled in the liboqs build for CVE-2025-48946).
- * Canonical source: @heossi/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
+ * Canonical source: @heossihq/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
  */
 export const ALGORITHM_TO_NIST: Record<string, string> = {
-	// FIPS 203 — ML-KEM
+	// FIPS 203 - ML-KEM
 	"kyber-512": "ML-KEM-512",
 	"kyber-768": "ML-KEM-768",
 	"kyber-1024": "ML-KEM-1024",
-	// FIPS 204 — ML-DSA
+	// FIPS 204 - ML-DSA
 	"dilithium-2": "ML-DSA-44",
 	"dilithium-3": "ML-DSA-65",
 	"dilithium-5": "ML-DSA-87",
-	// FIPS 205 — SLH-DSA (SHA-2 variants)
+	// FIPS 205 - SLH-DSA (SHA-2 variants)
 	"sphincs-sha2-128f-simple": "SLH-DSA-SHA2-128f",
 	"sphincs-sha2-128s-simple": "SLH-DSA-SHA2-128s",
 	"sphincs-sha2-192f-simple": "SLH-DSA-SHA2-192f",
 	"sphincs-sha2-192s-simple": "SLH-DSA-SHA2-192s",
 	"sphincs-sha2-256f-simple": "SLH-DSA-SHA2-256f",
 	"sphincs-sha2-256s-simple": "SLH-DSA-SHA2-256s",
-	// FIPS 205 — SLH-DSA (SHAKE variants)
+	// FIPS 205 - SLH-DSA (SHAKE variants)
 	"sphincs-shake-128f-simple": "SLH-DSA-SHAKE-128f",
 	"sphincs-shake-128s-simple": "SLH-DSA-SHAKE-128s",
 	"sphincs-shake-192f-simple": "SLH-DSA-SHAKE-192f",
@@ -933,7 +933,7 @@ export class TenantClient {
 		if (!config.apiKey || config.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP Tenant SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup - " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
 					"Docs: https://docs.qnsi.heossi.com/sdk/tenant-sdk",
 			);
@@ -942,7 +942,7 @@ export class TenantClient {
 		const baseUrl = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
 
 		// Enforce HTTPS in production (allow HTTP for localhost in development and
-		// for internal service-mesh hostnames — e.g. *.internal — which are on a
+		// for internal service-mesh hostnames - e.g. *.internal - which are on a
 		// private VPC network and do not require TLS termination at the transport layer).
 		if (!baseUrl.startsWith("https://")) {
 			const isLocalhost =
@@ -1648,7 +1648,7 @@ export class TenantClient {
 	/**
 	 * Trigger an onboarding workflow (provisions a new tenant). Maps to the real backend route
 	 * POST /tenant/v1/onboarding/workflows; the calling tenant is resolved from the activated
-	 * API key (sweep 2026-06-13 F1 — the prior `/tenants/:id/onboarding/start` path did not exist).
+	 * API key (sweep 2026-06-13 F1 - the prior `/tenants/:id/onboarding/start` path did not exist).
 	 */
 	async startOnboarding(request: StartOnboardingRequest): Promise<OnboardingInstance> {
 		await this.ensureActivated();
@@ -1671,7 +1671,7 @@ export class TenantClient {
 
 	/**
 	 * Get an onboarding workflow's status by its workflow id. Maps to the real backend route
-	 * GET /tenant/v1/onboarding/workflows/:workflowId (sweep 2026-06-13 F2 — the prior
+	 * GET /tenant/v1/onboarding/workflows/:workflowId (sweep 2026-06-13 F2 - the prior
 	 * `/tenants/:id/onboarding/status` path did not exist; the backend is workflow-keyed).
 	 */
 	async getOnboardingStatus(workflowId: string): Promise<OnboardingInstance> {

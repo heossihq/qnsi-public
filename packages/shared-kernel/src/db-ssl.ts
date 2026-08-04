@@ -9,16 +9,16 @@
  * Local dev:  sslmode=disable or sslmode=require (no CA verification needed)
  *
  * Supported modes:
- *   disable      — SSL off entirely
- *   prefer       — treated as require (Node pg has no "try SSL then fallback" — it's on or off)
- *   require      — SSL on, no certificate verification (rejectUnauthorized=false)
- *   no-verify    — alias for require (SSL on, no verification)
- *   verify-ca    — SSL on, verify server cert against CA, skip hostname match
- *   verify-full  — SSL on, verify server cert against CA + hostname must match cert SAN/CN
+ *   disable      - SSL off entirely
+ *   prefer       - treated as require (Node pg has no "try SSL then fallback" - it's on or off)
+ *   require      - SSL on, no certificate verification (rejectUnauthorized=false)
+ *   no-verify    - alias for require (SSL on, no verification)
+ *   verify-ca    - SSL on, verify server cert against CA, skip hostname match
+ *   verify-full  - SSL on, verify server cert against CA + hostname must match cert SAN/CN
  *
  * IP-host guard: verify-full and verify-ca reject IP-literal hostnames at startup because
  * RDS certificates contain DNS SANs, not IP SANs. Connecting via IP would cause a TLS
- * handshake failure at runtime — we fail fast with a clear error instead.
+ * handshake failure at runtime - we fail fast with a clear error instead.
  *
  * Diagnostic logging: opt-in via DB_SSL_DIAGNOSTIC=1 env var. When enabled, logs
  * hostname, resolved SSL mode, and whether CA is configured. No secrets are logged.
@@ -75,7 +75,7 @@ function assertNotIpHost(hostname: string, mode: PgSslMode): void {
 }
 
 /**
- * Read the CA bundle from disk. Fails fast if the file is missing — we never
+ * Read the CA bundle from disk. Fails fast if the file is missing - we never
  * silently fall back to unverified connections.
  */
 function readCaBundle(resolvedCaPath: string, mode: PgSslMode): string {
@@ -94,7 +94,7 @@ function readCaBundle(resolvedCaPath: string, mode: PgSslMode): string {
  * Resolve SSL configuration for a pg Pool from a sslmode string and optional CA path.
  *
  * - `disable`:     SSL off
- * - `prefer`:      treated as require — Node pg does not support "try SSL then fallback",
+ * - `prefer`:      treated as require - Node pg does not support "try SSL then fallback",
  *                  so prefer is functionally identical to require. SSL on, no cert verification.
  * - `require`:     SSL on, no certificate verification (rejectUnauthorized=false)
  * - `no-verify`:   alias for require (SSL on, no verification)
@@ -105,7 +105,7 @@ function readCaBundle(resolvedCaPath: string, mode: PgSslMode): string {
  *                  Uses Node's default checkServerIdentity (hostname must match cert SAN/CN).
  *
  * For verify-ca and verify-full, the CA bundle is read synchronously at startup.
- * This is intentional — fail fast if the CA file is missing rather than accepting
+ * This is intentional - fail fast if the CA file is missing rather than accepting
  * unverified connections.
  */
 export function resolvePgSsl(config: PgSslConfig): PoolConfig["ssl"] {
@@ -115,7 +115,7 @@ export function resolvePgSsl(config: PgSslConfig): PoolConfig["ssl"] {
 		return false;
 	}
 
-	// prefer is treated as require in Node pg — there is no "try SSL then fallback" behavior.
+	// prefer is treated as require in Node pg - there is no "try SSL then fallback" behavior.
 	// no-verify is an explicit alias for require (SSL on, no cert verification).
 	if (mode === "prefer" || mode === "require" || mode === "no-verify") {
 		return { rejectUnauthorized: false };
@@ -148,7 +148,7 @@ export function resolvePgSsl(config: PgSslConfig): PoolConfig["ssl"] {
 		};
 	}
 
-	// Unsupported mode — fail closed. Do not silently degrade to a weaker mode.
+	// Unsupported mode - fail closed. Do not silently degrade to a weaker mode.
 	throw new Error(
 		`[db-ssl] unsupported sslmode="${mode}". ` +
 			`Supported values: disable, prefer, require, no-verify, verify-ca, verify-full.`,
@@ -156,7 +156,7 @@ export function resolvePgSsl(config: PgSslConfig): PoolConfig["ssl"] {
 }
 
 /**
- * Log a one-time SSL diagnostic at startup. Safe for production — no secrets, no credentials.
+ * Log a one-time SSL diagnostic at startup. Safe for production - no secrets, no credentials.
  * Only logs: hostname, resolved SSL mode, whether CA is configured.
  *
  * Opt-in: only emits output when DB_SSL_DIAGNOSTIC=1 is set in the environment.
@@ -183,7 +183,7 @@ export function parsePostgresUrl(url: string): PoolConfig {
 	const sslmode = (parsedUrl.searchParams.get("sslmode") ?? "prefer") as PgSslMode;
 	const sslrootcert = parsedUrl.searchParams.get("sslrootcert") ?? undefined;
 
-	// Remove SSL params from URL — pg library doesn't parse them
+	// Remove SSL params from URL - pg library doesn't parse them
 	parsedUrl.searchParams.delete("sslmode");
 	parsedUrl.searchParams.delete("sslrootcert");
 
@@ -205,7 +205,7 @@ export function parsePostgresUrl(url: string): PoolConfig {
  * Reads:
  * - sslMode: the DATABASE_SSL env var value
  * - caPath: optional DATABASE_SSL_CA_PATH override (defaults to /etc/ssl/certs/rds-ca-bundle.pem)
- * - dbHost: optional hostname for diagnostic logging and IP-host guard (no credentials — safe for prod logs)
+ * - dbHost: optional hostname for diagnostic logging and IP-host guard (no credentials - safe for prod logs)
  */
 export function resolvePgSslFromEnv(
 	sslMode: string,
@@ -224,7 +224,7 @@ export function resolvePgSslFromEnv(
 
 /**
  * Normalize various SSL mode strings to our canonical PgSslMode type.
- * Throws on unrecognized values — fail closed, do not silently degrade.
+ * Throws on unrecognized values - fail closed, do not silently degrade.
  */
 function normalizeSslMode(raw: string): PgSslMode {
 	const lower = raw.toLowerCase().trim();

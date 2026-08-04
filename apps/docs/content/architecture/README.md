@@ -1,11 +1,11 @@
 ---
 title: Architecture
-description: Platform architecture — high availability, multi-region, residency, isolation, and operational topology.
+description: Platform architecture - high availability, multi-region, residency, isolation, and operational topology.
 ---
 
 # Architecture
 
-Platform architecture — high availability, multi-region, residency, isolation, and operational topology.
+Platform architecture - high availability, multi-region, residency, isolation, and operational topology.
 
 ## Pages
 

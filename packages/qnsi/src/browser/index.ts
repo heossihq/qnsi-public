@@ -1,17 +1,17 @@
 /**
- * `@heossi/qnsi/browser` — browser-compatible PQC encryption subpath.
+ * `@heossihq/qnsi/browser` - browser-compatible PQC encryption subpath.
  *
  * Client-side encryption (CSE), digital signatures, and key management
  * using NIST FIPS 203/204/205 standards via @noble/post-quantum.
  *
  * No native dependencies. No `node:` imports. Works in browsers, Deno,
  * Bun, and Node.js. Folded in from the former standalone
- * `@heossi/qnsi-browser` package (2026-05-16) so there is one install.
+ * `@heossihq/qnsi-browser` package (2026-05-16) so there is one install.
  *
  * Supported algorithms:
- * - ML-KEM (FIPS 203): kyber-512, kyber-768, kyber-1024 — key encapsulation
- * - ML-DSA (FIPS 204): dilithium-2, dilithium-3, dilithium-5 — digital signatures
- * - SLH-DSA (FIPS 205): 12 parameter sets — hash-based signatures
+ * - ML-KEM (FIPS 203): kyber-512, kyber-768, kyber-1024 - key encapsulation
+ * - ML-DSA (FIPS 204): dilithium-2, dilithium-3, dilithium-5 - digital signatures
+ * - SLH-DSA (FIPS 205): 12 parameter sets - hash-based signatures
  *
  * @example
  * ```ts
@@ -19,7 +19,7 @@
  *   initializePqcProvider,
  *   encryptBeforeUpload,
  *   decryptAfterDownload,
- * } from "@heossi/qnsi/browser";
+ * } from "@heossihq/qnsi/browser";
  *
  * await initializePqcProvider();
  * const { publicKey, privateKey } = await generateEncryptionKeyPair("kyber-768");
@@ -30,8 +30,8 @@
  * @module
  */
 
-// SDK activation types (folded-in copy — was @heossi/qnsi-sdk-activation,
-// now the @heossi/qnsi/activation subpath / internal ../_activation).
+// SDK activation types (folded-in copy - was @heossihq/qnsi-sdk-activation,
+// now the @heossihq/qnsi/activation subpath / internal ../_activation).
 export type {
 	SdkActivationConfig,
 	SdkActivationLimits,

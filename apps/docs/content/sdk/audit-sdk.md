@@ -1,5 +1,5 @@
 ---
-title: Audit SDK (@heossi/qnsi-audit-sdk)
+title: Audit SDK (qnsi.audit)
 version: 0.3.6
 last_updated: 2026-04-30
 copyright: © 2025 HEOSSI. All rights reserved.
@@ -8,10 +8,10 @@ source_files:
   - /packages/audit-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-audit-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-audit-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.audit./* method */(...);
 > ```
@@ -19,20 +19,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Audit SDK (`@heossi/qnsi-audit-sdk`)
+# Audit SDK (`qnsi.audit`)
 
 The TypeScript client for `audit-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. All audit events are signed with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-audit-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { AuditClient } from "@heossi/qnsi-audit-sdk";
+import { AuditClient } from "@heossihq/qnsi";
 
 const audit = new AuditClient({
 	baseUrl: "http://localhost:8103",
@@ -205,7 +205,7 @@ console.log(retentionMetrics.totalBytesReclaimed);
 The Audit SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-audit-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("dilithium-3"); // "ML-DSA-65"

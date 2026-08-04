@@ -1,7 +1,7 @@
 /**
  * Browser SDK Telemetry
  *
- * Lightweight, privacy-respecting telemetry for the @heossi/qnsi-browser.
+ * Lightweight, privacy-respecting telemetry for the @heossihq/qnsi-browser.
  * Tracks usage patterns (algorithm choices, operation counts, errors) without
  * collecting PII or cryptographic material.
  *
@@ -100,7 +100,7 @@ export function isTelemetryEnabled(): boolean {
 /**
  * Record a telemetry event. No-op if telemetry is not configured or disabled.
  *
- * This function never throws — errors in the telemetry handler are silently
+ * This function never throws - errors in the telemetry handler are silently
  * swallowed to avoid disrupting cryptographic operations.
  */
 export function recordTelemetryEvent(

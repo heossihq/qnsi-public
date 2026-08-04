@@ -2,7 +2,7 @@
 title: Compliance
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # Compliance
 
@@ -79,7 +79,5 @@ This page describes HEOSSI' compliance program status and is provided for inform
 ---
 
 **HEOSSI (PTE.) LTD**
-
-Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
 UEN: 202532790K

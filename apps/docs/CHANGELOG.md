@@ -1,4 +1,4 @@
-# @heossi/qnsi-docs-site
+# @heossihq/qnsi-docs-site
 
 ## 0.2.2
 
@@ -21,7 +21,7 @@
 
   ## Cloud Portal
 
-  - Replaced hardcoded algorithm name mappings in PQC status route with canonical toNistAlgorithmName from @heossi/qnsi-tenant-sdk
+  - Replaced hardcoded algorithm name mappings in PQC status route with canonical toNistAlgorithmName from @heossihq/qnsi-tenant-sdk
   - Replaced hardcoded algorithmToNist map in storage-client.tsx with canonical toNistAlgorithmName
   - Updated crypto policy tier descriptions to use NIST standard names (ML-KEM, ML-DSA, SLH-DSA, FN-DSA)
   - Updated KMS page algorithm badges to include FN-DSA and HQC families
@@ -66,7 +66,7 @@
 - Updated dependencies [ad6d0d4]
 - Updated dependencies [b7599c7]
 - Updated dependencies [be1dd80]
-  - @heossi/qnsi-portal-design-system@0.0.3
+  - @heossihq/qnsi-portal-design-system@0.0.3
 
 ## 0.2.1
 
@@ -90,4 +90,4 @@
 - Updated dependencies [2a530af]
 - Updated dependencies [d933225]
 - Updated dependencies [8cd2896]
-  - @heossi/qnsi-portal-design-system@0.0.2
+  - @heossihq/qnsi-portal-design-system@0.0.2

@@ -2,7 +2,7 @@
 title: Tenant Crypto Policy System
 version: 1.1.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 license: BSL-1.1
 source_files:
   - /packages/security/src/tenant-crypto-policy-client.ts
@@ -28,7 +28,7 @@ QNSI currently supports **two policy models**:
 - **v0 tiers** (legacy): default/strict/maximum/government
 - **v1 profiles + tiers** (evidence-first): profile constraints plus tier gates
 
-Services still use the v0 policy via `@heossi/qnsi-security` tenant-crypto-policy-client while migration completes. The v1 policy is stored in `tenant_crypto_policy` and is returned by `/platform/v1/crypto/policy` when an `X-Tenant-Id` header is supplied.
+Services still use the v0 policy via `@heossihq/qnsi-security` tenant-crypto-policy-client while migration completes. The v1 policy is stored in `tenant_crypto_policy` and is returned by `/platform/v1/crypto/policy` when an `X-Tenant-Id` header is supplied.
 
 ## Crypto Policy V1 (Profiles + Tiers)
 
@@ -113,7 +113,9 @@ The system supports both internal and NIST standardized algorithm names:
 Services create a crypto policy client from environment variables:
 
 ```typescript
-import { createTenantCryptoPolicyClientFromEnv } from '@heossi/qnsi-security';
+// Internal platform source (readable in the public mirror) - @heossihq/qnsi-security is
+// NOT published to npm. This shows how QNSI's own services resolve tenant crypto policy.
+import { createTenantCryptoPolicyClientFromEnv } from '../../packages/security/src/index.js';
 
 const cryptoPolicyClient = createTenantCryptoPolicyClientFromEnv();
 ```
@@ -128,8 +130,9 @@ AUTH_SERVICE_URL=https://auth-service:8081
 SERVICE_ID=kms-service
 SERVICE_SECRET=<service-secret>
 
-# Optional failure mode for tenant-service outages (default: fail_open)
-TENANT_CRYPTO_POLICY_FAILURE_MODE=fail_open
+# Optional only for explicitness; fail_closed is the sole accepted value.
+# Omitted configuration also fails closed.
+TENANT_CRYPTO_POLICY_FAILURE_MODE=fail_closed
 ```
 
 ### Algorithm Selection
@@ -151,10 +154,10 @@ const isSigAllowed = await cryptoPolicyClient.isAlgorithmAllowed(tenantId, 'dili
 ### Caching and Performance
 
 - **Cache TTL**: 60 seconds by default (configurable)
-- **Fallback (fail_open)**: Returns default policy if tenant-service is unavailable
-- **Failure (fail_closed)**: Throws a 503 error (CRYPTO_POLICY_UNAVAILABLE) to prevent silent policy bypass
+- **Failure mode**: Mandatory fail-closed behavior returns `503 CRYPTO_POLICY_UNAVAILABLE` for outages, malformed responses, or tenant mismatches
+- **Missing policy**: A `404` selects the PQC default tier with enforcement enabled; it is not an outage fallback
 - **Service Tokens**: Automatic token refresh for service-to-service auth
-- **Error Handling**: Graceful degradation to avoid blocking requests
+- **Response validation**: Tenant policy responses are schema-validated before caching
 
 ## API Endpoints
 
@@ -276,16 +279,16 @@ Uses crypto policy for:
 
 ## Compliance and Auditing
 
-### Enforcement Modes
-- **audit**: Log policy violations but allow operations
-- **enforce**: Block operations that violate policy
+### Enforcement Posture
+- **enforce**: Every service blocks operations that violate the resolved policy.
+- Audit events are observational evidence only; an `audit` label never authorizes a violating operation.
 
 ### Audit Events
-All crypto policy decisions are logged to audit-service:
-- Algorithm selection events
+Crypto policy decisions emit audit-service events for:
+- Algorithm selection decisions
 - Policy violations
-- Fallback to default policy
-- Cache hits/misses
+- Selection of the mandatory default after an authoritative `404`
+- Policy-store outages, malformed responses, and tenant mismatches
 
 ### Compliance Mapping
 - **FIPS 140-3**: Government tier uses FIPS-approved algorithms
@@ -297,14 +300,13 @@ All crypto policy decisions are logged to audit-service:
 ### Common Issues
 
 **Policy not found (404)**
-- Tenant has no custom policy, using default tier
+- Tenant has no custom policy, so the enforcing PQC default tier is selected
 - Normal behavior for new tenants
 
-**Service unavailable fallback**
-- tenant-service is down or unreachable
-- If `TENANT_CRYPTO_POLICY_FAILURE_MODE=fail_open`, client automatically uses default policy
-- If `TENANT_CRYPTO_POLICY_FAILURE_MODE=fail_closed`, services return `503 CRYPTO_POLICY_UNAVAILABLE`
-- Check service health and network connectivity
+**Policy service unavailable or response rejected**
+- Services return `503 CRYPTO_POLICY_UNAVAILABLE`; they never substitute policy after an outage
+- Verify tenant-service health, authentication, network connectivity, and response contract
+- Remove stale `fail_open` values; the only accepted explicit setting is `fail_closed`
 
 **Algorithm not allowed**
 - Requested algorithm not in tenant's allowed list
@@ -318,11 +320,7 @@ All crypto policy decisions are logged to audit-service:
 
 ### Monitoring
 
-Key metrics to monitor:
-- `tenant_crypto_policy_requests_total`
-- `tenant_crypto_policy_cache_hits_total`
-- `tenant_crypto_policy_fallback_total`
-- `tenant_crypto_policy_errors_total`
+Existing policy telemetry must be verified from the deployed observability pipeline before relying on a metric name or dashboard value.
 
 ### Debugging
 

@@ -52,10 +52,10 @@ def _client_with(routes: dict[str, Any]) -> QnsiClient:
 def test_vault_create_and_get() -> None:
     routes = {
         **_activate_route(),
-        "POST /vault/v1/secrets": {
+        "POST /proxy/vault/v1/secrets": {
             "json": {"id": "sec-1", "name": "openai-key", "version": 1},
         },
-        "GET /vault/v1/secrets/sec-1": {
+        "GET /proxy/vault/v1/secrets/sec-1": {
             "json": {"id": "sec-1", "name": "openai-key", "version": 1},
         },
     }
@@ -71,7 +71,7 @@ def test_vault_create_and_get() -> None:
 def test_vault_rotate() -> None:
     routes = {
         **_activate_route(),
-        "POST /vault/v1/secrets/sec-1/rotate": {
+        "POST /proxy/vault/v1/secrets/sec-1/rotate": {
             "json": {"id": "sec-1", "version": 2},
         },
     }
@@ -85,7 +85,7 @@ def test_vault_rotate() -> None:
 def test_vault_delete_returns_none() -> None:
     routes = {
         **_activate_route(),
-        "DELETE /vault/v1/secrets/sec-1": {"status": 204, "json": {}},
+        "DELETE /proxy/vault/v1/secrets/sec-1": {"status": 204, "json": {}},
     }
     with _client_with(routes) as q:
         assert q.vault.delete_secret("sec-1", tenant_id="t-1") is None
@@ -100,11 +100,14 @@ def test_kms_create_key_and_sign_verify() -> None:
 
     routes = {
         **_activate_route(),
-        "POST /kms/v1/keys": {"json": {"keyId": "key-abc", "algorithm": "ml-dsa-65"}},
-        "POST /kms/v1/keys/key-abc/sign": {
-            "json": {"signatureBase64": signature_b64},
+        "POST /proxy/kms/v1/keys": {"json": {"keyId": "key-abc", "algorithm": "ml-dsa-65"}},
+        # The real kms-service returns `signature` (proven against production
+        # 2026-07-14: kms.sign returned 3309 real ML-DSA-65 bytes). This mock said
+        # `signatureBase64`, so the test asserted a contract the backend does not have.
+        "POST /proxy/kms/v1/keys/key-abc/sign": {
+            "json": {"signature": signature_b64},
         },
-        "POST /kms/v1/keys/key-abc/verify": {"json": {"valid": True}},
+        "POST /proxy/kms/v1/keys/key-abc/verify": {"json": {"valid": True}},
     }
     with _client_with(routes) as q:
         key = q.kms.create_key(algorithm="ml-dsa-65", purpose="signing")
@@ -117,7 +120,7 @@ def test_kms_create_key_and_sign_verify() -> None:
 def test_kms_4xx_raises_api_error_with_code() -> None:
     routes = {
         **_activate_route(),
-        "POST /kms/v1/keys": {
+        "POST /proxy/kms/v1/keys": {
             "status": 422,
             "json": {"error": "tier does not allow ml-dsa-87", "code": "TIER_LIMIT"},
         },
@@ -142,8 +145,8 @@ def test_audit_log_event_and_list() -> None:
 
     routes = {
         **_activate_route(),
-        "POST /audit/v1/events": post_handler,
-        "GET /audit/v1/events": {
+        "POST /proxy/audit/v1/events": post_handler,
+        "GET /proxy/audit/v1/events": {
             "json": {"events": [{"id": "evt-1", "eventType": "model.inference"}]},
         },
     }
@@ -194,7 +197,7 @@ def test_service_call_retries_once_on_401() -> None:
 
     routes = {
         "POST /billing/v1/sdk/activate": activate_handler,
-        "GET /vault/v1/secrets/sec-1": get_handler,
+        "GET /proxy/vault/v1/secrets/sec-1": get_handler,
     }
     with _client_with(routes) as q:
         result = q.vault.get_secret("sec-1")

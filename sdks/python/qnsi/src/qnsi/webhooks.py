@@ -4,7 +4,7 @@ Every webhook QNSP delivers (regardless of which integration triggered it)
 is signed with HMAC-SHA-256 using a shared secret QNSP issued out-of-band.
 The signature lives in ``X-QNSP-Signature`` as ``sha256=<hex>`` (matches the
 GitHub webhook format most callers already implement). The signed payload
-is the **raw request body** — verify before parsing JSON, otherwise an
+is the **raw request body** - verify before parsing JSON, otherwise an
 attacker could land arbitrary structures in your handlers.
 
 Replay protection: ``X-QNSP-Timestamp`` carries an RFC-3339 UTC instant.
@@ -26,7 +26,7 @@ Usage::
             )
         except QnsiWebhookError as exc:
             raise HTTPException(400, str(exc))
-        # event.event_type, event.event_id, event.payload — all typed
+        # event.event_type, event.event_id, event.payload - all typed
 """
 
 from __future__ import annotations
@@ -111,11 +111,11 @@ def parse_qnsi_webhook(
     age = (current - sent_at).total_seconds()
     if age < -30:
         raise QnsiWebhookError(
-            f"webhook timestamp is in the future by {-age:.0f} s — clock skew or forgery"
+            f"webhook timestamp is in the future by {-age:.0f} s - clock skew or forgery"
         )
     if age > max_age_seconds:
         raise QnsiWebhookError(
-            f"webhook is too old ({age:.0f} s > {max_age_seconds} s) — possible replay"
+            f"webhook is too old ({age:.0f} s > {max_age_seconds} s) - possible replay"
         )
 
     try:

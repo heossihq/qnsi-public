@@ -1,4 +1,4 @@
-//! QNSI Billing — entitlement queries, usage meters, invoice listing,
+//! QNSI Billing - entitlement queries, usage meters, invoice listing,
 //! credit balance.
 
 use reqwest::Method;
@@ -23,7 +23,7 @@ impl Client {
     }
 
     pub async fn get_entitlements(&self) -> Result<Value, Error> {
-        // The bare `/entitlements` path 404s — the resolution route is
+        // The bare `/entitlements` path 404s - the resolution route is
         // `/entitlements/resolved/:tenantId` (server.ts:685).
         let tenant_id = self.sc.activation.get().await?.tenant_id;
         self.sc

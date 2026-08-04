@@ -1,7 +1,7 @@
 /**
  * Property-Based Tests for mapStandardError
  *
- * Platform-Hardening Spec — Tasks 8.1, 8.2, 8.3
+ * Platform-Hardening Spec - Tasks 8.1, 8.2, 8.3
  *
  * Property 2: Error response shape conformance (8.1)
  * Property 3: Production error sanitization (8.2)
@@ -135,7 +135,7 @@ const anyErrorArb = fc.oneof(
 	nonErrorArb,
 );
 
-// ── Task 8.1: Property 2 — Error response shape conformance ─────────────────
+// ── Task 8.1: Property 2 - Error response shape conformance ─────────────────
 
 describe("Property 2: Error response shape conformance", () => {
 	function assertValidShape(response: StandardErrorResponse): void {
@@ -213,7 +213,7 @@ describe("Property 2: Error response shape conformance", () => {
 	});
 });
 
-// ── Task 8.2: Property 3 — Production error sanitization ────────────────────
+// ── Task 8.2: Property 3 - Production error sanitization ────────────────────
 
 describe("Property 3: Production error sanitization", () => {
 	it("suppresses 5xx messages when exposeInternalMessages is false", () => {
@@ -298,7 +298,7 @@ describe("Property 3: Production error sanitization", () => {
 	});
 });
 
-// ── Task 8.3: Property 4 — Zod validation rejection ────────────────────────
+// ── Task 8.3: Property 4 - Zod validation rejection ────────────────────────
 
 describe("Property 4: Zod validation rejection", () => {
 	it("maps ZodError to 400 INVALID_REQUEST", () => {

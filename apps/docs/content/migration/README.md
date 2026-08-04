@@ -14,4 +14,4 @@ Step-by-step guides for migrating from classical KMS / Vault implementations to 
 - [Migration from AWS Secrets Manager](./from-aws-secrets-manager)
 - [Migration from HashiCorp Vault](./from-vault)
 - [Migration Journey to QNSI](./journey)
-
+- [Governed Migration Execution](./governed-execution)

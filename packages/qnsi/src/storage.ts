@@ -1,5 +1,5 @@
 /**
- * QNSP Storage — PQC-encrypted object storage with SSE-X. Wraps
+ * QNSP Storage - PQC-encrypted object storage with SSE-X. Wraps
  * `apps/storage-service` bucket/object routes, registered at `/storage/v1/buckets/*`
  * (apps/storage-service/src/routes/bucket-objects.ts) and reached via the edge gateway's
  * `/proxy/storage` prefix (rewritten to `/storage`).
@@ -9,14 +9,16 @@ import type { Internal, RequestOptions } from "./_internal.js";
 import { QnsiApiError } from "./errors.js";
 
 // Edge gateway rewrites /proxy/storage -> /storage, so this resolves to the backend's
-// /storage/v1/buckets/* routes. (Was /proxy/storage/storage/v1 — a double "storage" that
+// /storage/v1/buckets/* routes. (Was /proxy/storage/storage/v1 - a double "storage" that
 // rewrote to /storage/storage/v1, which the backend never served, so every call 404'd.)
 const PATH_PREFIX = "/proxy/storage/v1";
+
+export const STORAGE_RECIPIENT_ENVELOPE_V2_SCHEME = "ml-kem-hkdf-sha256-aes-256-gcm-v2" as const;
 
 export interface PutObjectInput {
 	readonly data: Uint8Array;
 	readonly contentType?: string;
-	readonly sseAlgorithm?: string;
+	readonly sseAlgorithm?: typeof STORAGE_RECIPIENT_ENVELOPE_V2_SCHEME;
 	readonly metadata?: Record<string, unknown>;
 }
 
@@ -36,9 +38,9 @@ export class StorageClient {
 	) {
 		const body: Record<string, unknown> = {
 			dataB64: encodeB64(input.data),
+			sseAlgorithm: input.sseAlgorithm ?? STORAGE_RECIPIENT_ENVELOPE_V2_SCHEME,
 		};
 		if (input.contentType !== undefined) body["contentType"] = input.contentType;
-		if (input.sseAlgorithm !== undefined) body["sseAlgorithm"] = input.sseAlgorithm;
 		if (input.metadata !== undefined) body["metadata"] = input.metadata;
 		return this.internal.request(
 			"PUT",

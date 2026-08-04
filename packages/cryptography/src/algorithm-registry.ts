@@ -1,7 +1,7 @@
 import type { PqcAlgorithm } from "./provider.js";
 
 /**
- * Core NIST-finalized PQC KEM algorithms (FIPS 203 — ML-KEM).
+ * Core NIST-finalized PQC KEM algorithms (FIPS 203 - ML-KEM).
  * These are the primary production-enforced KEMs.
  */
 export const PQC_CORE_KEM_ALGORITHMS = ["kyber-512", "kyber-768", "kyber-1024"] as const;
@@ -12,11 +12,11 @@ export const PQC_CORE_KEM_ALGORITHMS = ["kyber-512", "kyber-768", "kyber-1024"] 
  * Actual runtime availability depends on the installed liboqs build.
  */
 export const PQC_KEM_ALGORITHMS = [
-	// FIPS 203 — ML-KEM (NIST finalized)
+	// FIPS 203 - ML-KEM (NIST finalized)
 	"kyber-512",
 	"kyber-768",
 	"kyber-1024",
-	// HQC omitted — disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+	// HQC omitted - disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
 	// BIKE (NIST Round 4 candidate)
 	"bike-l1",
 	"bike-l3",
@@ -47,7 +47,7 @@ export const PQC_KEM_ALGORITHMS = [
 export type PqcKemAlgorithm = (typeof PQC_KEM_ALGORITHMS)[number];
 
 /**
- * Core NIST-finalized PQC signature algorithms (FIPS 204/205 — ML-DSA, SLH-DSA).
+ * Core NIST-finalized PQC signature algorithms (FIPS 204/205 - ML-DSA, SLH-DSA).
  * These are the primary production-enforced signatures.
  */
 export const PQC_CORE_SIGNATURE_ALGORITHMS = [
@@ -66,11 +66,11 @@ export const PQC_CORE_SIGNATURE_ALGORITHMS = [
  * Actual runtime availability depends on the installed liboqs build.
  */
 export const PQC_SIGNATURE_ALGORITHMS = [
-	// FIPS 204 — ML-DSA (NIST finalized)
+	// FIPS 204 - ML-DSA (NIST finalized)
 	"dilithium-2",
 	"dilithium-3",
 	"dilithium-5",
-	// FIPS 205 — SLH-DSA (NIST finalized)
+	// FIPS 205 - SLH-DSA (NIST finalized)
 	"sphincs-sha2-128f-simple",
 	"sphincs-sha2-128s-simple",
 	"sphincs-sha2-192f-simple",

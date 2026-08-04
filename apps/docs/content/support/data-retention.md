@@ -2,7 +2,7 @@
 title: Data Retention and Backup Policy
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Data Retention and Backup Policy
@@ -51,10 +51,10 @@ Information about your account:
 
 | Tier | Default Retention | Extended Options |
 |------|-------------------|------------------|
-| Free | 7 days | — |
-| Dev Starter | 14 days | — |
-| Dev Pro | 30 days | — |
-| Dev Elite | 30 days | — |
+| Free | 7 days | - |
+| Dev Starter | 14 days | - |
+| Dev Pro | 30 days | - |
+| Dev Elite | 30 days | - |
 | Business Team | 30 days | 90 days, 180 days, 1 year |
 | Business Advanced | 30 days | 90 days, 180 days, 1 year |
 | Business Elite | 90 days | 180 days, 1 year, 7 years |
@@ -109,18 +109,18 @@ All backups are encrypted:
 
 | Tier | RPO |
 |------|-----|
-| Free – Dev Elite | 24 hours |
-| Business Team – Business Elite | 4 hours |
-| Enterprise Standard – Enterprise Pro | 1 hour |
+| Free - Dev Elite | 24 hours |
+| Business Team - Business Elite | 4 hours |
+| Enterprise Standard - Enterprise Pro | 1 hour |
 | Enterprise Elite / Specialized | Custom (as low as near-zero) |
 
 ### 4.2 Recovery Time Objective (RTO)
 
 | Tier | RTO |
 |------|-----|
-| Free – Dev Elite | 24 hours |
-| Business Team – Business Elite | 4 hours |
-| Enterprise Standard – Enterprise Pro | 1 hour |
+| Free - Dev Elite | 24 hours |
+| Business Team - Business Elite | 4 hours |
+| Enterprise Standard - Enterprise Pro | 1 hour |
 | Enterprise Elite / Specialized | Custom |
 
 ### 4.3 Recovery Procedures
@@ -212,8 +212,6 @@ Data retention practices support compliance with:
 ---
 
 **HEOSSI (PTE.) LTD**
-
-Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
 UEN: 202532790K
 

@@ -1,10 +1,10 @@
 /**
- * @heossi/qnsi-browser test suite.
+ * @heossihq/qnsi-browser test suite.
  *
  * Tests the full browser-sdk API: provider initialization, CSE encrypt/decrypt,
  * digital signatures, serialization, runtime detection, and error handling.
  *
- * Runs in Node.js (vitest) — the noble provider works identically in Node.js and browsers.
+ * Runs in Node.js (vitest) - the noble provider works identically in Node.js and browsers.
  */
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -51,7 +51,7 @@ import {
 
 import type { PqcAlgorithm } from "./pqc-types.js";
 
-describe("@heossi/qnsi-browser", () => {
+describe("@heossihq/qnsi-browser", () => {
 	afterEach(() => {
 		resetProvider();
 	});

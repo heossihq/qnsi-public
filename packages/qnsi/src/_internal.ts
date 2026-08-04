@@ -1,7 +1,7 @@
 /**
  * Shared HTTP plumbing + activation cache.
  *
- * Internal — consumers should reach this only via `QnsiClient`. Each
+ * Internal - consumers should reach this only via `QnsiClient`. Each
  * service module (vault, kms, audit, …) takes an `Internal` instance
  * in its constructor and calls `internal.request(method, path, …)`.
  */
@@ -16,7 +16,7 @@ import { QnsiApiError, QnsiAuthError, QnsiNetworkError } from "./errors.js";
 export const SDK_ID = "qnsi";
 // Bump in lockstep with packages/qnsi/package.json `version` (activation
 // telemetry label). Same release contract as browser/sdk-package-version.ts.
-export const SDK_VERSION = "0.3.0";
+export const SDK_VERSION = "0.6.0";
 
 const DEFAULT_BASE_URL = "https://api.qnsi.heossi.com";
 const DEFAULT_TIMEOUT_MS = 15_000;
@@ -284,6 +284,6 @@ function parseExpiresAt(response: SdkActivationResponse): number {
 		const parsed = Date.parse(expiresAt);
 		if (!Number.isNaN(parsed)) return parsed;
 	}
-	// Conservative default — 5 minutes from now.
+	// Conservative default - 5 minutes from now.
 	return Date.now() + 5 * 60_000;
 }

@@ -1,5 +1,5 @@
 /**
- * QNSP Vault — PQC-encrypted secret storage with versioning, rotation,
+ * QNSP Vault - PQC-encrypted secret storage with versioning, rotation,
  * and deletion. Wraps `apps/vault-service` (`/vault/v1`).
  */
 
@@ -29,8 +29,41 @@ export class VaultClient {
 		return this.internal.request("POST", `${PATH_PREFIX}/secrets`, body, opts);
 	}
 
+	/** Secret metadata + the ML-KEM-wrapped envelope (NOT the plaintext). */
 	getSecret(secretId: string) {
 		return this.internal.request("GET", `${PATH_PREFIX}/secrets/${secretId}`);
+	}
+
+	/**
+	 * The DECRYPTED plaintext of a secret: `{ value }`. Server-side unwrap of the
+	 * ML-KEM-wrapped envelope, tenant-isolated by the API key.
+	 */
+	getSecretValue(secretId: string): Promise<{ value: string }> {
+		return this.internal.request("GET", `${PATH_PREFIX}/secrets/${secretId}/value`) as Promise<{
+			value: string;
+		}>;
+	}
+
+	/**
+	 * List the tenant's secrets (metadata: id, name, versions - never the payload).
+	 * The tenant is derived from the API key. Use to resolve a secret by name.
+	 */
+	listSecrets(query?: RequestOptions["query"]) {
+		return this.internal.request("GET", `${PATH_PREFIX}/secrets`, undefined, { query });
+	}
+
+	/**
+	 * Resolve a secret by NAME to its decrypted plaintext string, or null if no
+	 * secret with that name exists. The vault addresses secrets by id, so this
+	 * lists (to map name→id) then fetches the decrypted value.
+	 */
+	async getSecretValueByName(name: string): Promise<string | null> {
+		const listed = (await this.listSecrets()) as { secrets?: Array<Record<string, unknown>> };
+		const match = (listed?.secrets ?? []).find((s) => s["name"] === name);
+		const id = match?.["id"];
+		if (typeof id !== "string") return null;
+		const { value } = await this.getSecretValue(id);
+		return value ?? null;
 	}
 
 	getSecretVersion(secretId: string, version: number) {

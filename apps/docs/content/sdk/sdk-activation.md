@@ -1,16 +1,20 @@
 ---
 title: "SDK Activation"
-description: "How QNSI SDKs activate and verify licensing at startup — transparent to end developers, no manual steps required."
-version: 0.1.5
-last_updated: 2026-04-30
+description: "How QNSI SDKs activate and verify licensing at startup - transparent to end developers, no manual steps required."
+version: 0.6.0
+last_updated: 2026-07-20
 copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
+source_files:
+  - /packages/qnsi/src/_activation/activation-client.ts
+  - /packages/qnsi/src/_activation/types.ts
+  - /packages/qnsi/src/_internal.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-vault-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-vault-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.vault./* method */(...);
 > ```
@@ -19,57 +23,57 @@ license: BSL-1.1
 
 # SDK Activation
 
-All `@heossi/qnsi-*` SDKs perform a lightweight activation handshake when first initialised. This ties SDK usage to a registered QNSI account and enforces entitlement checks without requiring any additional code from the developer.
+The unified `@heossihq/qnsi` SDK performs a lightweight activation handshake before its first service operation. Applications can call `ensureActivated()` at startup when they prefer to surface credential or entitlement errors before serving traffic.
 
 This matters operationally because QNSI treats SDK use as part of the migration and consumption path. Activation is how the platform binds SDK traffic to a real tenant, plan, and entitlement set instead of allowing anonymous or untracked trust operations.
 
 ## How it works
 
-When you call `new VaultClient(config)` (or any other SDK constructor), the SDK internally calls `activateSdk()` from `@heossi/qnsi-sdk-activation`:
+The activation client bundled inside `@heossihq/qnsi`:
 
 1. Validates the API key format
 2. Sends a lightweight activation request to `https://api.qnsi.heossi.com`
-3. Receives a signed activation receipt valid for the session
+3. Receives an opaque activation token with an explicit expiry
 4. All subsequent API calls include the activation receipt for entitlement enforcement
 
-This happens **once per SDK instance** and adds less than 50 ms on a cold start.
+Successful activations are cached until shortly before expiry. Network latency depends on the deployment and is not represented as a fixed client-side guarantee.
 
 ## Developer experience
 
 No code changes required. The activation is transparent:
 
 ```typescript
-import { VaultClient } from "@heossi/qnsi-vault-sdk";
+import { QnsiClient } from "@heossihq/qnsi";
 
-// Activation happens here automatically
-const vault = new VaultClient({
+const qnsi = new QnsiClient({
   apiKey: process.env.QNSI_API_KEY!,
-  tenantId: process.env.QNSI_TENANT_ID!,
 });
 
-// All subsequent calls are already activated
-const secret = await vault.createSecret({ name: "db-password", value: "s3cr3t" });
+// Optional eager handshake; service calls also ensure activation.
+await qnsi.ensureActivated();
 ```
 
 ## Activation errors
 
-If activation fails, the SDK constructor throws an `ActivationError` with a `code` field:
+If activation fails, the handshake throws an `SdkActivationError_` with a `code` field:
 
 | Code | Meaning |
 |---|---|
 | `INVALID_API_KEY` | API key format is invalid or the key does not exist |
-| `TENANT_SUSPENDED` | Your QNSI tenant has been suspended — contact support |
-| `ENTITLEMENT_MISSING` | Your plan does not include this SDK — upgrade at [cloud.qnsi.heossi.com](https://cloud.qnsi.heossi.com) |
-| `ACTIVATION_TIMEOUT` | Could not reach the QNSI platform within the timeout — check connectivity |
-| `ACTIVATION_FAILED` | Unexpected activation failure — retry or contact support |
+| `ACCOUNT_SUSPENDED` | Your QNSI account is suspended - contact support |
+| `TIER_INSUFFICIENT` | Your plan does not include the requested capability |
+| `RATE_LIMITED` | Activation is temporarily rate limited |
+| `SERVICE_UNAVAILABLE` | The activation service could not be reached or returned an invalid response |
 
 ```typescript
-import { ActivationError } from "@heossi/qnsi-sdk-activation";
+import { QnsiClient } from "@heossihq/qnsi";
+import { SdkActivationError_ } from "@heossihq/qnsi/activation";
 
 try {
-  const vault = new VaultClient({ apiKey, tenantId });
+  const qnsi = new QnsiClient({ apiKey });
+  await qnsi.ensureActivated();
 } catch (err) {
-  if (err instanceof ActivationError) {
+  if (err instanceof SdkActivationError_) {
     console.error("Activation failed:", err.code, err.message);
   }
   throw err;
@@ -78,17 +82,7 @@ try {
 
 ## Offline / air-gapped environments
 
-For air-gapped deployments where outbound calls to `api.qnsi.heossi.com` are not permitted, contact your QNSI account team to obtain a **static activation token**. Pass it via the `activationToken` option:
-
-```typescript
-const vault = new VaultClient({
-  apiKey: process.env.QNSI_API_KEY!,
-  tenantId: process.env.QNSI_TENANT_ID!,
-  activationToken: process.env.QNSI_ACTIVATION_TOKEN,
-});
-```
-
-Static tokens are cryptographically signed and have a fixed expiry date agreed with your account team.
+Air-gapped activation is deployment-specific and is not enabled by a public static-token constructor option. Use the supported deployment bundle and account-team procedure for your isolated environment; do not copy a cloud API key or activation response into offline configuration.
 
 ## Related
 

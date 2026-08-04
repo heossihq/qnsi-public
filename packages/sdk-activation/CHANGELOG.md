@@ -1,4 +1,4 @@
-# @heossi/qnsi-sdk-activation
+# @heossihq/qnsi-sdk-activation
 
 ## 0.1.6
 
@@ -31,4 +31,4 @@
 - 8b8c331: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
 - dbfd5fd: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
 - e88fb5d: Automated changeset generated for staged code updates to keep release workflows fully synchronized.
-- aaa11cc: docs: add GitHub and Google OAuth sign-up links and update platform sign-in references across all published SDKs; add OAuth/Social Sign-In section to @heossi/qnsi-auth-sdk; add README to @heossi/qnsi-agent
+- aaa11cc: docs: add GitHub and Google OAuth sign-up links and update platform sign-in references across all published SDKs; add OAuth/Social Sign-In section to @heossihq/qnsi-auth-sdk; add README to @heossihq/qnsi-agent

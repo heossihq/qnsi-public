@@ -1,6 +1,6 @@
 ---
 title: "Quickstart"
-description: "Get started with QNSI in under 10 minutes — create a tenant, obtain an API token, and make your first secure API call from TypeScript, Python, Go, Rust, or JVM/Android."
+description: "Get started with QNSI in under 10 minutes - create a tenant, obtain an API token, and make your first secure API call from TypeScript, Python, Go, Rust, or JVM/Android."
 version: 0.2.0
 last_updated: 2026-04-30
 copyright: © 2025-2026 HEOSSI. All rights reserved.
@@ -23,7 +23,7 @@ Your workspace (tenant) is provisioned automatically on first sign-in for self-s
 
 ## 2. Generate an API key
 
-In the QNSI portal, go to **Settings → API Keys → New API Key**. Copy the key — it is shown once only.
+In the QNSI portal, go to **Settings → API Keys → New API Key**. Copy the key - it is shown once only.
 
 Store it as an environment variable:
 
@@ -45,17 +45,17 @@ A `200 OK` with an empty `data` array confirms authentication is working.
 
 ## 4. Install an SDK (optional)
 
-Pick the SDK for your language. All four families share the same wire contracts, the same algorithm names, and the same FIPS 203 / 204 / 205 posture — outputs round-trip across languages byte-for-byte.
+Pick the SDK for your language. All four families share the same wire contracts, the same algorithm names, and the same FIPS 203 / 204 / 205 posture - outputs round-trip across languages byte-for-byte.
 
 ### TypeScript / Node.js
 
 ```bash
-pnpm add @heossi/qnsi
-pnpm add -g @heossi/qnsi-cli      # CLI for scripting / CI
+pnpm add @heossihq/qnsi
+pnpm add -g @heossihq/qnsi          # The same package also installs the qnsi CLI
 ```
 
 ```typescript
-import { QnsiClient } from "@heossi/qnsi";
+import { QnsiClient } from "@heossihq/qnsi";
 
 const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
@@ -138,7 +138,7 @@ let secret = c.vault().create_secret(CreateSecretRequest {
 ```kotlin
 // Gradle (Kotlin DSL): build.gradle.kts
 dependencies {
-    implementation("io.heossi:qnsi:0.1.0")
+    implementation("com.heossi:qnsi:0.4.0")
 }
 ```
 
@@ -156,9 +156,9 @@ println(secret["id"])
 
 ## Next Steps
 
-- [API Reference](./api) — Full endpoint listing
-- [SDK Overview](./sdk/overview) — All available SDKs across five languages
-- [Supported Languages](./sdk/languages) — Feature matrix: TypeScript / Python / Go / Rust / JVM-Android
-- [MCP Server](./sdk/mcp-server) — Connect AI assistants to QNSI
-- [Getting Started Guide](./getting-started/overview) — Deeper walkthrough including auth flows
-- [cURL Quickstart](./getting-started/quickstart-curl) — Step-by-step API calls without an SDK
+- [API Reference](./api) - Full endpoint listing
+- [SDK Overview](./sdk/overview) - All available SDKs across five languages
+- [Supported Languages](./sdk/languages) - Feature matrix: TypeScript / Python / Go / Rust / JVM-Android
+- [MCP Server](./sdk/mcp-server) - Connect AI assistants to QNSI
+- [Getting Started Guide](./getting-started/overview) - Deeper walkthrough including auth flows
+- [cURL Quickstart](./getting-started/quickstart-curl) - Step-by-step API calls without an SDK

@@ -1,4 +1,4 @@
-"""QNSP Access-Control — RBAC: roles, permissions, role assignments."""
+"""QNSP Access-Control - RBAC: roles, permissions, role assignments."""
 
 from __future__ import annotations
 

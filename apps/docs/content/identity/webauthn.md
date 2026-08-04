@@ -1,7 +1,8 @@
 ---
-title: WebAuthn
+title: WebAuthn Passkeys and Passwordless Authentication
 version: 0.0.1
-last_updated: 2026-04-23
+last_updated: 2026-07-31
+description: Configure QNSI WebAuthn registration and authentication flows for passkeys, platform authenticators, roaming security keys, and credential revocation.
 copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
@@ -9,7 +10,7 @@ source_files:
   - /apps/auth-service/src/server.ts
 ---
 
-# WebAuthn
+# WebAuthn Passkeys and Passwordless Authentication
 
 QNSI supports WebAuthn for passwordless authentication.
 

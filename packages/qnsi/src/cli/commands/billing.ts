@@ -175,7 +175,7 @@ export function registerBillingCommands(program: Command, config: CliConfig): vo
 				const billingUrl = effectiveConfig.billingServiceUrl;
 				// billingServiceUrl already resolves to the /billing root (edge: /proxy/billing
 				// rewritten to /billing; local: localhost:8106/billing). Append only the
-				// post-/billing path — the addons commands above do the same. A leading
+				// post-/billing path - the addons commands above do the same. A leading
 				// "/billing" here produced /billing/billing/v1/usage -> 404 in prod.
 				const url = new URL(`${billingUrl}/v1/usage/${effectiveConfig.tenantId}`);
 				if (options.start) {

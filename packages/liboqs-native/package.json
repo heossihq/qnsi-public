@@ -1,5 +1,5 @@
 {
-	"name": "@heossi/liboqs-native",
+	"name": "@heossihq/liboqs-native",
 	"version": "0.15.1",
 	"type": "commonjs",
 	"license": "BUSL-1.1",
@@ -28,7 +28,7 @@
 		"lint": "biome check src tools vendor/path-key-shim.js",
 		"prepare": "pnpm run check-dist",
 		"prepublishOnly": "pnpm run build && pnpm run build:native",
-		"test": "echo 'Run smoke tests via @heossi/qnsi-cryptography'",
+		"test": "echo 'Run smoke tests via @heossihq/qnsi-cryptography'",
 		"typecheck": "tsc --project tsconfig.json --noEmit",
 		"install": "node ./tools/install.js"
 	},
@@ -44,5 +44,6 @@
 		"node-gyp": "^12.2.0",
 		"prebuildify": "^6.0.1",
 		"typescript": "^6.0.2"
-	}
+	},
+	"private": true
 }

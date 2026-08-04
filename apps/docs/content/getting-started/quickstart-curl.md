@@ -1,7 +1,7 @@
 ---
-title: "Quickstart: First API Call"
+title: "QNSI API Quickstart with curl"
 version: 0.0.2
-last_updated: 2026-04-23
+last_updated: 2026-07-31
 description: "Make your first QNSI API call in under 10 minutes using curl: obtain a service access token, then send an authenticated request scoped to your tenant ID."
 copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
@@ -9,7 +9,7 @@ source_files:
   - /apps/auth-service/src/server.ts
   - /apps/kms-service/src/config/env.ts
 ---
-# Quickstart: First API Call
+# QNSI API Quickstart with curl
 
 This guide gets you to a successful API call in under 10 minutes.
 
@@ -72,6 +72,6 @@ The `/proxy/health` endpoint returns the health status of all services:
 
 ## Common pitfalls
 
-- **Missing tenant**: Returns `400 BAD_REQUEST` — include `tenantId` query parameter
-- **Expired token**: Returns `401 UNAUTHORIZED` — request a new token and retry
-- **Wrong audience**: Returns `403 FORBIDDEN` — check token audience matches endpoint requirements
+- **Missing tenant**: Returns `400 BAD_REQUEST` - include `tenantId` query parameter
+- **Expired token**: Returns `401 UNAUTHORIZED` - request a new token and retry
+- **Wrong audience**: Returns `403 FORBIDDEN` - check token audience matches endpoint requirements

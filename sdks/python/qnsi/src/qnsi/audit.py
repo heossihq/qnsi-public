@@ -1,11 +1,11 @@
-"""Audit client — append immutable, hash-chained audit events.
+"""Audit client - append immutable, hash-chained audit events.
 
-Mirrors the most-used methods of ``@heossi/qnsi-audit-sdk``. Routes verified
+Mirrors the most-used methods of ``@heossihq/qnsi-audit-sdk``. Routes verified
 against ``apps/audit-service/src/routes/events.ts`` and the TypeScript
 SDK's ``ingestEvents`` / ``listEvents`` paths:
 
-  POST /audit/v1/events  — ingestEvents (write a batch)
-  GET  /audit/v1/events  — listEvents (query a window)
+  POST /audit/v1/events  - ingestEvents (write a batch)
+  GET  /audit/v1/events  - listEvents (query a window)
 """
 
 from __future__ import annotations

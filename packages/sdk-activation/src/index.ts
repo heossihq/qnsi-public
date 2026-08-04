@@ -1,10 +1,10 @@
 /**
- * @heossi/qnsi-sdk-activation
+ * @heossihq/qnsi-sdk-activation
  *
  * SDK activation and usage metering for QNSP platform SDKs.
  * Ensures all SDK usage is tied to a registered QNSP account.
  *
- * Browser-compatible — no node: imports.
+ * Browser-compatible - no node: imports.
  *
  * @module
  */

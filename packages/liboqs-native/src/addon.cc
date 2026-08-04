@@ -4,6 +4,7 @@
 
 #include <napi.h>
 #include <oqs/oqs.h>
+#include <openssl/err.h>
 
 namespace {
 
@@ -299,7 +300,7 @@ public:
 	 * Algorithm-detail introspection for signatures. Mirrors KEMWrapper::Details.
 	 * Note: liboqs 0.15.0 does NOT expose OQS_SIG_keypair_derand; the C library
 	 * lacks a seed-controlled keypair API for ML-DSA / SLH-DSA. Upstream PR
-	 * pending — until then, ACVP signature-keyGen tests are deferred. See
+	 * pending - until then, ACVP signature-keyGen tests are deferred. See
 	 * https://qnsi.heossi.com/verify/conformance scopeNotes.
 	 */
 	Napi::Value Details(const Napi::CallbackInfo& info) {
@@ -379,6 +380,25 @@ Napi::Value Version(const Napi::CallbackInfo& info) {
 	return Napi::String::New(info.Env(), OQS_version());
 }
 
+/**
+ * Clear OpenSSL's error queue for the current thread.
+ *
+ * Native libraries loaded into Node may use the same process-wide OpenSSL that
+ * Node exports. A successful third-party call is not entitled to leave stale
+ * diagnostic state behind for the next OpenSSL consumer (for example a TLS
+ * socket). Keep this primitive deliberately narrow: callers invoke it
+ * synchronously, on the same thread, immediately after the successful native
+ * boundary that may have dirtied the queue.
+ */
+Napi::Value ClearOpenSslErrorQueue(const Napi::CallbackInfo& info) {
+	ERR_clear_error();
+	return info.Env().Undefined();
+}
+
+Napi::Value HasOpenSslErrorQueueEntries(const Napi::CallbackInfo& info) {
+	return Napi::Boolean::New(info.Env(), ERR_peek_error() != 0);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
 	exports.Set("KEM", KEMWrapper::DefineClass(env));
 	exports.Set("Sig", SigWrapper::DefineClass(env));
@@ -387,10 +407,11 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 	exports.Set("isKemAlgorithmSupported", Napi::Function::New(env, IsKemAlgorithmSupported));
 	exports.Set("isSignatureAlgorithmSupported", Napi::Function::New(env, IsSignatureAlgorithmSupported));
 	exports.Set("version", Napi::Function::New(env, Version));
+	exports.Set("clearOpenSslErrorQueue", Napi::Function::New(env, ClearOpenSslErrorQueue));
+	exports.Set("hasOpenSslErrorQueueEntries", Napi::Function::New(env, HasOpenSslErrorQueueEntries));
 	return exports;
 }
 
 }  // namespace
 
 NODE_API_MODULE(liboqs_native, Init)
-

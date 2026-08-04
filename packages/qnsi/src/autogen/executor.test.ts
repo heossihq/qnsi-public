@@ -2,9 +2,9 @@
  * QnsiExecutor unit tests.
  *
  * The executor was folded in from the former standalone
- * `@heossi/qnsi-autogen-qnsp`; its workload submit/get HTTP is now inlined,
+ * `@heossihq/qnsi-autogen-qnsp`; its workload submit/get HTTP is now inlined,
  * so these tests mock `globalThis.fetch` (the real seam) rather than the
- * former `@heossi/qnsi-ai-sdk` client. Same behaviors asserted.
+ * former `@heossihq/qnsi-ai-sdk` client. Same behaviors asserted.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -229,7 +229,7 @@ describe("QnsiExecutor", () => {
 		it("throws on unsupported language", async () => {
 			const executor = makeExecutor();
 			await expect(
-				// @ts-expect-error — intentionally passing invalid language
+				// @ts-expect-error - intentionally passing invalid language
 				executor.execute({ code: "SELECT 1", language: "sql" }),
 			).rejects.toThrow("Unsupported language: sql");
 			expect(fetchMock).not.toHaveBeenCalled();

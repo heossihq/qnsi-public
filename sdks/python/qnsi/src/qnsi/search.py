@@ -1,4 +1,4 @@
-"""QNSP Search — encrypted vector search with SSE-X."""
+"""QNSP Search - encrypted vector search with SSE-X."""
 
 from __future__ import annotations
 

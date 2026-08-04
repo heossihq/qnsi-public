@@ -9,17 +9,17 @@
  * library version with the same seed must produce keys whose SHA-256
  * matches the values published here. If a future noble release ever
  * changes byte-level output for the same seed, the conformance route at
- * /api/sandbox/pqc-runtime/conformance starts returning false — surfacing a
+ * /api/sandbox/pqc-runtime/conformance starts returning false - surfacing a
  * potential FIPS compliance regression.
  *
  * What this does NOT claim: these are not NIST official ACVP test
  * vectors. NIST publishes official conformance vectors at
  * https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program
- * — those are the canonical proof of FIPS 203 / 204 / 205 conformance for
+ * - those are the canonical proof of FIPS 203 / 204 / 205 conformance for
  * the library implementation. The vectors below are *determinism vectors*
  * tied to a specific noble version.
  *
- * Run:  pnpm --filter @heossi/qnsi-web-portal run bench:gen-conformance
+ * Run:  pnpm --filter @heossihq/qnsi-web-portal run bench:gen-conformance
  *
  * Re-run only when intentionally upgrading @noble/post-quantum and
  * commit the new JSON together with the package.json bump.
@@ -44,7 +44,7 @@ interface SeededTarget {
 	readonly note: string;
 }
 
-// Fixed seeds — chosen as recognisable byte patterns, not secret. Keeping
+// Fixed seeds - chosen as recognisable byte patterns, not secret. Keeping
 // them in plain hex (rather than base64) so they can be copy-pasted into
 // reference test scripts. Each seed length is the size noble's keygen
 // validates against (`abytes(seed, N, 'seed')`).

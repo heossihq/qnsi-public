@@ -238,7 +238,7 @@ describe("noble provider factory", () => {
 
 	describe("SLH-DSA (FIPS 205) hash-based signatures", () => {
 		// Test one SHA2 and one SHAKE variant to keep test runtime reasonable
-		// (SLH-DSA keygen is slow — full 12-variant test would take minutes)
+		// (SLH-DSA keygen is slow - full 12-variant test would take minutes)
 		const slhAlgorithms: PqcAlgorithm[] = ["sphincs-sha2-128f-simple", "sphincs-shake-128f-simple"];
 
 		for (const algorithm of slhAlgorithms) {

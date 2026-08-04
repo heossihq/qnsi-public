@@ -1,6 +1,6 @@
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossihq/qnsi-sdk-activation";
 
 import type {
 	BillingClientTelemetry,
@@ -12,7 +12,7 @@ import { SDK_PACKAGE_VERSION } from "./sdk-package-version.js";
 import { validateUUID } from "./validation.js";
 
 /**
- * @heossi/qnsi-billing-sdk
+ * @heossihq/qnsi-billing-sdk
  *
  * TypeScript SDK client for the QNSP billing-service API.
  * Provides a high-level interface for usage meter ingestion and invoice management.
@@ -559,7 +559,7 @@ export class BillingClient {
 		if (!config.apiKey || config.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP Billing SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup - " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
 					"Docs: https://docs.qnsi.heossi.com/sdk/billing-sdk",
 			);
@@ -568,7 +568,7 @@ export class BillingClient {
 		const baseUrl = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
 
 		// Enforce HTTPS in production (allow HTTP for localhost in development and
-		// for internal service-mesh hostnames — e.g. *.internal — which are on a
+		// for internal service-mesh hostnames - e.g. *.internal - which are on a
 		// private VPC network and do not require TLS termination at the transport layer).
 		if (!baseUrl.startsWith("https://")) {
 			const isLocalhost =

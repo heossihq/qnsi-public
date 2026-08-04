@@ -101,7 +101,65 @@ export async function requestServiceToken(config: CliConfig): Promise<string | n
 	}
 }
 
+/**
+ * Resolve the tenant that owns an API key, by activating it - the same handshake the SDK
+ * performs on its first call. Cached for the life of the process.
+ */
+let cachedApiKeyTenant: { key: string; tenantId: string } | null = null;
+
+export async function resolveApiKeyTenant(config: CliConfig): Promise<string | null> {
+	if (!config.apiKey) return null;
+	if (config.tenantId) return config.tenantId; // an explicit tenant always wins
+	if (cachedApiKeyTenant?.key === config.apiKey) return cachedApiKeyTenant.tenantId;
+
+	const base = (config.edgeGatewayUrl ?? "https://api.qnsi.heossi.com").replace(/\/$/, "");
+	try {
+		const response = await fetch(`${base}/proxy/billing/v1/sdk/activate`, {
+			method: "POST",
+			headers: {
+				authorization: `Bearer ${config.apiKey}`,
+				"content-type": "application/json",
+			},
+			body: JSON.stringify({ sdkId: "qnsp", sdkVersion: "cli", runtime: "node" }),
+			signal: AbortSignal.timeout(15_000),
+		});
+		if (!response.ok) return null;
+		const body = (await response.json()) as { tenantId?: unknown };
+		if (typeof body.tenantId !== "string" || body.tenantId.length === 0) return null;
+		cachedApiKeyTenant = { key: config.apiKey, tenantId: body.tenantId };
+		return body.tenantId;
+	} catch {
+		return null;
+	}
+}
+
 export async function getAuthHeaders(config: CliConfig): Promise<Record<string, string>> {
+	// ── API-KEY PATH (what a CUSTOMER actually has) ──────────────────────────────
+	//
+	// The CLI ships as the `qnsi` bin inside @heossihq/qnsi - the package every customer
+	// installs - but it had NO api-key path: it demanded QNSI_SERVICE_ID +
+	// QNSI_SERVICE_SECRET, which are INTERNAL service-account credentials. Proven
+	// 2026-07-14 against production: `qnsi kms keys list` with a real API key exited
+	// "Error: QNSI_SERVICE_ID must be set". The shipped CLI was unusable by the audience
+	// it shipped to - advertised-not-built, aimed straight at developers.
+	//
+	// The API key IS a bearer credential at the edge gateway (that is exactly how every
+	// SDK authenticates), and the tenant resolves from the activation handshake - so a
+	// customer needs nothing but their key.
+	if (config.apiKey) {
+		const headers: Record<string, string> = {
+			Authorization: `Bearer ${config.apiKey}`,
+			"Content-Type": "application/json",
+		};
+		const tenantId = await resolveApiKeyTenant(config);
+		if (tenantId) {
+			headers["x-qnsp-tenant"] = tenantId;
+			headers["x-tenant-id"] = tenantId;
+		}
+		return headers;
+	}
+
+	// ── SERVICE-ACCOUNT PATH (internal / ops) - unchanged ────────────────────────
 	const token = await requestServiceToken(config);
 	if (!token) {
 		process.exit(EXIT_CODES.AUTH_ERROR);

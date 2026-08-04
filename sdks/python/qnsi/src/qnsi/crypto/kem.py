@@ -1,6 +1,6 @@
 """ML-KEM (FIPS 203) and other KEMs via liboqs-python.
 
-The class is intentionally thin — three operations (keygen, encapsulate,
+The class is intentionally thin - three operations (keygen, encapsulate,
 decapsulate) and three readable size attributes. Higher-level patterns
 (envelope encryption, key wrapping) live in `qnsp.kms`.
 
@@ -8,7 +8,7 @@ Examples::
 
     from qnsi.crypto import MlKem
 
-    # ML-KEM-768 (NIST security category 3 — recommended default)
+    # ML-KEM-768 (NIST security category 3 - recommended default)
     kem = MlKem("ML-KEM-768")
     pk, sk = kem.keygen()
     ciphertext, shared = kem.encapsulate(pk)
@@ -72,15 +72,15 @@ def _import_oqs():
 
 
 class MlKem:
-    """ML-KEM (FIPS 203) — module-lattice key encapsulation mechanism.
+    """ML-KEM (FIPS 203) - module-lattice key encapsulation mechanism.
 
     Wraps liboqs-python's ``KeyEncapsulation`` so QNSP customers get a
     minimal, typed surface that mirrors the TypeScript ``MlKem`` class in
-    ``@heossi/qnsi-cryptography``.
+    ``@heossihq/qnsi-cryptography``.
 
     Args:
         algorithm: One of ``"ML-KEM-512"``, ``"ML-KEM-768"`` (default for
-            most QNSP tiers — NIST security category 3), or
+            most QNSP tiers - NIST security category 3), or
             ``"ML-KEM-1024"``. Other liboqs-supported KEMs (BIKE, FrodoKEM,
             Classic-McEliece) are also accepted; see
             ``qnsp.crypto.SUPPORTED_KEMS``.
@@ -119,7 +119,7 @@ class MlKem:
             )
 
         # Pull sizes from liboqs (`details`) so they always match the
-        # underlying spec — no inline literals that drift from FIPS 203.
+        # underlying spec - no inline literals that drift from FIPS 203.
         details = kem.details if hasattr(kem, "details") else {}
         self._algorithm = algorithm
         self._liboqs_name = chosen

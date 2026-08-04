@@ -8,6 +8,7 @@
  * instead of a raw 402/403).
  */
 
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { ApiClient } from "./api-client.js";
 import type { TierGate } from "./session.js";
@@ -61,11 +62,27 @@ export async function kmsGenerateKey(
 	ctx: ToolContext,
 	input: z.infer<typeof kmsGenerateKeySchema>,
 ): Promise<ToolResult> {
+	// WIRE CONTRACT (kms-service createKeySchema):
+	//     { tenantId, keyId (REQUIRED, 1-255), keyType (root|master|data|byok),
+	//       algorithm, metadata }
+	//
+	// This sent `{ tenantId, algorithm, label, metadata }` - no `keyId`, no `keyType`, and a
+	// top-level `label` the backend does not know. So it returned 400 "Invalid request body"
+	// EVERY TIME: the tool had never generated a key. Proven 2026-07-14 in a real MCP session
+	// against production, which also blocked qnsp_kms_get_key and qnsp_kms_rotate_key because
+	// neither could obtain a keyId.
+	//
+	// `label` is not a backend field - Zod's non-strict object silently STRIPS it - so it goes
+	// into metadata, exactly as the (proven) npm SDK does with its `purpose` hint.
+	const metadata: Record<string, string> = { ...(input.metadata ?? {}) };
+	if (input.label) metadata["label"] = input.label;
+
 	const { data } = await ctx.api.post("/proxy/kms/v1/keys", {
 		tenantId: ctx.gate.tenantId,
+		keyId: randomUUID(),
+		keyType: "data",
 		algorithm: input.algorithm,
-		label: input.label ?? `mcp-${Date.now()}`,
-		metadata: input.metadata ?? {},
+		metadata,
 	});
 	return json(data);
 }
@@ -111,6 +128,74 @@ export async function kmsRotateKey(
 		tenantId: ctx.gate.tenantId,
 		reason: "MCP rotation",
 	});
+	return json(data);
+}
+
+// ── HSPK (HSM-Sealed Post-Quantum Keys) Tools ────────────────────────────────
+
+export const kmsHspkSealSchema = z.object({
+	connectionId: z.string().describe("An active BYOHSM connection the tenant has provisioned"),
+	keyId: z
+		.string()
+		.describe("HSM RSA key with encrypt+decrypt usage on that connection (the custody root)"),
+	algorithm: z
+		.enum(["ml-dsa-44", "ml-dsa-65", "ml-dsa-87"])
+		.optional()
+		.describe("PQC signature algorithm to generate + seal (default ml-dsa-65)"),
+	oaepHash: z
+		.enum(["sha1", "sha256"])
+		.optional()
+		.describe("RSA-OAEP hash; default sha256. Use sha1 only for HSMs that require it"),
+});
+
+export async function kmsHspkSeal(
+	ctx: ToolContext,
+	input: z.infer<typeof kmsHspkSealSchema>,
+): Promise<ToolResult> {
+	// WIRE CONTRACT (kms-service sealPqcSchema):
+	//   { tenantId, connectionId, keyId, algorithm?, oaepHash? }
+	// Response: { algorithm, publicKey, sealedKey, hsmKeyHandle }. The caller stores
+	// sealedKey and passes it back to qnsp_kms_hspk_sign (HSPK is stateless).
+	const body: Record<string, unknown> = {
+		tenantId: ctx.gate.tenantId,
+		connectionId: input.connectionId,
+		keyId: input.keyId,
+	};
+	if (input.algorithm) body["algorithm"] = input.algorithm;
+	if (input.oaepHash) body["oaepHash"] = input.oaepHash;
+	const { data } = await ctx.api.post("/proxy/kms/v1/byohsm/pqc/seal", body);
+	return json(data);
+}
+
+export const kmsHspkSignSchema = z.object({
+	connectionId: z.string().describe("The BYOHSM connection"),
+	keyId: z.string().describe("The same HSM RSA custody key used to seal"),
+	sealedKey: z
+		.record(z.string(), z.unknown())
+		.describe("The sealedKey object returned by qnsp_kms_hspk_seal"),
+	message: z.string().describe("The message to sign (plaintext; base64-encoded before sending)"),
+	oaepHash: z
+		.enum(["sha1", "sha256"])
+		.optional()
+		.describe("Must match the value used at seal time (default sha256)"),
+});
+
+export async function kmsHspkSign(
+	ctx: ToolContext,
+	input: z.infer<typeof kmsHspkSignSchema>,
+): Promise<ToolResult> {
+	// WIRE CONTRACT (kms-service signPqcSchema):
+	//   { tenantId, connectionId, keyId, sealedKey, data(base64), oaepHash? }
+	// Response: { algorithm, signature(base64) }.
+	const body: Record<string, unknown> = {
+		tenantId: ctx.gate.tenantId,
+		connectionId: input.connectionId,
+		keyId: input.keyId,
+		sealedKey: input.sealedKey,
+		data: Buffer.from(input.message, "utf-8").toString("base64"),
+	};
+	if (input.oaepHash) body["oaepHash"] = input.oaepHash;
+	const { data } = await ctx.api.post("/proxy/kms/v1/byohsm/pqc/sign", body);
 	return json(data);
 }
 
@@ -173,21 +258,15 @@ export async function vaultListSecrets(
 
 // ── Crypto Inventory (CBOM) Tools ───────────────────────────────────────────
 
-export const cryptoScanSchema = z.object({
-	scope: z
-		.enum(["full", "keys", "certificates", "algorithms"])
-		.optional()
-		.describe("Scan scope (default: full)"),
-});
+export const cryptoScanSchema = z.object({}).strict();
 
 export async function cryptoScan(
 	ctx: ToolContext,
-	input: z.infer<typeof cryptoScanSchema>,
+	_input: z.infer<typeof cryptoScanSchema>,
 ): Promise<ToolResult> {
-	const scope = input.scope ?? "full";
-	const { data } = await ctx.api.get(
-		`/proxy/crypto/v1/discovery/jobs?tenantId=${ctx.gate.tenantId}&limit=10&scope=${encodeURIComponent(scope)}`,
-	);
+	const { data } = await ctx.api.post("/proxy/crypto/v1/assets/discover", {
+		tenantId: ctx.gate.tenantId,
+	});
 	return json(data);
 }
 

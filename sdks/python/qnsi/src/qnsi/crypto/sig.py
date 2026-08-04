@@ -1,4 +1,4 @@
-"""Digital signatures via liboqs-python — ML-DSA, SLH-DSA, Falcon.
+"""Digital signatures via liboqs-python - ML-DSA, SLH-DSA, Falcon.
 
 Three classes share an identical surface (keygen, sign, verify) so callers
 can swap algorithm families without rewriting code. Each is a thin wrapper
@@ -81,7 +81,7 @@ class _BaseSignature:
 
     @property
     def signature_max_bytes(self) -> int:
-        """Maximum signature length per FIPS spec — actual signatures may
+        """Maximum signature length per FIPS spec - actual signatures may
         be shorter for variable-length schemes (Falcon)."""
         return self._signature_max_bytes
 
@@ -131,7 +131,7 @@ class _BaseSignature:
 
 
 class MlDsa(_BaseSignature):
-    """ML-DSA (FIPS 204) — module-lattice digital signature.
+    """ML-DSA (FIPS 204) - module-lattice digital signature.
 
     Args:
         algorithm: ``"ML-DSA-44"`` (NIST cat 2), ``"ML-DSA-65"`` (cat 3,
@@ -140,9 +140,9 @@ class MlDsa(_BaseSignature):
 
 
 class SlhDsa(_BaseSignature):
-    """SLH-DSA (FIPS 205) — stateless hash-based digital signature.
+    """SLH-DSA (FIPS 205) - stateless hash-based digital signature.
 
-    Conservative choice for regulated workloads — security argument is
+    Conservative choice for regulated workloads - security argument is
     different from lattice-based schemes (relies only on hash-function
     security). Slower than ML-DSA but produces compact public keys.
 
@@ -154,7 +154,7 @@ class SlhDsa(_BaseSignature):
 
 
 class Falcon(_BaseSignature):
-    """Falcon (NIST PQC selection) — compact lattice-based signature.
+    """Falcon (NIST PQC selection) - compact lattice-based signature.
 
     Smaller signatures than ML-DSA at equivalent security; slower keygen.
 

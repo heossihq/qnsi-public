@@ -10,7 +10,7 @@ import (
 )
 
 // TestProdSmokeAuthLoginAndSession is a REAL end-to-end smoke against PRODUCTION through the
-// actual Go auth client (provable-evidence mandate — prove the wire contract with a real call,
+// actual Go auth client (provable-evidence mandate - prove the wire contract with a real call,
 // not a mock). It proves the reaudit 2026-06-13 #32/#34/#36 fix: the auth client now targets
 // /edge/auth/login (was /auth/v1/login → 404) and the session-authenticated /auth/risk/policies
 // (was /auth/v1/risk/policies → 404).
@@ -27,7 +27,7 @@ func TestProdSmokeAuthLoginAndSession(t *testing.T) {
 	password := os.Getenv("QNSP_CANARY_PASSWORD")
 	tenant := os.Getenv("QNSP_CANARY_TENANT")
 	if key == "" || email == "" || password == "" || tenant == "" {
-		t.Skip("canary creds not set (QNSP_CANARY_KEY/EMAIL/PASSWORD/TENANT) — skipping prod smoke")
+		t.Skip("canary creds not set (QNSP_CANARY_KEY/EMAIL/PASSWORD/TENANT) - skipping prod smoke")
 	}
 
 	baseURL := os.Getenv("QNSP_E2E_API")
@@ -57,7 +57,7 @@ func TestProdSmokeAuthLoginAndSession(t *testing.T) {
 	if sess == nil || sess.AccessToken == "" {
 		t.Fatalf("login did not cache a session")
 	}
-	t.Logf("login OK — session cached (tenant=%s)", sess.TenantID)
+	t.Logf("login OK - session cached (tenant=%s)", sess.TenantID)
 
 	// listRiskPolicies -> GET /auth/risk/policies with the session JWT + x-qnsp-tenant-id.
 	// (Returns 200 against prod; the old /auth/v1/risk/policies path 404'd.) A non-2xx returns
@@ -66,5 +66,5 @@ func TestProdSmokeAuthLoginAndSession(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListRiskPolicies(/auth/risk/policies, session) failed: %v", err)
 	}
-	t.Logf("listRiskPolicies OK — %d field(s) in response", len(policies))
+	t.Logf("listRiskPolicies OK - %d field(s) in response", len(policies))
 }

@@ -1,4 +1,4 @@
-// Package billing is the QNSP Billing client — entitlement queries,
+// Package billing is the QNSP Billing client - entitlement queries,
 // usage meters, invoice listing, and credit balance.
 //
 // Wraps `apps/billing-service` (see /proxy/billing in production). Note

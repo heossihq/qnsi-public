@@ -1070,8 +1070,8 @@
 				"passRate": 55.17
 			},
 			"scopeNotes": [
-				"@heossi/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
-				"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.15.0 upstream does NOT expose OQS_SIG_keypair_derand — the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
+				"@heossihq/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
+				"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.15.0 upstream does NOT expose OQS_SIG_keypair_derand - the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
 				"The liboqs C library's own ACVP test record is maintained upstream by the Open Quantum Safe project at github.com/open-quantum-safe/liboqs."
 			]
 		}

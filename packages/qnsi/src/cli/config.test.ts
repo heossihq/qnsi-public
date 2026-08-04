@@ -13,14 +13,40 @@ describe("config", () => {
 	});
 
 	describe("loadConfig", () => {
-		it("should load default configuration", () => {
+		/**
+		 * DEFAULT TO PRODUCTION - this test previously asserted localhost, which was the bug.
+		 *
+		 * The CLI ships as the `qnsi` bin inside @heossihq/qnsi, the package every customer
+		 * installs from npm. It defaulted every service URL to http://localhost:8095 etc., so
+		 * a customer's very first command died with "fetch failed". Proven 2026-07-14. Every
+		 * published CLI (aws, gh, stripe) defaults to production; local dev is the special
+		 * case that sets an env var - and it still works, as the next test proves.
+		 *
+		 * The path must also NOT carry the service prefix: the edge gateway strips only
+		 * `/proxy`, and every command already appends `/kms/v1/...`. It used to derive
+		 * `/proxy/kms`, producing `/proxy/kms/kms/v1/keys` -> 404 for 8 of 11 command groups.
+		 */
+		it("defaults to PRODUCTION via the edge gateway, with no double service prefix", () => {
 			const config = loadConfig();
-			expect(config.authServiceUrl).toBe("http://localhost:8081");
-			expect(config.kmsServiceUrl).toBe("http://localhost:8095");
-			expect(config.vaultServiceUrl).toBe("http://localhost:8090");
-			expect(config.auditServiceUrl).toBe("http://localhost:8103");
+			expect(config.edgeGatewayUrl).toBe("https://api.qnsi.heossi.com");
+			expect(config.kmsServiceUrl).toBe("https://api.qnsi.heossi.com/proxy");
+			expect(config.vaultServiceUrl).toBe("https://api.qnsi.heossi.com/proxy");
+			expect(config.auditServiceUrl).toBe("https://api.qnsi.heossi.com/proxy");
+
+			// storage and billing legitimately keep a prefix - their commands omit it.
+			expect(config.storageServiceUrl).toBe("https://api.qnsi.heossi.com/proxy/storage");
+			expect(config.billingServiceUrl).toBe("https://api.qnsi.heossi.com/proxy/billing");
+
 			expect(config.outputFormat).toBe("table");
 			expect(config.verbose).toBe(false);
+		});
+
+		it("local development still works - an explicit service URL always wins", () => {
+			process.env["QNSI_KMS_SERVICE_URL"] = "http://localhost:8095";
+			process.env["QNSI_VAULT_SERVICE_URL"] = "http://localhost:8090";
+			const config = loadConfig();
+			expect(config.kmsServiceUrl).toBe("http://localhost:8095");
+			expect(config.vaultServiceUrl).toBe("http://localhost:8090");
 		});
 
 		it("should load configuration from environment variables", () => {

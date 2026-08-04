@@ -1,14 +1,21 @@
-# @heossi/qnsi-mcp
+# @heossihq/qnsi-mcp
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [d9ab7af]
+  - @heossihq/qnsi@0.5.3
 
 ## 0.1.4
 
 ### Patch Changes
 
-- Re-point activation off the unpublished `@heossi/qnsi-sdk-activation`
-  onto `@heossi/qnsi/activation`, so `npm i @heossi/qnsi-mcp` resolves
+- Re-point activation off the unpublished `@heossihq/qnsi-sdk-activation`
+  onto `@heossihq/qnsi/activation`, so `npm i @heossihq/qnsi-mcp` resolves
   cleanly (the prior 0.1.3 depended on a now-unpublished package).
 - Updated dependencies
-  - @heossi/qnsi@0.2.0
+  - @heossihq/qnsi@0.2.0
 
 ## 0.1.2
 

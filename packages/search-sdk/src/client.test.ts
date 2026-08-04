@@ -1,4 +1,4 @@
-import { clearActivationCache } from "@heossi/qnsi-sdk-activation";
+import { clearActivationCache } from "@heossihq/qnsi-sdk-activation";
 import type { fetch as undiciFetch } from "undici";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 

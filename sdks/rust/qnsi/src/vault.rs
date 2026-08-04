@@ -1,4 +1,4 @@
-//! QNSI Vault — PQC-encrypted secret storage with versioning, rotation,
+//! QNSI Vault - PQC-encrypted secret storage with versioning, rotation,
 //! and deletion.
 
 use reqwest::Method;

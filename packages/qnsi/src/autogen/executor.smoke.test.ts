@@ -1,10 +1,10 @@
 /**
- * Smoke tests for @heossi/qnsi-autogen-qnsp
+ * Smoke tests for @heossihq/qnsi-autogen-qnsp
  *
  * Verifies that the package exports are importable and classes can be instantiated.
- * No API key or network access required — catches build regressions.
+ * No API key or network access required - catches build regressions.
  *
- * Run: pnpm --filter @heossi/qnsi-autogen-qnsp test
+ * Run: pnpm --filter @heossihq/qnsi-autogen-qnsp test
  */
 
 import { describe, expect, it } from "vitest";
@@ -45,7 +45,7 @@ describe("QnsiExecutor smoke", () => {
 	it("rejects unsupported language synchronously", async () => {
 		const executor = new QnsiExecutor({ apiKey: "smoke-test-key" });
 		await expect(
-			// @ts-expect-error — intentionally passing invalid language
+			// @ts-expect-error - intentionally passing invalid language
 			executor.execute({ code: "SELECT 1", language: "sql" }),
 		).rejects.toThrow("Unsupported language: sql");
 	});

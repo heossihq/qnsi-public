@@ -1,4 +1,4 @@
-import { activateSdk } from "@heossi/qnsi-sdk-activation";
+import { activateSdk } from "@heossihq/qnsi-sdk-activation";
 
 import type { PqcAlgorithm, PqcProvider } from "../provider.js";
 
@@ -12,7 +12,7 @@ export interface ExternalPqcProviderMetadata {
 
 /**
  * Activation parameters added in v0.2.0. External consumers must pass
- * `apiKey` — get a free key (no credit card, free-forever tier) at
+ * `apiKey` - get a free key (no credit card, free-forever tier) at
  * https://cloud.qnsi.heossi.com/auth. See README "Migration from v0.1.x".
  *
  * QNSP backend services (inside the trust boundary, not external consumers)
@@ -23,7 +23,7 @@ export interface ExternalPqcProviderMetadata {
 export interface ExternalPqcProviderInitOptions {
 	/**
 	 * QNSP API key. Required for external consumers since v0.2.0. Free signup:
-	 * https://cloud.qnsi.heossi.com/auth (free-forever tier — 10 GB storage,
+	 * https://cloud.qnsi.heossi.com/auth (free-forever tier - 10 GB storage,
 	 * 50,000 API calls/month, 20 KMS keys, 25 vault secrets, no credit card).
 	 */
 	readonly apiKey?: string;
@@ -63,7 +63,7 @@ export function listExternalPqcProviders(): ReadonlyArray<ExternalPqcProviderMet
 const SDK_PACKAGE_VERSION = "0.2.0";
 
 /**
- * Initialize a registered PQC provider. Requires a QNSP API key — performs an
+ * Initialize a registered PQC provider. Requires a QNSP API key - performs an
  * activation handshake with the QNSP billing-service to confirm the caller is
  * a registered tenant before returning a working provider.
  *
@@ -83,8 +83,8 @@ export async function initializeExternalPqcProvider(
 
 	if (!isInternal && !hasApiKey) {
 		throw new Error(
-			"@heossi/qnsi-cryptography v0.2.0+ requires `options.apiKey`. " +
-				"Get a free API key (no credit card, free-forever tier — 10 GB storage, " +
+			"@heossihq/qnsi-cryptography v0.2.0+ requires `options.apiKey`. " +
+				"Get a free API key (no credit card, free-forever tier - 10 GB storage, " +
 				"50,000 API calls/month, 20 KMS keys, 25 vault secrets) at " +
 				"https://cloud.qnsi.heossi.com/auth. " +
 				"See README 'Migration from v0.1.x' for details. " +
@@ -103,7 +103,7 @@ export async function initializeExternalPqcProvider(
 		throw new Error(`External PQC provider '${name}' probe failed`);
 	}
 
-	// Activation handshake — validates the API key against billing-service,
+	// Activation handshake - validates the API key against billing-service,
 	// returns tier limits, caches the activation token. Throws a typed
 	// SdkActivationError if the key is invalid, the account is suspended, or
 	// the platform is unreachable. Skipped when `internal === true` (QNSP

@@ -1,13 +1,13 @@
 /**
- * Integration tests for @heossi/qnsi-autogen-qnsp
+ * Integration tests for @heossihq/qnsi-autogen-qnsp
  *
  * These tests hit the real QNSP AI orchestrator API via edge gateway.
- * Requires QNSI_API_KEY env var — the API key resolves tenant, tier, and policy automatically.
+ * Requires QNSI_API_KEY env var - the API key resolves tenant, tier, and policy automatically.
  *
  * Note: Workload submission requires enterprise tier with enclave access.
  * On lower tiers, the test verifies that the executor correctly surfaces the tier error.
  *
- * Run: QNSI_API_KEY=qnsp_... pnpm --filter @heossi/qnsi-autogen-qnsp test:integration
+ * Run: QNSI_API_KEY=qnsp_... pnpm --filter @heossihq/qnsi-autogen-qnsp test:integration
  */
 
 import { describe, expect, it } from "vitest";
@@ -38,7 +38,7 @@ describe.skipIf(!QNSI_API_KEY)("QnsiExecutor integration", () => {
 			expect(result.workloadId).toBeTruthy();
 			expect(typeof result.status).toBe("string");
 		} catch (error) {
-			// Expected on non-enterprise tiers — verify it's a structured error, not a crash
+			// Expected on non-enterprise tiers - verify it's a structured error, not a crash
 			expect(error).toBeInstanceOf(Error);
 			expect((error as Error).message).toBeTruthy();
 		}

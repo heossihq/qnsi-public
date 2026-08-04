@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { QnsiToolkit } from "@heossi/qnsi-langchain-qnsp";
+ * import { QnsiToolkit } from "@heossihq/qnsi-langchain-qnsp";
  * import { ChatOpenAI } from "@langchain/openai";
  * import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
  *
@@ -41,7 +41,7 @@ const SDK_VERSION = "0.3.0";
 export interface QnsiToolkitConfig {
 	/**
 	 * QNSP API key. Get one at https://cloud.qnsi.heossi.com/api-keys
-	 * The API key carries the tenant ID — no separate tenantId needed.
+	 * The API key carries the tenant ID - no separate tenantId needed.
 	 */
 	readonly apiKey: string;
 	/**
@@ -67,7 +67,7 @@ export interface QnsiToolkitConfig {
 }
 
 /**
- * QNSP Toolkit — a composable set of LangChain tools for governed AI agents.
+ * QNSP Toolkit - a composable set of LangChain tools for governed AI agents.
  *
  * Provides:
  * - Vault tools: read, write, and rotate PQC-encrypted secrets
@@ -100,10 +100,10 @@ export class QnsiToolkit {
 	/**
 	 * One-shot activation handshake against billing-service. Validates the API
 	 * key, captures tenantId + tier, caches the activation token. Required:
-	 * call `await toolkit.activate()` before `toolkit.getTools()` — `getTools()`
+	 * call `await toolkit.activate()` before `toolkit.getTools()` - `getTools()`
 	 * throws otherwise.
 	 *
-	 * Idempotent — repeat calls are cheap (cached) and only re-fetch when the
+	 * Idempotent - repeat calls are cheap (cached) and only re-fetch when the
 	 * activation token approaches expiry.
 	 */
 	async activate(): Promise<void> {
@@ -121,7 +121,7 @@ export class QnsiToolkit {
 		}
 		// Inject the resolved tenant into the inlined vault client so its
 		// requests carry the x-qnsp-tenant-id header (the former
-		// @heossi/qnsi-vault-sdk did this via its own internal activation;
+		// @heossihq/qnsi-vault-sdk did this via its own internal activation;
 		// here the single langchain-qnsp activation covers it).
 		this.#vaultClient.setTenantId(this.#tenantId);
 		this.#activated = true;
@@ -130,7 +130,7 @@ export class QnsiToolkit {
 	#assertActivated(): void {
 		if (!this.#activated) {
 			throw new Error(
-				"@heossi/qnsi-langchain-qnsp: call `await toolkit.activate()` once before `getTools()`. " +
+				"@heossihq/qnsi-langchain-qnsp: call `await toolkit.activate()` once before `getTools()`. " +
 					"This validates your QNSP API key and resolves the tenant ID. " +
 					"Free signup (no credit card): https://cloud.qnsi.heossi.com/auth",
 			);

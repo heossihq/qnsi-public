@@ -1,0 +1,46 @@
+{
+	"name": "@heossihq/qnsi-agent",
+	"version": "0.1.2",
+	"publishConfig": {
+		"access": "public"
+	},
+	"type": "module",
+	"description": "QNSP Host Agent - discovers cryptographic assets on customer servers and reports to the QNSP platform.",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/heossihq/qnsi-public",
+		"directory": "apps/qnsp-agent"
+	},
+	"homepage": "https://qnsi.heossi.com",
+	"bugs": {
+		"url": "https://github.com/heossihq/qnsi-public/issues"
+	},
+	"bin": {
+		"qnsp-agent": "./dist/index.js"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"CHANGELOG.md"
+	],
+	"engines": {
+		"node": ">=22.0.0"
+	},
+	"scripts": {
+		"dev": "tsx watch src/index.ts",
+		"build": "tsc --project tsconfig.build.json",
+		"start": "node --enable-source-maps dist/index.js",
+		"lint": "biome check .",
+		"test": "vitest run",
+		"typecheck": "tsc --project tsconfig.json --noEmit"
+	},
+	"dependencies": {
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@types/node": "^25.5.2",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2",
+		"vitest": "4.1.2"
+	}
+}

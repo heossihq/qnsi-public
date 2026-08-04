@@ -1,18 +1,18 @@
 ---
-title: Access Control SDK (@heossi/qnsi-access-control-sdk)
+title: Access Control SDK (qnsi.access)
 version: 0.3.6
 last_updated: 2026-04-30
-description: Access Control SDK for QNSI, now consolidated into the unified @heossi/qnsi package, with capability tokens signed using tenant-specific PQC algorithms.
+description: Access Control SDK for QNSI, now consolidated into the unified @heossihq/qnsi package, with capability tokens signed using tenant-specific PQC algorithms.
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/access-control-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-access-control-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-access-control-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.access./* method */(...);
 > ```
@@ -20,20 +20,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Access Control SDK (`@heossi/qnsi-access-control-sdk`)
+# Access Control SDK (`qnsi.access`)
 
 The TypeScript client for `access-control-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. All capability tokens are signed with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-access-control-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { AccessControlClient } from "@heossi/qnsi-access-control-sdk";
+import { AccessControlClient } from "@heossihq/qnsi";
 
 const accessControl = new AccessControlClient({
 	baseUrl: "http://localhost:8102",
@@ -300,7 +300,7 @@ if (audit.crossTenantViolations.length > 0) {
 The Access Control SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-access-control-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("dilithium-3"); // "ML-DSA-65"

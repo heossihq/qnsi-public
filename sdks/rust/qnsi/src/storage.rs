@@ -1,4 +1,4 @@
-//! QNSI Storage — PQC-encrypted object storage with SSE-X.
+//! QNSI Storage - PQC-encrypted object storage with SSE-X.
 
 use base64::engine::general_purpose::STANDARD as B64;
 use base64::Engine;
@@ -12,7 +12,7 @@ use crate::errors::{ApiError, Error};
 use crate::service_client::ServiceClient;
 
 // Edge gateway rewrites /proxy/storage -> /storage, so this resolves to the
-// backend's /storage/v1/buckets/* routes. (Was /proxy/storage/storage/v1 — a
+// backend's /storage/v1/buckets/* routes. (Was /proxy/storage/storage/v1 - a
 // double "storage" the backend never served, so every call 404'd. Matches npm.)
 const PATH_PREFIX: &str = "/proxy/storage/v1";
 

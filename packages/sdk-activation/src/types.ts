@@ -2,7 +2,7 @@
  * SDK Activation Types
  *
  * Shared contract between SDK clients and the billing-service activation endpoint.
- * Browser-compatible — no node: imports.
+ * Browser-compatible - no node: imports.
  *
  * @module
  */
@@ -66,7 +66,7 @@ export type SdkActivationRequest = z.infer<typeof SdkActivationRequestSchema>;
 
 /**
  * Tier limits returned in the activation response.
- * Subset of full TierLimits — only what SDKs need for client-side enforcement.
+ * Subset of full TierLimits - only what SDKs need for client-side enforcement.
  */
 export const SdkActivationLimitsSchema = z.object({
 	storageGB: z.number(),
@@ -92,7 +92,7 @@ export const SdkActivationResponseSchema = z.object({
 	tier: z.string().min(1),
 	/** Tier limits for client-side enforcement */
 	limits: SdkActivationLimitsSchema,
-	/** Activation token — opaque string, valid for `expiresInSeconds` */
+	/** Activation token - opaque string, valid for `expiresInSeconds` */
 	activationToken: z.string().min(1),
 	/** Token validity in seconds (default: 3600 = 1 hour) */
 	expiresInSeconds: z.number().int().positive(),

@@ -40,6 +40,9 @@ export const mockConfig: CliConfig = {
 	edgeGatewayUrl: null,
 	cloudPortalUrl: "https://cloud.qnsi.heossi.com",
 	authServiceUrl: "http://localhost:8081",
+	// null = exercise the service-account path, which is what these tests cover.
+	// The api-key path is covered separately (utils/auth.test.ts).
+	apiKey: null,
 	serviceId: "test-service-id",
 	serviceSecret: "test-secret",
 	tenantId: "test-tenant",

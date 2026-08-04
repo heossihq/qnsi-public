@@ -1,14 +1,14 @@
 /**
- * Minimal QNSP Vault client — `@heossi/qnsi/langchain` subpath.
+ * Minimal QNSP Vault client - `@heossihq/qnsi/langchain` subpath.
  *
  * Faithful inline of the `getSecret` / `createSecret` / `rotateSecret` slice of
- * the former `@heossi/qnsi-vault-sdk` `VaultClient` (2026-05-16
+ * the former `@heossihq/qnsi-vault-sdk` `VaultClient` (2026-05-16
  * consolidation): Bearer auth, `x-qnsp-tenant-id` header, 429 retry with
  * exponential backoff + `Retry-After`, per-request timeout, `Vault API
  * error: <status> <statusText>` on failure. Endpoints and request/response
  * shapes are byte-for-byte preserved. Activation is owned by `QnsiToolkit`
  * (single `langchain-qnsp` handshake); the resolved tenant id is injected via
- * {@link VaultClient.setTenantId} — so this subpath has no `@heossi/qnsi-*`
+ * {@link VaultClient.setTenantId} - so this subpath has no `@heossihq/qnsi-*`
  * workspace dependency (same pattern as `../_activation`).
  */
 

@@ -4,7 +4,7 @@ Each client takes an `ApiKeyActivation` instance, calls
 ``activation.get_activation()`` once on first use to ensure activation
 succeeds before sending real traffic, then issues authenticated requests
 through the QNSP edge gateway. 401 responses trigger one cache invalidation +
-retry — same pattern as the BEE partner client.
+retry.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from qnsi._errors import QnsiApiError, QnsiNetworkError
 
 
 class _ServiceClient:
-    """Base class — concrete clients (Vault, KMS, Audit) inherit."""
+    """Base class - concrete clients (Vault, KMS, Audit) inherit."""
 
     PATH_PREFIX: str = ""  # e.g. "/vault" or "/kms" or "/audit"
 
@@ -62,7 +62,7 @@ class _ServiceClient:
         query: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
-        # Lazy activation — first call exercises the handshake; later calls
+        # Lazy activation - first call exercises the handshake; later calls
         # reuse the cached token until near-expiry.
         self._activation.get_activation()
 
@@ -71,8 +71,25 @@ class _ServiceClient:
         # rather than per-method (mirrors the npm SDK's withTenantId); a
         # caller-supplied tenantId always wins. Omitting it is what shipped silent
         # "missing tenantId" 400s and stripped fields.
-        if isinstance(json, dict) and "tenantId" not in json:
-            json = {"tenantId": self._activation.tenant_id, **json}
+        #
+        # MUST test the VALUE, not the KEY. Callers routinely pass an explicit
+        # `tenantId: None` (e.g. kms.list_keys builds
+        # `{"tenantId": tenant_id, "limit": limit, "cursor": cursor}` with tenant_id=None),
+        # so a `"tenantId" not in ...` guard sees the key, skips injection, and `_url`
+        # then drops the None - leaving no tenant on the wire at all. Proven against
+        # production 2026-07-14 with the PUBLISHED 0.4.0:
+        #     kms.list_keys()                    -> 400 BAD_REQUEST
+        #     kms.list_keys(tenant_id="<uuid>")  -> 200
+        if isinstance(json, dict) and json.get("tenantId") is None:
+            json = {**json, "tenantId": self._activation.tenant_id}
+
+        # Backend GET endpoints (e.g. /crypto/v1/assets/stats, /crypto/v1/readiness,
+        # GET /kms/v1/keys/:id) read tenantId from the QUERY string and 400 without it.
+        # The body injection above cannot help a GET (no body), so also inject the
+        # activated tenant into the query (mirrors the npm SDK's withTenantIdQuery).
+        # A caller-supplied tenantId always wins. Same value-not-key rule as above.
+        if query is None or query.get("tenantId") is None:
+            query = {**(query or {}), "tenantId": self._activation.tenant_id}
 
         url = self._url(path, query=query)
         headers = self._build_headers(idempotency_key=idempotency_key)
@@ -115,7 +132,7 @@ class _ServiceClient:
             return {}
         body = _safe_json(response)
         if not isinstance(body, dict):
-            # 200 with non-object JSON (e.g. an array) — wrap so callers can
+            # 200 with non-object JSON (e.g. an array) - wrap so callers can
             # destructure consistently.
             return {"_raw": body}
         return body

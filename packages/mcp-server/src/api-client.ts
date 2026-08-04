@@ -58,7 +58,7 @@ export class ApiClient {
 			"x-qnsp-tenant-id": this.tenantId,
 			"x-tenant-id": this.tenantId,
 			"content-type": "application/json",
-			"user-agent": "qnsp-mcp-server/0.1.0",
+			"user-agent": "qnsi-mcp-server/0.2.0",
 		};
 
 		const response = await fetch(url, {

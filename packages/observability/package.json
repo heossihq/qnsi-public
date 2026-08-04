@@ -1,5 +1,5 @@
 {
-	"name": "@heossi/qnsi-observability",
+	"name": "@heossihq/qnsi-observability",
 	"version": "0.1.4",
 	"license": "Apache-2.0",
 	"engines": {
@@ -54,11 +54,12 @@
 		"@opentelemetry/resources": "^2.6.1",
 		"@opentelemetry/sdk-metrics": "^2.6.1",
 		"@opentelemetry/sdk-trace-node": "^2.6.1",
-		"@heossi/qnsi-shared-kernel": "workspace:*",
+		"@heossihq/qnsi-shared-kernel": "workspace:*",
 		"fastify": "^5.8.5"
 	},
 	"devDependencies": {
 		"@types/node": "^25.5.2",
 		"vitest": "4.1.2"
-	}
+	},
+	"private": true
 }

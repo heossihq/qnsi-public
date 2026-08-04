@@ -37,7 +37,7 @@ const logAgentActionSchema = z.object({
 	payload: z
 		.record(z.string(), z.unknown())
 		.describe(
-			"Structured data describing the action — what the agent did, inputs, outputs, reasoning",
+			"Structured data describing the action - what the agent did, inputs, outputs, reasoning",
 		),
 	metadata: z
 		.record(z.string(), z.unknown())

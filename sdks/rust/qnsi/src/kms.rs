@@ -1,4 +1,4 @@
-//! QNSI KMS — server-side PQC keys with sign, verify, wrap, and unwrap.
+//! QNSI KMS - server-side PQC keys with sign, verify, wrap, and unwrap.
 
 use base64::engine::general_purpose::STANDARD as B64;
 use base64::Engine;
@@ -30,7 +30,7 @@ impl Client {
     ) -> Result<Value, Error> {
         // The backend create schema REQUIRES a client-supplied keyId (1-255 chars)
         // and a keyType (root|master|data|byok). Generate a UUID handle when the
-        // caller omits one, and default keyType to "data" — mirrors the Python SDK
+        // caller omits one, and default keyType to "data" - mirrors the Python SDK
         // (kms.py: `key_id or str(uuid.uuid4())`, `key_type="data"`).
         if req.key_id.is_none() {
             req.key_id = Some(uuid::Uuid::new_v4().to_string());
@@ -44,7 +44,7 @@ impl Client {
     }
 
     pub async fn list_keys(&self) -> Result<Value, Error> {
-        // kms reads scope by a tenantId QUERY param — injected centrally by ServiceClient.
+        // kms reads scope by a tenantId QUERY param - injected centrally by ServiceClient.
         self.sc
             .request::<()>(Method::GET, "/keys", None, None, None)
             .await

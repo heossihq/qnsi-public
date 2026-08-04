@@ -1,5 +1,5 @@
 ---
-title: Billing SDK (@heossi/qnsi-billing-sdk)
+title: Billing SDK (qnsi.billing)
 version: 0.2.6
 last_updated: 2026-04-30
 copyright: © 2025 HEOSSI. All rights reserved.
@@ -8,10 +8,10 @@ source_files:
   - /packages/billing-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-billing-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-billing-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.billing./* method */(...);
 > ```
@@ -19,20 +19,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Billing SDK (`@heossi/qnsi-billing-sdk`)
+# Billing SDK (`qnsi.billing`)
 
 The TypeScript client for `billing-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Provides usage metering, invoice management, revenue analytics, and payment recovery.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-billing-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { BillingClient } from "@heossi/qnsi-billing-sdk";
+import { BillingClient } from "@heossihq/qnsi";
 
 const billing = new BillingClient({
 	baseUrl: "https://api.qnsi.heossi.com",

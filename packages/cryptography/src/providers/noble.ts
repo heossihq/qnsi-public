@@ -1,5 +1,5 @@
 /**
- * Noble PQC Provider — browser-compatible PQC cryptographic operations.
+ * Noble PQC Provider - browser-compatible PQC cryptographic operations.
  *
  * Implements the PqcProvider interface using @noble/post-quantum (pure JavaScript).
  * Supports all NIST FIPS finalized standards:

@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"ignoreDeprecations": "6.0",
+		"noEmit": false,
+		"outDir": "dist"
+	},
+	"exclude": ["dist", "build", "**/*.test.ts", "**/*.spec.ts"]
+}

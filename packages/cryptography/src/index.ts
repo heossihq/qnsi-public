@@ -8,3 +8,4 @@ export * from "./provider-attestation.js";
 export * from "./providers/index.js";
 export * from "./tls/pqc-tls.js";
 export * from "./tls/rotate-pqc-cert.js";
+export * from "./xwing.js";

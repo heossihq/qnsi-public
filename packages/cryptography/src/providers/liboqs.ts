@@ -22,7 +22,7 @@ import {
 	registerExternalPqcProvider,
 } from "./external.js";
 
-const DEFAULT_MODULE_ID = "@heossi/liboqs-native";
+const DEFAULT_MODULE_ID = "@heossihq/liboqs-native";
 const DEFAULT_HASH_ALGORITHM = "sha3-256";
 
 const require = createRequire(import.meta.url);
@@ -35,7 +35,7 @@ let liboqsPackageAuthor: string | undefined;
 
 try {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	const pkg = require("@heossi/liboqs-native/package.json") as {
+	const pkg = require("@heossihq/liboqs-native/package.json") as {
 		readonly version?: string;
 		readonly liboqsVersion?: string;
 		readonly author?: string;
@@ -326,7 +326,7 @@ interface DefaultModuleNamespace {
  * Algorithms that exist in the PqcAlgorithm union + retain code paths, but are NOT
  * offered because the liboqs build cannot perform them safely. HQC: disabled upstream
  * (OQS_ENABLE_KEM_HQC=OFF) pending the 2025-spec rewrite; unpatched CVE-2025-48946.
- * Kept local (not imported from @heossi/qnsi-security) to avoid a cryptography→security
+ * Kept local (not imported from @heossihq/qnsi-security) to avoid a cryptography→security
  * dependency cycle; the canonical list is crypto-policy.ts DISABLED_KEM_ALGORITHMS.
  */
 const DISABLED_ALGORITHMS: ReadonlySet<PqcAlgorithm> = new Set(["hqc-128", "hqc-192", "hqc-256"]);
@@ -351,11 +351,11 @@ function resolveImportedModule(imported: LiboqsModule | DefaultModuleNamespace):
 }
 
 const LIBOQS_MISSING_MESSAGE =
-	"@heossi/liboqs-native is not installed. " +
-	"It is an optional dependency of @heossi/qnsi-cryptography that is only distributed via GitHub Packages. " +
+	"@heossihq/liboqs-native is not installed. " +
+	"It is an optional dependency of @heossihq/qnsi-cryptography that is only distributed via GitHub Packages. " +
 	"To enable the native liboqs provider, configure an .npmrc scope mapping " +
 	"(echo '@heossi:registry=https://npm.pkg.github.com' >> .npmrc) and run " +
-	"`npm install @heossi/liboqs-native`. " +
+	"`npm install @heossihq/liboqs-native`. " +
 	"Alternatively, use the pure-JS noble provider via " +
 	"`initializeExternalPqcProvider('noble')`, which is always available.";
 
@@ -375,7 +375,7 @@ async function defaultLoadModule(moduleId: string): Promise<LiboqsModule> {
 	try {
 		const imported: LiboqsModule | DefaultModuleNamespace =
 			moduleId === DEFAULT_MODULE_ID
-				? ((await import("@heossi/liboqs-native")) as LiboqsModule | DefaultModuleNamespace)
+				? ((await import("@heossihq/liboqs-native")) as LiboqsModule | DefaultModuleNamespace)
 				: await runtimeImport(moduleId);
 		return resolveImportedModule(imported);
 	} catch (error) {

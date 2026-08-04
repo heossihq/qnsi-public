@@ -57,17 +57,17 @@ Data never in plaintext on server.
 
 ### Browser-side PQC encryption
 
-The `@heossi/qnsi-browser` package provides client-side PQC encryption directly in the browser using `@noble/post-quantum` (pure JavaScript, zero native dependencies). This enables true end-to-end encryption where data is encrypted before it leaves the browser.
+Browser-side PQC uses `@noble/post-quantum` directly (pure JavaScript, zero native dependencies). This enables true end-to-end encryption where data is encrypted before it leaves the browser. QNSI does not currently publish a separate browser SDK package.
 
 Supported algorithms (18 FIPS-standardized):
-- **ML-KEM** (FIPS 203): kyber-512, kyber-768, kyber-1024 — key encapsulation
-- **ML-DSA** (FIPS 204): dilithium-2, dilithium-3, dilithium-5 — digital signatures
-- **SLH-DSA** (FIPS 205): 12 parameter sets (SHA2/SHAKE × 128/192/256 × f/s) — hash-based signatures
+- **ML-KEM** (FIPS 203): kyber-512, kyber-768, kyber-1024 - key encapsulation
+- **ML-DSA** (FIPS 204): dilithium-2, dilithium-3, dilithium-5 - digital signatures
+- **SLH-DSA** (FIPS 205): 12 parameter sets (SHA2/SHAKE × 128/192/256 × f/s) - hash-based signatures
 
 CSE workflow:
 1. Generate ML-KEM key pair via `generateEncryptionKeyPair("kyber-768")`
-2. Encrypt data with `encryptBeforeUpload(data, publicKey, "kyber-768")` — uses ML-KEM + AES-256-GCM
+2. Encrypt data with `encryptBeforeUpload(data, publicKey, "kyber-768")` - uses ML-KEM + AES-256-GCM
 3. Upload encrypted envelope to QNSI storage
 4. Download and decrypt with `decryptAfterDownload(envelope, privateKey)`
 
-See the [`@heossi/qnsi-browser` documentation](/sdk/browser-sdk) for full API reference and integration examples.
+See the [`@noble/post-quantum` package](https://www.npmjs.com/package/@noble/post-quantum) for the primitive API. Keep private keys in browser-controlled storage and upload only the encrypted envelope to QNSI storage.

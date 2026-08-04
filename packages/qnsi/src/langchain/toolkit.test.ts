@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QnsiToolkit } from "./toolkit.js";
 
-// Test double: @heossi/qnsi-vault-sdk
+// Test double: @heossihq/qnsi-vault-sdk
 const mockVaultInstance = {
 	getSecret: vi.fn().mockResolvedValue({
 		id: "secret-123",

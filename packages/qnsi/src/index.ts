@@ -1,15 +1,14 @@
 /**
- * `@heossi/qnsi` — official Node.js / TypeScript SDK for the
+ * `@heossihq/qnsi` - official Node.js / TypeScript SDK for the
  * Quantum-Native Security Infrastructure.
  *
  * Single package covering vault, kms, audit, auth, tenant, access,
  * billing, crypto-inventory, storage, search, and ai-orchestrator,
- * plus webhook signature verification. Mirrors the `qnsp` Python /
- * Go / Rust SDK surface byte-for-byte.
+ * plus webhook signature verification.
  *
  * @example
  * ```ts
- * import { QnsiClient } from "@heossi/qnsi";
+ * import { QnsiClient } from "@heossihq/qnsi";
  *
  * const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
  *
@@ -42,14 +41,22 @@ export {
 } from "./access.js";
 export {
 	AiClient,
+	type DeployModelRequest,
 	type InferenceRequest,
 	type RegisterArtifactRequest,
 	type RegisterModelRequest,
 	type SubmitWorkloadRequest,
+	type UpdateModelRequest,
 } from "./ai.js";
 export { AuditClient, type LogEventRequest } from "./audit.js";
 export { AuthClient, type LoginRequest } from "./auth.js";
-export { BillingClient, type IngestMeterRequest } from "./billing.js";
+export {
+	BillingClient,
+	type BillingSecurityEnvelope,
+	type BillingSignature,
+	type IngestMeterRequest,
+	type ListInvoicesQuery,
+} from "./billing.js";
 // QnsiClient is the canonical name (product is QNSI). QnspClient is kept as a
 // @deprecated back-compat alias for consumers on the pre-rebrand name.
 export {
@@ -78,7 +85,14 @@ export {
 	/** @deprecated Use `QnsiWebhookError`. */
 	QnsiWebhookError as QnspWebhookError,
 } from "./errors.js";
-export { type CreateKeyRequest, KmsClient } from "./kms.js";
+export {
+	type CreateKeyRequest,
+	type HspkSealRequest,
+	type HspkSealResponse,
+	type HspkSignRequest,
+	KmsClient,
+	type SealedPqcKey,
+} from "./kms.js";
 export {
 	type CreateIndexRequest,
 	type QueryRequest,
@@ -86,8 +100,14 @@ export {
 	type Vector,
 } from "./search.js";
 export { type PutObjectInput, StorageClient } from "./storage.js";
-export { type CreateTenantRequest, TenantClient } from "./tenant.js";
-// Service classes — exported so callers can construct mocks for testing.
+export {
+	type CreateTenantRequest,
+	TenantClient,
+	type TenantSecurityEnvelope,
+	type TenantSignature,
+	type UpdateTenantRequest,
+} from "./tenant.js";
+// Service classes - exported so callers can construct mocks for testing.
 export { type CreateSecretRequest, VaultClient } from "./vault.js";
 export {
 	MAX_WEBHOOK_SKEW_MS,

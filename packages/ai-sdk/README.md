@@ -1,4 +1,4 @@
-# @heossi/qnsi-ai-sdk
+# @heossihq/qnsi-ai-sdk
 
 TypeScript SDK client for the QNSI AI orchestration service; equivalent shapes ship in Python, Go, and Rust. Provides secure AI workload management, enclave inference, and encrypted training.
 
@@ -7,13 +7,13 @@ Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi-ai-sdk
+pnpm add @heossihq/qnsi-ai-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { AiOrchestratorClient } from "@heossi/qnsi-ai-sdk";
+import { AiOrchestratorClient } from "@heossihq/qnsi-ai-sdk";
 
 const ai = new AiOrchestratorClient({
   baseUrl: "https://api.qnsi.heossi.com",
@@ -35,7 +35,7 @@ const result = await ai.runInference({
 ## Requirements
 
 - Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
-- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
+- A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

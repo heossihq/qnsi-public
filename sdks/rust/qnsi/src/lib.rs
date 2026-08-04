@@ -1,10 +1,10 @@
-//! # qnsi — Rust SDK for the Quantum-Native Security Infrastructure
+//! # qnsi - Rust SDK for the Quantum-Native Security Infrastructure
 //!
-//! Typed Rust client for QNSI — post-quantum cryptography (ML-KEM, ML-DSA,
+//! Typed Rust client for QNSI - post-quantum cryptography (ML-KEM, ML-DSA,
 //! SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS,
 //! and immutable audit trails. Same wire contracts as the official
-//! `@heossi/qnsi` TypeScript SDK, the `qnsi` Python SDK, and the
-//! `github.com/heossihq/qnsi-public/sdks/go/qnsi` Go SDK — pick whichever
+//! `@heossihq/qnsi` TypeScript SDK, the `qnsi` Python SDK, and the
+//! `github.com/heossihq/qnsi-public/sdks/go/qnsi` Go SDK - pick whichever
 //! language fits your stack and the byte-for-byte outputs round-trip.
 //!
 //! ## Quick start
@@ -134,22 +134,22 @@ impl Client {
         })
     }
 
-    /// Vault subclient — PQC-encrypted secret storage.
+    /// Vault subclient - PQC-encrypted secret storage.
     pub fn vault(&self) -> vault::Client {
         vault::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// KMS subclient — server-side PQC keys.
+    /// KMS subclient - server-side PQC keys.
     pub fn kms(&self) -> kms::Client {
         kms::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// Audit subclient — immutable, hash-chained event log.
+    /// Audit subclient - immutable, hash-chained event log.
     pub fn audit(&self) -> audit::Client {
         audit::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// Auth subclient — password login, JWT session refresh/revocation, MFA,
+    /// Auth subclient - password login, JWT session refresh/revocation, MFA,
     /// and risk-based authentication. Cloned so the cached login session is
     /// SHARED across calls (inner state is `Arc<Mutex<…>>`): `auth().login(...)`
     /// then later `auth().revoke(...)` / `auth().mfa_*` reuse the same session.
@@ -157,38 +157,38 @@ impl Client {
         self.auth.clone()
     }
 
-    /// Tenant subclient — tenant CRUD, crypto-policy management,
+    /// Tenant subclient - tenant CRUD, crypto-policy management,
     /// onboarding, quotas, health.
     pub fn tenant(&self) -> tenant::Client {
         tenant::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// Access-control subclient — RBAC roles and permissions.
+    /// Access-control subclient - RBAC roles and permissions.
     pub fn access(&self) -> access::Client {
         access::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// Billing subclient — entitlements, usage meters, invoices.
+    /// Billing subclient - entitlements, usage meters, invoices.
     pub fn billing(&self) -> billing::Client {
         billing::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// Crypto-inventory subclient — Cryptographic Bill of Materials.
+    /// Crypto-inventory subclient - Cryptographic Bill of Materials.
     pub fn crypto_inventory(&self) -> crypto_inventory::Client {
         crypto_inventory::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// Storage subclient — PQC-encrypted object storage with SSE-X.
+    /// Storage subclient - PQC-encrypted object storage with SSE-X.
     pub fn storage(&self) -> storage::Client {
         storage::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// Search subclient — encrypted vector search.
+    /// Search subclient - encrypted vector search.
     pub fn search(&self) -> search::Client {
         search::Client::new(self.activation.clone(), self.http.clone())
     }
 
-    /// AI subclient — model registry, AI workloads with enclave
+    /// AI subclient - model registry, AI workloads with enclave
     /// attestation, inference, bias / prompt-injection monitoring.
     pub fn ai(&self) -> ai::Client {
         ai::Client::new(self.activation.clone(), self.http.clone())

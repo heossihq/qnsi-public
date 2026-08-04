@@ -1,15 +1,15 @@
 /**
- * QNSP Vector Store for LlamaIndex — `@heossi/qnsi/llamaindex` subpath.
+ * QNSP Vector Store for LlamaIndex - `@heossihq/qnsi/llamaindex` subpath.
  *
  * PQC-encrypted semantic search backed by QNSP search-service (SSE-X).
  * LlamaIndex `VectorStore`-compatible without importing `llamaindex`.
  *
- * Folded in from the former standalone `@heossi/qnsi-llamaindex-qnsp`
+ * Folded in from the former standalone `@heossihq/qnsi-llamaindex-qnsp`
  * (2026-05-16). The search-service HTTP (`indexDocument` POST
  * `/search/v1/documents/index`, `search` GET `/search/v1/documents`, 429
  * retry w/ backoff + `x-qnsp-tenant-id` header) is inlined here faithfully
- * from the former `@heossi/qnsi-search-sdk`, and SSE-X auto-token derivation
- * uses the inlined `./sse.js` — so this subpath has no `@heossi/qnsi-*`
+ * from the former `@heossihq/qnsi-search-sdk`, and SSE-X auto-token derivation
+ * uses the inlined `./sse.js` - so this subpath has no `@heossihq/qnsi-*`
  * workspace dependency (same pattern as `../_activation`). A single
  * activation (sdkId `llamaindex-qnsp`) resolves the tenant; that tenant id is
  * sent both in the request and the `x-qnsp-tenant-id` header.
@@ -38,7 +38,7 @@ async function resolveActivationTenantId(apiKey: string, baseUrl: string): Promi
 	return activation.tenantId;
 }
 
-// ─── Faithful search-service types (ported from @heossi/qnsi-search-sdk) ──────
+// ─── Faithful search-service types (ported from @heossihq/qnsi-search-sdk) ──────
 
 export interface SearchSecurityEnvelope {
 	readonly controlPlaneTokenSha256: string | null;
@@ -115,11 +115,11 @@ export interface VectorStoreQueryResult {
 export interface QnsiVectorStoreConfig {
 	/**
 	 * QNSP API key. Get one at https://cloud.qnsi.heossi.com/api-keys
-	 * The API key carries the tenant ID internally — no separate tenantId needed.
+	 * The API key carries the tenant ID internally - no separate tenantId needed.
 	 */
 	readonly apiKey: string;
 	/**
-	 * Tenant ID for all search operations. Optional — resolved automatically
+	 * Tenant ID for all search operations. Optional - resolved automatically
 	 * from the API key via SDK activation when omitted.
 	 */
 	readonly tenantId?: string;
@@ -164,7 +164,7 @@ const NULL_SIGNATURE = {
 	publicKey: "",
 } as const;
 
-// ─── Inlined faithful search-service HTTP (from @heossi/qnsi-search-sdk) ──────
+// ─── Inlined faithful search-service HTTP (from @heossihq/qnsi-search-sdk) ──────
 
 function assertHttpsOrLocal(baseUrl: string): void {
 	if (baseUrl.startsWith("https://")) return;
@@ -369,7 +369,7 @@ class SearchTransport {
  *
  * @example
  * ```typescript
- * import { QnsiVectorStore } from "@heossi/qnsi/llamaindex";
+ * import { QnsiVectorStore } from "@heossihq/qnsi/llamaindex";
  *
  * const store = new QnsiVectorStore({ apiKey: process.env.QNSI_API_KEY });
  * await store.add([{ id_: "doc-1", text: "Quantum-safe overview", metadata: {} }]);

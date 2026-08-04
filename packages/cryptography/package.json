@@ -1,12 +1,12 @@
 {
-	"name": "@heossi/qnsi-cryptography",
+	"name": "@heossihq/qnsi-cryptography",
 	"version": "0.2.0",
 	"license": "Apache-2.0",
 	"publishConfig": {
 		"access": "public"
 	},
 	"type": "module",
-	"description": "Post-quantum cryptography (PQC) primitives for Node.js: ML-KEM, ML-DSA, SLH-DSA, FN-DSA, HQC — all 89 NIST PQC algorithms via liboqs. Free tier at cloud.qnsi.heossi.com.",
+	"description": "Post-quantum cryptography (PQC) primitives for Node.js: ML-KEM, ML-DSA, SLH-DSA, FN-DSA, HQC - all 89 NIST PQC algorithms via liboqs. Free tier at cloud.qnsi.heossi.com.",
 	"keywords": [
 		"qnsp",
 		"pqc",
@@ -57,13 +57,13 @@
 		}
 	},
 	"dependencies": {
-		"@heossi/qnsi-sdk-activation": "workspace:*",
+		"@heossihq/qnsi-sdk-activation": "workspace:*",
 		"@noble/hashes": "^2.0.1",
 		"@noble/post-quantum": "^0.6.1",
 		"zod": "^4.3.6"
 	},
 	"optionalDependencies": {
-		"@heossi/liboqs-native": "workspace:*"
+		"@heossihq/liboqs-native": "workspace:*"
 	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
@@ -77,5 +77,6 @@
 	"devDependencies": {
 		"@types/node": "^25.5.2",
 		"vitest": "4.1.2"
-	}
+	},
+	"private": true
 }

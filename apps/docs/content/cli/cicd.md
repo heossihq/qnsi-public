@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Install QNSI CLI
-        run: pnpm add -g @heossi/qnsi-cli
+        run: pnpm add -g @heossihq/qnsi
       
       - name: Configure QNSI
         env:
@@ -44,7 +44,7 @@ jobs:
 deploy:
   image: node:20
   before_script:
-    - corepack enable && corepack prepare pnpm@10.25.0 --activate && pnpm add -g @heossi/qnsi-cli
+    - corepack enable && corepack prepare pnpm@10.25.0 --activate && pnpm add -g @heossihq/qnsi
   script:
     - qnsi vault secrets get $QNSI_SECRET_ID --output json > api-key.json
   variables:
@@ -65,7 +65,7 @@ pipeline {
         stage('Setup') {
             steps {
                 sh 'corepack enable && corepack prepare pnpm@10.25.0 --activate'
-                sh 'pnpm add -g @heossi/qnsi-cli'
+                sh 'pnpm add -g @heossihq/qnsi'
                 sh 'qnsi auth token --service-id $QNSI_SERVICE_ID --service-secret $QNSI_SERVICE_SECRET --output json'
             }
         }
@@ -94,7 +94,7 @@ jobs:
           command: |
             corepack enable
             corepack prepare pnpm@10.25.0 --activate
-            pnpm add -g @heossi/qnsi-cli
+            pnpm add -g @heossihq/qnsi
       - run:
           name: Fetch secrets
           command: |

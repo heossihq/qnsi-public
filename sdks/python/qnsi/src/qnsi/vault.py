@@ -1,6 +1,6 @@
-"""Vault client — PQC-encrypted secret storage.
+"""Vault client - PQC-encrypted secret storage.
 
-Mirrors the public surface of the TypeScript ``@heossi/qnsi-vault-sdk`` for the
+Mirrors the public surface of the TypeScript ``@heossihq/qnsi-vault-sdk`` for the
 methods most-used by Python LLM workloads: create, get, rotate, delete.
 
 Wire paths come from ``apps/vault-service/src/routes/secrets.ts`` and the
@@ -30,7 +30,7 @@ class VaultClient(_ServiceClient):
     """Typed-ish client for vault-service.
 
     Returns raw response dicts so the public API doesn't drift away from
-    the wire shape — type-safe wrappers around each shape are a v0.3 nice-
+    the wire shape - type-safe wrappers around each shape are a v0.3 nice-
     to-have. Callers can inspect every server-side field today.
     """
 
@@ -51,15 +51,26 @@ class VaultClient(_ServiceClient):
         """Create a new secret. Server encrypts the payload using the named
         PQC algorithm; the client stays oblivious to the envelope details.
         """
+        # WIRE CONTRACT (apps/vault-service createSecretSchema):
+        #     { tenantId: uuid, name: min 3, payload: string, metadata, rotationPolicy }
+        #
+        # This sent `payloadBase64` and a top-level `algorithm`. The backend requires
+        # `payload`; `payloadBase64` is not a field it knows, so `payload` arrived
+        # undefined and the call NEVER succeeded. Proven against production 2026-07-14
+        # with the PUBLISHED 0.4.0 - vault-service's own log:
+        #
+        #     ZodError: path ["payload"] - expected string, received undefined
+        #
+        # `algorithm` is likewise not a backend field: Zod's non-strict object silently
+        # STRIPS it. It belongs in metadata, exactly as the (proven) npm SDK does
+        # (packages/qnsi/src/vault.ts: `{ name, payload: req.payloadB64, metadata }`).
         body: dict[str, Any] = {
             "name": name,
-            "payloadBase64": payload_b64,
-            "algorithm": algorithm,
+            "payload": payload_b64,
+            "metadata": {**(metadata or {}), "algorithm": algorithm},
         }
         if tenant_id:
             body["tenantId"] = tenant_id
-        if metadata:
-            body["metadata"] = metadata
         return self._request(
             "POST", "/secrets", json=body, idempotency_key=idempotency_key
         )
@@ -90,9 +101,16 @@ class VaultClient(_ServiceClient):
     ) -> dict[str, Any]:
         """Rotate the secret to a fresh version. Old versions remain
         accessible by version number for the configured retention window."""
-        body: dict[str, Any] = {"newPayloadBase64": new_payload_b64}
+        # WIRE CONTRACT (apps/vault-service rotateSecretSchema):
+        #     { tenantId: uuid, newPayload?: string, metadata?, rotationPolicy? }
+        #
+        # Same defect as create_secret: this sent `newPayloadBase64`, which the backend
+        # does not know, so the rotation carried no payload. `algorithm` is not a backend
+        # field either - Zod's non-strict object silently STRIPS it - so it goes in
+        # metadata, exactly as the (proven) npm SDK does.
+        body: dict[str, Any] = {"newPayload": new_payload_b64}
         if algorithm:
-            body["algorithm"] = algorithm
+            body["metadata"] = {"algorithm": algorithm}
         return self._request(
             "POST",
             f"/secrets/{secret_id}/rotate",

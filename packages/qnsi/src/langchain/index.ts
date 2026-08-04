@@ -4,14 +4,14 @@ import { bridgeQnsiEnv } from "../internal/env-aliases.js";
 bridgeQnsiEnv();
 
 /**
- * @heossi/qnsi-langchain-qnsp
+ * @heossihq/qnsi-langchain-qnsp
  *
- * LangChain tools for QNSP — governed agents with PQC-encrypted secrets,
+ * LangChain tools for QNSP - governed agents with PQC-encrypted secrets,
  * quantum-safe signing, and immutable audit trails.
  *
  * @example
  * ```typescript
- * import { QnsiToolkit } from "@heossi/qnsi-langchain-qnsp";
+ * import { QnsiToolkit } from "@heossihq/qnsi-langchain-qnsp";
  *
  * const toolkit = new QnsiToolkit({ apiKey: process.env.QNSI_API_KEY });
  * const tools = toolkit.getTools();

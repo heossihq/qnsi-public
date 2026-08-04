@@ -1,12 +1,12 @@
 /**
- * QNSP Auth — JWT issuance, refresh, revocation, WebAuthn passkeys, MFA,
+ * QNSI Auth - JWT issuance, refresh, revocation, WebAuthn passkeys, MFA,
  * federated identity (SAML / OIDC), risk-based authentication. Wraps
- * `apps/auth-service` (`/auth/v1`).
+ * `apps/auth-service` (routes are `/auth/*`, no `/v1` segment).
  */
 
 import type { Internal } from "./_internal.js";
 
-const PATH_PREFIX = "/proxy/auth/v1";
+const PATH_PREFIX = "/proxy/auth";
 
 export interface LoginRequest {
 	readonly email: string;
@@ -22,42 +22,52 @@ export class AuthClient {
 	}
 
 	refreshToken(refreshToken: string) {
-		return this.internal.request("POST", `${PATH_PREFIX}/refresh`, { refreshToken });
+		return this.internal.request("POST", `${PATH_PREFIX}/token/refresh`, { refreshToken });
 	}
 
 	async revoke(refreshToken: string): Promise<void> {
-		await this.internal.request("POST", `${PATH_PREFIX}/revoke`, { refreshToken });
+		await this.internal.request("POST", `${PATH_PREFIX}/token/revoke`, { refreshToken });
 	}
 
 	// ── WebAuthn passkeys ────────────────────────────────────────────
 
 	registerPasskeyStart(userId: string, tenantId: string) {
-		return this.internal.request("POST", `${PATH_PREFIX}/passkeys/register/start`, {
+		return this.internal.request("POST", `${PATH_PREFIX}/webauthn/register/start`, {
 			userId,
 			tenantId,
 		});
 	}
 
 	registerPasskeyComplete(body: Record<string, unknown>) {
-		return this.internal.request("POST", `${PATH_PREFIX}/passkeys/register/complete`, body);
+		return this.internal.request("POST", `${PATH_PREFIX}/webauthn/register/complete`, body);
 	}
 
 	authenticatePasskeyStart(body: Record<string, unknown>) {
-		return this.internal.request("POST", `${PATH_PREFIX}/passkeys/authenticate/start`, body);
+		return this.internal.request("POST", `${PATH_PREFIX}/webauthn/authenticate/start`, body);
 	}
 
 	authenticatePasskeyComplete(body: Record<string, unknown>) {
-		return this.internal.request("POST", `${PATH_PREFIX}/passkeys/authenticate/complete`, body);
+		return this.internal.request("POST", `${PATH_PREFIX}/webauthn/authenticate/complete`, body);
 	}
 
 	listPasskeys(userId: string, tenantId: string) {
-		return this.internal.request("GET", `${PATH_PREFIX}/passkeys`, undefined, {
-			query: { userId, tenantId },
-		});
+		return this.internal.request(
+			"GET",
+			`${PATH_PREFIX}/webauthn/credentials/${userId}`,
+			undefined,
+			{
+				query: { tenantId },
+			},
+		);
 	}
 
-	async deletePasskey(credentialId: string): Promise<void> {
-		await this.internal.request("DELETE", `${PATH_PREFIX}/passkeys/${credentialId}`);
+	async deletePasskey(credentialId: string, userId: string): Promise<void> {
+		await this.internal.request(
+			"DELETE",
+			`${PATH_PREFIX}/webauthn/credentials/${credentialId}`,
+			undefined,
+			{ query: { userId } },
+		);
 	}
 
 	// ── MFA ──────────────────────────────────────────────────────────
@@ -73,11 +83,11 @@ export class AuthClient {
 	// ── Federated identity ──────────────────────────────────────────
 
 	federateSAML(body: Record<string, unknown>) {
-		return this.internal.request("POST", `${PATH_PREFIX}/federate/saml`, body);
+		return this.internal.request("POST", `${PATH_PREFIX}/federation/saml/assertion`, body);
 	}
 
 	federateOIDC(body: Record<string, unknown>) {
-		return this.internal.request("POST", `${PATH_PREFIX}/federate/oidc`, body);
+		return this.internal.request("POST", `${PATH_PREFIX}/federation/oidc/callback`, body);
 	}
 
 	// ── Risk-based auth ──────────────────────────────────────────────

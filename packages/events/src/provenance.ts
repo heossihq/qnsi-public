@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getRequestContext } from "@heossi/qnsi-observability";
+import { getRequestContext } from "@heossihq/qnsi-observability";
 import { trace } from "@opentelemetry/api";
 import type { EventMetadata } from "./envelope.js";
 

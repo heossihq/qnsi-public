@@ -29,11 +29,11 @@ struct Tally {
 impl Tally {
     fn ok(&mut self, name: &str, detail: &str) {
         self.passed += 1;
-        println!("  PASS  {name} — {detail}");
+        println!("  PASS  {name} - {detail}");
     }
     fn bad(&mut self, name: &str, detail: &str) {
         self.failed += 1;
-        println!("  FAIL  {name} — {detail}");
+        println!("  FAIL  {name} - {detail}");
     }
 }
 
@@ -46,7 +46,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let rand = uuid::Uuid::new_v4().to_string();
     let rand = &rand[..8];
 
-    println!("\nqnsi Rust SDK e2e verification (PRODUCTION) — https://api.qnsi.heossi.com\n");
+    println!("\nqnsi Rust SDK e2e verification (PRODUCTION) - https://api.qnsi.heossi.com\n");
     let mut t = Tally { passed: 0, failed: 0 };
 
     let c = Client::new(ClientOptions::with_api_key(api_key))?;

@@ -1,4 +1,4 @@
-import { clearActivationCache } from "@heossi/qnsi-sdk-activation";
+import { clearActivationCache } from "@heossihq/qnsi-sdk-activation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthClient } from "./index.js";
 
@@ -194,7 +194,7 @@ describe("AuthClient Security Tests", () => {
 						apiKey: "api_key_example_123",
 					}),
 			});
-			// second call in the IIFE below — activationPromise already resolved
+			// second call in the IIFE below - activationPromise already resolved
 			mockFetch.mockResolvedValueOnce({
 				ok: false,
 				status: 500,

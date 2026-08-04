@@ -1,4 +1,4 @@
-//! QNSI Access-Control — RBAC: roles, permissions, role assignments.
+//! QNSI Access-Control - RBAC: roles, permissions, role assignments.
 
 use reqwest::Method;
 use serde::{Deserialize, Serialize};

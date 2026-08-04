@@ -1,4 +1,4 @@
-// Package search is the QNSP Search client — encrypted vector search
+// Package search is the QNSP Search client - encrypted vector search
 // with SSE-X.
 //
 // Wraps `apps/search-service` (see /proxy/search in production).

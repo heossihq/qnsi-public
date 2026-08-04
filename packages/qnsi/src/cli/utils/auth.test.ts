@@ -157,3 +157,55 @@ describe("auth utilities", () => {
 		});
 	});
 });
+
+/**
+ * REGRESSION GUARD: the CLI must work with the credential a CUSTOMER actually has.
+ *
+ * The `qnsi` CLI ships as the bin inside @heossihq/qnsi - the package every customer installs
+ * - but it had NO api-key path at all. Proven 2026-07-14 against production:
+ *
+ *     QNSI_API_KEY=<real key>  qnsi kms keys list
+ *     -> Error: QNSI_SERVICE_ID must be set
+ *
+ * It demanded QNSI_SERVICE_ID + QNSI_SERVICE_SECRET + QNSI_TENANT_ID - internal
+ * service-account credentials a customer does not have and cannot get. The word `apiKey`
+ * appeared exactly once in the whole CLI: in a log-sanitiser regex.
+ *
+ * Advertised-not-built, aimed straight at developers.
+ */
+describe("getAuthHeaders: the API-key path (what a customer has)", () => {
+	const base = {
+		edgeGatewayUrl: "https://api.qnsi.heossi.com",
+		cloudPortalUrl: "https://cloud.qnsi.heossi.com",
+		authServiceUrl: "https://api.qnsi.heossi.com",
+		serviceId: null,
+		serviceSecret: null,
+		kmsServiceUrl: "",
+		vaultServiceUrl: "",
+		auditServiceUrl: "",
+		tenantServiceUrl: "",
+		billingServiceUrl: "",
+		accessControlServiceUrl: "",
+		securityMonitoringServiceUrl: "",
+		storageServiceUrl: "",
+		searchServiceUrl: "",
+		observabilityServiceUrl: "",
+		outputFormat: "json" as const,
+		verbose: false,
+	};
+
+	it("uses the API key as the bearer - no service account required", async () => {
+		const config = { ...base, apiKey: "qnsi_pqc_api_test", tenantId: "tenant-1" } as CliConfig;
+		const headers = await getAuthHeaders(config);
+
+		// Before the fix this exited the process with "QNSI_SERVICE_ID must be set".
+		expect(headers["Authorization"]).toBe("Bearer qnsi_pqc_api_test");
+		expect(headers["x-qnsp-tenant"]).toBe("tenant-1");
+	});
+
+	it("an explicit tenantId still wins over activation", async () => {
+		const config = { ...base, apiKey: "k", tenantId: "explicit-tenant" } as CliConfig;
+		const headers = await getAuthHeaders(config);
+		expect(headers["x-tenant-id"]).toBe("explicit-tenant");
+	});
+});

@@ -1,11 +1,11 @@
 ---
 title: Storage Service
-description: Quantum-safe object storage — server-side encryption with extended PQC (SSE-X), lifecycle, and replication.
+description: Quantum-safe object storage - server-side encryption with extended PQC (SSE-X), lifecycle, and replication.
 ---
 
 # Storage Service
 
-Quantum-safe object storage — server-side encryption with extended PQC (SSE-X), lifecycle, and replication.
+Quantum-safe object storage - server-side encryption with extended PQC (SSE-X), lifecycle, and replication.
 
 ## Pages
 

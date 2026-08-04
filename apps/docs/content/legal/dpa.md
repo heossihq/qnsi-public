@@ -1,90 +1,37 @@
 ---
-title: Data Processing Agreement
-version: 1.0.0
-last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+title: Data Processing Addendum
+description: Processor terms for Customer Data, including the sub-processor disclosure.
+last_updated: 2026-06-01
+copyright: © 2026 HEOSSI (PTE.) LTD. All rights reserved.
 ---
-# Data Processing Agreement
+# Data Processing Addendum
 
-This page provides a summary of the QNSI Data Processing Agreement (DPA). The DPA governs how HEOSSI (PTE.) LTD processes personal data on your behalf as a data processor.
+Last updated: 2026-06-01 · Effective: 2026-06-01
 
-This DPA is designed to comply with Singapore's Personal Data Protection Act 2012 (PDPA), GDPR, and other applicable data protection laws.
+**The authoritative Data Processing Addendum is published at [https://qnsi.heossi.com/dpa](https://qnsi.heossi.com/dpa).**
 
-## Purpose
+This documentation page intentionally does not restate the terms of that document. Two
+versions of a binding instrument is how they drift apart, and a stale copy of a contract
+is worse than no copy. Read the authoritative version at the link above.
 
-The DPA governs how QNSI processes personal data on your behalf.
+## Sub-processors (current)
 
-## Roles
+The complete, current sub-processor disclosure required by GDPR Article 28(2) and (4) is
+generated below from the same source the DPA page itself uses - so this page cannot name
+a different set of vendors than the contract does. Last updated: 2026-07-13.
 
-- **You**: Data Controller
-- **QNSI**: Data Processor
+| Sub-processor | Purpose | Region | Processes Customer Data |
+| --- | --- | --- | --- |
+| Amazon Web Services (AWS) | Primary cloud infrastructure for QNSI Cloud - compute (ECS, Lambda), storage (S3, RDS), networking (CloudFront, ELB), key management (KMS, Secrets Manager). | Singapore (ap-southeast-1) | Yes |
+| Stripe | Subscription billing, payment processing, tax calculation, and invoicing for self-serve plans. | Global (controller-to-processor) | Yes |
+| Namecheap (PrivateEmail) | Transactional email delivery for account verification, invoices, support correspondence, and incident notifications. | United States | Yes |
+| Cloudflare | DNS authoritative resolution and DDoS protection for heossi.com and qnsi.heossi.com zones. | Global edge network | No |
+| GitHub (Microsoft) | Source-code hosting and CI/CD orchestration for QNSI build pipelines. Customer Data is never stored in GitHub. | United States | No |
+| npm, Inc. (GitHub Packages) | Public SDK distribution. No Customer Data is processed; only published artifact metadata. | United States | No |
 
-## Our obligations
+Full disclosure, including transfer mechanisms and the right to object:
+[https://qnsi.heossi.com/legal/sub-processors](https://qnsi.heossi.com/legal/sub-processors).
 
-- Process data only per your instructions
-- Implement security measures
-- Assist with data subject requests
-- Notify of data breaches
-- Delete data on termination
-- Allow audits
-
-## Security measures
-
-- Encryption at rest and in transit
-- Access controls
-- Audit logging
-- Incident response
-- Regular security testing
-
-## Sub-processors
-
-Current sub-processors:
-- AWS (infrastructure)
-- Stripe (payments)
-
-Changes notified 30 days in advance.
-
-## Data transfers
-
-For international transfers:
-- Standard Contractual Clauses
-- Data residency options
-- Supplementary measures
-
-## Data subject rights
-
-We assist with:
-- Access requests
-- Rectification
-- Erasure
-- Portability
-- Restriction
-
-## Breach notification
-
-- Notify within 48 hours
-- Provide incident details
-- Assist with notifications
-
-## Termination
-
-On termination:
-- Return or delete data
-- Certify deletion
-- 30-day export period
-
-## Governing Law
-
-This DPA is governed by the laws of Singapore. For customers subject to GDPR, the Standard Contractual Clauses (SCCs) apply to data transfers.
-
-## Contact
-
-**HEOSSI (PTE.) LTD**
-
-Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
-
-UEN: 202532790K
-
-DPA requests: contact@heossi.com
-
-Full Terms of Service and Privacy Policy: https://qnsi.heossi.com/terms
+> Generated from the single legal source of truth (`apps/web/lib/legal/`). Do not edit
+> by hand - edit the source and run `pnpm gen:legal-docs`. The authoritative published
+> version of every document is on the [QNSI Legal and Trust Center](https://qnsi.heossi.com/legal).

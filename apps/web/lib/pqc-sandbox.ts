@@ -3,9 +3,9 @@
  *
  * Three callers share these primitives:
  *
- *   /api/sandbox/pqc-runtime               — fresh keys/sig per request (the curl demo)
- *   /api/sandbox/pqc-runtime/conformance   — deterministic-seed reproduction check
- *   /api/health/pqc-sandbox             — self-canary used to monitor the demo
+ *   /api/sandbox/pqc-runtime               - fresh keys/sig per request (the curl demo)
+ *   /api/sandbox/pqc-runtime/conformance   - deterministic-seed reproduction check
+ *   /api/health/pqc-sandbox             - self-canary used to monitor the demo
  *
  * Why centralized: the demo, the conformance proof, and the canary all need
  * the SAME code path so that the canary actually guards the demo. If we
@@ -51,7 +51,7 @@ export const KEM_REGISTRY: Record<KemId, KemEntry> = {
 
 // SLH-DSA SHA2-based "f" (fast) variants chosen for sandbox latency.
 // The "s" (small) variants have shorter signatures but signing takes
-// 1–15 seconds, which exceeds the public-sandbox response budget.
+// 1-15 seconds, which exceeds the public-sandbox response budget.
 export const SIG_REGISTRY: Record<SigId, SigEntry> = {
 	"ml-dsa-44": { instance: ml_dsa44, fipsStandard: "FIPS 204", nistSecurityCategory: 2 },
 	"ml-dsa-65": { instance: ml_dsa65, fipsStandard: "FIPS 204", nistSecurityCategory: 3 },

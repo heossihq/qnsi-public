@@ -1,7 +1,7 @@
 //! Local PQC primitives via the `oqs` crate (0.11).
 //!
 //! Available only with the `crypto` feature enabled. The algorithm-name
-//! surface mirrors `@heossi/qnsi` (TypeScript), `qnsi.crypto`
+//! surface mirrors `@heossihq/qnsi` (TypeScript), `qnsi.crypto`
 //! (Python), and `qnsi/crypto` (Go), so an algorithm string that works
 //! in one SDK works everywhere.
 
@@ -33,7 +33,7 @@ pub fn kem_algorithm(name: &str) -> Result<kem::Algorithm, CryptoError> {
         "Kyber512" => Kyber512,
         "Kyber768" => Kyber768,
         "Kyber1024" => Kyber1024,
-        // HQC omitted — disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+        // HQC omitted - disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
         "BIKE-L1" => BikeL1,
         "BIKE-L3" => BikeL3,
         "BIKE-L5" => BikeL5,

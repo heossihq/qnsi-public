@@ -1,5 +1,5 @@
 {
-	"name": "@heossi/qnsi-events",
+	"name": "@heossihq/qnsi-events",
 	"version": "0.1.4",
 	"license": "Apache-2.0",
 	"engines": {
@@ -57,11 +57,12 @@
 	},
 	"dependencies": {
 		"@opentelemetry/api": "^1.9.1",
-		"@heossi/qnsi-observability": "workspace:*",
+		"@heossihq/qnsi-observability": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
 		"@types/node": "^25.5.2",
 		"vitest": "4.1.2"
-	}
+	},
+	"private": true
 }

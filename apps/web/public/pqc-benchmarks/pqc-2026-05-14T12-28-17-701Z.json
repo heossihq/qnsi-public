@@ -16,7 +16,7 @@
 		"publicMirror": "https://github.com/heossihq/qnsi-public",
 		"publicLibrary": "https://github.com/paulmillr/noble-post-quantum",
 		"liveSandbox": "https://qnsi.heossi.com/api/sandbox/pqc-runtime",
-		"readerSnippet": "npm i @noble/post-quantum && node --input-type=module -e \"import {ml_kem768} from '@noble/post-quantum/ml-kem.js'; const t=performance.now(); const kp=ml_kem768.keygen(); console.log('keygen ms:', (performance.now()-t).toFixed(3), '— pubkey bytes:', kp.publicKey.length);\"",
+		"readerSnippet": "npm i @noble/post-quantum && node --input-type=module -e \"import {ml_kem768} from '@noble/post-quantum/ml-kem.js'; const t=performance.now(); const kp=ml_kem768.keygen(); console.log('keygen ms:', (performance.now()-t).toFixed(3), '- pubkey bytes:', kp.publicKey.length);\"",
 		"note": "Absolute timings depend on hardware, kernel scheduler, and thermal state. Cross-algorithm ratios are stable. Schema v2 adds cold-start, memory footprint, and concurrency measurements for production capacity planning."
 	},
 	"kems": [

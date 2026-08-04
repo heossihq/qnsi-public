@@ -1,10 +1,10 @@
 /**
- * Smoke tests for @heossi/qnsi-llamaindex-qnsp
+ * Smoke tests for @heossihq/qnsi-llamaindex-qnsp
  *
  * Verifies that the package exports are importable and classes can be instantiated.
- * No API key or network access required — catches build regressions.
+ * No API key or network access required - catches build regressions.
  *
- * Run: pnpm --filter @heossi/qnsi-llamaindex-qnsp test
+ * Run: pnpm --filter @heossihq/qnsi-llamaindex-qnsp test
  */
 
 import { describe, expect, it } from "vitest";

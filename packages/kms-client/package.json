@@ -1,5 +1,5 @@
 {
-	"name": "@heossi/qnsi-kms-client",
+	"name": "@heossihq/qnsi-kms-client",
 	"version": "0.2.6",
 	"publishConfig": {
 		"access": "public"
@@ -34,7 +34,7 @@
 		"@opentelemetry/exporter-metrics-otlp-http": "^0.214.0",
 		"@opentelemetry/resources": "^2.6.1",
 		"@opentelemetry/sdk-metrics": "^2.6.1",
-		"@heossi/qnsi-sdk-activation": "workspace:*",
+		"@heossihq/qnsi-sdk-activation": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"keywords": [
@@ -69,5 +69,6 @@
 	"homepage": "https://cloud.qnsi.heossi.com",
 	"bugs": {
 		"url": "https://github.com/heossihq/qnsi-public/issues"
-	}
+	},
+	"private": true
 }

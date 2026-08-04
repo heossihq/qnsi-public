@@ -1,21 +1,21 @@
-# @heossi/qnsi-sdk-activation
+# @heossihq/qnsi-sdk-activation
 
 SDK activation and usage metering for QNSI platform SDKs. Ensures all SDK usage is tied to a registered QNSI account.
 
 Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.com).
 
-> **Note:** This is an internal package used by other `@heossi/qnsi-*` SDKs. You typically do not need to install or use it directly.
+> **Note:** This is an internal package used by other `@heossihq/qnsi-*` SDKs. You typically do not need to install or use it directly.
 
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi-sdk-activation
+pnpm add @heossihq/qnsi-sdk-activation
 ```
 
 ## Quick Start
 
 ```typescript
-import { activateSdk } from "@heossi/qnsi-sdk-activation";
+import { activateSdk } from "@heossihq/qnsi-sdk-activation";
 
 // Called internally by QNSI SDKs during initialization
 await activateSdk({
@@ -35,7 +35,7 @@ await activateSdk({
 ## Requirements
 
 - Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
-- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
+- A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

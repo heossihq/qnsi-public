@@ -1,4 +1,4 @@
-import { clearActivationCache } from "@heossi/qnsi-sdk-activation";
+import { clearActivationCache } from "@heossihq/qnsi-sdk-activation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BillingClient } from "./index.js";
 
@@ -111,7 +111,7 @@ describe("BillingClient Security Tests", () => {
 						apiKey: "api_key_example_123",
 					}),
 			});
-			// second call in the IIFE below — activationPromise already resolved, only the operation double needed
+			// second call in the IIFE below - activationPromise already resolved, only the operation double needed
 			mockFetch.mockResolvedValueOnce({
 				ok: false,
 				status: 500,

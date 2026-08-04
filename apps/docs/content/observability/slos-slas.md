@@ -2,7 +2,7 @@
 title: SLOs and SLAs
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # SLOs and SLAs
 
@@ -13,7 +13,7 @@ Service Level Objectives (SLOs) and Service Level Agreements (SLAs) for QNSI Clo
 - **SLOs** are internal operational targets that we monitor and optimize against. They are not contractual commitments.
 - **SLAs** are contractual commitments with defined remedies (Service Credits) for eligible subscription tiers.
 
-For the full SLA document with availability commitments, credit schedules, and exclusions, see [Service Level Agreement](/legal/sla).
+For the full SLA document with availability commitments, credit schedules, and exclusions, see [Service Level Agreement](/legal/service-level-agreement).
 
 ## Service Level Objectives (SLOs)
 
@@ -102,7 +102,7 @@ SLAs provide contractual availability commitments with Service Credits for eligi
 
 ### Service Credit Schedule
 
-See the [full SLA document](/legal/sla) for:
+See the [full SLA document](/legal/service-level-agreement) for:
 - Detailed credit percentages
 - SLA exclusions
 - Credit request procedures
@@ -123,8 +123,8 @@ For details on incident classification and response times, see [Incident Respons
 
 ## Related Documentation
 
-- [Service Level Agreement](/legal/sla) — Contractual SLA with credit schedules
-- [Support Policy](/support/support-policy) — Support tiers and response times
-- [Maintenance Policy](/support/maintenance-policy) — Scheduled maintenance windows
-- [Status Page](/support/status-page) — Real-time service status
-- [Incident Response](/security/incident-response) — Security incident handling
+- [Service Level Agreement](/legal/service-level-agreement) - Contractual SLA with credit schedules
+- [Support Policy](/support/support-policy) - Support tiers and response times
+- [Maintenance Policy](/support/maintenance-policy) - Scheduled maintenance windows
+- [Status Page](/support/status-page) - Real-time service status
+- [Incident Response](/security/incident-response) - Security incident handling

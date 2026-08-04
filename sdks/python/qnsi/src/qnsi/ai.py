@@ -1,4 +1,4 @@
-"""QNSP AI Orchestrator — model registry, AI workload submission with
+"""QNSP AI Orchestrator - model registry, AI workload submission with
 enclave attestation, inference, bias / prompt-injection monitoring."""
 
 from __future__ import annotations
@@ -80,7 +80,7 @@ class AIClient(_ServiceClient):
         self,
         *,
         model_id: str,
-        type: str,  # noqa: A002 — matches API field name
+        type: str,  # noqa: A002 - matches API field name
         input_refs: list[str] | None = None,
         output_bucket: str | None = None,
         enclave_type: str | None = None,
@@ -124,7 +124,7 @@ class AIClient(_ServiceClient):
         self,
         *,
         model_id: str,
-        input: dict[str, Any],  # noqa: A002 — matches API field name
+        input: dict[str, Any],  # noqa: A002 - matches API field name
         stream: bool = False,
         metadata: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
@@ -144,9 +144,9 @@ class AIClient(_ServiceClient):
         self,
         *,
         name: str,
-        hash: str,  # noqa: A002 — matches API field name
+        hash: str,  # noqa: A002 - matches API field name
         storage_id: str,
-        type: str | None = None,  # noqa: A002 — matches API field name
+        type: str | None = None,  # noqa: A002 - matches API field name
         metadata: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:

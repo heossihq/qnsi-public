@@ -1,29 +1,29 @@
 ---
-title: LlamaIndex Integration (@heossi/qnsi-llamaindex-qnsp)
-version: 0.2.5
-last_updated: 2026-04-30
+title: LlamaIndex Integration (@heossihq/qnsi/llamaindex)
+version: 0.6.0
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
-  - /packages/llamaindex-qnsp/package.json
-  - /packages/llamaindex-qnsp/src/index.ts
-  - /packages/llamaindex-qnsp/src/vector-store.ts
+  - /packages/qnsi/package.json
+  - /packages/qnsi/src/llamaindex/index.ts
+  - /packages/qnsi/src/llamaindex/vector-store.ts
 ---
 
-# LlamaIndex Integration (`@heossi/qnsi-llamaindex-qnsp`)
+# LlamaIndex Integration (`@heossihq/qnsi/llamaindex`)
 
 QNSI exposes an encrypted vector-store adapter for LlamaIndex backed by QNSI search and storage services.
 
 ## Install
 
 ```bash
-pnpm add @heossi/qnsi-llamaindex-qnsp llamaindex
+pnpm add @heossihq/qnsi llamaindex
 ```
 
 ## Usage
 
 ```ts
-import { QnsiVectorStore } from "@heossi/qnsi-llamaindex-qnsp";
+import { QnsiVectorStore } from "@heossihq/qnsi/llamaindex";
 
 const store = new QnsiVectorStore({
 	apiKey: process.env.QNSI_API_KEY!,
@@ -38,7 +38,7 @@ const store = new QnsiVectorStore({
 
 ## Authentication
 
-The adapter activates through `@heossi/qnsi-sdk-activation`, derives tenant identity from the API key, and uses billing as the source of truth for availability and limits.
+The adapter uses the activation client bundled in `@heossihq/qnsi`, derives tenant identity from the API key, and uses billing as the source of truth for availability and limits.
 
 ## Related docs
 

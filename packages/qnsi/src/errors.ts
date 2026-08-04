@@ -1,12 +1,12 @@
 /**
  * Typed error hierarchy for the QNSP SDK.
  *
- * Every method in `@heossi/qnsi` rejects with an instance of one of these
- * classes — never with a bare `Error` or a string. Callers can branch on
+ * Every method in `@heossihq/qnsi` rejects with an instance of one of these
+ * classes - never with a bare `Error` or a string. Callers can branch on
  * the failure mode without parsing error messages.
  */
 
-/** Base class — all QNSP SDK errors inherit. */
+/** Base class - all QNSP SDK errors inherit. */
 export class QnsiError extends Error {
 	constructor(message: string, options?: ErrorOptions) {
 		super(message, options);

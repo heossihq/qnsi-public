@@ -1,7 +1,6 @@
 ---
 title: Go SDK
-version: 0.1.0
-last_updated: 2026-04-30
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 ---
 # Go SDK
@@ -101,7 +100,7 @@ event, err := qnsp.ParseWebhook(
 )
 ```
 
-`qnsp.MaxWebhookSkew` defaults to 5 minutes — pass your own `time.Duration` to tighten it.
+`qnsp.MaxWebhookSkew` defaults to 5 minutes - pass your own `time.Duration` to tighten it.
 
 ## Error handling
 

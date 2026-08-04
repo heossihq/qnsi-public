@@ -1,4 +1,4 @@
-# @heossi/qnsi-billing-sdk
+# @heossihq/qnsi-billing-sdk
 
 TypeScript SDK client for the QNSI billing-service API; equivalent shapes ship in Python, Go, and Rust. Provides usage meter ingestion and invoice management.
 
@@ -7,13 +7,13 @@ Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi-billing-sdk
+pnpm add @heossihq/qnsi-billing-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { BillingClient } from "@heossi/qnsi-billing-sdk";
+import { BillingClient } from "@heossihq/qnsi-billing-sdk";
 
 const billing = new BillingClient({
   baseUrl: "https://api.qnsi.heossi.com",
@@ -36,7 +36,7 @@ const invoices = await billing.listInvoices("your-tenant-id");
 ## Requirements
 
 - Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
-- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
+- A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

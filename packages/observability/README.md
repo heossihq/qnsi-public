@@ -1,4 +1,4 @@
-# @heossi/qnsi-observability
+# @heossihq/qnsi-observability
 
 Observability primitives for the Quantum-Native Security Infrastructure (QNSI), including metrics, tracing, context helpers, and integrity hooks.
 
@@ -40,7 +40,7 @@ Services can optionally include PQC signature metadata:
 Services automatically enrich metrics when using wrapped counters/histograms:
 
 ```typescript
-import { enrichMetricAttributes } from "@heossi/qnsi-observability";
+import { enrichMetricAttributes } from "@heossihq/qnsi-observability";
 
 function wrapCounter(counter) {
   return {
@@ -61,7 +61,7 @@ function wrapCounter(counter) {
 **Log Enrichment:**
 
 ```typescript
-import { createIntegrityLogger } from "@heossi/qnsi-observability";
+import { createIntegrityLogger } from "@heossihq/qnsi-observability";
 
 const logger = createIntegrityLogger(fastifyLogger, {
   sourceService: "my-service",
@@ -74,13 +74,13 @@ const logger = createIntegrityLogger(fastifyLogger, {
 
 ## Exports
 
-- `createMeterProvider`, `createCounter`, `createHistogram` — Metric creation helpers
-- `createEnrichedCounter`, `createEnrichedHistogram` — Metrics with automatic provenance enrichment
-- `enrichMetricAttributes`, `enrichLogMetadata` — Manual enrichment helpers
-- `extractProvenanceAttributes`, `createPqcSignatureAttributes` — Attribute extraction utilities
-- `createIntegrityLogger` — Logger wrapper with automatic enrichment
-- `getRequestContext`, `withRequestContext` — Request context propagation
-- `configureNodeTracing`, `createSpan` — Tracing helpers
+- `createMeterProvider`, `createCounter`, `createHistogram` - Metric creation helpers
+- `createEnrichedCounter`, `createEnrichedHistogram` - Metrics with automatic provenance enrichment
+- `enrichMetricAttributes`, `enrichLogMetadata` - Manual enrichment helpers
+- `extractProvenanceAttributes`, `createPqcSignatureAttributes` - Attribute extraction utilities
+- `createIntegrityLogger` - Logger wrapper with automatic enrichment
+- `getRequestContext`, `withRequestContext` - Request context propagation
+- `configureNodeTracing`, `createSpan` - Tracing helpers
 
 ## Scripts
 

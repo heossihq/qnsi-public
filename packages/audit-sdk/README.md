@@ -1,4 +1,4 @@
-# @heossi/qnsi-audit-sdk
+# @heossihq/qnsi-audit-sdk
 
 TypeScript SDK client for the QNSI audit-service API; equivalent shapes ship in Python, Go, and Rust. Provides audit log querying and compliance reporting.
 
@@ -7,13 +7,13 @@ Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi-audit-sdk
+pnpm add @heossihq/qnsi-audit-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { AuditClient } from "@heossi/qnsi-audit-sdk";
+import { AuditClient } from "@heossihq/qnsi-audit-sdk";
 
 const audit = new AuditClient({
   baseUrl: "https://api.qnsi.heossi.com",
@@ -37,7 +37,7 @@ const logs = await audit.listEvents({
 ## Requirements
 
 - Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
-- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
+- A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

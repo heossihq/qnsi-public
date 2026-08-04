@@ -1,4 +1,4 @@
-"""QNSP Storage — PQC-encrypted object storage with SSE-X."""
+"""QNSP Storage - PQC-encrypted object storage with SSE-X."""
 
 from __future__ import annotations
 

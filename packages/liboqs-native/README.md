@@ -1,17 +1,17 @@
-# `@heossi/liboqs-native`
+# `@heossihq/liboqs-native`
 
 This workspace package hosts the liboqs Node-API addon used whenever services
-set `PQC_LIBOQS_MODULE=@heossi/liboqs-native`.
+set `PQC_LIBOQS_MODULE=@heossihq/liboqs-native`.
 
 Key characteristics:
 
-- **Prebuilds-first** – we generate prebuilt binaries via `prebuildify` and ship
+- **Prebuilds-first** - we generate prebuilt binaries via `prebuildify` and ship
   them under `prebuilds/<platform>-<arch>/node.napi.node`.
-- **Auto-fallback** – if a prebuild is missing the `install` script runs
+- **Auto-fallback** - if a prebuild is missing the `install` script runs
   `node-gyp-build`, compiling from source with the local toolchain.
-- **Pure JS surface** – consumers always import `dist/index.js`, which exports
+- **Pure JS surface** - consumers always import `dist/index.js`, which exports
   the `KEM`, `Sig`, `getSupported*`, and `version` helpers expected by
-  `@heossi/qnsi-cryptography`.
+  `@heossihq/qnsi-cryptography`.
 
 ## Directory layout
 
@@ -30,8 +30,8 @@ packages/liboqs-native/
 
 1. Build liboqs and set `OQS_INCLUDE_PATH` / `OQS_LIB_PATH` as described in
    `docs/guides/liboqs-native-build.md`.
-2. Run `pnpm --filter @heossi/liboqs-native prebuild` to populate `prebuilds/`.
-3. Verify the addon with `pnpm --filter @heossi/qnsi-cryptography smoke`.
+2. Run `pnpm --filter @heossihq/liboqs-native prebuild` to populate `prebuilds/`.
+3. Verify the addon with `pnpm --filter @heossihq/qnsi-cryptography smoke`.
 4. During deployment copy (or download) the prebuilds into this package before
    running `pnpm install`. If no prebuild exists the install step compiles the
    addon transparently.

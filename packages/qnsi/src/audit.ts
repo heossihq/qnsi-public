@@ -1,5 +1,5 @@
 /**
- * QNSP Audit — immutable, hash-chained event log. Wraps
+ * QNSP Audit - immutable, hash-chained event log. Wraps
  * `apps/audit-service` (`/audit/v1`).
  */
 
@@ -15,7 +15,7 @@ export interface LogEventRequest {
 
 /**
  * Translate the ergonomic SDK event into the wire shape the audit-service
- * actually accepts. This is the contract-translation boundary — callers keep
+ * actually accepts. This is the contract-translation boundary - callers keep
  * passing `{ eventType, payload, tags }` unchanged.
  *
  * `normalizeBatch` (`apps/audit-service/src/services/audit-service.ts`) matches
@@ -52,7 +52,7 @@ export class AuditClient {
 	ingestEvents(events: readonly LogEventRequest[], opts?: Pick<RequestOptions, "idempotencyKey">) {
 		return this.internal.request(
 			"POST",
-			`${PATH_PREFIX}/events/batch`,
+			`${PATH_PREFIX}/events`,
 			{ events: events.map(toWireEvent) },
 			opts,
 		);

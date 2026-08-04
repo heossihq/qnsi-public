@@ -1,14 +1,14 @@
 ---
 title: API Route Catalog
 version: 0.1.0
-last_updated: 2026-04-23
-copyright: © 2025 HEOSSI. All rights reserved.
+last_updated: 2026-07-20
+copyright: © 2026 HEOSSI. All rights reserved.
 license: BSL-1.1
 ---
 
-# QNSI API Route Catalog
+# QNSI API Route Source Index
 
-This page is auto-generated from the service route source files and provides a canonical, exhaustive list of all registered HTTP endpoints. For detailed request/response schemas and usage examples, see the per-service sections in [API Reference](./reference.md).
+This page is auto-generated from statically visible `server.get/post/put/delete/patch` calls in service route source files. It is a source-level engineering index, not proof that a registrar is mounted or that an endpoint is externally reachable. The service manifests and production surface probe provide separate declaration and reachability evidence. For supported public contracts and usage examples, see [API Reference](./reference.md).
 
 ---
 
@@ -47,7 +47,7 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/ai/v1/costs/recommendations` |  |
 | POST | `/ai/v1/costs/recommendations/:id/accept` |  |
 | POST | `/ai/v1/costs/recommendations/:id/reject` |  |
-| POST | `/ai/v1/costs/record` |  |
+| POST | `/ai/v1/costs/record` | Transactional outbox for ai.recommendation.issued.v1 (sweep F6/F8). |
 | POST | `/ai/v1/costs/record/batch` |  |
 | GET | `/ai/v1/costs/summary` |  |
 | GET | `/ai/v1/enclaves` |  |
@@ -102,12 +102,14 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/access/v1/capabilities` |  |
 | POST | `/access/v1/capabilities/:tokenId/revoke` |  |
 | POST | `/access/v1/capabilities/introspect` |  |
+| POST | `/access/v1/check` | Check whether a subject has a permission (optionally within a scope) |
 | POST | `/access/v1/cross-tenant/anomalies` | Detect access anomalies across tenants |
 | POST | `/access/v1/cross-tenant/compare` | Compare policies across tenants |
 | GET | `/access/v1/cross-tenant/graph` | Get cross-tenant access graph |
 | GET | `/access/v1/cross-tenant/isolation-audit` | Tenant isolation audit |
 | POST | `/access/v1/cross-tenant/overview` | Cross-tenant access overview |
 | POST | `/access/v1/evaluate` |  |
+| DELETE | `/access/v1/internal/tenant/:tenantId` |  |
 | POST | `/access/v1/jit/check` | Check if user has JIT access to resource |
 | POST | `/access/v1/jit/grants/:grantId/revoke` | Revoke JIT grant |
 | GET | `/access/v1/jit/grants/user/:userId` | Get active JIT grants for a user |
@@ -126,6 +128,13 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/access/v1/reviews/campaigns/:campaignId/items/:itemId/decision` | Submit a review decision for an item |
 | POST | `/access/v1/reviews/campaigns/:campaignId/start` | Start a review campaign (generates review items) |
 | GET | `/access/v1/reviews/stats` | Get access review statistics |
+| POST | `/access/v1/role-assignments` | Assign a role to a subject |
+| DELETE | `/access/v1/role-assignments/:assignmentId` | Revoke a role assignment |
+| GET | `/access/v1/roles` | List roles |
+| POST | `/access/v1/roles` | Create a role |
+| DELETE | `/access/v1/roles/:roleId` | Delete a role (and its assignments) |
+| GET | `/access/v1/roles/:roleId` | Get a role |
+| PATCH | `/access/v1/roles/:roleId` | Update a role |
 | POST | `/access/v1/simulate` | Simulate a single access request |
 | POST | `/access/v1/simulate/batch` | Batch simulation for multiple requests |
 | GET | `/access/v1/simulate/history` | Get simulation history |
@@ -139,6 +148,7 @@ This page is auto-generated from the service route source files and provides a c
 |--------|------|-------------|
 | POST | `/audit/v1/chain/verify` |  |
 | GET | `/audit/v1/checkpoints` |  |
+| GET | `/audit/v1/checkpoints/:id/proofs/public` | Public, receipt-facing inclusion proof. The proof contains only hashes and the signed checkpoint metadata; it never exposes event payloads. |
 | GET | `/audit/v1/checkpoints/:id/verify` |  |
 | GET | `/audit/v1/checkpoints/latest` |  |
 | GET | `/audit/v1/checkpoints/latest/public` | are exposed; internal event IDs, counts of per-tenant events, and chain-state cursors are NOT included. |
@@ -197,6 +207,7 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/auth/analytics/stats` |  |
 | POST | `/auth/email/addon-request` |  |
 | POST | `/auth/email/join-request-notification` |  |
+| POST | `/auth/email/team-invitation` |  |
 | POST | `/auth/email/welcome` | Send welcome email to newly registered user. Called by billing-service after successful signup provisioning. |
 | GET | `/auth/federation/:providerId/metadata` | Get federation metadata |
 | GET | `/auth/federation/audit/cross-tenant` | Cross-tenant federation activity (for admin) |
@@ -242,7 +253,7 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/auth/mfa/verify` | Verify MFA challenge (TOTP) |
 | GET | `/auth/oauth/identity` | Returns { userId, tenantId } or 404. Protected by AUTH_OAUTH_SESSION_SECRET. |
 | POST | `/auth/oauth/identity` | Upsert an OAuth identity link. Protected by AUTH_OAUTH_SESSION_SECRET. |
-| POST | `/auth/oauth/session` | Caller must supply { userId, tenantId, roles } — verified server-side. Protected by AUTH_OAUTH_SESSION_SECRET. |
+| POST | `/auth/oauth/session` | Caller must supply { userId, tenantId, roles } - verified server-side. Protected by AUTH_OAUTH_SESSION_SECRET. |
 | GET | `/auth/oauth/user-by-email` | is not linked yet but the user account already exists. Protected by AUTH_OAUTH_SESSION_SECRET. |
 | POST | `/auth/reset-password` | Reset password with token |
 | POST | `/auth/risk/evaluate` | Evaluate authentication risk |
@@ -251,6 +262,7 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/auth/risk/signals` | Report threat signal |
 | GET | `/auth/risk/stats` | Get risk statistics |
 | GET | `/auth/risk/users/:userId/signals` | Get risk signals for a user |
+| DELETE | `/auth/v1/internal/tenant/:tenantId` |  |
 | GET | `/auth/v1/nhi/discovery` |  |
 | GET | `/auth/v1/nhi/identities` |  |
 | POST | `/auth/v1/service-accounts` |  |
@@ -272,7 +284,7 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/api/marketplace/aws/resolve-customer` | AWS Marketplace. The registration token is passed as a query parameter by AWS Marketplace to the fulfillment URL. |
 | POST | `/api/marketplace/aws/webhook` | AWS Marketplace webhook endpoint Handles subscription events from AWS Marketplace |
 | GET | `/api/marketplace/azure/entitlement/:subscriptionId` | Get subscription entitlement by Azure subscription ID. GET /api/marketplace/azure/entitlement/:subscriptionId |
-| POST | `/api/marketplace/azure/resolve` | Called when a customer clicks through from Azure Marketplace to the QNSI landing page. The marketplace token is passed as a query parameter. |
+| POST | `/api/marketplace/azure/resolve` | Called when a customer clicks through from Azure Marketplace to the QNSP landing page. The marketplace token is passed as a query parameter. |
 | POST | `/api/marketplace/azure/webhook` | Must respond with HTTP 200 to acknowledge receipt. For ChangePlan/ChangeQuantity, must PATCH the operation within 10 seconds. |
 | GET | `/api/marketplace/vercel/oauth/callback` | OAuth callback (user-initiated install flow) ======================================================================= |
 | GET | `/api/marketplace/vercel/sso` | SSO deep link ======================================================================= |
@@ -308,6 +320,9 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/billing/v1/analytics/revenue/tenant/:tenantId` | Get revenue by tenant over time GET /billing/v1/analytics/revenue/tenant/:tenantId |
 | GET | `/billing/v1/analytics/revenue/time-series` | Get revenue time series for charts GET /billing/v1/analytics/revenue/time-series |
 | GET | `/billing/v1/analytics/revenue/top-tenants` | Get top revenue-generating tenants GET /billing/v1/analytics/revenue/top-tenants |
+| GET | `/billing/v1/conformance/active-tenants` |  |
+| GET | `/billing/v1/conformance/quota/:tenantId` |  |
+| POST | `/billing/v1/conformance/quota/:tenantId/consume` |  |
 | POST | `/billing/v1/credits` | Create a credit for a tenant POST /billing/v1/credits |
 | POST | `/billing/v1/credits/apply` | Apply credit to an invoice or balance POST /billing/v1/credits/apply |
 | GET | `/billing/v1/credits/balance/:tenantId` | Get credit balance for a tenant GET /billing/v1/credits/balance/:tenantId |
@@ -331,6 +346,7 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/billing/v1/forecasting/trends/:tenantId` | Get trend analysis for usage GET /billing/v1/forecasting/trends/:tenantId |
 | GET | `/billing/v1/forecasting/usage/:tenantId` | Get usage forecast for a tenant GET /billing/v1/forecasting/usage/:tenantId |
 | POST | `/billing/v1/funnel/events` |  |
+| DELETE | `/billing/v1/internal/tenant/:tenantId` |  |
 | GET | `/billing/v1/invoices` |  |
 | POST | `/billing/v1/invoices` |  |
 | POST | `/billing/v1/invoices/generate` |  |
@@ -391,6 +407,7 @@ This page is auto-generated from the service route source files and provides a c
 
 | Method | Path | Description |
 |--------|------|-------------|
+| POST | `/crypto/v1/agent-report-bundles` |  |
 | POST | `/crypto/v1/agent-reports` | Uses a route-scoped preParsing hook to capture the raw body for HMAC signature verification without affecting other routes. |
 | GET | `/crypto/v1/agent-reports/status` | GET /crypto/v1/agent-reports/status Check the number of pending reports for the tenant. |
 | GET | `/crypto/v1/agents` | GET /crypto/v1/agents List all registered agents for the tenant. |
@@ -405,6 +422,7 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/crypto/v1/assets/:id` |  |
 | POST | `/crypto/v1/assets/:id/rotate` |  |
 | POST | `/crypto/v1/assets/discover` |  |
+| POST | `/crypto/v1/assets/import` |  |
 | POST | `/crypto/v1/assets/rotate-bulk` |  |
 | GET | `/crypto/v1/assets/stats` |  |
 | GET | `/crypto/v1/cbom` | KMS, Vault, Edge Gateway, external, host agents, etc. Requires at least tenant_viewer role. |
@@ -416,6 +434,8 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/crypto/v1/certificates/expiring` |  |
 | GET | `/crypto/v1/certificates/expiry` |  |
 | POST | `/crypto/v1/certificates/renew` |  |
+| POST | `/crypto/v1/code-scan-reports` |  |
+| GET | `/crypto/v1/code-scan-reports/status` |  |
 | GET | `/crypto/v1/compliance/nist-report` | - periodStart (optional): ISO date string for report period start - periodEnd (optional): ISO date string for report period end |
 | GET | `/crypto/v1/connected-sources` | Returns a summary of all configured discovery connectors for the tenant, including last sync status, asset counts per source, and coverage gaps. |
 | GET | `/crypto/v1/connector-configs` | GET /crypto/v1/connector-configs List all connector configs for the tenant. Configs are redacted. |
@@ -454,12 +474,27 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/crypto/v1/hardware/:hardwareId/health` |  |
 | POST | `/crypto/v1/hardware/:hardwareId/health` |  |
 | GET | `/crypto/v1/hardware/summary` |  |
+| DELETE | `/crypto/v1/internal/tenant/:tenantId` | route-coverage check can statically detect this registration. The const is still used for the JWT-hook exemption prefix in server.ts. |
+| GET | `/crypto/v1/managed-migration/credentials` |  |
+| POST | `/crypto/v1/managed-migration/credentials` |  |
+| DELETE | `/crypto/v1/managed-migration/credentials/:id` |  |
+| POST | `/crypto/v1/managed-migration/credentials/:id/validate` |  |
 | GET | `/crypto/v1/migration-plan` | crypto assets. Returns deprecated algorithms, phased timeline, and effort breakdown. Requires authenticated tenant context (x-qnsp-tenant header or JWT tenantId). |
+| POST | `/crypto/v1/migration/asset-actions/:id/confirm-cutover` |  |
+| POST | `/crypto/v1/migration/asset-actions/:id/reconcile` |  |
+| GET | `/crypto/v1/migration/cutover-progress` |  |
 | POST | `/crypto/v1/migration/dry-run` | passed to /execute as the confirmation gate. Gated by migration-execution feature flag. Requires tenant_admin role. |
 | POST | `/crypto/v1/migration/execute` | exactly what they previewed in the dry-run. Gated by migration-execution feature flag. Requires tenant_admin role. |
-| GET | `/crypto/v1/migration/executions` | List migration executions for the tenant, most recent first. Not gated — read-only access to execution history. |
-| GET | `/crypto/v1/migration/executions/:id` | Get a single migration execution by ID. Not gated — read-only. |
+| GET | `/crypto/v1/migration/executions` | List migration executions for the tenant, most recent first. Not gated - read-only access to execution history. |
+| GET | `/crypto/v1/migration/executions/:id` | Get a single migration execution by ID. Not gated - read-only. |
+| POST | `/crypto/v1/migration/executions/:id/approve` |  |
+| GET | `/crypto/v1/migration/executions/:id/asset-actions` |  |
 | POST | `/crypto/v1/migration/executions/:id/cancel` | Cancel a pending or in-progress migration execution. Gated by migration-execution feature flag. Requires tenant_admin role. |
+| GET | `/crypto/v1/migration/executions/:id/control-events` |  |
+| POST | `/crypto/v1/migration/executions/:id/pause` |  |
+| GET | `/crypto/v1/migration/executions/:id/reconciliation-events` |  |
+| POST | `/crypto/v1/migration/executions/:id/resume` |  |
+| GET | `/crypto/v1/migration/executions/:id/waves` |  |
 | GET | `/crypto/v1/observations/tls/aggregates` |  |
 | POST | `/crypto/v1/observations/tls/aggregates` |  |
 | GET | `/crypto/v1/policies` |  |
@@ -501,11 +536,17 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/edge/auth/forgot-account` |  |
 | POST | `/edge/auth/forgot-password` |  |
 | POST | `/edge/auth/login` |  |
+| POST | `/edge/auth/login-identity` | portal's /api/auth/login got 404 from the gateway for every login that omits a workspace ID - i.e. the primary login path was dead. (2026-06-03) |
+| POST | `/edge/auth/login/select-tenant` | posts the selectionToken + chosen tenantId here; auth-service exchanges it for a tenant-scoped session. Was likewise unrouted (404) at the gateway. (2026-06-03) |
 | POST | `/edge/auth/logout` |  |
+| GET | `/edge/auth/me/tenants` | at the edge -> 404 route-not-found -> the cloud BFF (/api/user/tenants) saw the user as having no workspaces. Authenticated (user JWT validated by auth-service). |
 | GET | `/edge/auth/oauth/identity` | OAuth-linked identities. The Authorization header carries the shared OAuth session secret (Bearer token), NOT a user JWT. |
 | POST | `/edge/auth/oauth/identity` |  |
 | POST | `/edge/auth/oauth/session` |  |
+| GET | `/edge/auth/oauth/user-by-email` | route the edge returned 404 (route-not-found) -> the BFF treated it as "no user" -> every existing-user OAuth login got "sign up first". |
+| POST | `/edge/auth/revoke-all-sessions` | revokeAll path) silently failed to revoke other sessions - a security action that appeared to succeed. Authenticated (user JWT validated by auth-service). |
 | POST | `/edge/auth/switch-tenant` | policy-bundle-hash) and Tier B headers (entitlement-decision-id, audit-intent-id) are forwarded so auth-service can include them in its structured audit receipt. |
+| POST | `/edge/auth/token/refresh` | the 15-min access token expired mid-session and users were silently logged out (~10-12 min) with no warning. (2026-05-31) |
 | POST | `/edge/auth/webauthn/authenticate/complete` |  |
 | POST | `/edge/auth/webauthn/authenticate/start` | WebAuthn authentication routes |
 | DELETE | `/edge/auth/webauthn/credentials/:credentialId` |  |
@@ -536,6 +577,7 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/evidence/transport-security` |  |
 | GET | `/oauth/vercel/callback` |  |
 | GET | `/oauth/vercel/sso` |  |
+| POST | `/platform/v1/conformance/sign-evidence-pack` | Response: signature block compatible with attaching as a W3C DataIntegrityProof. |
 | GET | `/platform/v1/crypto/algorithms` | GET /platform/v1/crypto/algorithms List all known algorithms with their metadata and lifecycle status. |
 | GET | `/platform/v1/crypto/algorithms/:algorithm` | GET /platform/v1/crypto/algorithms/:algorithm Get metadata for a specific algorithm. |
 | GET | `/platform/v1/crypto/attestation` | GET /platform/v1/crypto/attestation Generate a signed compliance attestation snapshot. |
@@ -556,7 +598,7 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/platform/v1/crypto/tls/evidence` |  |
 | GET | `/platform/v1/crypto/tls/evidence/public` |  |
 | GET | `/proxy/auth/health` |  |
-| GET | `/proxy/health` | Health check endpoint for all proxied services |
+| GET | `/proxy/health` | health routing. A structured `warn` log captures which backends were degraded so the alerting signal is preserved. |
 | POST | `/public/join-requests` |  |
 | GET | `/public/tenant-by-domain/:domain` |  |
 | GET | `/public/tenant-by-slug/:slug` | This is used by the login flow to resolve tenant slugs to UUIDs |
@@ -592,6 +634,8 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/kms/v1/byohsm/connections/:connectionId/validate` |  |
 | GET | `/kms/v1/byohsm/keys` |  |
 | POST | `/kms/v1/byohsm/keys` |  |
+| POST | `/kms/v1/byohsm/pqc/seal` | private key under a non-extractable HSM RSA-OAEP custody key (requires a customer-provisioned BYOHSM connection with an RSA encrypt/decrypt key). |
+| POST | `/kms/v1/byohsm/pqc/sign` | (RSA-OAEP-unwraps the content key) and sign, without the PQC key ever persisting in software. |
 | POST | `/kms/v1/byohsm/sign` |  |
 | POST | `/kms/v1/byohsm/unwrap` |  |
 | POST | `/kms/v1/byohsm/verify` |  |
@@ -613,15 +657,20 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/kms/v1/escrow/recovery/initiate` |  |
 | POST | `/kms/v1/escrow/recovery/submit-share` |  |
 | GET | `/kms/v1/health` |  |
+| DELETE | `/kms/v1/internal/tenant/:tenantId` |  |
 | GET | `/kms/v1/keys` | List keys |
 | POST | `/kms/v1/keys` | Create key |
-| DELETE | `/kms/v1/keys/:keyId` | Revoke key |
+| DELETE | `/kms/v1/keys/:keyId` | for those, a non-delegated caller gets 202 + a dual-control approval request; a second distinct principal must approve (below) before the revoke executes. |
 | GET | `/kms/v1/keys/:keyId` | Get key by ID |
+| GET | `/kms/v1/keys/:keyId/approvals/:approvalId` | the approve path dispatches the side effect by the request's resourceType so future gated KMS operations (e.g. escrow release) can reuse it. |
+| POST | `/kms/v1/keys/:keyId/approvals/:approvalId/approve` | Checker approves. On quorum the gated operation executes exactly once, dispatched by resourceType (maker != checker enforced by the gate). |
+| POST | `/kms/v1/keys/:keyId/approvals/:approvalId/reject` |  |
 | DELETE | `/kms/v1/keys/:keyId/policy` |  |
 | GET | `/kms/v1/keys/:keyId/policy` |  |
 | PUT | `/kms/v1/keys/:keyId/policy` |  |
+| GET | `/kms/v1/keys/:keyId/public-key` | and is never returned. Enables publishing/verifying signatures made by KMS-held signing keys (e.g. the PQ coverage register online-downgrade signer). |
 | POST | `/kms/v1/keys/:keyId/rotate` | Rotate key |
-| POST | `/kms/v1/keys/:keyId/sign` | Sign data with a PQC signature key (ML-DSA / FN-DSA / SLH-DSA) Billable operation: kms.code.sign — gated by pqc-code-signing addon |
+| POST | `/kms/v1/keys/:keyId/sign` | Sign data with a PQC signature key (ML-DSA / FN-DSA / SLH-DSA) Billable operation: kms.code.sign - gated by pqc-code-signing addon |
 | POST | `/kms/v1/keys/:keyId/unwrap` | Unwrap key |
 | POST | `/kms/v1/keys/:keyId/upgrade` | Upgrade key algorithm to tenant's PQC default |
 | POST | `/kms/v1/keys/:keyId/verify` | Verify a PQC signature |
@@ -699,7 +748,7 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/search/v1/analytics/queries/:queryId/feedback` |  |
 | GET | `/search/v1/analytics/summary` |  |
 | GET | `/search/v1/documents` |  |
-| POST | `/search/v1/documents/index` |  |
+| POST | `/search/v1/documents/index` | both redundant and wrong for api-key callers - their tenant is in x-qnsp-api-key-* headers, not a JWT - sweep 2026-06-13 F40.) |
 | POST | `/search/v1/health/alerts` |  |
 | POST | `/search/v1/health/alerts/:alertId/acknowledge` |  |
 | POST | `/search/v1/health/alerts/:alertId/resolve` |  |
@@ -710,6 +759,12 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/search/v1/health/snapshots` |  |
 | POST | `/search/v1/health/snapshots` |  |
 | GET | `/search/v1/health/summary` |  |
+| GET | `/search/v1/indexes` |  |
+| POST | `/search/v1/indexes` |  |
+| DELETE | `/search/v1/indexes/:indexName` |  |
+| POST | `/search/v1/indexes/:indexName/query` |  |
+| POST | `/search/v1/indexes/:indexName/vectors` |  |
+| DELETE | `/search/v1/internal/tenant/:tenantId` |  |
 | GET | `/search/v1/isolation/audit` |  |
 | POST | `/search/v1/isolation/audit` |  |
 | POST | `/search/v1/isolation/policies` |  |
@@ -767,6 +822,8 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/security/v1/compliance/mappings` |  |
 | POST | `/security/v1/compliance/mappings` |  |
 | GET | `/security/v1/compliance/summary` |  |
+| GET | `/security/v1/crypto-monitoring/alerts` | GET /security/v1/crypto-monitoring/alerts - the tenant's recent detections, mapped to the cloud portal's CryptoAlert shape. Real rows only. |
+| GET | `/security/v1/crypto-monitoring/stats` | GET /security/v1/crypto-monitoring/stats - real aggregations over security_alerts. |
 | POST | `/security/v1/detections` |  |
 | POST | `/security/v1/key-compromise` | POST /security/v1/key-compromise Report a key compromise incident and trigger automated remediation. |
 | GET | `/security/v1/key-compromise/:incidentId` | GET /security/v1/key-compromise/:incidentId Get the status of a key compromise incident. |
@@ -777,6 +834,7 @@ This page is auto-generated from the service route source files and provides a c
 | PATCH | `/security/v1/playbooks/:playbookId` |  |
 | POST | `/security/v1/playbooks/execute` |  |
 | GET | `/security/v1/playbooks/executions` |  |
+| GET | `/security/v1/playbooks/executions/:executionId` | Execution detail incl. per-action dispositions + results (the portal shows WHY each containment action completed/failed/awaits approval; also the audit record of what ran). |
 | GET | `/security/v1/playbooks/executions/:executionId/actions` |  |
 | POST | `/security/v1/playbooks/executions/:executionId/approve` |  |
 | GET | `/security/v1/remediation/executions` | Get remediation execution history for an alert. GET /security/v1/remediation/executions?alertId=... |
@@ -805,9 +863,14 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/storage/internal/byok/keys/:tenantId` |  |
 | PUT | `/storage/internal/byok/keys/:tenantId` |  |
 | POST | `/storage/internal/rotations` |  |
-| GET | `/storage/v1/admin/health` | Health check endpoint for admin operations |
-| POST | `/storage/v1/admin/migrate-pqc` | Migration endpoint to update existing documents with PQC metadata Migration endpoint to update existing documents with PQC metadata |
-| GET | `/storage/v1/admin/test` | Test endpoint to verify admin routes are working |
+| GET | `/storage/v1/admin/health` | Health check endpoint for admin operations (platform-admin only; the unauthenticated liveness probe is the top-level /storage/health, registered separately). |
+| POST | `/storage/v1/admin/migrate-pqc` | Migration endpoint to update existing documents with PQC metadata. |
+| GET | `/storage/v1/admin/test` | Diagnostic endpoint to verify admin routes are mounted (platform-admin only). |
+| GET | `/storage/v1/buckets` |  |
+| GET | `/storage/v1/buckets/:bucket/objects` |  |
+| DELETE | `/storage/v1/buckets/:bucket/objects/:key` |  |
+| GET | `/storage/v1/buckets/:bucket/objects/:key` |  |
+| PUT | `/storage/v1/buckets/:bucket/objects/:key` |  |
 | POST | `/storage/v1/classification/detect-pii` | Detect PII in content (preview without storing) |
 | POST | `/storage/v1/classification/objects` | Classify an object |
 | GET | `/storage/v1/classification/objects/:objectId` | Get object classification |
@@ -851,6 +914,7 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/storage/v1/gdpr/export/:id` | Get export status GET /storage/v1/gdpr/export/:id |
 | GET | `/storage/v1/gdpr/export/:id/download` | Download export GET /storage/v1/gdpr/export/:id/download |
 | POST | `/storage/v1/gdpr/export/:id/process` | Process export (generate export data) POST /storage/v1/gdpr/export/:id/process |
+| DELETE | `/storage/v1/internal/tenant/:tenantId` |  |
 | GET | `/storage/v1/replication/configurations` | List replication configurations |
 | POST | `/storage/v1/replication/configurations` | Create replication configuration |
 | DELETE | `/storage/v1/replication/configurations/:configId` | Delete replication configuration |
@@ -900,6 +964,7 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/tenant/v1/health/snapshots` |  |
 | GET | `/tenant/v1/health/snapshots/:snapshotId` |  |
 | GET | `/tenant/v1/health/summary` |  |
+| POST | `/tenant/v1/invitations/accept` | Accept an invitation by its one-time token (used by the signup/onboarding flow). |
 | POST | `/tenant/v1/isolation/audits` |  |
 | GET | `/tenant/v1/isolation/audits/:auditId` |  |
 | POST | `/tenant/v1/isolation/audits/:auditId/checks/:checkId/result` |  |
@@ -920,6 +985,7 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/tenant/v1/onboarding/workflows/:workflowId/action` |  |
 | POST | `/tenant/v1/onboarding/workflows/:workflowId/steps/:stepId/result` |  |
 | GET | `/tenant/v1/public/by-domain/:domain` |  |
+| GET | `/tenant/v1/public/by-id/:id` | Public UUID->tenant resolver. Used by the forgot-account flow (unauthenticated) to turn a tenant UUID into the human-readable slug/name for the reminder email. |
 | GET | `/tenant/v1/public/by-slug/:slug` | Public endpoint: Lookup tenant by slug (no auth required) Used by login flow to resolve tenant slugs to UUIDs |
 | GET | `/tenant/v1/quotas/current` |  |
 | GET | `/tenant/v1/quotas/decisions` |  |
@@ -931,10 +997,15 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/tenant/v1/quotas/usage` |  |
 | GET | `/tenant/v1/tenants` |  |
 | POST | `/tenant/v1/tenants` |  |
+| DELETE | `/tenant/v1/tenants/:id` | primitive - used by the purge worker (after cross-service purge) and by billing orphan-tenant cleanup. Irreversible. |
 | GET | `/tenant/v1/tenants/:id` |  |
 | PATCH | `/tenant/v1/tenants/:id` |  |
 | GET | `/tenant/v1/tenants/:id/add-ons` |  |
-| POST | `/tenant/v1/tenants/:id/add-ons` |  |
+| POST | `/tenant/v1/tenants/:id/add-ons` | Declarative entropy-source contract. See /trust/entropy. |
+| GET | `/tenant/v1/tenants/:id/approvals/:approvalId` | type (crypto-policy-change, tenant-delete, …). The approve path dispatches the side effect by the request's resourceType so new gated operations reuse this. |
+| POST | `/tenant/v1/tenants/:id/approvals/:approvalId/approve` | Checker approves. On quorum the gated change is applied exactly once, dispatched by resourceType (maker != checker enforced by the gate). |
+| POST | `/tenant/v1/tenants/:id/approvals/:approvalId/reject` |  |
+| POST | `/tenant/v1/tenants/:id/cancel-deletion` | Cancel a pending deletion during the grace window - restores the workspace. |
 | GET | `/tenant/v1/tenants/:id/crypto-policy` |  |
 | PUT | `/tenant/v1/tenants/:id/crypto-policy` |  |
 | GET | `/tenant/v1/tenants/:id/crypto-policy-v1` |  |
@@ -950,11 +1021,13 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/tenant/v1/tenants/:id/integrations` |  |
 | POST | `/tenant/v1/tenants/:id/integrations` |  |
 | PATCH | `/tenant/v1/tenants/:id/integrations/:integrationId` |  |
-| GET | `/tenant/v1/tenants/:id/invitations` | List pending invitations |
-| POST | `/tenant/v1/tenants/:id/invitations` |  |
+| GET | `/tenant/v1/tenants/:id/invitations` | List invitations - the cloud BFF (app/api/team/management) already calls this and expects { invitations }; it previously 404'd because only POST existed. |
+| POST | `/tenant/v1/tenants/:id/invitations` | accepted for wire compatibility but are no longer needed - invitations no longer mutate the signed tenant record. |
+| DELETE | `/tenant/v1/tenants/:id/invitations/:invitationId` | Revoke a pending invitation. |
 | GET | `/tenant/v1/tenants/:id/join-requests` |  |
 | POST | `/tenant/v1/tenants/:id/join-requests` |  |
 | POST | `/tenant/v1/tenants/:id/join-requests/:requestId/review` |  |
+| POST | `/tenant/v1/tenants/:id/schedule-deletion` | crypto-erase purge). Owner-only is enforced at the cloud BFF; the JWT/edge scope the caller to their own tenant. Status flips to pending_deletion (suspends access). |
 | GET | `/tenant/v1/tenants/:id/session-settings` | Get session security settings for a tenant. Returns default settings if none are configured. |
 | PUT | `/tenant/v1/tenants/:id/session-settings` | Update session security settings for a tenant. Allows configuring session timeout, idle warnings, tenant switch behavior, etc. |
 
@@ -964,11 +1037,13 @@ This page is auto-generated from the service route source files and provides a c
 |--------|------|-------------|
 | GET | `/vault/v1/dynamic-secrets/configs` | List dynamic secret configurations |
 | POST | `/vault/v1/dynamic-secrets/configs` | Create a dynamic secret configuration |
-| POST | `/vault/v1/dynamic-secrets/configs/:configId/credentials` | Request dynamic credentials |
+| POST | `/vault/v1/dynamic-secrets/configs/:configId/credentials` | Request dynamic credentials - REAL provisioning via engine driver |
 | GET | `/vault/v1/dynamic-secrets/configs/:configId/leases` | List active credentials for a config |
+| GET | `/vault/v1/dynamic-secrets/engines` | Catalog endpoint - what engines are live + what's planned. Useful for portal UI to render the engine selector with implemented/planned hints. |
 | POST | `/vault/v1/dynamic-secrets/leases/:leaseId/renew` | Renew a credential lease |
-| POST | `/vault/v1/dynamic-secrets/leases/:leaseId/revoke` | Revoke a credential lease |
+| POST | `/vault/v1/dynamic-secrets/leases/:leaseId/revoke` | Revoke a credential lease - queues for the lease-maintenance-worker. The worker will call driver.revoke and transition active → revoking → revoked. |
 | GET | `/vault/v1/dynamic-secrets/stats` | Get dynamic secrets statistics |
+| DELETE | `/vault/v1/internal/tenant/:tenantId` |  |
 | POST | `/vault/v1/leakage-detection/incidents` |  |
 | GET | `/vault/v1/leakage-detection/incidents/:incidentId` |  |
 | PATCH | `/vault/v1/leakage-detection/incidents/:incidentId` |  |
@@ -980,6 +1055,7 @@ This page is auto-generated from the service route source files and provides a c
 | GET | `/vault/v1/leakage-detection/scans/:scanId` |  |
 | POST | `/vault/v1/leakage-detection/secrets/:secretId/check` |  |
 | GET | `/vault/v1/leakage-detection/stats` |  |
+| GET | `/vault/v1/versioned-secrets` | ── List versioned secrets (one row per secret_id; latest version's fields) ── |
 | POST | `/vault/v1/versioned-secrets` |  |
 | GET | `/vault/v1/versioned-secrets/:secretId/audit` |  |
 | POST | `/vault/v1/versioned-secrets/:secretId/compare` |  |
@@ -989,5 +1065,8 @@ This page is auto-generated from the service route source files and provides a c
 | POST | `/vault/v1/versioned-secrets/:secretId/rollback` |  |
 | GET | `/vault/v1/versioned-secrets/:secretId/versions/:version` |  |
 | PATCH | `/vault/v1/versioned-secrets/:secretId/versions/:version/state` |  |
+| GET | `/vault/v1/versioned-secrets/retention-policies` | ── Named retention policies: list (with appliedSecretCount) ── |
+| POST | `/vault/v1/versioned-secrets/retention-policies` | ── Named retention policies: create ── |
+| DELETE | `/vault/v1/versioned-secrets/retention-policies/:policyId` | ── Named retention policies: delete (clears the link from referencing secrets) ── |
 | GET | `/vault/v1/versioned-secrets/stats` |  |
 

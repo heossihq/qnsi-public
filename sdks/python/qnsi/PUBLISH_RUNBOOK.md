@@ -7,7 +7,7 @@ GitHub Actions workflow on every `main` push that touches
 which avoids storing long-lived API tokens in GitHub Secrets.
 
 > **Primary publish path is LOCAL-FIRST** (founder directive 2026-05-16):
-> publish from the workstation with the `.env` PyPI account token — see the
+> publish from the workstation with the `.env` PyPI account token - see the
 > canonical procedure in
 > [`.claude/rules/sdk-publish-checklist.md`](../../../.claude/rules/sdk-publish-checklist.md)
 > ("PyPI (`qnsp`)"). The GitHub Actions / trusted-publishing path below is the
@@ -18,7 +18,7 @@ which avoids storing long-lived API tokens in GitHub Secrets.
 ## Current ownership state (2026-06-04)
 
 `qnsp` **already exists** on PyPI (latest `0.3.0`), first published 2026-05-16
-via an **account-scoped token** under the PyPI **user account `heossi`** —
+via an **account-scoped token** under the PyPI **user account `heossi`** -
 because the org wasn't approved yet and a project-scoped token can't create a
 not-yet-existing project (the global name is claimed under whichever account
 first uploads).
@@ -26,7 +26,7 @@ first uploads).
 The PyPI **Company org `heossi`** was **approved + created on 2026-06-04**
 (email from noreply@pypi.org to ops@heossi.com). So the remaining action is a
 **one-time transfer** of the existing project from the user account into the
-org. There is **no PyPI API for this — it is web-UI only.**
+org. There is **no PyPI API for this - it is web-UI only.**
 
 ### Transfer the `qnsp` project into the `heossi` org (web UI, owner only)
 
@@ -39,11 +39,11 @@ logged in as the `heossi` user (who owns both the project and the org):
 4. **Transfer existing project**
 
 Ownership shifts from the individual user to the org. **No re-publish, no
-version bump** — package metadata and installed artifacts are unaffected
+version bump** - package metadata and installed artifacts are unaffected
 (org ownership is invisible to `pip`).
 
 After transfer, the local-publish `.env` account token should still authorise
-uploads (the user remains an Owner via the org) — but **verify on the next
+uploads (the user remains an Owner via the org) - but **verify on the next
 publish**; if PyPI rejects it, mint a new org/project-scoped token or use the
 trusted-publishing fallback below.
 
@@ -86,7 +86,7 @@ gh run watch
 
 The workflow uses [`pypa/gh-action-pypi-publish@release/v1`](https://github.com/pypa/gh-action-pypi-publish),
 which exchanges the GitHub OIDC token for a short-lived PyPI API token
-automatically — no PyPI token is stored in GitHub Secrets.
+automatically - no PyPI token is stored in GitHub Secrets.
 
 Expected outcome: a successful upload to <https://pypi.org/project/qnsp/>.
 Confirm with:

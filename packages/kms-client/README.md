@@ -1,4 +1,4 @@
-# @heossi/qnsi-kms-client
+# @heossihq/qnsi-kms-client
 
 KMS client for QNSI key management service. Post-quantum key generation, rotation, and cryptographic operations.
 
@@ -7,13 +7,13 @@ Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi-kms-client
+pnpm add @heossihq/qnsi-kms-client
 ```
 
 ## Quick Start
 
 ```typescript
-import { HttpKmsServiceClient } from "@heossi/qnsi-kms-client";
+import { HttpKmsServiceClient } from "@heossihq/qnsi-kms-client";
 
 const kms = new HttpKmsServiceClient(
   "https://api.qnsi.heossi.com",
@@ -42,7 +42,7 @@ const unwrapped = await kms.unwrapKey({
 ## Requirements
 
 - Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
-- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
+- A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

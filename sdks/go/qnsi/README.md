@@ -1,8 +1,8 @@
-# qnsi — Go SDK for the Quantum-Native Security Infrastructure
+# qnsi - Go SDK for the Quantum-Native Security Infrastructure
 
-Typed Go client for QNSI — post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS, immutable audit trails. Same wire contracts as the official `@heossi/qnsi-*` TypeScript and `qnsi` Python SDK families — pick whichever language fits your stack and the byte-for-byte outputs round-trip.
+Typed Go client for QNSI - post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS, immutable audit trails. Same wire contracts as the official `@heossihq/qnsi-*` TypeScript and `qnsi` Python SDK families - pick whichever language fits your stack and the byte-for-byte outputs round-trip.
 
-> **Free tier available.** Free-forever account at <https://cloud.qnsi.heossi.com/auth> — 60-second signup, no credit card. Includes 10 GB PQC storage, 50 000 API calls/month, 20 KMS keys, 25 vault secrets.
+> **Free tier available.** Free-forever account at <https://cloud.qnsi.heossi.com/auth> - 60-second signup, no credit card. Includes 10 GB PQC storage, 50 000 API calls/month, 20 KMS keys, 25 vault secrets.
 
 ## Install
 
@@ -18,7 +18,7 @@ To use the `qnsi/crypto` subpackage you need `liboqs` available at link time:
 | --- | --- |
 | macOS | `brew install liboqs` |
 | Debian/Ubuntu | `apt install liboqs-dev` |
-| From source | `cmake -DBUILD_SHARED_LIBS=ON ...` — see <https://github.com/open-quantum-safe/liboqs> |
+| From source | `cmake -DBUILD_SHARED_LIBS=ON ...` - see <https://github.com/open-quantum-safe/liboqs> |
 
 Requires Go 1.22+.
 
@@ -45,7 +45,7 @@ func main() {
 	defer c.Close()
 	ctx := context.Background()
 
-	// ── Vault — PQC-encrypted secret storage ───────────────────────────
+	// ── Vault - PQC-encrypted secret storage ───────────────────────────
 	secret, _ := c.Vault().CreateSecret(ctx, vault.CreateSecretRequest{
 		Name:       "openai-api-key",
 		PayloadB64: base64.StdEncoding.EncodeToString([]byte("sk-...")),
@@ -53,7 +53,7 @@ func main() {
 	}, "")
 	fmt.Printf("vault id=%v\n", secret["id"])
 
-	// ── KMS — server-side PQC keys ────────────────────────────────────
+	// ── KMS - server-side PQC keys ────────────────────────────────────
 	key, _ := c.KMS().CreateKey(ctx, kms.CreateKeyRequest{
 		Algorithm: "ml-dsa-65",
 		Purpose:   "signing",
@@ -62,7 +62,7 @@ func main() {
 	ok, _ := c.KMS().Verify(ctx, key["keyId"].(string), []byte("hello"), signature)
 	fmt.Println("verify ok:", ok)
 
-	// ── Audit — immutable, hash-chained event log ─────────────────────
+	// ── Audit - immutable, hash-chained event log ─────────────────────
 	c.Audit().LogEvent(ctx, audit.LogEventRequest{
 		EventType: "model.inference",
 		Payload:   map[string]any{"modelId": "gpt-4o", "latencyMs": 412},
@@ -158,29 +158,29 @@ If the activation token is rotated server-side, the SDK invalidates its cache an
 
 Customer-facing modules (every QNSI service callable through the edge gateway today):
 
-- `qnsi/vault` — `CreateSecret`, `GetSecret`, `GetSecretVersion`, `RotateSecret`, `DeleteSecret`, `ListSecretVersions` — wraps `apps/vault-service`
-- `qnsi/kms` — `CreateKey`, `ListKeys`, `GetKey`, `RotateKey`, `DeleteKey`, `Sign`, `Verify`, `Wrap`, `Unwrap` — wraps `apps/kms-service`
-- `qnsi/audit` — `LogEvent`, `IngestEvents` (batch), `ListEvents` — wraps `apps/audit-service`
-- `qnsi/auth` — `Login` (caches the session), `RefreshToken`, `Revoke`, `MfaChallenge`/`MfaVerify`, `EvaluateRisk`, `ListRiskPolicies` — wraps `apps/auth-service`. (WebAuthn passkeys and SAML/OIDC federation are not exposed — they are a browser ceremony / SCIM provisioning surface, not a server-side api-key SDK call.)
-- `qnsi/tenant` — `CreateTenant`, `GetTenant`, `UpdateTenant`, `ListTenants`, `GetCryptoPolicy`, `UpsertCryptoPolicy`, `GetCurrentHealth`, `GetCurrentQuotas` — wraps `apps/tenant-service`
-- `qnsi/access` — `CreateRole`, `GetRole`, `ListRoles`, `DeleteRole`, `AssignRole`, `RevokeRoleAssignment`, `CheckPermission` — wraps `apps/access-control-service`
-- `qnsi/billing` — `GetEntitlements`, `IngestMeter`, `IngestMeters`, `ListInvoices`, `GetInvoice`, `GetCreditBalance` — wraps `apps/billing-service`
-- `qnsi/cryptoinventory` — `ListAssets`, `GetAsset`, `GetAssetStats`, `DiscoverAssets`, `GetReadinessScore` — wraps `apps/crypto-inventory-service` (CBOM)
-- `qnsi/storage` — `PutObject`, `GetObject`, `DeleteObject`, `ListObjects`, `ListBuckets` — wraps `apps/storage-service` (SSE-X)
-- `qnsi/search` — `CreateIndex`, `ListIndexes`, `DeleteIndex`, `UpsertVectors`, `Query` — wraps `apps/search-service` (vector search)
-- `qnsi/ai` — `RegisterModel`, model lifecycle, `SubmitWorkload`, `InvokeInference`, `RegisterArtifact` — wraps `apps/ai-orchestrator`
+- `qnsi/vault` - `CreateSecret`, `GetSecret`, `GetSecretVersion`, `RotateSecret`, `DeleteSecret`, `ListSecretVersions` - wraps `apps/vault-service`
+- `qnsi/kms` - `CreateKey`, `ListKeys`, `GetKey`, `RotateKey`, `DeleteKey`, `Sign`, `Verify`, `Wrap`, `Unwrap` - wraps `apps/kms-service`
+- `qnsi/audit` - `LogEvent`, `IngestEvents` (batch), `ListEvents` - wraps `apps/audit-service`
+- `qnsi/auth` - `Login` (caches the session), `RefreshToken`, `Revoke`, `MfaChallenge`/`MfaVerify`, `EvaluateRisk`, `ListRiskPolicies` - wraps `apps/auth-service`. (WebAuthn passkeys and SAML/OIDC federation are not exposed - they are a browser ceremony / SCIM provisioning surface, not a server-side api-key SDK call.)
+- `qnsi/tenant` - `CreateTenant`, `GetTenant`, `UpdateTenant`, `ListTenants`, `GetCryptoPolicy`, `UpsertCryptoPolicy`, `GetCurrentHealth`, `GetCurrentQuotas` - wraps `apps/tenant-service`
+- `qnsi/access` - `CreateRole`, `GetRole`, `ListRoles`, `DeleteRole`, `AssignRole`, `RevokeRoleAssignment`, `CheckPermission` - wraps `apps/access-control-service`
+- `qnsi/billing` - `GetEntitlements`, `IngestMeter`, `IngestMeters`, `ListInvoices`, `GetInvoice`, `GetCreditBalance` - wraps `apps/billing-service`
+- `qnsi/cryptoinventory` - `ListAssets`, `GetAsset`, `GetAssetStats`, `DiscoverAssets`, `GetReadinessScore` - wraps `apps/crypto-inventory-service` (CBOM)
+- `qnsi/storage` - `PutObject`, `GetObject`, `DeleteObject`, `ListObjects`, `ListBuckets` - wraps `apps/storage-service` (SSE-X)
+- `qnsi/search` - `CreateIndex`, `ListIndexes`, `DeleteIndex`, `UpsertVectors`, `Query` - wraps `apps/search-service` (vector search)
+- `qnsi/ai` - `RegisterModel`, model lifecycle, `SubmitWorkload`, `InvokeInference`, `RegisterArtifact` - wraps `apps/ai-orchestrator`
 
 Local primitives + integration:
 
-- `qnsi/crypto` (requires liboqs at link time) — ML-KEM (512/768/1024), ML-DSA (44/65/87), SLH-DSA (12 variants), Falcon (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS — every FIPS 203/204/205 finalist exposed by liboqs 0.12.0
-- `qnsp.ParseWebhook` / `qnsp.VerifyWebhookSignature` — HMAC-SHA-256 signature verification + typed `qnsp.WebhookEvent`
-- `qnsp.NewClient` — API-key activation against `/billing/v1/sdk/activate` with caching and 401 retry
+- `qnsi/crypto` (requires liboqs at link time) - ML-KEM (512/768/1024), ML-DSA (44/65/87), SLH-DSA (12 variants), Falcon (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS - every FIPS 203/204/205 finalist exposed by liboqs 0.12.0
+- `qnsp.ParseWebhook` / `qnsp.VerifyWebhookSignature` - HMAC-SHA-256 signature verification + typed `qnsp.WebhookEvent`
+- `qnsp.NewClient` - API-key activation against `/billing/v1/sdk/activate` with caching and 401 retry
 
 Each subclient also exposes a `Do(ctx, method, path, body, query, idempotencyKey)` escape hatch so endpoints not yet wrapped above are still callable without dropping to raw HTTP.
 
 ## What's coming
 
-- AsyncStream variants for `Storage.GetObject` — large objects without buffering
+- AsyncStream variants for `Storage.GetObject` - large objects without buffering
 - Pre-built `qnsi/qnsitest` helper that mocks the QNSI API for tests
 - Generated typed responses (currently `map[string]any`) for every method
 

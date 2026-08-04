@@ -6,7 +6,7 @@ description: Reference for QNSI CLI exit codes, from success and general errors 
 copyright: 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
-  - /packages/cli/src/config.ts
+  - /packages/qnsi/src/cli/config.ts
 ---
 # CLI Exit Codes
 
@@ -14,7 +14,7 @@ Exit codes returned by QNSI CLI commands.
 
 ## Exit Codes
 
-From `packages/cli/src/config.ts`:
+From `packages/qnsi/src/cli/config.ts`:
 
 ```typescript
 export const EXIT_CODES = {

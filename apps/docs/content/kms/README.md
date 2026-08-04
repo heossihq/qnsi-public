@@ -1,11 +1,11 @@
 ---
 title: Key Management Service (KMS)
-description: Post-quantum key management — KEM/signature key generation, rotation, wrapping, attestation, and HSM integration.
+description: Post-quantum key management - KEM/signature key generation, rotation, wrapping, attestation, and HSM integration.
 ---
 
 # Key Management Service (KMS)
 
-Post-quantum key management — KEM/signature key generation, rotation, wrapping, attestation, and HSM integration.
+Post-quantum key management - KEM/signature key generation, rotation, wrapping, attestation, and HSM integration.
 
 ## Pages
 

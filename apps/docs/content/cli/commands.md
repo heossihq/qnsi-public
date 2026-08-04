@@ -1,25 +1,29 @@
 ---
 title: CLI Commands
-version: 0.0.1
-last_updated: 2026-04-23
+version: 0.0.2
+last_updated: 2026-07-20
 description: Complete command reference for the QNSI CLI, covering global options plus auth, KMS, vault, and audit commands with service URLs and output format flags.
 copyright: 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
-  - /packages/cli/src/index.ts
-  - /packages/cli/src/commands/auth.ts
-  - /packages/cli/src/commands/kms.ts
-  - /packages/cli/src/commands/vault.ts
-  - /packages/cli/src/commands/audit.ts
+  - /packages/qnsi/src/cli/index.ts
+  - /packages/qnsi/src/cli/commands/auth.ts
+  - /packages/qnsi/src/cli/commands/kms.ts
+  - /packages/qnsi/src/cli/commands/vault.ts
+  - /packages/qnsi/src/cli/commands/audit.ts
+  - /packages/qnsi/src/cli/commands/crypto-scan.ts
 ---
 
 # CLI Commands
 
 Complete command reference for the QNSI CLI.
 
+The published unified CLI ships with `@heossihq/qnsi` 0.6.0. Commands below use the
+production edge gateway unless a service URL is explicitly configured.
+
 ## Global Options
 
-From `packages/cli/src/index.ts`:
+From `packages/qnsi/src/cli/index.ts`:
 
 ```bash
 --edge-gateway-url <url>    Edge Gateway URL (production entrypoint)
@@ -44,7 +48,7 @@ From `packages/cli/src/index.ts`:
 
 ## Auth Commands
 
-From `packages/cli/src/commands/auth.ts`:
+From `packages/qnsi/src/cli/commands/auth.ts`:
 
 ### Request service token
 ```bash
@@ -58,7 +62,7 @@ qnsi auth token [--service-id <id>] [--service-secret <secret>] [--audience <aud
 
 ## KMS Commands
 
-From `packages/cli/src/commands/kms.ts`:
+From `packages/qnsi/src/cli/commands/kms.ts`:
 
 ### List keys
 ```bash
@@ -86,7 +90,7 @@ qnsi kms keys create [--name <name>] [--algorithm <algorithm>] [--purpose <purpo
 
 ## Vault Commands
 
-From `packages/cli/src/commands/vault.ts`:
+From `packages/qnsi/src/cli/commands/vault.ts`:
 
 ### List secrets
 ```bash
@@ -108,7 +112,7 @@ qnsi vault secrets get 6f9f1ce1-2c5b-4fb6-b37b-8ffef8f0b6c9
 
 ## Storage Commands
 
-From `packages/cli/src/commands/storage.ts`:
+From `packages/qnsi/src/cli/commands/storage.ts`:
 
 ### List objects
 ```bash
@@ -117,7 +121,7 @@ qnsi storage objects list [--limit <number>] [--cursor <cursor>] [--prefix <pref
 
 ## Audit Commands
 
-From `packages/cli/src/commands/audit.ts`:
+From `packages/qnsi/src/cli/commands/audit.ts`:
 
 ### List events
 ```bash
@@ -138,7 +142,7 @@ qnsi audit events list --limit 100 --source-service kms-service --since 2025-12-
 
 ## Search Commands
 
-From `packages/cli/src/commands/search.ts`:
+From `packages/qnsi/src/cli/commands/search.ts`:
 
 ### Query
 ```bash
@@ -147,7 +151,7 @@ qnsi search query --query <query> [--limit <number>]
 
 ## Tenant Commands
 
-From `packages/cli/src/commands/tenant.ts`:
+From `packages/qnsi/src/cli/commands/tenant.ts`:
 
 ### Get tenant (strictly tenant-scoped)
 ```bash
@@ -158,7 +162,7 @@ qnsi tenant get <tenantId>
 
 ## Billing Commands
 
-From `packages/cli/src/commands/billing.ts`:
+From `packages/qnsi/src/cli/commands/billing.ts`:
 
 ### List add-ons
 ```bash
@@ -182,7 +186,7 @@ qnsi billing usage [--start <date>] [--end <date>]
 
 ## Access Control Commands
 
-From `packages/cli/src/commands/access-control.ts`:
+From `packages/qnsi/src/cli/commands/access-control.ts`:
 
 ### Policies list
 ```bash
@@ -201,7 +205,7 @@ qnsi access policies create --name <name> --effect <effect> --actions <actions> 
 
 ## Observability Commands
 
-From `packages/cli/src/commands/observability.ts`:
+From `packages/qnsi/src/cli/commands/observability.ts`:
 
 ### List SLOs
 ```bash
@@ -215,7 +219,7 @@ qnsi observability otlp status
 
 ## Security Commands
 
-From `packages/cli/src/commands/security.ts`:
+From `packages/qnsi/src/cli/commands/security.ts`:
 
 ### Alerts list
 ```bash
@@ -227,3 +231,36 @@ qnsi security alerts list [--severity <severity>] [--status <status>] [--limit <
 qnsi security breaches list [--limit <number>] [--cursor <cursor>]
 
 ```
+## Crypto Inventory Commands
+
+### Scan source code locally
+
+```bash
+qnsi crypto scan [directory] [options]
+```
+
+The scan is parse-only and local. Source contents are not uploaded.
+
+**Options:**
+
+- `--format <table|json|cbom>` - Output format (default: `table`)
+- `--output <file>` - Write JSON or CBOM output to a file
+- `--exclude <dirs>` - Comma-separated extra directories to skip
+- `--max-findings <number>` - Stop at a finding cap and mark the result truncated
+- `--upload` - Upload normalized findings using a scoped scanner identity
+- `--repo-id <id>` - Stable repository deduplication key; required with `--upload`
+- `--repo-name <name>` - Repository display name
+- `--ref <ref>` and `--commit <sha>` - Bind uploaded evidence to a revision
+- `--agent-id <id>` and `--agent-secret <secret>` - Scanner identity; environment variables are preferred
+
+```bash
+qnsi crypto scan ./ --format cbom --output qnsi-code.cbom.json
+
+QNSI_TENANT_ID=<tenant-id> \
+QNSI_AGENT_ID=<agent-id> \
+QNSI_AGENT_SECRET=<agent-secret> \
+qnsi crypto scan ./ --upload --repo-id payments-api --repo-name example/payments-api
+```
+
+See [Source-Code Cryptography Scanning](../crypto/source-code-scanning) for the
+Cloud Portal, CI, upload, and discovery workflow.

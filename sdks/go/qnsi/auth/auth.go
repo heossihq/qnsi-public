@@ -1,4 +1,4 @@
-// Package auth is the QNSP Auth client — password login, JWT session refresh/revocation, MFA,
+// Package auth is the QNSP Auth client - password login, JWT session refresh/revocation, MFA,
 // and risk-based authentication.
 //
 // Routes are mapped to the real auth-service surface verified against production (reaudit
@@ -8,7 +8,7 @@
 // caches the resulting session and uses it automatically.
 //
 // WebAuthn passkeys (#33) and SAML/OIDC federation (#35) are intentionally NOT exposed. The real
-// backend surfaces are /auth/webauthn/* (a browser authenticator ceremony — navigator.credentials,
+// backend surfaces are /auth/webauthn/* (a browser authenticator ceremony - navigator.credentials,
 // not driveable from a server-side api-key SDK) and /auth/federation/scim|saml/acs (a SCIM/SAML-ACS
 // provisioning + callback API, not a per-call SDK surface). They were removed rather than ship dead
 // endpoints (the old /passkeys/* and /federate/* paths did not exist on the backend).
@@ -108,7 +108,7 @@ func (c *Client) RefreshToken(ctx context.Context, refreshToken string) (map[str
 func (c *Client) requireSession() (*Session, error) {
 	s := c.GetSession()
 	if s == nil {
-		return nil, fmt.Errorf("qnsp: not logged in — call auth.Login first")
+		return nil, fmt.Errorf("qnsp: not logged in - call auth.Login first")
 	}
 	return s, nil
 }

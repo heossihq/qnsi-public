@@ -1,5 +1,5 @@
-import { registerPqcProvider, unregisterPqcProvider } from "@heossi/qnsi-cryptography";
-import { createDeterministicTestPqcProvider } from "@heossi/qnsi-cryptography/testing/providers";
+import { registerPqcProvider, unregisterPqcProvider } from "@heossihq/qnsi-cryptography";
+import { createDeterministicTestPqcProvider } from "@heossihq/qnsi-cryptography/testing/providers";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createJwtVerifier, signJwt, verifyJwt } from "./jwt.js";
 

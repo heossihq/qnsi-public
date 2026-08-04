@@ -1,22 +1,24 @@
 ---
 title: "Host Agents"
 description: "Deploy the QNSI Host Agent to discover cryptographic assets across your server fleet and report them to the QNSI platform."
-version: 0.1.0
-last_updated: 2026-04-23
+version: 0.1.1
+last_updated: 2026-07-20
 copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
-  - /apps/qnsi-agent/src/index.ts
-  - /apps/qnsi-agent/src/config.ts
-  - /apps/qnsi-agent/src/scanner.ts
-  - /apps/qnsi-agent/src/reporter.ts
+  - /apps/qnsp-agent/src/index.ts
+  - /apps/qnsp-agent/src/config.ts
+  - /apps/qnsp-agent/src/scanner.ts
+  - /apps/qnsp-agent/src/reporter.ts
+  - /apps/qnsp-agent/src/scan-checkpoint.ts
+  - /apps/qnsp-agent/src/offline-bundle.ts
   - /apps/crypto-inventory-service/src/routes/agents.ts
   - /apps/crypto-inventory-service/src/services/agent-auth.ts
 ---
 
 # Host Agents
 
-The QNSI Host Agent is a lightweight CLI daemon that discovers cryptographic assets on your servers — SSH keys, TLS certificates, PKCS#12/JKS keystores, and active TLS endpoints — and reports them to the QNSI platform for inventory, exposure analysis, and PQC migration planning.
+The QNSI Host Agent is a lightweight CLI daemon that discovers cryptographic assets on your servers - SSH keys, TLS certificates, PKCS#12/JKS keystores, and active TLS endpoints - and reports them to the QNSI platform for inventory, exposure analysis, and PQC migration planning.
 
 Host Agents are one of the two primary discovery modes in QNSI:
 
@@ -42,8 +44,8 @@ In the QNSI portal, navigate to **Crypto Posture → Host Agents → Register Ag
 
 Give the agent a name (e.g. `web-01-prod`) and click **Register Agent**. You will receive:
 
-- **Agent ID** — a UUID identifying this agent
-- **Agent Secret** — a 64-character hex string shown **once only**. Store it securely.
+- **Agent ID** - a UUID identifying this agent
+- **Agent Secret** - a 64-character hex string shown **once only**. Store it securely.
 
 Alternatively, register via the API:
 
@@ -76,11 +78,7 @@ Response:
 
 ### 2. Install the agent
 
-```bash
-npm install -g @heossi/qnsi-agent
-```
-
-Requires Node.js 20+. The package installs the `qnsi-agent` binary globally.
+The host agent is a tenant-enabled deployment artifact, not a general public npm install. Your QNSI onboarding package provides the signed artifact and deployment instructions for your operating environment. Requires Node.js 20+.
 
 ### 3. Configure the agent
 
@@ -122,12 +120,12 @@ qnsi-agent daemon
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `QNSI_AGENT_ID` | ✅ | — | Agent UUID from the QNSI portal |
-| `QNSI_AGENT_SECRET` | ✅ | — | 64-char hex secret from registration |
-| `QNSI_ENDPOINT` | ✅ | — | `https://api.qnsi.heossi.com` |
-| `QNSI_TENANT_ID` | ✅ | — | Your tenant UUID |
+| `QNSI_AGENT_ID` | ✅ | - | Agent UUID from the QNSI portal |
+| `QNSI_AGENT_SECRET` | ✅ | - | 64-char hex secret from registration |
+| `QNSI_ENDPOINT` | ✅ | - | `https://api.qnsi.heossi.com` |
+| `QNSI_TENANT_ID` | ✅ | - | Your tenant UUID |
 | `QNSI_SCAN_PATHS` | ❌ | `/etc/ssl,/etc/pki,/etc/ssh,/home,/root,...` | Comma-separated paths to scan |
-| `QNSI_INTERVAL_SECS` | ❌ | `300` | Report interval in daemon mode (30–86400) |
+| `QNSI_INTERVAL_SECS` | ❌ | `300` | Report interval in daemon mode (30-86400) |
 | `QNSI_LOG_LEVEL` | ❌ | `info` | `silent`, `error`, `warn`, `info`, `debug` |
 | `QNSI_HOSTNAME` | ❌ | `os.hostname()` | Override the reported hostname |
 
@@ -203,8 +201,8 @@ sudo systemctl enable --now qnsi-agent
 | Status | Meaning |
 |---|---|
 | `active` | Agent is registered and can submit reports |
-| `disabled` | Agent is temporarily suspended — reports will be rejected |
-| `revoked` | Agent access is permanently revoked — cannot be re-activated |
+| `disabled` | Agent is temporarily suspended - reports will be rejected |
+| `revoked` | Agent access is permanently revoked - cannot be re-activated |
 
 ## Security Model
 
@@ -237,14 +235,14 @@ qnsi-agent help        Print help
 
 ## Troubleshooting
 
-**`Invalid agent configuration`** — One or more required environment variables are missing or invalid. Run `qnsi-agent status` to see the current config (secrets are not printed).
+**`Invalid agent configuration`** - One or more required environment variables are missing or invalid. Run `qnsi-agent status` to see the current config (secrets are not printed).
 
-**`Report rejected (401)`** — The agent secret is wrong or the agent ID does not exist. Re-register or rotate the secret.
+**`Report rejected (401)`** - The agent secret is wrong or the agent ID does not exist. Re-register or rotate the secret.
 
-**`Report rejected (403)`** — The `host-agent-ingestion` feature is not enabled for your tenant, or the agent belongs to a different tenant.
+**`Report rejected (403)`** - The `host-agent-ingestion` feature is not enabled for your tenant, or the agent belongs to a different tenant.
 
-**`Agent is not active`** — The agent has been `disabled` or `revoked`. Re-enable it in the portal or register a new agent.
+**`Agent is not active`** - The agent has been `disabled` or `revoked`. Re-enable it in the portal or register a new agent.
 
-**`Nonce already used (replay detected)`** — The same request was submitted twice within 10 minutes. This is a no-op — the first submission was accepted.
+**`Nonce already used (replay detected)`** - The same request was submitted twice within 10 minutes. This is a no-op - the first submission was accepted.
 
-**`Timestamp outside acceptable range`** — The system clock on the agent host is more than 5 minutes out of sync. Sync the clock with NTP.
+**`Timestamp outside acceptable range`** - The system clock on the agent host is more than 5 minutes out of sync. Sync the clock with NTP.

@@ -1,18 +1,18 @@
 /**
- * Tier Limits — Shared across all SDKs
+ * Tier Limits - Shared across all SDKs
  *
  * Defines the tier-gated capabilities surfaced through the @qnsp SDK surface.
  * SDKs use this to fail fast with clear, typed errors before making API calls.
  *
  * Architecture note:
  *   This catalogue is deliberately **inlined** rather than imported from the
- *   internal `@heossi/qnsi-pricing` package. `@heossi/qnsi-pricing` is a private workspace
+ *   internal `@heossihq/qnsi-pricing` package. `@heossihq/qnsi-pricing` is a private workspace
  *   package that contains the full commercial model (Stripe product ids,
  *   per-cycle prices in cents, add-on SKUs, sales-motion signals) which must
  *   NOT leak onto the public npm registry.
  *
- *   Drift with `@heossi/qnsi-pricing` is prevented at build time by
- *   `tier-limits.drift.test.ts`, which imports `@heossi/qnsi-pricing` as a
+ *   Drift with `@heossihq/qnsi-pricing` is prevented at build time by
+ *   `tier-limits.drift.test.ts`, which imports `@heossihq/qnsi-pricing` as a
  *   devDependency and asserts every value in `TIER_LIMITS` matches the
  *   internal source of truth. If marketing tweaks a tier flag there, the
  *   drift test fails until this file is updated in lockstep.
@@ -45,7 +45,7 @@ export interface TierLimits {
 }
 
 /**
- * Inlined projection of the internal `@heossi/qnsi-pricing` TIER_PRICING catalogue.
+ * Inlined projection of the internal `@heossihq/qnsi-pricing` TIER_PRICING catalogue.
  * Only the 7 fields SDK consumers need to reason about feature availability.
  * Drift-guarded by `tier-limits.drift.test.ts` at build time.
  */
@@ -161,7 +161,7 @@ const BILLING_TIER_LIMITS: Record<BillingPricingTier, TierLimits> = {
 };
 
 /**
- * Internal QNSP platform tier — for QNSP staff, ops admins, and super admins only.
+ * Internal QNSP platform tier - for QNSP staff, ops admins, and super admins only.
  * Never exposed to customers. Superset of enterprise-elite + specialized.
  */
 const PLATFORM_TIER_LIMITS: TierLimits = {

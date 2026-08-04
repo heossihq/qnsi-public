@@ -1,5 +1,5 @@
 {
-	"name": "@heossi/qnsi-search-sdk",
+	"name": "@heossihq/qnsi-search-sdk",
 	"version": "0.2.10",
 	"publishConfig": {
 		"access": "public"
@@ -27,8 +27,8 @@
 		"@opentelemetry/exporter-metrics-otlp-http": "^0.214.0",
 		"@opentelemetry/resources": "^2.6.1",
 		"@opentelemetry/sdk-metrics": "^2.6.1",
-		"@heossi/qnsi-shared-kernel": "workspace:*",
-		"@heossi/qnsi-sdk-activation": "workspace:*",
+		"@heossihq/qnsi-shared-kernel": "workspace:*",
+		"@heossihq/qnsi-sdk-activation": "workspace:*",
 		"undici": "^8.0.1",
 		"zod": "^4.3.6"
 	},
@@ -73,5 +73,6 @@
 		"README.md",
 		"LICENSE",
 		"CHANGELOG.md"
-	]
+	],
+	"private": true
 }

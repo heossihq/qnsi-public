@@ -1,8 +1,8 @@
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-crypto-inventory-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-crypto-inventory-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.crypto./* method */(...);
 > ```
@@ -343,7 +343,7 @@ GET /platform/v1/crypto/policy/presets
 ### TypeScript/Node.js
 
 ```typescript
-import { CryptoInventoryClient } from '@heossi/qnsi-crypto-inventory-sdk';
+import { CryptoInventoryClient } from '@heossihq/qnsi';
 
 const client = new CryptoInventoryClient({
   apiKey: process.env.QNSI_API_KEY,

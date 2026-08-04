@@ -1,7 +1,7 @@
 {
-	"name": "@heossi/qnsi-mcp",
-	"version": "0.1.5",
-	"description": "QNSP MCP Server: post-quantum cryptography tools for AI assistants. Manage PQC keys, encrypted vault, crypto inventory, and compliance — all tier-gated via QNSP billing.",
+	"name": "@heossihq/qnsi-mcp",
+	"version": "0.2.0",
+	"description": "QNSI MCP server: 17 tenant-scoped tools for PQC keys, HSPK custody, encrypted vault, crypto inventory, audit, search, and platform operations.",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -40,14 +40,16 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"lint": "biome check .",
-		"test": "vitest run"
+		"test": "vitest run",
+		"typecheck": "tsc --project tsconfig.json --noEmit"
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.29.0",
-		"@heossi/qnsi": "workspace:*",
+		"@heossihq/qnsi": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@heossihq/qnsi-enforcement-contract": "workspace:*",
 		"@types/node": "^25.5.2",
 		"typescript": "^6.0.2",
 		"vitest": "4.1.2"

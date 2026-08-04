@@ -1,4 +1,4 @@
-# @heossi/qnsi-resilience
+# @heossihq/qnsi-resilience
 
 ## 0.1.1
 

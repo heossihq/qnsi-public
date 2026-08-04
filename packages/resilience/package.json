@@ -1,5 +1,5 @@
 {
-	"name": "@heossi/qnsi-resilience",
+	"name": "@heossihq/qnsi-resilience",
 	"version": "0.1.2",
 	"license": "Apache-2.0",
 	"publishConfig": {
@@ -48,5 +48,6 @@
 	"devDependencies": {
 		"@types/node": "^25.5.2",
 		"vitest": "4.1.2"
-	}
+	},
+	"private": true
 }

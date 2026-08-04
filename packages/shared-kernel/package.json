@@ -1,5 +1,5 @@
 {
-	"name": "@heossi/qnsi-shared-kernel",
+	"name": "@heossihq/qnsi-shared-kernel",
 	"version": "0.1.4",
 	"license": "Apache-2.0",
 	"engines": {
@@ -74,20 +74,21 @@
 	},
 	"dependencies": {
 		"@opentelemetry/api": "^1.9.1",
-		"@heossi/qnsi-cryptography": "workspace:*",
-		"@heossi/qnsi-resilience": "workspace:*",
+		"@heossihq/qnsi-cryptography": "workspace:*",
+		"@heossihq/qnsi-resilience": "workspace:*",
 		"nodemailer": "^8.0.5",
 		"pg": "^8.20.0",
 		"sql.js": "^1.14.1",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
-		"@heossi/qnsi-pricing": "workspace:*",
+		"@heossihq/qnsi-pricing": "workspace:*",
 		"@types/node": "^25.5.2",
 		"@types/nodemailer": "^7.0.11",
 		"@types/pg": "^8.20.0",
 		"@types/sql.js": "^1.4.11",
 		"fast-check": "^4.6.0",
 		"vitest": "4.1.2"
-	}
+	},
+	"private": true
 }

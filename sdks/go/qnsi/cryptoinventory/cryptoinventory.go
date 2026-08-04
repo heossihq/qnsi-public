@@ -1,4 +1,4 @@
-// Package cryptoinventory is the QNSP Crypto-Inventory client — the
+// Package cryptoinventory is the QNSP Crypto-Inventory client - the
 // Cryptographic Bill of Materials (CBOM): asset catalogue, discovery
 // runs, deprecation policies, and PQC migration readiness.
 //
@@ -38,8 +38,8 @@ func (c *Client) GetAsset(ctx context.Context, assetID string) (map[string]any, 
 // GetAssetStats returns aggregate counts for the tenant's CBOM
 // (e.g. by algorithm, by status). Mirrors the data used by the
 // `Crypto Inventory` cloud-portal page.
-func (c *Client) GetAssetStats(ctx context.Context, tenantID string) (map[string]any, error) {
-	return c.base.Do(ctx, http.MethodGet, "/assets/stats/"+tenantID, nil, nil, "")
+func (c *Client) GetAssetStats(ctx context.Context, _tenantID string) (map[string]any, error) {
+	return c.base.Do(ctx, http.MethodGet, "/assets/stats", nil, nil, "")
 }
 
 // DiscoverAssetsRequest triggers a discovery run.
@@ -50,12 +50,12 @@ type DiscoverAssetsRequest struct {
 }
 
 func (c *Client) DiscoverAssets(ctx context.Context, req DiscoverAssetsRequest, idempotencyKey string) (map[string]any, error) {
-	return c.base.Do(ctx, http.MethodPost, "/discovery/runs", req, nil, idempotencyKey)
+	return c.base.Do(ctx, http.MethodPost, "/assets/discover", req, nil, idempotencyKey)
 }
 
 // GetReadinessScore returns the tenant's PQC migration readiness score.
-func (c *Client) GetReadinessScore(ctx context.Context, tenantID string) (map[string]any, error) {
-	return c.base.Do(ctx, http.MethodGet, "/readiness/"+tenantID, nil, nil, "")
+func (c *Client) GetReadinessScore(ctx context.Context, _tenantID string) (map[string]any, error) {
+	return c.base.Do(ctx, http.MethodGet, "/readiness", nil, nil, "")
 }
 
 // Do exposes the underlying service client for endpoints not yet wrapped.

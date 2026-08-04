@@ -1,7 +1,8 @@
 ---
-title: Key Types
+title: PQC and Classical KMS Key Types
 version: 0.0.1
-last_updated: 2026-04-23
+last_updated: 2026-07-31
+description: Review the symmetric, classical asymmetric, and post-quantum signing and key-encapsulation types accepted by QNSI KMS.
 copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
@@ -9,7 +10,7 @@ source_files:
   - /packages/cryptography/src/provider.ts
 ---
 
-# Key Types
+# PQC and Classical KMS Key Types
 
 QNSI KMS (port 8095) supports multiple key types for different use cases.
 

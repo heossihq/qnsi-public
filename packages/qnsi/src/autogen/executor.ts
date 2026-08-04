@@ -1,16 +1,16 @@
 /**
- * QNSP AutoGen Executor — `@heossi/qnsi/autogen` subpath.
+ * QNSP AutoGen Executor - `@heossihq/qnsi/autogen` subpath.
  *
  * Submits code-execution workloads to QNSP AI orchestrator enclaves and waits
  * for completion, returning structured output with the enclave attestation
  * proof. Provides a function-executor interface compatible with AutoGen's code
- * execution pattern — without importing from `autogen` directly.
+ * execution pattern - without importing from `autogen` directly.
  *
- * Folded in from the former standalone `@heossi/qnsi-autogen-qnsp` package
+ * Folded in from the former standalone `@heossihq/qnsi-autogen-qnsp` package
  * (2026-05-16). The workload submit/get HTTP is inlined here (faithful to the
- * former `@heossi/qnsi-ai-sdk` `AiOrchestratorClient`: Bearer auth,
+ * former `@heossihq/qnsi-ai-sdk` `AiOrchestratorClient`: Bearer auth,
  * `idempotency-key` header, `env` defaulted, bounded retry) so this subpath
- * has no `@heossi/qnsi-*` workspace dependency — same pattern as
+ * has no `@heossihq/qnsi-*` workspace dependency - same pattern as
  * `../_activation`. Tier/enclave access is enforced authoritatively by the
  * edge-gateway + ai-orchestrator server side (a 402/403 surfaces as an Error);
  * the former client-side tier pre-check was advisory only and is intentionally
@@ -27,7 +27,7 @@ bridgeQnsiEnv();
 const SDK_VERSION = "0.3.0";
 const SDK_ID = "autogen-qnsi";
 
-// Activation handshake — keeps telemetry and tier limits consistent. Returns
+// Activation handshake - keeps telemetry and tier limits consistent. Returns
 // the tenantId so callers can attach it to workload submissions.
 async function resolveActivationTenantId(apiKey: string, baseUrl: string): Promise<string> {
 	const activation = await activateSdk({
@@ -39,7 +39,7 @@ async function resolveActivationTenantId(apiKey: string, baseUrl: string): Promi
 	return activation.tenantId;
 }
 
-// ─── Faithful workload types (ported from @heossi/qnsi-ai-sdk types.ts) ──────
+// ─── Faithful workload types (ported from @heossihq/qnsi-ai-sdk types.ts) ──────
 
 export type WorkloadStatus =
 	| "pending"
@@ -130,12 +130,12 @@ export interface WorkloadDetail extends WorkloadSummary {
 export interface QnsiExecutorConfig {
 	/**
 	 * QNSP API key. Get one at https://cloud.qnsi.heossi.com/api-keys
-	 * The API key carries the tenant ID — no separate tenantId needed.
+	 * The API key carries the tenant ID - no separate tenantId needed.
 	 */
 	readonly apiKey: string;
 	/**
 	 * Tenant ID for all workload submissions.
-	 * Optional — when omitted, the tenant is resolved automatically from the API key
+	 * Optional - when omitted, the tenant is resolved automatically from the API key
 	 * via SDK activation. Only provide this if you need to override the resolved tenant.
 	 */
 	readonly tenantId?: string;
@@ -198,7 +198,7 @@ export interface ExecuteCodeRequest {
 	/** Human-readable name for this workload (used in audit logs). */
 	readonly name?: string;
 	/**
-	 * Idempotency key — if provided, duplicate submissions with the same key
+	 * Idempotency key - if provided, duplicate submissions with the same key
 	 * return the original workload result instead of creating a new one.
 	 */
 	readonly idempotencyKey?: string;
@@ -250,7 +250,7 @@ const LANGUAGE_COMMANDS: Record<string, readonly string[]> = {
  *
  * @example
  * ```typescript
- * import { QnsiExecutor } from "@heossi/qnsi/autogen";
+ * import { QnsiExecutor } from "@heossihq/qnsi/autogen";
  *
  * const executor = new QnsiExecutor({ apiKey: process.env.QNSI_API_KEY });
  * const result = await executor.execute({ code: "print('hi')", language: "python" });
@@ -286,7 +286,7 @@ export class QnsiExecutor {
 	}
 
 	/**
-	 * Resolve the effective tenant ID — either from config or via SDK activation.
+	 * Resolve the effective tenant ID - either from config or via SDK activation.
 	 * Caches the result after the first call.
 	 */
 	async #ensureTenantId(): Promise<string> {
@@ -311,7 +311,7 @@ export class QnsiExecutor {
 
 	/**
 	 * Authenticated request against the AI orchestrator via the edge gateway.
-	 * Faithful to the former @heossi/qnsi-ai-sdk request: Bearer apiKey, JSON,
+	 * Faithful to the former @heossihq/qnsi-ai-sdk request: Bearer apiKey, JSON,
 	 * bounded retry (3 attempts, 1s backoff) on network / 5xx.
 	 */
 	async #request<T>(
@@ -449,7 +449,7 @@ export class QnsiExecutor {
 	}
 
 	/**
-	 * Submit a workload. Faithful to @heossi/qnsi-ai-sdk: `idempotencyKey` is
+	 * Submit a workload. Faithful to @heossihq/qnsi-ai-sdk: `idempotencyKey` is
 	 * stripped from the body and sent as the `idempotency-key` header; `env`
 	 * defaults to `{}`.
 	 */

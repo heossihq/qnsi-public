@@ -1,5 +1,5 @@
 ---
-title: Tenant SDK (@heossi/qnsi-tenant-sdk)
+title: Tenant SDK (qnsi.tenant)
 version: 0.3.6
 last_updated: 2026-04-30
 copyright: © 2025 HEOSSI. All rights reserved.
@@ -8,10 +8,10 @@ source_files:
   - /packages/tenant-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-tenant-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-tenant-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.tenant./* method */(...);
 > ```
@@ -19,20 +19,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Tenant SDK (`@heossi/qnsi-tenant-sdk`)
+# Tenant SDK (`qnsi.tenant`)
 
 The TypeScript client for `tenant-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Provides tenant lifecycle management, crypto policy configuration, health monitoring, quota management, and onboarding workflows.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-tenant-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { TenantClient } from "@heossi/qnsi-tenant-sdk";
+import { TenantClient } from "@heossihq/qnsi";
 
 const tenants = new TenantClient({
 	baseUrl: "http://localhost:8108",
@@ -320,7 +320,7 @@ await tenants.rollbackTenantCryptoPolicyV1(
 Convert between internal and NIST standardized names. The Tenant SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-tenant-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"

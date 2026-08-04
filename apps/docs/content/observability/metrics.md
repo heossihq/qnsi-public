@@ -97,4 +97,4 @@ From `apps/pdp-service/src/pdp-metrics.ts` and `apps/edge-gateway/src/observabil
 
 **Dashboards / alarms:** `docs/operations/pdp-edge-enforcement-observability.md` (Terraform module `pdp_edge_enforcement_observability`, optional Grafana JSON under `infra/observability/dashboards/`).
 
-**Scope note:** `/edge/v1/*` is outside the PDP enforcement hook — see `docs/architecture/EDGE-V1-CONTROL-PLANE-PDP-EXCEPTION.md`.
+**Scope note:** `/edge/v1/*` is outside the PDP enforcement hook - see `docs/architecture/EDGE-V1-CONTROL-PLANE-PDP-EXCEPTION.md`.

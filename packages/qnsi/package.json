@@ -1,12 +1,12 @@
 {
-	"name": "@heossi/qnsi",
-	"version": "0.5.0",
+	"name": "@heossihq/qnsi",
+	"version": "0.6.0",
 	"publishConfig": {
 		"access": "public"
 	},
 	"type": "module",
 	"license": "Apache-2.0",
-	"description": "Official Node.js / TypeScript SDK for the QNSI Quantum-Native Security Infrastructure by HEOSSI. Single package covering vault, kms, audit, auth, tenant, access-control, billing, crypto-inventory, storage, search, ai-orchestrator + local PQC primitives + webhook verification. Mirrors the qnsp Python / Go / Rust SDK surface byte-for-byte.",
+	"description": "Official Node.js / TypeScript SDK for QNSI. Typed clients for mounted vault, KMS, audit, auth, tenant, access-control, billing, crypto-inventory, storage, search, and AI routes, plus local PQC utilities and webhook verification.",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -34,6 +34,10 @@
 			"types": "./dist/autogen/index.d.ts",
 			"import": "./dist/autogen/index.js"
 		},
+		"./code-scan": {
+			"types": "./dist/code-scan/index.d.ts",
+			"import": "./dist/code-scan/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"bin": {
@@ -54,14 +58,10 @@
 	},
 	"peerDependencies": {
 		"@langchain/core": ">=0.3.0",
-		"autogen": ">=0.0.1",
 		"llamaindex": ">=0.5.0"
 	},
 	"peerDependenciesMeta": {
 		"@langchain/core": {
-			"optional": true
-		},
-		"autogen": {
 			"optional": true
 		},
 		"llamaindex": {
@@ -69,6 +69,7 @@
 		}
 	},
 	"devDependencies": {
+		"@heossihq/qnsi-enforcement-contract": "workspace:*",
 		"@langchain/core": "^0.3.80",
 		"@types/node": "^25.5.2",
 		"typescript": "^6.0.2",
@@ -105,7 +106,7 @@
 		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/qnsi"
 	},
-	"homepage": "https://cloud.qnsi.heossi.com",
+	"homepage": "https://qnsi.heossi.com",
 	"bugs": {
 		"url": "https://github.com/heossihq/qnsi-public/issues"
 	},

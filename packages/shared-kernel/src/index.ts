@@ -17,6 +17,6 @@ export * from "./tier-limits.js";
 export * from "./token-prefixes.js";
 
 // Node.js-only utilities (use separate import path to avoid bundling in browser)
-// import { benchmark } from "@heossi/qnsi-shared-kernel/benchmarks"
-// import { loadTest } from "@heossi/qnsi-shared-kernel/load-testing"
-// import { smokeTest } from "@heossi/qnsi-shared-kernel/smoke-test-utils"
+// import { benchmark } from "@heossihq/qnsi-shared-kernel/benchmarks"
+// import { loadTest } from "@heossihq/qnsi-shared-kernel/load-testing"
+// import { smokeTest } from "@heossihq/qnsi-shared-kernel/smoke-test-utils"

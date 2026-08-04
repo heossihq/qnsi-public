@@ -1,17 +1,17 @@
 ---
-title: Crypto Inventory SDK (@heossi/qnsi-crypto-inventory-sdk)
+title: Crypto Inventory SDK (qnsi.cryptoInventory)
 version: 0.3.6
-last_updated: 2026-04-30
+last_updated: 2026-07-20
 copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
   - /packages/crypto-inventory-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-crypto-inventory-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-crypto-inventory-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.crypto./* method */(...);
 > ```
@@ -19,20 +19,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Crypto Inventory SDK (`@heossi/qnsi-crypto-inventory-sdk`)
+# Crypto Inventory SDK (`qnsi.cryptoInventory`)
 
 The TypeScript client for `crypto-inventory-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Provides cryptographic asset discovery and inventory management across the QNSI platform.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-crypto-inventory-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { CryptoInventoryClient } from "@heossi/qnsi-crypto-inventory-sdk";
+import { CryptoInventoryClient } from "@heossihq/qnsi";
 
 const inventory = new CryptoInventoryClient({
 	baseUrl: "http://localhost:8115",
@@ -152,6 +152,31 @@ console.log(history[0]);
 // }
 ```
 
+### Source-code discovery
+
+The published unified package also provides the local `qnsi crypto scan` command. It can emit
+a standalone CBOM or upload normalized findings using a scoped scanner identity. Uploaded
+findings are processed by a discovery run with source `code_repo` and become assets with type
+`code_usage`:
+
+```bash
+qnsi crypto scan ./ --format cbom --output qnsi-code.cbom.json
+qnsi crypto scan ./ --upload --repo-id payments-api --repo-name example/payments-api
+```
+
+Source-file contents are not uploaded. See [Source-Code Cryptography
+Scanning](../crypto/source-code-scanning) for credential setup and CI usage.
+
+### Governed migration execution
+
+Migration execution is a controlled API workflow rather than a direct SDK rotation call. Use
+the current REST surface to dry-run, submit the returned `planSnapshotHash`, obtain a second
+operator's approval, and monitor waves and per-asset actions. Ambiguous provider outcomes stay
+in verification-required state until an operator records hashed evidence.
+
+See [Governed Migration Execution](../migration/governed-execution) and the [API Route
+Catalog](../api/route-catalog).
+
 ## Delete Asset
 
 ```ts
@@ -163,7 +188,7 @@ await inventory.deleteAsset("<asset_uuid>");
 The Crypto Inventory SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-crypto-inventory-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"

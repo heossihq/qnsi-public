@@ -1,4 +1,4 @@
-# @heossi/qnsi-access-control-sdk
+# @heossihq/qnsi-access-control-sdk
 
 TypeScript SDK client for the QNSI access-control-service API; equivalent shapes ship in Python, Go, and Rust. Provides policy management and capability token operations.
 
@@ -7,13 +7,13 @@ Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi-access-control-sdk
+pnpm add @heossihq/qnsi-access-control-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { AccessControlClient } from "@heossi/qnsi-access-control-sdk";
+import { AccessControlClient } from "@heossihq/qnsi-access-control-sdk";
 
 const acl = new AccessControlClient({
   baseUrl: "https://api.qnsi.heossi.com",
@@ -47,7 +47,7 @@ const capability = await acl.issueCapability({
 ## Requirements
 
 - Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
-- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
+- A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

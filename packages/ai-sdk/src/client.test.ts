@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { ReadableStream } from "node:stream/web";
 
-import { clearActivationCache } from "@heossi/qnsi-sdk-activation";
+import { clearActivationCache } from "@heossihq/qnsi-sdk-activation";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { AiOrchestratorClient } from "./client.js";

@@ -1,5 +1,5 @@
 ---
-title: Auth SDK (@heossi/qnsi-auth-sdk)
+title: Auth SDK (qnsi.auth)
 version: 0.3.6
 last_updated: 2026-04-30
 copyright: © 2025 HEOSSI. All rights reserved.
@@ -8,10 +8,10 @@ source_files:
   - /packages/auth-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-auth-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.auth./* method */(...);
 > ```
@@ -19,20 +19,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Auth SDK (`@heossi/qnsi-auth-sdk`)
+# Auth SDK (`qnsi.auth`)
 
 The TypeScript client for `auth-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. All tokens are signed with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-auth-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { AuthClient } from "@heossi/qnsi-auth-sdk";
+import { AuthClient } from "@heossihq/qnsi";
 
 const auth = new AuthClient({
 	baseUrl: "https://api.qnsi.heossi.com",
@@ -148,7 +148,7 @@ const oidcResult = await auth.federateOIDC({
 For internal services to authenticate with each other:
 
 ```ts
-import { requestServiceToken, getServiceAuthHeader } from "@heossi/qnsi-auth-sdk";
+import { requestServiceToken, getServiceAuthHeader } from "@heossihq/qnsi";
 
 // Get service token
 const token = await requestServiceToken({
@@ -176,7 +176,7 @@ fetch(url, {
 The Auth SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-auth-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("dilithium-3"); // "ML-DSA-65"

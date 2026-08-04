@@ -15,7 +15,7 @@ describe("bridgeQnsiEnvVars (QNSI full-rename Phase B)", () => {
 		expect(env["QNSP_KMS_URL"]).toBe("http://kms");
 	});
 
-	it("explicitly-set values always win — the bridge only fills gaps", () => {
+	it("explicitly-set values always win - the bridge only fills gaps", () => {
 		const env: NodeJS.ProcessEnv = {
 			QNSP_TOKEN: "old",
 			QNSI_TOKEN: "new",

@@ -101,7 +101,9 @@ async function run() {
 	// No prebuilt binary - check if we can build from source
 	const canBuild = await checkNativePrerequisites();
 	if (canBuild) {
-		console.info("[@heossi/liboqs-native] Native prerequisites detected. Building from source...");
+		console.info(
+			"[@heossihq/liboqs-native] Native prerequisites detected. Building from source...",
+		);
 		// Set environment variables for node-gyp-build if using defaults
 		if (!process.env.OQS_INCLUDE_PATH || !process.env.OQS_LIB_PATH) {
 			const monorepoRoot = resolve(__dirname, "..", "..", "..");
@@ -127,7 +129,7 @@ async function run() {
 					resolvePromise();
 				} else {
 					console.warn(
-						`[@heossi/liboqs-native] Build failed with code ${code ?? "unknown"}. Continuing installation - native bindings will be unavailable.`,
+						`[@heossihq/liboqs-native] Build failed with code ${code ?? "unknown"}. Continuing installation - native bindings will be unavailable.`,
 					);
 					resolvePromise(); // Don't fail install
 				}
@@ -135,7 +137,7 @@ async function run() {
 
 			task.on("error", (error) => {
 				console.warn(
-					`[@heossi/liboqs-native] Build error: ${error.message}. Continuing installation - native bindings will be unavailable.`,
+					`[@heossihq/liboqs-native] Build error: ${error.message}. Continuing installation - native bindings will be unavailable.`,
 				);
 				resolvePromise(); // Don't fail install
 			});
@@ -144,7 +146,7 @@ async function run() {
 
 	// No prerequisites - this is expected for most developers
 	console.warn(
-		"[@heossi/liboqs-native] No prebuilt binary and native prerequisites unavailable. " +
+		"[@heossihq/liboqs-native] No prebuilt binary and native prerequisites unavailable. " +
 			"This is expected if liboqs is not built. " +
 			"The package will use deterministic PQC provider in tests. " +
 			"To build native bindings, see docs/guides/liboqs-native-build.md",
@@ -153,8 +155,8 @@ async function run() {
 
 run().catch((error) => {
 	// Don't fail install - just warn
-	console.warn(`[@heossi/liboqs-native] Install warning: ${error.message}`);
+	console.warn(`[@heossihq/liboqs-native] Install warning: ${error.message}`);
 	console.warn(
-		"[@heossi/liboqs-native] Continuing installation. Native bindings will be unavailable.",
+		"[@heossihq/liboqs-native] Continuing installation. Native bindings will be unavailable.",
 	);
 });

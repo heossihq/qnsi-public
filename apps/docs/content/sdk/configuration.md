@@ -5,10 +5,10 @@ last_updated: 2026-04-23
 copyright: © 2025 HEOSSI. All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-auth-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.auth./* method */(...);
 > ```
@@ -21,7 +21,7 @@ Configure QNSI SDKs for your environment.
 
 ## Configuration options
 
-SDK configuration is per-service. QNSI publishes separate SDK packages (for example `@heossi/qnsi-auth-sdk`, `@heossi/qnsi-vault-sdk`, `@heossi/qnsi-storage-sdk`).
+SDK configuration is per-service. QNSI publishes separate SDK packages (for example `@heossihq/qnsi-auth-sdk`, `@heossihq/qnsi-vault-sdk`, `@heossihq/qnsi-storage-sdk`).
 
 Most SDKs share these common options:
 
@@ -31,14 +31,12 @@ Most SDKs share these common options:
 | `apiKey` | No | Bearer token used for `Authorization: Bearer <token>` |
 | `timeoutMs` | No | Request timeout in ms |
 
-Some SDKs also require tenant context (for example `@heossi/qnsi-storage-sdk` sends `x-tenant-id` based on the configured `tenantId`).
+Some SDKs also require tenant context (for example `@heossihq/qnsi-storage-sdk` sends `x-tenant-id` based on the configured `tenantId`).
 
 ## Node.js configuration
 
 ```typescript
-import { AuthClient } from "@heossi/qnsi-auth-sdk";
-import { VaultClient } from "@heossi/qnsi-vault-sdk";
-import { StorageClient } from "@heossi/qnsi-storage-sdk";
+import { AuthClient, StorageClient, VaultClient } from "@heossihq/qnsi";
 
 const authClient = new AuthClient({
   baseUrl: "https://api.qnsi.heossi.com",

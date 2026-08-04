@@ -1,5 +1,5 @@
 ---
-title: AI SDK (@heossi/qnsi-ai-sdk)
+title: AI SDK (qnsi.ai)
 version: 0.1.11
 last_updated: 2026-04-30
 copyright: © 2025 HEOSSI. All rights reserved.
@@ -9,10 +9,10 @@ source_files:
   - /packages/ai-sdk/src/types.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-ai-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-ai-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.ai./* method */(...);
 > ```
@@ -20,20 +20,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# AI SDK (`@heossi/qnsi-ai-sdk`)
+# AI SDK (`qnsi.ai`)
 
 The TypeScript client for `ai-orchestrator`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Model artifacts and inference data are encrypted with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-ai-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { AiOrchestratorClient } from "@heossi/qnsi-ai-sdk";
+import { AiOrchestratorClient } from "@heossihq/qnsi";
 
 const ai = new AiOrchestratorClient({
 	baseUrl: "http://localhost:8094",
@@ -171,7 +171,7 @@ await ai.cancelWorkload({
 The SDK validates tier access for premium features:
 
 ```ts
-import { AiOrchestratorClient, TierError } from "@heossi/qnsi-ai-sdk";
+import { AiOrchestratorClient, TierError } from "@heossihq/qnsi";
 
 try {
 	const ai = new AiOrchestratorClient({

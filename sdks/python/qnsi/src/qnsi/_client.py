@@ -4,7 +4,7 @@ A single ``QnsiClient(api_key=...)`` exposes the whole platform via
 sub-namespaces (``vault``, ``kms``, ``audit``, …). Local PQC primitives
 live under ``qnsp.crypto`` and require the ``qnsi[crypto]`` extra.
 
-Customer onboarding is identical for everyone — there are no per-partner
+Customer onboarding is identical for everyone - there are no per-partner
 constructors. Anyone with a free QNSP API key (https://cloud.qnsi.heossi.com/auth)
 gets the same surface.
 """

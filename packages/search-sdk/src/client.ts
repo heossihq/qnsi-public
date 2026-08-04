@@ -1,6 +1,6 @@
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossihq/qnsi-sdk-activation";
 import { type RequestInit as UndiciRequestInit, fetch as undiciFetch } from "undici";
 
 import type { SearchClientTelemetry, SearchClientTelemetryConfig } from "./observability.js";
@@ -90,7 +90,7 @@ export class SearchClient {
 		if (!options.apiKey || options.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP Search SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup - " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
 					"Docs: https://docs.qnsi.heossi.com/sdk/search-sdk",
 			);
@@ -98,7 +98,7 @@ export class SearchClient {
 		const baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
 
 		// Enforce HTTPS in production (allow HTTP for localhost in development and
-		// for internal service-mesh hostnames — e.g. *.internal — which are on a
+		// for internal service-mesh hostnames - e.g. *.internal - which are on a
 		// private VPC network and do not require TLS termination at the transport layer).
 		if (!baseUrl.startsWith("https://")) {
 			const isLocalhost =

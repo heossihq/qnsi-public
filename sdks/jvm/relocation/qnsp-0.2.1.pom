@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  RELOCATION POM. io.cuilabs:qnsp has moved to com.heossi:qnsi following the
+  CUI Labs -> HEOSSI / QNSP -> QNSI rebrand. Maven Central is immutable, so the
+  legacy io.cuilabs:qnsp:0.1.0/0.2.0 artifacts cannot be deleted; this 0.2.1
+  POM-only release makes the LATEST io.cuilabs:qnsp resolve with a "relocated"
+  warning that points consumers at com.heossi:qnsi. Published 2026-06-23.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.cuilabs</groupId>
+  <artifactId>qnsp</artifactId>
+  <version>0.2.1</version>
+  <packaging>pom</packaging>
+
+  <name>QNSI JVM SDK (relocated to com.heossi:qnsi)</name>
+  <description>RELOCATED: io.cuilabs:qnsp has moved to com.heossi:qnsi following the CUI Labs to HEOSSI (QNSP to QNSI) rebrand. Update your dependency to com.heossi:qnsi.</description>
+  <url>https://qnsi.heossi.com</url>
+
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>heossi</id>
+      <name>HEOSSI (PTE.) LTD</name>
+      <url>https://heossi.com</url>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/heossihq/qnsi-public</url>
+    <connection>scm:git:https://github.com/heossihq/qnsi-public.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/heossihq/qnsi-public.git</developerConnection>
+  </scm>
+
+  <distributionManagement>
+    <relocation>
+      <groupId>com.heossi</groupId>
+      <artifactId>qnsi</artifactId>
+      <version>0.3.0</version>
+      <message>QNSP is now QNSI: io.cuilabs:qnsp has moved to com.heossi:qnsi (CUI Labs to HEOSSI rebrand).</message>
+    </relocation>
+  </distributionManagement>
+</project>

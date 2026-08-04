@@ -1,7 +1,7 @@
 ---
 title: Getting Started Overview
-version: 0.0.3
-last_updated: 2026-04-23
+version: 0.0.4
+last_updated: 2026-07-20
 copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0 (SDK packages) / BSL-1.1 (core platform)
 source_files:
@@ -15,17 +15,17 @@ QNSI is an API-first platform providing tenant-scoped security primitives: ident
 
 QNSI was conceived, architected, and engineered starting in Dec 2020. The current monorepo was bootstrapped in Nov 2025.
 
-> **Monorepo**: `@heossi/qnsi-monorepo` v0.0.1  
-> **Node.js**: ≥24.12.0 | **pnpm**: ≥10.25.0
+> **Monorepo**: `@heossihq/qnsi-monorepo` v0.0.1
+> **Node.js**: ≥24.18.0 | **pnpm**: ≥10.25.0
 
 ## What QNSI Provides
 
 - **Identity & Auth**: PQC-signed JWTs (ML-DSA), refresh tokens, service accounts, RBAC, WebAuthn passkeys, social OAuth (GitHub, Google, LinkedIn, Microsoft), enterprise OIDC/SAML federation, linked external identities
-- **KMS**: Key generation, rotation, BYOK import
+- **KMS**: Key generation, rotation, BYOK import, BYOH HSM, and HSM-Sealed Post-Quantum Keys
 - **Secrets**: Secure storage with TTL and rotation
 - **Storage**: Encryption at rest
 - **Audit**: Immutable event logs and Merkle checkpointing
-- **Crypto Posture**: Discovery, exposure analysis, migration planning, readiness, and evidence workflows
+- **Crypto Posture**: Cloud, host, TLS, and local source-code discovery; CBOM; exposure analysis; governed migration waves; readiness; and evidence workflows
 
 ## How customers typically start
 
@@ -64,3 +64,5 @@ Ports derived from `apps/*/src/config/env.ts`:
 - [Quickstart with curl](./quickstart-curl)
 - [API Reference](/api/overview)
 - [Migration Journey](/migration/journey)
+- [Source-Code Cryptography Scanning](/crypto/source-code-scanning)
+- [Governed Migration Execution](/migration/governed-execution)

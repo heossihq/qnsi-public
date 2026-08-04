@@ -1,11 +1,11 @@
 ---
 title: Deployment
-description: Deployment topologies — managed cloud, VPC, on-prem, air-gapped.
+description: Deployment topologies - managed cloud, VPC, on-prem, air-gapped.
 ---
 
 # Deployment
 
-Deployment topologies — managed cloud, VPC, on-prem, air-gapped.
+Deployment topologies - managed cloud, VPC, on-prem, air-gapped.
 
 ## Pages
 

@@ -1,4 +1,4 @@
-//! QNSI Search — encrypted vector search with SSE-X.
+//! QNSI Search - encrypted vector search with SSE-X.
 
 use reqwest::Method;
 use serde::{Deserialize, Serialize};

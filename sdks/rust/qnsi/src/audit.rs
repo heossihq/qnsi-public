@@ -1,4 +1,4 @@
-//! QNSI Audit — immutable, hash-chained event log.
+//! QNSI Audit - immutable, hash-chained event log.
 
 use reqwest::Method;
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-# @heossi/qnsi-vault-sdk
+# @heossihq/qnsi-vault-sdk
 
 TypeScript SDK client for the QNSI vault-service API; equivalent shapes ship in Python, Go, and Rust. Provides secret management with envelope encryption, versioning, and rotation.
 
@@ -7,13 +7,13 @@ Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi-vault-sdk
+pnpm add @heossihq/qnsi-vault-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { VaultClient } from "@heossi/qnsi-vault-sdk";
+import { VaultClient } from "@heossihq/qnsi-vault-sdk";
 
 const vault = new VaultClient({
   baseUrl: "https://api.qnsi.heossi.com",
@@ -38,7 +38,7 @@ const retrieved = await vault.getSecret(secret.id);
 ## Requirements
 
 - Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
-- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
+- A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

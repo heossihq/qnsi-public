@@ -2,14 +2,14 @@
 title: Maintenance Policy
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Maintenance Policy
 
 This document describes how HEOSSI (PTE.) LTD ("HEOSSI") performs scheduled and emergency maintenance for QNSI Cloud services.
 
-This Maintenance Policy is subject to the [Terms of Service](https://qnsi.heossi.com/terms) and the applicable [Service Level Agreement](/legal/sla).
+The current authoritative Support and Maintenance Policy is published at https://qnsi.heossi.com/legal/support-and-maintenance. This document is a historical operational reference and does not create a guaranteed maintenance window or notice period unless incorporated into a signed Order Form.
 
 ## 1. Maintenance Types
 
@@ -17,7 +17,7 @@ This Maintenance Policy is subject to the [Terms of Service](https://qnsi.heossi
 
 Planned maintenance for updates, upgrades, and infrastructure improvements.
 
-- **Frequency:** As needed, typically 1–2 times per month
+- **Frequency:** As needed, typically 1-2 times per month
 - **Duration:** Typically under 30 minutes
 - **Impact:** Zero-downtime deployments are the goal; brief latency increases may occur
 
@@ -37,7 +37,7 @@ Scheduled maintenance is performed during low-traffic periods:
 
 | Region | Maintenance Window (Local Time) |
 |--------|--------------------------------|
-| Asia-Pacific (Singapore) | Tuesday/Thursday 02:00–06:00 SGT |
+| Asia-Pacific (Singapore) | Tuesday/Thursday 02:00-06:00 SGT |
 | Additional regions | As defined per region |
 
 ### 2.2 Window Preferences
@@ -148,7 +148,7 @@ Business and Enterprise customers may request deferral of non-critical maintenan
 
 1. While HEOSSI strives to minimize service disruption, maintenance may occasionally cause brief unavailability or performance degradation.
 
-2. Scheduled maintenance during announced windows is excluded from SLA availability calculations as described in the [Service Level Agreement](/legal/sla).
+2. Scheduled maintenance during announced windows is excluded from SLA availability calculations as described in the [Service Level Agreement](/legal/service-level-agreement).
 
 3. HEOSSI reserves the right to perform emergency maintenance without advance notice when required to address security threats or prevent service degradation.
 
@@ -157,8 +157,6 @@ Business and Enterprise customers may request deferral of non-critical maintenan
 ---
 
 **HEOSSI (PTE.) LTD**
-
-Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
 UEN: 202532790K
 

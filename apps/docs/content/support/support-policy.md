@@ -2,14 +2,14 @@
 title: Support Policy
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Support Policy
 
 This document describes the support services available to QNSI Cloud customers provided by HEOSSI (PTE.) LTD ("HEOSSI"), a company incorporated in Singapore (UEN: 202532790K).
 
-This Support Policy is subject to the [Terms of Service](https://qnsi.heossi.com/terms) and the applicable [Service Level Agreement](/legal/sla).
+The current authoritative Support and Maintenance Policy is published at https://qnsi.heossi.com/legal/support-and-maintenance. This document is a historical support-tier reference and does not create a guarantee unless incorporated into a signed Order Form.
 
 ## 1. Support Tiers
 
@@ -26,7 +26,7 @@ This Support Policy is subject to the [Terms of Service](https://qnsi.heossi.com
 
 | Attribute | Details |
 |-----------|---------|
-| **Availability** | Business hours (9:00–18:00 SGT, Mon–Fri) |
+| **Availability** | Business hours (9:00-18:00 SGT, Mon-Fri) |
 | **Channels** | Email, Support Portal |
 | **Response Time** | 24 business hours |
 | **Scope** | Technical issues, configuration guidance |
@@ -35,7 +35,7 @@ This Support Policy is subject to the [Terms of Service](https://qnsi.heossi.com
 
 | Attribute | Details |
 |-----------|---------|
-| **Availability** | Extended hours (8:00–22:00 SGT, Mon–Fri) |
+| **Availability** | Extended hours (8:00-22:00 SGT, Mon-Fri) |
 | **Channels** | Email, Support Portal, Chat |
 | **Response Time** | 4 business hours |
 | **Scope** | Technical issues, architecture guidance, onboarding assistance |
@@ -179,8 +179,8 @@ If your issue is not being resolved satisfactorily:
 
 ## 9. Support Hours and Holidays
 
-- **Business Hours:** 9:00–18:00 Singapore Time (SGT), Monday–Friday
-- **Extended Hours:** 8:00–22:00 SGT, Monday–Friday
+- **Business Hours:** 9:00-18:00 Singapore Time (SGT), Monday-Friday
+- **Extended Hours:** 8:00-22:00 SGT, Monday-Friday
 - **24×7:** Available for Enterprise tiers and Premium Support add-on
 
 **Holidays:** Support availability may be reduced during Singapore public holidays. Critical (Severity 1) support remains available for 24×7 customers.
@@ -198,8 +198,6 @@ If your issue is not being resolved satisfactorily:
 ---
 
 **HEOSSI (PTE.) LTD**
-
-Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
 
 UEN: 202532790K
 

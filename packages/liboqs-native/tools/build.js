@@ -45,13 +45,15 @@ async function ensureNativePrerequisites() {
 
 	if (!includeRoot || includeRoot.trim().length === 0) {
 		console.warn(
-			"[@heossi/liboqs-native] OQS_INCLUDE_PATH is not set. Skipping prebuild generation.",
+			"[@heossihq/liboqs-native] OQS_INCLUDE_PATH is not set. Skipping prebuild generation.",
 		);
 		return { found: false };
 	}
 
 	if (!libraryRoot || libraryRoot.trim().length === 0) {
-		console.warn("[@heossi/liboqs-native] OQS_LIB_PATH is not set. Skipping prebuild generation.");
+		console.warn(
+			"[@heossihq/liboqs-native] OQS_LIB_PATH is not set. Skipping prebuild generation.",
+		);
 		return { found: false };
 	}
 
@@ -60,14 +62,14 @@ async function ensureNativePrerequisites() {
 
 	if (!(await fileExists(headerPath))) {
 		console.warn(
-			`[@heossi/liboqs-native] Missing liboqs header at ${headerPath}. Set OQS_INCLUDE_PATH to a liboqs build directory to enable native compilation.`,
+			`[@heossihq/liboqs-native] Missing liboqs header at ${headerPath}. Set OQS_INCLUDE_PATH to a liboqs build directory to enable native compilation.`,
 		);
 		return { found: false };
 	}
 
 	if (!(await fileExists(libraryPath))) {
 		console.warn(
-			`[@heossi/liboqs-native] Missing liboqs static library at ${libraryPath}. Set OQS_LIB_PATH to a liboqs build directory to enable native compilation.`,
+			`[@heossihq/liboqs-native] Missing liboqs static library at ${libraryPath}. Set OQS_LIB_PATH to a liboqs build directory to enable native compilation.`,
 		);
 		return { found: false };
 	}
@@ -79,7 +81,7 @@ async function run() {
 	const prerequisites = await ensureNativePrerequisites();
 	if (!prerequisites.found) {
 		console.warn(
-			"[@heossi/liboqs-native] Native toolchain prerequisites unavailable. " +
+			"[@heossihq/liboqs-native] Native toolchain prerequisites unavailable. " +
 				"Continuing without generating prebuilt binaries.",
 		);
 		return;

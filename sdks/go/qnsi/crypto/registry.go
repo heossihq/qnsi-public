@@ -1,7 +1,7 @@
 // Package crypto provides local PQC primitives via liboqs-go 0.12.0.
 //
 // The algorithm names exposed here are the canonical QNSP names that
-// match @heossi/qnsp-cryptography (TypeScript) and qnsp.crypto (Python). Internally
+// match @heossihq/qnsp-cryptography (TypeScript) and qnsp.crypto (Python). Internally
 // they are mapped to the liboqs-go enabled-algorithm strings for the
 // installed liboqs version.
 //
@@ -13,7 +13,7 @@ package crypto
 // kemCandidates is the canonical-name → ordered-list-of-liboqs-candidate-names
 // mapping. The first candidate that liboqs-go reports as enabled is used.
 //
-// The mapping mirrors the equivalent structure in the @heossi/qnsp-cryptography
+// The mapping mirrors the equivalent structure in the @heossihq/qnsp-cryptography
 // liboqs provider and qnsp.crypto._registry, so an algorithm string that
 // works in TypeScript or Python also works here.
 var kemCandidates = map[string][]string{
@@ -25,7 +25,7 @@ var kemCandidates = map[string][]string{
 	"Kyber768":  {"Kyber768"},
 	"Kyber1024": {"Kyber1024"},
 
-	// HQC omitted — disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+	// HQC omitted - disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
 
 	"BIKE-L1": {"BIKE-L1"},
 	"BIKE-L3": {"BIKE-L3"},
@@ -112,7 +112,7 @@ var sigCandidates = map[string][]string{
 
 // SupportedKEMs returns the canonical QNSP KEM names this binding knows
 // about. Whether each is *enabled* in the linked liboqs build depends on
-// how liboqs was configured at compile time — call IsKEMEnabled to check.
+// how liboqs was configured at compile time - call IsKEMEnabled to check.
 func SupportedKEMs() []string {
 	out := make([]string, 0, len(kemCandidates))
 	for k := range kemCandidates {

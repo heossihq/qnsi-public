@@ -1,5 +1,5 @@
 {
-	"name": "@heossi/qnsi-sdk-activation",
+	"name": "@heossihq/qnsi-sdk-activation",
 	"version": "0.1.7",
 	"publishConfig": {
 		"access": "public"
@@ -56,5 +56,6 @@
 	"homepage": "https://cloud.qnsi.heossi.com",
 	"bugs": {
 		"url": "https://github.com/heossihq/qnsi-public/issues"
-	}
+	},
+	"private": true
 }

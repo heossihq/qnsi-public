@@ -1,11 +1,11 @@
 ---
 title: Identity & Access
-description: Identity layer — authentication flows, federation, MFA, WebAuthn, and risk-based policies.
+description: Identity layer - authentication flows, federation, MFA, WebAuthn, and risk-based policies.
 ---
 
 # Identity & Access
 
-Identity layer — authentication flows, federation, MFA, WebAuthn, and risk-based policies.
+Identity layer - authentication flows, federation, MFA, WebAuthn, and risk-based policies.
 
 ## Pages
 

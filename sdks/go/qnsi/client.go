@@ -20,7 +20,7 @@ import (
 
 // ClientOptions configures NewClient.
 type ClientOptions struct {
-	APIKey     string        // required — get one at https://cloud.qnsi.heossi.com/api-keys
+	APIKey     string        // required - get one at https://cloud.qnsi.heossi.com/api-keys
 	BaseURL    string        // optional override; defaults to production edge gateway
 	Timeout    time.Duration // optional per-request timeout; default 15s
 	HTTPClient *http.Client  // optional; if nil, the SDK constructs one with Timeout

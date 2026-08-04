@@ -1,10 +1,10 @@
 /**
- * Public PQC benchmark runner — schema v3.
+ * Public PQC benchmark runner - schema v3.
  *
  * v3 (2026-05-14):
  *   - Batched memory measurement (N=200 instances ÷ N for stable per-instance RSS)
  *   - Multi-process concurrency via child_process.fork (real multi-core scaling)
- *   - Noble comparison: side-by-side @heossi/liboqs-native vs @noble/post-quantum
+ *   - Noble comparison: side-by-side @heossihq/liboqs-native vs @noble/post-quantum
  *
  * v2 added cold-start, single-instance memory (deprecated by v3 batched), and
  * in-process concurrency (kept; still surfaces saturation finding).
@@ -13,7 +13,7 @@
  * Output: `apps/web/public/pqc-benchmarks/pqc-latest.json` plus historical
  * snapshot `pqc-<UTC>.json`.
  *
- * Run:  pnpm --filter @heossi/qnsi-web-portal run bench:pqc
+ * Run:  pnpm --filter @heossihq/qnsi-web-portal run bench:pqc
  *
  * Multi-process mode: the same script forks itself with
  * `PQC_BENCH_CHILD_MODE=1` to spawn workers; each child runs N ops then
@@ -39,7 +39,7 @@ import type {
 } from "../lib/benchmark-types.js";
 
 const require = createRequire(import.meta.url);
-const liboqs = require("@heossi/liboqs-native") as {
+const liboqs = require("@heossihq/liboqs-native") as {
 	KEM: new (algorithm: string) => KemHandle;
 	Sig: new (algorithm: string) => SigHandle;
 	version(): string;
@@ -147,7 +147,7 @@ const SIGNATURE_TARGETS: readonly SignatureTarget[] = [
 ];
 
 const MESSAGE = Buffer.from(
-	"QNSI PQC benchmark — message used for sign/verify rounds. Length is intentionally short " +
+	"QNSI PQC benchmark - message used for sign/verify rounds. Length is intentionally short " +
 		"to mirror typical control-plane payloads (auth tokens, audit signatures, billing meters).",
 	"utf8",
 );
@@ -160,7 +160,7 @@ const MULTI_PROCESS_LEVELS: readonly number[] = [1, 2, 4, 8];
 const MULTI_PROCESS_OPS_PER_CHILD = 100;
 
 /* ════════════════════════════════════════════════════════════════════ */
-/*  Child mode — used by multi-process concurrency measurement          */
+/*  Child mode - used by multi-process concurrency measurement          */
 /* ════════════════════════════════════════════════════════════════════ */
 
 if (process.env["PQC_BENCH_CHILD_MODE"] === "1") {
@@ -189,7 +189,7 @@ function runChildKeygen(liboqsName: string, type: "kem" | "sig", ops: number): v
 }
 
 /* ════════════════════════════════════════════════════════════════════ */
-/*  Parent mode — orchestrates all measurements                          */
+/*  Parent mode - orchestrates all measurements                          */
 /* ════════════════════════════════════════════════════════════════════ */
 
 function measure(
@@ -693,7 +693,7 @@ async function main(): Promise<void> {
 	}
 
 	console.log(
-		`liboqs ${liboqs.version()} + noble ${getNobleVersion()} on ${platform()}/${arch()} — ${getCpuModel()}`,
+		`liboqs ${liboqs.version()} + noble ${getNobleVersion()} on ${platform()}/${arch()} - ${getCpuModel()}`,
 	);
 	console.log(`Schema v3: + multi-process concurrency, batched memory, noble comparison`);
 
@@ -729,7 +729,7 @@ async function main(): Promise<void> {
 			publicLibrary: "https://github.com/paulmillr/noble-post-quantum",
 			liveSandbox: "https://qnsi.heossi.com/api/sandbox/pqc-runtime",
 			readerSnippet:
-				"npm i @noble/post-quantum && node --input-type=module -e \"import {ml_kem768} from '@noble/post-quantum/ml-kem.js'; const t=performance.now(); const kp=ml_kem768.keygen(); console.log('keygen ms:', (performance.now()-t).toFixed(3), '— pubkey bytes:', kp.publicKey.length);\"",
+				"npm i @noble/post-quantum && node --input-type=module -e \"import {ml_kem768} from '@noble/post-quantum/ml-kem.js'; const t=performance.now(); const kp=ml_kem768.keygen(); console.log('keygen ms:', (performance.now()-t).toFixed(3), '- pubkey bytes:', kp.publicKey.length);\"",
 			note: "Absolute timings depend on hardware, kernel scheduler, and thermal state. Cross-algorithm ratios are stable. Schema v3 adds multi-process scaling, batched memory measurement, and side-by-side noble comparison.",
 		},
 		kems,

@@ -32,8 +32,8 @@ QNSI is designed for high availability across all tiers.
 ## Health checks
 
 All services expose health endpoints through edge-gateway:
-- `GET /proxy/<service>/health` — basic liveness
-- `GET /edge/<service>/health` — alternative health path
+- `GET /proxy/<service>/health` - basic liveness
+- `GET /edge/<service>/health` - alternative health path
 
 Health check endpoints (GET/HEAD) bypass bot protection and rate limiting for reliable monitoring.
 

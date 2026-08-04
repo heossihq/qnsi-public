@@ -1,26 +1,24 @@
 ---
 title: SDK Overview
-version: 0.3.6
-last_updated: 2026-04-30
+version: 0.6.0
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
-  - /packages/auth-sdk/package.json
-  - /packages/vault-sdk/package.json
-  - /packages/kms-client/package.json
-  - /packages/storage-sdk/package.json
-  - /packages/crypto-inventory-sdk/package.json
-  - /packages/browser-sdk/package.json
+  - /packages/qnsi/package.json
+  - /packages/qnsi/src/client.ts
+  - /packages/qnsi/src/browser/index.ts
+  - /packages/qnsi/src/code-scan/index.ts
   - /packages/mcp-server/package.json
   - /sdks/python/qnsi/pyproject.toml
   - /sdks/go/qnsi/go.mod
   - /sdks/rust/qnsi/Cargo.toml
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-auth-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.auth./* method */(...);
 > ```
@@ -30,9 +28,9 @@ source_files:
 
 # SDK Overview
 
-QNSI provides official SDKs in **five languages** — TypeScript/Node.js, Python, Go, Rust, and JVM/Android (Kotlin + Java) — all built on the same wire contracts, the same algorithm names, and the same FIPS 203 / 204 / 205 posture. Pick whichever fits your stack and the byte-for-byte outputs round-trip across languages.
+QNSI provides official SDKs in **five languages** - TypeScript/Node.js, Python, Go, Rust, and JVM/Android (Kotlin + Java) - all built on the same wire contracts, the same algorithm names, and the same FIPS 203 / 204 / 205 posture. Pick whichever fits your stack and the byte-for-byte outputs round-trip across languages.
 
-All language families ship as a **single package per language** with the same 11-service surface. The 11 per-service `@heossi/qnsi-*-sdk` packages on npm are deprecated in favour of `@heossi/qnsi` (they continue to install but are no longer the recommended entry point). See [Supported Languages](./languages) for the full feature matrix and [the @heossi/qnsi README](https://github.com/heossihq/qnsi-public/blob/main/packages/qnsi/README.md#migration-from-per-service-sdks) for the import-by-import migration guide.
+All language families ship as a **single package per language** with the same 11-service surface. The 11 per-service `@heossihq/qnsi-*-sdk` packages on npm are deprecated in favour of `@heossihq/qnsi` (they continue to install but are no longer the recommended entry point). See [Supported Languages](./languages) for the full feature matrix and [the @heossihq/qnsi README](https://github.com/heossihq/qnsi-public/blob/main/packages/qnsi/README.md#migration-from-per-service-sdks) for the import-by-import migration guide.
 
 The SDKs include tenant crypto policy integration, NIST algorithm name utilities, and support for the latest platform capabilities including risk-based authentication, JIT access, AI orchestration, and real-time streaming.
 
@@ -42,45 +40,42 @@ For migration work, the SDKs are the application cutover surface. Discovery typi
 
 | Language | Package | Version | Source | Activation `sdkId` |
 |---|---|---|---|---|
-| TypeScript / Node.js | [`@heossi/qnsi`](https://www.npmjs.com/package/@heossi/qnsi) | 0.1.0 | [`packages/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/packages/qnsi) | `qnsi` |
-| Python | [`qnsi`](https://pypi.org/project/qnsi/) | 0.3.0 | [`sdks/python/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi) | `qnsi-python` |
-| Go | `github.com/heossihq/qnsi-public/sdks/go/qnsi` | 0.2.0 | [`sdks/go/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/go/qnsi) | `qnsi-go` |
-| Rust | [`qnsi`](https://crates.io/crates/qnsi) | 0.2.0 | [`sdks/rust/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/rust/qnsi) | `qnsi-rust` |
-| JVM / Android (Kotlin + Java) | [`io.heossi:qnsi`](https://central.sonatype.com/artifact/io.heossi/qnsi) | 0.1.0 | [`sdks/jvm/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/jvm) | `qnsi-jvm` |
+| TypeScript / Node.js | [`@heossihq/qnsi`](https://www.npmjs.com/package/@heossihq/qnsi) | 0.6.0 | [`packages/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/packages/qnsi) | `qnsi` |
+| Python | [`qnsi`](https://pypi.org/project/qnsi/) | 0.4.2 | [`sdks/python/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi) | `qnsi-python` |
+| Go | `github.com/heossihq/qnsi-public/sdks/go/qnsi` | latest module revision | [`sdks/go/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/go/qnsi) | `qnsi-go` |
+| Rust | [`qnsi`](https://crates.io/crates/qnsi) | 0.3.0 | [`sdks/rust/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/rust/qnsi) | `qnsi-rust` |
+| JVM / Android (Kotlin + Java) | [`com.heossi:qnsi`](https://central.sonatype.com/artifact/com.heossi/qnsi) | 0.4.0 | [`sdks/jvm/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/jvm) | `qnsi-jvm` |
 
-Each package exposes the same 11 service modules — vault, kms, audit, auth, tenant, access, billing, crypto-inventory, storage, search, ai — plus webhook signature verification and (where the language supports it) local PQC primitives via the language's liboqs binding.
+Each package exposes the same 11 service modules - vault, kms, audit, auth, tenant, access, billing, crypto-inventory, storage, search, ai - plus webhook signature verification and (where the language supports it) local PQC primitives via the language's liboqs binding.
 
 ## Deprecated TypeScript per-service packages
 
-These were the original split before consolidation. They remain installable for transitional purposes; new code should use `@heossi/qnsi` directly.
+These were the original split before consolidation. They remain installable for transitional purposes; new code should use `@heossihq/qnsi` directly.
 
 | Package | Last version | Status |
 |---------|---|---|
-| `@heossi/qnsi-auth-sdk` | 0.3.6 | Deprecated → `@heossi/qnsi.auth` |
-| `@heossi/qnsi-vault-sdk` | 0.3.9 | Deprecated → `@heossi/qnsi.vault` |
-| `@heossi/qnsi-kms-client` | 0.2.6 | Deprecated → `@heossi/qnsi.kms` |
-| `@heossi/qnsi-storage-sdk` | 0.3.6 | Deprecated → `@heossi/qnsi.storage` |
-| `@heossi/qnsi-audit-sdk` | 0.3.6 | Deprecated → `@heossi/qnsi.audit` |
-| `@heossi/qnsi-access-control-sdk` | 0.3.6 | Deprecated → `@heossi/qnsi.access` |
-| `@heossi/qnsi-billing-sdk` | 0.2.6 | Deprecated → `@heossi/qnsi.billing` |
-| `@heossi/qnsi-search-sdk` | 0.2.10 | Deprecated → `@heossi/qnsi.search` |
-| `@heossi/qnsi-tenant-sdk` | 0.3.6 | Deprecated → `@heossi/qnsi.tenant` |
-| `@heossi/qnsi-ai-sdk` | 0.1.11 | Deprecated → `@heossi/qnsi.ai` |
-| `@heossi/qnsi-crypto-inventory-sdk` | 0.3.6 | Deprecated → `@heossi/qnsi.cryptoInventory` |
-| `@heossi/qnsi-browser` | 0.1.4 | **Not deprecated** — browser-side PQC primitives, distinct purpose from `@heossi/qnsi` (which is Node.js-only) |
+| `@heossihq/qnsi-auth-sdk` | 0.3.6 | Deprecated → `@heossihq/qnsi.auth` |
+| `@heossihq/qnsi-vault-sdk` | 0.3.9 | Deprecated → `@heossihq/qnsi.vault` |
+| `@heossihq/qnsi-kms-client` | 0.2.6 | Deprecated → `@heossihq/qnsi.kms` |
+| `@heossihq/qnsi-storage-sdk` | 0.3.6 | Deprecated → `@heossihq/qnsi.storage` |
+| `@heossihq/qnsi-audit-sdk` | 0.3.6 | Deprecated → `@heossihq/qnsi.audit` |
+| `@heossihq/qnsi-access-control-sdk` | 0.3.6 | Deprecated → `@heossihq/qnsi.access` |
+| `@heossihq/qnsi-billing-sdk` | 0.2.6 | Deprecated → `@heossihq/qnsi.billing` |
+| `@heossihq/qnsi-search-sdk` | 0.2.10 | Deprecated → `@heossihq/qnsi.search` |
+| `@heossihq/qnsi-tenant-sdk` | 0.3.6 | Deprecated → `@heossihq/qnsi.tenant` |
+| `@heossihq/qnsi-ai-sdk` | 0.1.11 | Deprecated → `@heossihq/qnsi.ai` |
+| `@heossihq/qnsi-crypto-inventory-sdk` | 0.3.6 | Deprecated → `@heossihq/qnsi.cryptoInventory` |
 
 ## Developer tooling
 
-These packages are part of the public integration surface, but they are not the per-service SDK clients listed above:
+The published npm integration tooling is:
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| `@heossi/qnsi-cli` | 0.1.12 | Command-line automation and CI/CD workflows |
-| `@heossi/qnsi-mcp` | 0.1.3 | Official MCP server for AI assistants using QNSI tools |
-| `@heossi/qnsi-sdk-activation` | 0.1.5 | Shared activation and entitlement bootstrap used by SDK packages |
-| `@heossi/qnsi-langchain-qnsp` | 0.1.7 | LangChain integration package |
-| `@heossi/qnsi-llamaindex-qnsp` | 0.2.5 | LlamaIndex integration package |
-| `@heossi/qnsi-autogen-qnsp` | 0.2.5 | AutoGen integration package |
+| `@heossihq/qnsi` | 0.6.0 | Unified Node.js SDK and `qnsi` CLI for automation, source scanning, and CI/CD |
+| `@heossihq/qnsi-mcp` | 0.2.0 | Official MCP server for AI assistants using QNSI tools |
+
+The TypeScript package also exports `@heossihq/qnsi/browser`, `@heossihq/qnsi/langchain`, `@heossihq/qnsi/llamaindex`, `@heossihq/qnsi/autogen`, `@heossihq/qnsi/activation`, and `@heossihq/qnsi/code-scan`. Install `@heossihq/qnsi` once, then import the required subpath; these are not separate packages.
 
 ## How SDKs fit into the migration journey
 
@@ -99,23 +94,19 @@ If workloads are still calling the old KMS, old secret store, or old certificate
 
 ## Individual SDK docs
 
-- [`@heossi/qnsi-auth-sdk`](./auth-sdk) — Risk-based auth, federated audit, WebAuthn
-- [`@heossi/qnsi-vault-sdk`](./vault-sdk) — Dynamic secrets, leakage detection, versioned secrets
-- [`@heossi/qnsi-storage-sdk`](./storage-sdk) — Data classification, retention, cross-region replication
-- [`@heossi/qnsi-kms-client`](./kms-client) — BYOHSM, key escrow, usage analytics
-- [`@heossi/qnsi-search-sdk`](./search-sdk) — Query analytics, synonym management, isolation
-- [`@heossi/qnsi-audit-sdk`](./audit-sdk) — Real-time streaming, retention automation
-- [`@heossi/qnsi-access-control-sdk`](./access-control-sdk) — Policy simulation, JIT access
-- [`@heossi/qnsi-billing-sdk`](./billing-sdk) — Revenue analytics, dunning, credits
-- [`@heossi/qnsi-tenant-sdk`](./tenant-sdk) — Health dashboard, quota forecasting
-- [`@heossi/qnsi-ai-sdk`](./ai-sdk) — Model registry, bias monitoring, prompt injection
-- [`@heossi/qnsi-crypto-inventory-sdk`](./crypto-inventory-sdk) — Certificate lifecycle, PQC readiness
-- [`@heossi/qnsi-browser`](./browser-sdk) — Browser-side PQC operations
-- [`@heossi/qnsi-mcp`](./mcp-server) — MCP integration for AI assistants
-- [`@heossi/qnsi-langchain-qnsp`](./langchain-qnsp) — LangChain toolkit for vault, KMS, and audit
-- [`@heossi/qnsi-llamaindex-qnsp`](./llamaindex-qnsp) — LlamaIndex vector-store adapter for encrypted search
-- [`@heossi/qnsi-autogen-qnsp`](./autogen-qnsp) — AutoGen executor for QNSI AI orchestration
-- [`@heossi/qnsi-resilience`](./resilience) — Shared resilience primitives used by QNSI clients
+- [`@heossihq/qnsi-auth-sdk`](./auth-sdk) - Risk-based auth, federated audit, WebAuthn
+- [`@heossihq/qnsi-vault-sdk`](./vault-sdk) - Dynamic secrets, leakage detection, versioned secrets
+- [`@heossihq/qnsi-storage-sdk`](./storage-sdk) - Data classification, retention, cross-region replication
+- [`@heossihq/qnsi-kms-client`](./kms-client) - BYOHSM, key escrow, usage analytics
+- [`@heossihq/qnsi-search-sdk`](./search-sdk) - Query analytics, synonym management, isolation
+- [`@heossihq/qnsi-audit-sdk`](./audit-sdk) - Real-time streaming, retention automation
+- [`@heossihq/qnsi-access-control-sdk`](./access-control-sdk) - Policy simulation, JIT access
+- [`@heossihq/qnsi-billing-sdk`](./billing-sdk) - Revenue analytics, dunning, credits
+- [`@heossihq/qnsi-tenant-sdk`](./tenant-sdk) - Health dashboard, quota forecasting
+- [`@heossihq/qnsi-ai-sdk`](./ai-sdk) - Model registry, bias monitoring, prompt injection
+- [`@heossihq/qnsi-crypto-inventory-sdk`](./crypto-inventory-sdk) - Certificate lifecycle, PQC readiness
+- [`@heossihq/qnsi-mcp`](./mcp-server) - MCP integration for AI assistants
+- [`@heossihq/qnsi-resilience`](./resilience) - Shared resilience primitives used by QNSI clients
 
 ## Requirements
 
@@ -136,7 +127,7 @@ SDKs provide type-safe interfaces and consistent error handling. All SDKs includ
 
 ### Node.js
 ```bash
-pnpm add @heossi/qnsi
+pnpm add @heossihq/qnsi
 ```
 
 ### Python
@@ -158,14 +149,14 @@ cargo add qnsi --features crypto   # with local PQC primitives via oqs 0.11
 
 ### JVM / Android
 ```kotlin
-// Gradle (Kotlin DSL) — JVM (Spring/Java/Kotlin) + Android (API 21+)
-implementation("io.heossi:qnsi:0.1.0")
+// Gradle (Kotlin DSL) - JVM (Spring/Java/Kotlin) + Android (API 21+)
+implementation("com.heossi:qnsi:0.4.0")
 ```
 
 ## Quick start
 
 ```typescript
-import { QnsiClient } from "@heossi/qnsi";
+import { QnsiClient } from "@heossihq/qnsi";
 
 const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
@@ -276,7 +267,7 @@ All SDKs now support tenant crypto policy integration. This allows services to:
 All SDKs export the NIST name mapping covering 13 PQC families: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```typescript
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-tenant-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 
 // Convert internal name to NIST name
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"
@@ -323,34 +314,34 @@ See the [Tenant Crypto Policy Guide](/architecture/tenant-crypto-policy) for det
 
 ### Authentication & Access
 
-- **Risk-Based Auth** (`@heossi/qnsi-auth-sdk`): Adaptive MFA based on behavioral analytics, device fingerprinting, and geolocation
-- **Federated Audit** (`@heossi/qnsi-auth-sdk`): Cross-IdP session correlation and unified audit trails
-- **JIT Access** (`@heossi/qnsi-access-control-sdk`): Time-bound privilege elevation with automatic revocation
-- **Policy Simulation** (`@heossi/qnsi-access-control-sdk`): Test policy changes against historical patterns
+- **Risk-Based Auth** (`@heossihq/qnsi-auth-sdk`): Adaptive MFA based on behavioral analytics, device fingerprinting, and geolocation
+- **Federated Audit** (`@heossihq/qnsi-auth-sdk`): Cross-IdP session correlation and unified audit trails
+- **JIT Access** (`@heossihq/qnsi-access-control-sdk`): Time-bound privilege elevation with automatic revocation
+- **Policy Simulation** (`@heossihq/qnsi-access-control-sdk`): Test policy changes against historical patterns
 
 ### Key & Secret Management
 
-- **BYOHSM** (`@heossi/qnsi-kms-client`): Connect external HSMs via PKCS#11
-- **Key Escrow** (`@heossi/qnsi-kms-client`): M-of-N threshold recovery schemes
-- **Dynamic Secrets** (`@heossi/qnsi-vault-sdk`): On-demand credential generation
-- **Leakage Detection** (`@heossi/qnsi-vault-sdk`): Real-time scanning for exposed secrets
+- **BYOHSM** (`@heossihq/qnsi-kms-client`): Connect external HSMs via PKCS#11
+- **Key Escrow** (`@heossihq/qnsi-kms-client`): M-of-N threshold recovery schemes
+- **Dynamic Secrets** (`@heossihq/qnsi-vault-sdk`): On-demand credential generation
+- **Leakage Detection** (`@heossihq/qnsi-vault-sdk`): Real-time scanning for exposed secrets
 
 ### AI & ML Operations
 
-- **Model Registry** (`@heossi/qnsi-ai-sdk`): Versioned model catalog with deployment tracking
-- **Bias Monitoring** (`@heossi/qnsi-ai-sdk`): Fairness metrics and incident reporting
-- **Cost Optimization** (`@heossi/qnsi-ai-sdk`): Token usage analytics and budget alerts
-- **Prompt Injection** (`@heossi/qnsi-ai-sdk`): Real-time attack detection and blocking
+- **Model Registry** (`@heossihq/qnsi-ai-sdk`): Versioned model catalog with deployment tracking
+- **Bias Monitoring** (`@heossihq/qnsi-ai-sdk`): Fairness metrics and incident reporting
+- **Cost Optimization** (`@heossihq/qnsi-ai-sdk`): Token usage analytics and budget alerts
+- **Prompt Injection** (`@heossihq/qnsi-ai-sdk`): Real-time attack detection and blocking
 
 ### AI Tooling & Automation
 
-- **MCP Server** (`@heossi/qnsi-mcp`): Expose tenant-scoped QNSI tools to AI assistants
-- **CLI Automation** (`@heossi/qnsi-cli`): Script CI/CD workflows and operational tasks
-- **Framework Integrations** (`@heossi/qnsi-langchain-qnsp`, `@heossi/qnsi-llamaindex-qnsp`, `@heossi/qnsi-autogen-qnsp`): Connect QNSI services into agent frameworks
+- **MCP Server** (`@heossihq/qnsi-mcp`): Expose tenant-scoped QNSI tools to AI assistants
+- **CLI Automation** (`@heossihq/qnsi`): Script CI/CD workflows, scan source code, and perform operational tasks with the bundled `qnsi` binary
+- **Framework Integrations**: Connect through the MCP server or the unified language SDK for agent-framework workflows
 
 ### Billing & Tenant Management
 
-- **Revenue Analytics** (`@heossi/qnsi-billing-sdk`): Real-time dashboards by tenant/product
-- **Usage Forecasting** (`@heossi/qnsi-billing-sdk`): ML-powered consumption predictions
-- **Health Dashboard** (`@heossi/qnsi-tenant-sdk`): Consolidated tenant health metrics
-- **Isolation Audit** (`@heossi/qnsi-tenant-sdk`): Continuous verification of data isolation
+- **Revenue Analytics** (`@heossihq/qnsi-billing-sdk`): Real-time dashboards by tenant/product
+- **Usage Forecasting** (`@heossihq/qnsi-billing-sdk`): ML-powered consumption predictions
+- **Health Dashboard** (`@heossihq/qnsi-tenant-sdk`): Consolidated tenant health metrics
+- **Isolation Audit** (`@heossihq/qnsi-tenant-sdk`): Continuous verification of data isolation

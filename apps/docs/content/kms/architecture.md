@@ -1,13 +1,13 @@
 ---
 title: KMS Architecture
 version: 0.0.1
-last_updated: 2026-04-23
+last_updated: 2026-07-20
 description: QNSI KMS architecture for centralized cryptographic key operations, covering service configuration, HSM and PKCS#11 integration, caching, and FIPS mode.
 copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/kms-service/src/config/env.ts
-  - /apps/kms-service/src/server.ts
+  - /apps/kms-service/src/index.ts
 ---
 
 # KMS Architecture
@@ -77,7 +77,7 @@ Client → Edge Gateway (8107) → KMS Service (8095) → HSM (PKCS#11)
 | Revoke | `DELETE /kms/v1/keys/:keyId` | Mark key unusable (revocation, not cryptographic shredding) | No |
 
 Data encryption/decryption is performed by the consuming service using keys obtained
-via Wrap/Unwrap (envelope encryption) — the KMS API does not expose direct
+via Wrap/Unwrap (envelope encryption) - the KMS API does not expose direct
 encrypt/decrypt endpoints.
 
 ## Caching

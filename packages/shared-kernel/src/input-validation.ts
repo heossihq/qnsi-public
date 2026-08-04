@@ -47,28 +47,28 @@ export function secureString(opts?: {
 }
 
 /**
- * Secure UUID schema — validates RFC 4122 UUID format.
+ * Secure UUID schema - validates RFC 4122 UUID format.
  */
 export function secureUuid(): z.ZodString {
 	return z.string().regex(VALIDATION_LIMITS.UUID_PATTERN, "Must be a valid UUID");
 }
 
 /**
- * Secure tenant ID schema — same format as UUID.
+ * Secure tenant ID schema - same format as UUID.
  */
 export function secureTenantId(): z.ZodString {
 	return z.string().regex(VALIDATION_LIMITS.TENANT_ID_PATTERN, "Must be a valid tenant ID (UUID)");
 }
 
 /**
- * Secure email schema — enforces RFC 5321 max length and basic format.
+ * Secure email schema - enforces RFC 5321 max length and basic format.
  */
 export function secureEmail(): z.ZodString {
 	return z.string().email().max(VALIDATION_LIMITS.EMAIL_MAX_LENGTH);
 }
 
 /**
- * Secure key ID schema — alphanumeric with hyphens/underscores, max 128 chars.
+ * Secure key ID schema - alphanumeric with hyphens/underscores, max 128 chars.
  */
 export function secureKeyId(): z.ZodString {
 	return z.string().regex(VALIDATION_LIMITS.KEY_ID_PATTERN, "Must be a valid key ID");

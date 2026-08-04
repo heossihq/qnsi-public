@@ -1,0 +1,51 @@
+{
+	"name": "@heossihq/product-facts-schema",
+	"version": "0.1.0",
+	"description": "Shared HEOSSI protocol for canonicalizing, dual-signing, and verifying product facts.",
+	"type": "module",
+	"license": "Apache-2.0",
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"engines": {
+		"node": ">=24.0.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/heossihq/qnsi-public",
+		"directory": "packages/product-facts-schema"
+	},
+	"homepage": "https://www.heossi.com",
+	"keywords": [
+		"product-facts",
+		"llms-txt",
+		"ml-dsa",
+		"ed25519",
+		"post-quantum",
+		"digital-signature"
+	],
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"lint": "biome check .",
+		"test": "vitest run",
+		"typecheck": "tsc --project tsconfig.json --noEmit"
+	},
+	"devDependencies": {
+		"@types/node": "^25.5.2",
+		"typescript": "^6.0.2",
+		"vitest": "4.1.2"
+	}
+}

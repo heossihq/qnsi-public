@@ -46,7 +46,7 @@ func (f *fakeBackend) handler() http.Handler {
 		})
 	})
 	// Service traffic is served under the edge gateway's /proxy/<svc> prefix (bare /<svc>
-	// paths 404 in production — that was the 0.3.0 routing bug these guards now pin).
+	// paths 404 in production - that was the 0.3.0 routing bug these guards now pin).
 	mux.HandleFunc("/proxy/vault/", func(w http.ResponseWriter, r *http.Request) {
 		if f.vault != nil {
 			f.vault(w, r)
@@ -150,7 +150,7 @@ func TestKMS_CreateSignVerify(t *testing.T) {
 		switch {
 		case r.Method == http.MethodPost && r.URL.Path == "/proxy/kms/v1/keys":
 			// Guard: createKey sends keyType "data" (+ a generated keyId, not pinned) and the
-			// injected tenantId — not the old {algorithm, purpose}.
+			// injected tenantId - not the old {algorithm, purpose}.
 			wantFields(t, r, map[string]string{"keyType": "data", "tenantId": "tenant-test"})
 			_ = json.NewEncoder(w).Encode(map[string]any{"keyId": "key-1", "algorithm": "ml-dsa-65"})
 		case r.Method == http.MethodPost && r.URL.Path == "/proxy/kms/v1/keys/key-1/sign":

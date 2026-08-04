@@ -4,14 +4,14 @@ import { bridgeQnsiEnv } from "../internal/env-aliases.js";
 bridgeQnsiEnv();
 
 /**
- * `@heossi/qnsi/llamaindex` — LlamaIndex adapters for QNSP.
+ * `@heossihq/qnsi/llamaindex` - LlamaIndex adapters for QNSP.
  *
  * PQC-encrypted vector store backed by QNSP search-service (SSE-X). Folded in
- * from the former standalone `@heossi/qnsi-llamaindex-qnsp` (2026-05-16).
+ * from the former standalone `@heossihq/qnsi-llamaindex-qnsp` (2026-05-16).
  *
  * @example
  * ```typescript
- * import { QnsiVectorStore } from "@heossi/qnsi/llamaindex";
+ * import { QnsiVectorStore } from "@heossihq/qnsi/llamaindex";
  *
  * const store = new QnsiVectorStore({ apiKey: process.env.QNSI_API_KEY });
  * ```

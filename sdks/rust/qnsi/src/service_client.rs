@@ -38,7 +38,7 @@ impl ServiceClient {
         query: Option<&[(&str, String)]>,
         idempotency_key: Option<&str>,
     ) -> Result<Value, Error> {
-        // Lazy activation — first call exercises the handshake. The resolved
+        // Lazy activation - first call exercises the handshake. The resolved
         // tenantId is injected into object bodies below.
         let tenant_id = self.activation.get().await?.tenant_id;
 

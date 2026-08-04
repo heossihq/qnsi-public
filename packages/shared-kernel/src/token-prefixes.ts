@@ -1,11 +1,11 @@
 /**
- * Opaque-token prefix classification — single source of truth for every
+ * Opaque-token prefix classification - single source of truth for every
  * service that routes a bearer token by its prefix (auth-service verify,
  * edge-gateway enforcement/proxy).
  *
  * QNSI full-rename Phase A2 (docs/operations/QNSI_FULL_RENAME_RUNBOOK.md):
  * `qnsi_pqc_*` is the canonical prefix family; `qnsp_pqc_*` and the legacy
- * `qnsp_pat_`/`qnsp_api_` families remain accepted FOREVER — issued keys are
+ * `qnsp_pat_`/`qnsp_api_` families remain accepted FOREVER - issued keys are
  * long-lived credentials and must never stop verifying because of a rename.
  * Verification itself is hash-of-full-token; the prefix only routes type.
  */

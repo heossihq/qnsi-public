@@ -1,7 +1,7 @@
 ---
 title: Python SDK
-version: 0.2.0
-last_updated: 2026-04-30
+version: 0.4.2
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 ---
 # Python SDK
@@ -37,19 +37,19 @@ import os, base64
 from qnsi import QnsiClient
 
 with QnsiClient(api_key=os.environ["QNSI_API_KEY"]) as qnsi:
-    # Vault — PQC-encrypted secret storage
+    # Vault - PQC-encrypted secret storage
     secret = qnsi.vault.create_secret(
         name="openai-api-key",
         payload_b64=base64.b64encode(b"sk-...").decode(),
         algorithm="ml-kem-768",
     )
 
-    # KMS — server-side PQC keys
+    # KMS - server-side PQC keys
     key = qnsi.kms.create_key(algorithm="ml-dsa-65", purpose="signing")
     sig = qnsi.kms.sign(key["keyId"], data=b"hello")
     assert qnsi.kms.verify(key["keyId"], data=b"hello", signature=sig)
 
-    # Audit — immutable, hash-chained event log
+    # Audit - immutable, hash-chained event log
     qnsi.audit.log_event(
         event_type="model.inference",
         payload={"modelId": "gpt-4o", "latencyMs": 412},
@@ -92,21 +92,12 @@ qnsi.has_feature("sseEnabled")
 
 ## What's covered today
 
-- `qnsi.crypto` — ML-KEM, ML-DSA, SLH-DSA, Falcon (full liboqs 0.12.0 surface) — see [`src/qnsi/crypto/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi/src/qnsi/crypto)
-- `qnsi.vault` — [`src/qnsi/vault.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/vault.py)
-- `qnsi.kms` — [`src/qnsi/kms.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/kms.py)
-- `qnsi.audit` — [`src/qnsi/audit.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/audit.py)
+- `qnsi.crypto` - ML-KEM, ML-DSA, SLH-DSA, Falcon (full liboqs 0.12.0 surface) - see [`src/qnsi/crypto/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi/src/qnsi/crypto)
+- `qnsi.vault` - [`src/qnsi/vault.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/vault.py)
+- `qnsi.kms` - [`src/qnsi/kms.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/kms.py)
+- `qnsi.audit` - [`src/qnsi/audit.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/audit.py)
 - Webhook verify + parse, API-key activation with caching and 401 retry
 
-## What's coming in v0.3.0
-
-To match the Go and Rust v0.1.0 surface, the Python package will gain:
-
-- `qnsi.tenant` — tenant CRUD and crypto-policy management
-- `qnsi.access` — RBAC roles and permissions
-- `qnsi.billing` — entitlements, usage meters, invoices
-- `qnsi.crypto_inventory` — CBOM
-- `qnsi.storage` — PQC-encrypted object storage (SSE-X)
-- `qnsi.search` — encrypted vector search
-
-In the meantime, you can call those services directly via `httpx` against `https://api.qnsi.heossi.com/proxy/<service>/...` using the same auth header the SDK uses (`authorization: Bearer <api_key>`).
+The current package also includes `qnsi.tenant`, `qnsi.access`, `qnsi.billing`,
+`qnsi.crypto_inventory`, `qnsi.storage`, `qnsi.search`, and `qnsi.ai`. Use the SDK
+overview's registry-verified version table when pinning a release.

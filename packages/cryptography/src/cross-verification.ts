@@ -320,7 +320,7 @@ export class CrossVerificationService {
 				algorithm: algorithm as PqcAlgorithm,
 				operation,
 			}),
-			error: `Algorithm '${algorithm}' is not supported by ${this.secondaryName} — cross-verification not possible`,
+			error: `Algorithm '${algorithm}' is not supported by ${this.secondaryName} - cross-verification not possible`,
 		};
 	}
 }

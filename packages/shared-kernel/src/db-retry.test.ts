@@ -22,11 +22,22 @@ vi.mock("pg", () => {
 	class Pool {
 		readonly connect: ReturnType<typeof vi.fn>;
 		readonly end: ReturnType<typeof vi.fn>;
+		/**
+		 * The real pg.Pool is an EventEmitter. This mock had no `on`, so it was LESS capable
+		 * than the thing it stands for - and the moment createDatabasePoolWithRetry started
+		 * attaching the client-error guard (`pool.on("connect", …)`, the fix for the
+		 * 2026-07-14 kms-service crash), the test failed with "pool.on is not a function".
+		 *
+		 * A double that cannot do what the real object does will eventually mislead. It now
+		 * records handlers, so the guard is exercised rather than merely tolerated.
+		 */
+		readonly on: ReturnType<typeof vi.fn>;
 		totalCount: number;
 
 		constructor() {
 			this.connect = vi.fn(async () => pgState.client);
 			this.end = vi.fn(async () => undefined);
+			this.on = vi.fn(() => this);
 			this.totalCount = 0;
 			pgState.instances.push(this);
 		}

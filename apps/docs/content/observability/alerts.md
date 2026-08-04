@@ -8,7 +8,7 @@ copyright: © 2025 HEOSSI. All rights reserved.
 
 Configure alerts for QNSI platform events.
 
-> **Scope:** The YAML fragments below are **illustrative** patterns. They are not a guarantee that each rule is deployed in production. For cloud-portal bootstrap outages (`/api/session/bootstrap` 503), see `docs/operations/portal-bootstrap-observability.md` in the monorepo — **ai-orchestrator** auto-remediation and optional `ALERT_WEBHOOK_URL` are **not** wired to that path unless you add explicit alarms or integrations.
+> **Scope:** The YAML fragments below are **illustrative** patterns. They are not a guarantee that each rule is deployed in production. For cloud-portal bootstrap outages (`/api/session/bootstrap` 503), see `docs/operations/portal-bootstrap-observability.md` in the monorepo - **ai-orchestrator** auto-remediation and optional `ALERT_WEBHOOK_URL` are **not** wired to that path unless you add explicit alarms or integrations.
 
 ## Alert types
 

@@ -6,9 +6,9 @@ description: Configure QNSI CLI authentication with service account credentials,
 copyright: © 2025 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
-  - /packages/cli/src/commands/auth.ts
-  - /packages/cli/src/utils/auth.ts
-  - /packages/cli/src/config.ts
+  - /packages/qnsi/src/cli/commands/auth.ts
+  - /packages/qnsi/src/cli/utils/auth.ts
+  - /packages/qnsi/src/cli/config.ts
 ---
 # CLI Authentication
 
@@ -16,13 +16,13 @@ Configure authentication for the QNSI CLI.
 
 ## Service Token Authentication
 
-From `packages/cli/src/commands/auth.ts`, the CLI uses service account authentication:
+From `packages/qnsi/src/cli/commands/auth.ts`, the CLI uses service account authentication:
 
 ```bash
 qnsi auth token --service-id <id> --service-secret <secret>
 ```
 
-**Implementation**: The CLI requests a service token from auth-service via `POST /auth/service-token` (see `packages/cli/src/utils/auth.ts`).
+**Implementation**: The CLI requests a service token from auth-service via `POST /auth/service-token` (see `packages/qnsi/src/cli/utils/auth.ts`).
 
 The request uses:
 - `Authorization: Bearer <serviceSecret>`
@@ -32,7 +32,7 @@ Tokens are cached per `serviceId` to avoid re-requesting on every command.
 
 ## Configuration
 
-From `packages/cli/src/config.ts`, configuration is loaded from environment variables:
+From `packages/qnsi/src/cli/config.ts`, configuration is loaded from environment variables:
 
 If you set `QNSI_EDGE_GATEWAY_URL`, the CLI will default to routing service requests through:
 ```
@@ -46,7 +46,7 @@ Examples:
 
 ## Environment Variables
 
-From `packages/cli/src/config.ts`:
+From `packages/qnsi/src/cli/config.ts`:
 
 | Variable | Description | Default |
 |----------|-------------|----------|

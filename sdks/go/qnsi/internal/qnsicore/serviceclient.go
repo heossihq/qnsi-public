@@ -92,8 +92,8 @@ func (c *ServiceClient) Do(ctx context.Context, method, path string, body any, q
 
 // SessionDo executes a request authenticated by a user SESSION (a JWT obtained from auth login)
 // rather than the api-key, against an ABSOLUTE path (BaseURL + path, NOT the service PathPrefix).
-// Used by the auth client for /edge/auth/* (login/refresh — no bearer yet) and /auth/* (revoke /
-// mfa / risk — session bearer + the x-qnsp-tenant-id header). bearer/tenantID are omitted when "".
+// Used by the auth client for /edge/auth/* (login/refresh - no bearer yet) and /auth/* (revoke /
+// mfa / risk - session bearer + the x-qnsp-tenant-id header). bearer/tenantID are omitted when "".
 func (c *ServiceClient) SessionDo(ctx context.Context, method, path string, body any, query map[string]string, bearer, tenantID string) (map[string]any, error) {
 	target := c.Activator.BaseURL() + path
 	if len(query) > 0 {
@@ -171,8 +171,8 @@ func (c *ServiceClient) SessionDo(ctx context.Context, method, path string, body
 
 func (c *ServiceClient) send(ctx context.Context, method, path string, body any, query map[string]string, idempotencyKey, tenantID string) (*http.Response, error) {
 	target := c.Activator.BaseURL() + c.PathPrefix + path
-	// Backend read/write routes scope by tenantId — in the GET query and in write bodies. Inject
-	// the activated tenant centrally so every call carries it (mirrors @heossi/qnsp + the JVM
+	// Backend read/write routes scope by tenantId - in the GET query and in write bodies. Inject
+	// the activated tenant centrally so every call carries it (mirrors @heossihq/qnsp + the JVM
 	// SDK); caller-supplied values win. Without this, kms/vault list+create 400 "missing tenant".
 	q := url.Values{}
 	for k, v := range query {

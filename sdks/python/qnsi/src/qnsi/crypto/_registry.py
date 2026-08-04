@@ -1,10 +1,10 @@
-"""Algorithm name registry — display names ↔ liboqs identifiers.
+"""Algorithm name registry - display names ↔ liboqs identifiers.
 
 liboqs-python 0.12.0 accepts the FIPS-canonical names for the standardised
 schemes (`ML-KEM-768`, `ML-DSA-65`) and the legacy names from earlier liboqs
 versions (`Kyber768`, `Dilithium3`). Some round-2 SLH-DSA variants in 0.12.0
 still ship under their internal underscore-uppercase identifier
-(``SLH_DSA_PURE_SHA2_128F``) — this module hides that from callers so they
+(``SLH_DSA_PURE_SHA2_128F``) - this module hides that from callers so they
 can use ``"SLH-DSA-SHA2-128f"`` and the wrapper picks the correct internal
 name automatically.
 
@@ -16,12 +16,12 @@ from __future__ import annotations
 
 # Public name → list of liboqs candidate names (try in order, first match wins).
 KEM_ALGORITHMS: dict[str, tuple[str, ...]] = {
-    # FIPS 203 — ML-KEM
+    # FIPS 203 - ML-KEM
     "ML-KEM-512": ("ML-KEM-512", "Kyber512"),
     "ML-KEM-768": ("ML-KEM-768", "Kyber768"),
     "ML-KEM-1024": ("ML-KEM-1024", "Kyber1024"),
     # NIST round 4 + others (KEMs only)
-    # HQC omitted — disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+    # HQC omitted - disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
     "BIKE-L1": ("BIKE-L1",),
     "BIKE-L3": ("BIKE-L3",),
     "BIKE-L5": ("BIKE-L5",),
@@ -37,11 +37,11 @@ KEM_ALGORITHMS: dict[str, tuple[str, ...]] = {
 }
 
 SIGNATURE_ALGORITHMS: dict[str, tuple[str, ...]] = {
-    # FIPS 204 — ML-DSA
+    # FIPS 204 - ML-DSA
     "ML-DSA-44": ("ML-DSA-44", "Dilithium2"),
     "ML-DSA-65": ("ML-DSA-65", "Dilithium3"),
     "ML-DSA-87": ("ML-DSA-87", "Dilithium5"),
-    # FIPS 205 — SLH-DSA. liboqs 0.12.0 ships these under the underscore-
+    # FIPS 205 - SLH-DSA. liboqs 0.12.0 ships these under the underscore-
     # uppercase internal identifiers; some FIPS-canonical aliases work too.
     "SLH-DSA-SHA2-128f": (
         "SLH-DSA-SHA2-128f",

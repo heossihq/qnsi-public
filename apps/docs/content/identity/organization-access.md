@@ -1,13 +1,13 @@
 ---
 title: Organization Access (C2)
 version: 0.0.1
-last_updated: 2026-04-23
+last_updated: 2026-07-20
 copyright: © 2025 HEOSSI. All rights reserved.
 license: BSL-1.1
 source_files:
   - /apps/tenant-service/src/services/tenant-service.ts
   - /apps/tenant-service/src/routes/tenants.ts
-  - /apps/cloud/app/settings/settings-client.tsx
+  - /apps/cloud/app/(portal)/settings/settings-client.tsx
   - /apps/cloud/app/api/auth/join-request/route.ts
   - /apps/cloud/app/api/settings/tenant/join-requests/[requestId]/review/route.ts
   - /apps/auth-service/src/server.ts

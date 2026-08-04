@@ -1,7 +1,7 @@
 ---
 title: Rust SDK
-version: 0.1.0
-last_updated: 2026-04-30
+version: 0.3.0
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 ---
 # Rust SDK

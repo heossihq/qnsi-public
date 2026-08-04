@@ -1,8 +1,14 @@
 ---
 title: Air-Gapped Deployment
-version: 0.0.1
-last_updated: 2026-04-23
+version: 0.1.0
+description: Deploy QNSI in isolated networks and transfer signed discovery evidence from disconnected estates.
+last_updated: 2026-07-20
 copyright: © 2025 HEOSSI. All rights reserved.
+source_files:
+  - /apps/qnsp-agent/src/scan-checkpoint.ts
+  - /apps/qnsp-agent/src/offline-bundle.ts
+  - /apps/qnsp-agent/src/spool.ts
+  - /apps/crypto-inventory-service/src/routes/offline-agent-bundles.ts
 ---
 # Air-Gapped Deployment
 
@@ -10,7 +16,8 @@ Deploy QNSI in isolated networks without internet access.
 
 ## Overview
 
-Air-gapped deployment for:
+Air-gapped deployment is intended for:
+
 - Classified environments
 - Regulatory requirements
 - Maximum security
@@ -57,6 +64,29 @@ updates:
 telemetry:
   enabled: false
 ```
+
+## Offline discovery evidence transfer
+
+Restricted estates that prohibit outbound connectivity can run the host scan locally and move only signed findings across the boundary. Source files and the agent secret are never written into the transfer bundle.
+
+Register the agent through the tenant's Crypto Posture agent page, provision its one-time secret inside the restricted environment, and run:
+
+```bash
+qnsp-agent export /secure-transfer/qnsi-scan
+```
+
+The scanner checkpoints its deterministic filesystem cursor, resumes after interruption, and writes bounded `*.qnsi-scan.json` evidence bundles with restrictive filesystem permissions. Each bundle contains findings metadata, a SHA-256 payload digest, the tenant and agent identities, and an HMAC-SHA256 signature derived from the registered agent secret.
+
+On a connected transfer host, no agent secret is required. Set only the API endpoint and import either a bundle or the complete directory:
+
+```bash
+export QNSI_ENDPOINT=https://api.qnsi.heossi.com
+qnsp-agent import /secure-transfer/qnsi-scan
+```
+
+The service rejects tenant or agent mismatches, disabled or revoked agents, altered payloads, invalid signatures, and conflicting bundle-ID reuse. Accepted bundles are durably recorded with their payload hash, signature, source agent, linked report ID, bundle creation time, and import time before entering the same inventory discovery path as online agent evidence.
+
+This evidence-transfer workflow is not a substitute for the separately contracted air-gapped QNSI platform deployment bundle described above.
 
 ## Licensing
 

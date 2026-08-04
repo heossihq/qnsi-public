@@ -1,10 +1,10 @@
 /**
- * Integration tests for @heossi/qnsi-llamaindex-qnsp
+ * Integration tests for @heossihq/qnsi-llamaindex-qnsp
  *
  * These tests hit the real QNSP search-service API via edge gateway.
- * Requires QNSI_API_KEY env var — the API key resolves tenant, tier, and policy automatically.
+ * Requires QNSI_API_KEY env var - the API key resolves tenant, tier, and policy automatically.
  *
- * Run: QNSI_API_KEY=qnsp_... pnpm --filter @heossi/qnsi-llamaindex-qnsp test:integration
+ * Run: QNSI_API_KEY=qnsp_... pnpm --filter @heossihq/qnsi-llamaindex-qnsp test:integration
  */
 
 import { describe, expect, it } from "vitest";

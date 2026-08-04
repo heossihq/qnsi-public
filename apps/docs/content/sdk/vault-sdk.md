@@ -1,5 +1,5 @@
 ---
-title: Vault SDK (@heossi/qnsi-vault-sdk)
+title: Vault SDK (qnsi.vault)
 version: 0.3.1
 last_updated: 2026-04-23
 copyright: © 2025 HEOSSI. All rights reserved.
@@ -8,10 +8,10 @@ source_files:
   - /packages/vault-sdk/src/index.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-vault-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-vault-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.vault./* method */(...);
 > ```
@@ -19,7 +19,7 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Vault SDK (`@heossi/qnsi-vault-sdk`)
+# Vault SDK (`qnsi.vault`)
 
 TypeScript client for `vault-service`. All secrets are encrypted with tenant-specific PQC algorithms based on crypto policy.
 
@@ -28,13 +28,13 @@ TypeScript client for `vault-service`. All secrets are encrypted with tenant-spe
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-vault-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { VaultClient } from "@heossi/qnsi-vault-sdk";
+import { VaultClient } from "@heossihq/qnsi";
 
 const vault = new VaultClient({
 	baseUrl: "http://localhost:8090",
@@ -435,7 +435,7 @@ console.log(stats);
 The Vault SDK exports the NIST name mapping covering all PQC families supported by QNSI: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```ts
-import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossi/qnsi-vault-sdk";
+import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"
@@ -471,7 +471,7 @@ console.log(ALGORITHM_TO_NIST);
 The SDK validates tier access when configured:
 
 ```ts
-import { VaultClient, TierError } from "@heossi/qnsi-vault-sdk";
+import { VaultClient, TierError } from "@heossihq/qnsi";
 
 try {
 	const vault = new VaultClient({

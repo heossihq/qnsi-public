@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """PROVABLE end-to-end verification for the `qnsp` Python SDK against PRODUCTION.
 
-(.claude/rules/provable-evidence-mandate.md — the proof IS the deliverable.)
+(.claude/rules/provable-evidence-mandate.md - the proof IS the deliverable.)
 
 Runs the REAL developer journey with NO mocks, mirroring the npm harness
 (scripts/verify/sdk-qnsp-e2e.mjs):
@@ -43,17 +43,17 @@ _failed = 0
 def ok(name: str, detail: str = "") -> None:
     global _passed
     _passed += 1
-    print(f"  PASS  {name}" + (f" — {detail}" if detail else ""))
+    print(f"  PASS  {name}" + (f" - {detail}" if detail else ""))
 
 
 def bad(name: str, detail: str = "") -> None:
     global _failed
     _failed += 1
-    print(f"  FAIL  {name}" + (f" — {detail}" if detail else ""))
+    print(f"  FAIL  {name}" + (f" - {detail}" if detail else ""))
 
 
 def main() -> int:
-    print(f"\nQNSP Python SDK e2e verification (PRODUCTION) — {API}\n")
+    print(f"\nQNSP Python SDK e2e verification (PRODUCTION) - {API}\n")
     rand = secrets.token_hex(4)
     email = f"qnsp-py-e2e-{rand}@example.com"
     password = "E2eTestPass123!"

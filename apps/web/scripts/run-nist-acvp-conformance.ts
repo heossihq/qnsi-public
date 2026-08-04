@@ -1,5 +1,5 @@
 /**
- * NIST ACVP conformance runner — validates QNSI's PQC implementations
+ * NIST ACVP conformance runner - validates QNSI's PQC implementations
  * against the OFFICIAL NIST ACVP test vectors for FIPS 203 (ML-KEM),
  * FIPS 204 (ML-DSA), and FIPS 205 (SLH-DSA).
  *
@@ -7,9 +7,9 @@
  * canonical usnistgov/ACVP-Server gen-val/json-files directory tree.
  * Each algorithm-operation has three files (gzipped JSON):
  *
- *   prompt.json.gz           — test inputs (seeds, messages, sigs)
- *   expectedResults.json.gz  — what the implementation must return
- *   internalProjection.json.gz — full internal state for diagnostics
+ *   prompt.json.gz           - test inputs (seeds, messages, sigs)
+ *   expectedResults.json.gz  - what the implementation must return
+ *   internalProjection.json.gz - full internal state for diagnostics
  *
  * Output: a tamper-evident evidence file committed to
  * apps/web/public/pqc-evidence/acvp-latest.json with per-algorithm
@@ -33,7 +33,7 @@
  *     acvp-vectors) of the NIST canonical repo. The mirror's commit
  *     SHA is recorded in the evidence file so an auditor can verify
  *     the same JSON we ran against.
- *   - SLH-DSA keyGen FULL mode is fast — under 60 s for all 12
+ *   - SLH-DSA keyGen FULL mode is fast - under 60 s for all 12
  *     parameter sets × 10 tests each on a modern laptop. ACVP_FAST=1
  *     remains available as a smoke-test toggle (1 tcId per group) for
  *     CI pull-request runs, but the default ships FULL coverage.
@@ -49,10 +49,10 @@ import { gunzipSync } from "node:zlib";
 import { ml_dsa44, ml_dsa65, ml_dsa87 } from "@noble/post-quantum/ml-dsa.js";
 import { ml_kem512, ml_kem768, ml_kem1024 } from "@noble/post-quantum/ml-kem.js";
 
-// @heossi/liboqs-native is a CJS native addon (export = liboqs). Use
+// @heossihq/liboqs-native is a CJS native addon (export = liboqs). Use
 // createRequire to get the shape unambiguously even though this file is ESM.
 const requireFromHere = createRequire(import.meta.url);
-const liboqs = requireFromHere("@heossi/liboqs-native") as {
+const liboqs = requireFromHere("@heossihq/liboqs-native") as {
 	KEM: new (
 		algorithm: string,
 	) => {
@@ -99,7 +99,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = join(__dirname, "..");
 
 const ACVP_VECTORS_REPO = "paulmillr/acvp-vectors";
-// Pin to a known commit — bump intentionally when re-running with a
+// Pin to a known commit - bump intentionally when re-running with a
 // newer NIST vector snapshot. Recorded in the evidence file so an
 // auditor can verify the same bytes we tested against.
 const ACVP_VECTORS_REF = "main";
@@ -114,10 +114,10 @@ const POST_TO_AUDIT =
 	process.env["POST_TO_AUDIT"] === "1" || process.env["POST_TO_AUDIT"] === "true";
 /**
  * ACVP_PROVIDERS controls which crypto-provider implementations to run
- * against the NIST vectors. Default is "noble,liboqs" — runs both because:
+ * against the NIST vectors. Default is "noble,liboqs" - runs both because:
  *   • noble (@noble/post-quantum) is the reference/cross-verification provider
  *     used in browsers + secondary in KMS/audit-service.
- *   • liboqs (@heossi/liboqs-native, the C native binding) is the PRIMARY
+ *   • liboqs (@heossihq/liboqs-native, the C native binding) is the PRIMARY
  *     production provider for every QNSI backend service.
  * Acceptable values: "noble", "liboqs", "noble,liboqs", "both".
  */
@@ -227,10 +227,10 @@ interface VectorGroup {
 	readonly testType?: string;
 	/**
 	 * For ML-KEM-encapDecap groups: distinguishes between
-	 *   "encapsulation"          — AFT groups (ek + m → c + k)
-	 *   "decapsulation"          — VAL groups (c + dk → k)
-	 *   "encapsulationKeyCheck"  — VAL groups (ek only, FIPS 203 §7.2 modulus + length check)
-	 *   "decapsulationKeyCheck"  — VAL groups (dk only, FIPS 203 §7.3 hash + length check)
+	 *   "encapsulation"          - AFT groups (ek + m → c + k)
+	 *   "decapsulation"          - VAL groups (c + dk → k)
+	 *   "encapsulationKeyCheck"  - VAL groups (ek only, FIPS 203 §7.2 modulus + length check)
+	 *   "decapsulationKeyCheck"  - VAL groups (dk only, FIPS 203 §7.3 hash + length check)
 	 */
 	readonly function?: string;
 	readonly tests: VectorTest[];
@@ -444,7 +444,7 @@ function runMlKemEncapDecap(prompt: VectorFile, expected: VectorFile): PerOperat
 					gPassed++;
 				} else if (fn === "encapsulationKeyCheck") {
 					// FIPS 203 §7.2 modulus + length check. We probe by attempting
-					// encapsulate(ek, dummyM) — noble validates ek length + per-coefficient
+					// encapsulate(ek, dummyM) - noble validates ek length + per-coefficient
 					// modulus < q (3329) and throws "wrong publicKey modulus" or length
 					// error on malformed keys.
 					if (!pt.ek || typeof et.testPassed !== "boolean") {
@@ -470,7 +470,7 @@ function runMlKemEncapDecap(prompt: VectorFile, expected: VectorFile): PerOperat
 					gPassed++;
 				} else if (fn === "decapsulationKeyCheck") {
 					// FIPS 203 §7.3 length + embedded H(ek) hash check. We probe by
-					// attempting decapsulate(zero_ct_of_correct_length, dk) — noble
+					// attempting decapsulate(zero_ct_of_correct_length, dk) - noble
 					// validates dk length and the embedded H(ek) hash before any
 					// decapsulation work, throwing "invalid secretKey: hash check failed"
 					// or a length error on malformed keys. A valid dk returns the
@@ -719,23 +719,23 @@ function runSlhDsaKeyGen(prompt: VectorFile, expected: VectorFile): PerOperation
 }
 
 // ─────────────────────────────────────────────────────────────────────
-//             liboqs provider — production-engine adapter
+//             liboqs provider - production-engine adapter
 // ─────────────────────────────────────────────────────────────────────
 
 /**
  * Wraps a liboqs `KEM` so it exposes the same surface as our noble-backed
  * `MlKemImpl`. The two seed-controlled operations (`keygen(seed)`,
- * `encapsulate(pk, m)`) throw a sentinel error because the @heossi/
+ * `encapsulate(pk, m)`) throw a sentinel error because the @heossihq/
  * liboqs-native Node addon does not yet bind `OQS_KEM_keypair_derand` /
  * `OQS_KEM_encaps_derand`. The runner upgrades that sentinel to a
  * `skipped` row with an audit-trail reason. `decapsulate(ct, dk)` is the
- * deterministic operation we DO drive against liboqs — that's the path
+ * deterministic operation we DO drive against liboqs - that's the path
  * that backs production decap calls in vault-service, kms-service, etc.
  */
 /**
  * NIST ACVP keyGen tests for ML-DSA + SLH-DSA require a deterministic
  * keypair-from-seed API. liboqs 0.15.0 exposes OQS_KEM_keypair_derand for
- * KEMs but does NOT yet expose OQS_SIG_keypair_derand for signatures —
+ * KEMs but does NOT yet expose OQS_SIG_keypair_derand for signatures -
  * the C library lacks a seed-controlled keypair function for ML-DSA /
  * SLH-DSA. Upstream PR proposed against open-quantum-safe/liboqs to add
  * this; meanwhile signature-keyGen tests are deferred against liboqs.
@@ -751,7 +751,7 @@ function makeLiboqsMlKemImpl(algorithm: string): MlKemImpl {
 	return {
 		keygen(seed: Uint8Array): { publicKey: Uint8Array; secretKey: Uint8Array } {
 			// FIPS 203 keyGen uses a 64-byte seed (d || z). Caller passes the
-			// concatenated seed; @heossi/liboqs-native 0.15.1 binds
+			// concatenated seed; @heossihq/liboqs-native 0.15.1 binds
 			// OQS_KEM_keypair_derand directly.
 			const kem = newKem();
 			try {
@@ -1293,7 +1293,7 @@ async function main(): Promise<void> {
 	const runNoble = PROVIDERS.has("noble");
 	const runLiboqs = PROVIDERS.has("liboqs");
 
-	// Preload all required vectors once — both providers reuse the same JSON.
+	// Preload all required vectors once - both providers reuse the same JSON.
 	const mlKemKeyGenVec = wantsFips203 ? await loadAlgorithm("ML-KEM-keyGen-FIPS203") : null;
 	const mlKemEncapDecapVec = wantsFips203 ? await loadAlgorithm("ML-KEM-encapDecap-FIPS203") : null;
 	const mlDsaKeyGenVec = wantsFips204 ? await loadAlgorithm("ML-DSA-keyGen-FIPS204") : null;
@@ -1303,7 +1303,7 @@ async function main(): Promise<void> {
 	const nobleResults: PerOperationResult[] = [];
 	if (runNoble) {
 		console.log("══════════════════════════════════════════════════════════════");
-		console.log(" Provider: noble (@noble/post-quantum) — reference + cross-verify");
+		console.log(" Provider: noble (@noble/post-quantum) - reference + cross-verify");
 		console.log("══════════════════════════════════════════════════════════════");
 		if (mlKemKeyGenVec) {
 			console.log("─ FIPS 203 (ML-KEM) keyGen…");
@@ -1338,10 +1338,10 @@ async function main(): Promise<void> {
 	if (runLiboqs) {
 		console.log("");
 		console.log("══════════════════════════════════════════════════════════════");
-		console.log(" Provider: liboqs (@heossi/liboqs-native) — primary production engine");
+		console.log(" Provider: liboqs (@heossihq/liboqs-native) - primary production engine");
 		console.log("══════════════════════════════════════════════════════════════");
 		if (mlKemKeyGenVec) {
-			console.log("─ FIPS 203 (ML-KEM) keyGen — via OQS_KEM_keypair_derand…");
+			console.log("─ FIPS 203 (ML-KEM) keyGen - via OQS_KEM_keypair_derand…");
 			liboqsResults.push(
 				runMlKemKeyGen(mlKemKeyGenVec.prompt, mlKemKeyGenVec.expected, LIBOQS_ML_KEM_BY_PARAMSET),
 			);
@@ -1349,7 +1349,7 @@ async function main(): Promise<void> {
 			console.log(`   ${r?.passed}/${r?.totalTests} passed (${r?.durationMs}ms)`);
 		}
 		if (mlKemEncapDecapVec) {
-			console.log("─ FIPS 203 (ML-KEM) encapDecap — encapsulation AFT + decap + key-checks…");
+			console.log("─ FIPS 203 (ML-KEM) encapDecap - encapsulation AFT + decap + key-checks…");
 			liboqsResults.push(
 				runMlKemEncapDecapLiboqs(mlKemEncapDecapVec.prompt, mlKemEncapDecapVec.expected),
 			);
@@ -1359,14 +1359,14 @@ async function main(): Promise<void> {
 			);
 		}
 		if (mlDsaKeyGenVec) {
-			console.log("─ FIPS 204 (ML-DSA) keyGen — DEFERRED (OQS_SIG_keypair_derand absent upstream)");
+			console.log("─ FIPS 204 (ML-DSA) keyGen - DEFERRED (OQS_SIG_keypair_derand absent upstream)");
 			liboqsResults.push(
 				buildLiboqsSkippedOp("ML-DSA", "keyGen", "ML-DSA-keyGen-FIPS204", mlDsaKeyGenVec.prompt),
 			);
 		}
 		if (slhDsaKeyGenVec) {
 			console.log(
-				"─ FIPS 205 (SLH-DSA) keyGen — DEFERRED (OQS_SIG_keypair_derand absent upstream)",
+				"─ FIPS 205 (SLH-DSA) keyGen - DEFERRED (OQS_SIG_keypair_derand absent upstream)",
 			);
 			liboqsResults.push(
 				buildLiboqsSkippedOp("SLH-DSA", "keyGen", "SLH-DSA-keyGen-FIPS205", slhDsaKeyGenVec.prompt),
@@ -1383,7 +1383,7 @@ async function main(): Promise<void> {
 	// its `exports`, and under pnpm it is NOT hoisted to a repo-root node_modules
 	// (the previous fixed-path read threw ENOENT in CI). Resolve the installed
 	// package from a subpath it DOES export (already imported above) and read
-	// package.json beside it. Evidence metadata only — fall back to "unknown", never throw.
+	// package.json beside it. Evidence metadata only - fall back to "unknown", never throw.
 	const nobleVersionResolved = ((): string => {
 		try {
 			let dir = dirname(requireFromHere.resolve("@noble/post-quantum/ml-kem.js"));
@@ -1424,8 +1424,8 @@ async function main(): Promise<void> {
 		results: liboqsResults,
 		summary: summariseResults(liboqsResults),
 		scopeNotes: [
-			"@heossi/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
-			"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.15.0 upstream does NOT expose OQS_SIG_keypair_derand — the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
+			"@heossihq/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
+			"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.15.0 upstream does NOT expose OQS_SIG_keypair_derand - the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
 			"The liboqs C library's own ACVP test record is maintained upstream by the Open Quantum Safe project at github.com/open-quantum-safe/liboqs.",
 		],
 	};
@@ -1468,7 +1468,7 @@ async function main(): Promise<void> {
 	console.log("─ Summary (per provider)");
 	for (const [name, p] of [
 		["noble  (@noble/post-quantum, pure-JS, cross-verify)", nobleProvider],
-		["liboqs (@heossi/liboqs-native, native-C, production)", liboqsProvider],
+		["liboqs (@heossihq/liboqs-native, native-C, production)", liboqsProvider],
 	] as const) {
 		const s = p.summary;
 		console.log(`   ${name}`);

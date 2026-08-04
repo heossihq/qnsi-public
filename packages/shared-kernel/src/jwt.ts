@@ -1,8 +1,8 @@
-import type { PqcAlgorithm, PqcProvider } from "@heossi/qnsi-cryptography";
-import { listPqcProviders, resolvePqcProvider } from "@heossi/qnsi-cryptography";
+import type { PqcAlgorithm, PqcProvider } from "@heossihq/qnsi-cryptography";
+import { listPqcProviders, resolvePqcProvider } from "@heossihq/qnsi-cryptography";
 import { metrics } from "@opentelemetry/api";
 
-const meter = metrics.getMeter("@heossi/qnsi-shared-kernel");
+const meter = metrics.getMeter("@heossihq/qnsi-shared-kernel");
 const jwtVerificationsCounter = meter.createCounter("pqc_jwt_verifications_total", {
 	description: "Total PQC JWT verification attempts by algorithm and outcome",
 });

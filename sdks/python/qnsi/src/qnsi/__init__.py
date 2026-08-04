@@ -1,8 +1,8 @@
-"""QNSI — official Python SDK for the Quantum-Native Security Infrastructure.
+"""QNSI - official Python SDK for the Quantum-Native Security Infrastructure.
 
-Mirrors the surface of the ``@heossi/qnsi-*`` TypeScript SDK family for the Python
+Mirrors the surface of the ``@heossihq/qnsi-*`` TypeScript SDK family for the Python
 ecosystem. Same wire contracts, same algorithm names, same FIPS 203/204/205
-posture — pick whichever language fits your stack and the byte-for-byte
+posture - pick whichever language fits your stack and the byte-for-byte
 outputs round-trip.
 
 Quick start::
@@ -44,7 +44,7 @@ Webhook verification::
         secret=os.environ["QNSP_WEBHOOK_SECRET"],
     )
 
-Free signup at https://cloud.qnsi.heossi.com/auth — no credit card.
+Free signup at https://cloud.qnsi.heossi.com/auth - no credit card.
 """
 
 from qnsi._client import QnsiClient
@@ -72,7 +72,10 @@ from qnsi.webhooks import (
     verify_qnsi_webhook_signature,
 )
 
-__version__ = "0.4.0"
+# DERIVED, never hand-typed. This literal said "0.4.0" while pip installed 0.4.1 and the
+# activation handshake reported "0.3.0" - three versions in one package. See
+# _activation._package_version for the full story.
+from qnsi._activation import SDK_VERSION as __version__  # noqa: E402
 
 # --- Deprecated pre-rebrand aliases (product is QNSI; use the Qnsi* names) ---
 QnspClient = QnsiClient

@@ -1,4 +1,4 @@
-// Package access is the QNSP Access-Control client — RBAC: roles,
+// Package access is the QNSP Access-Control client - RBAC: roles,
 // permissions, role assignments.
 //
 // Wraps `apps/access-control-service` (see /proxy/access in production).

@@ -1,11 +1,11 @@
 ---
 title: Audit Trail
-description: Tamper-evident audit trail — event types, retention, streaming, compliance mapping, and forensics.
+description: Tamper-evident audit trail - event types, retention, streaming, compliance mapping, and forensics.
 ---
 
 # Audit Trail
 
-Tamper-evident audit trail — event types, retention, streaming, compliance mapping, and forensics.
+Tamper-evident audit trail - event types, retention, streaming, compliance mapping, and forensics.
 
 ## Pages
 

@@ -1,5 +1,5 @@
 ---
-title: Search SDK (@heossi/qnsi-search-sdk)
+title: Search SDK (qnsi.search)
 version: 0.2.10
 last_updated: 2026-04-30
 copyright: © 2025 HEOSSI. All rights reserved.
@@ -9,10 +9,10 @@ source_files:
   - /packages/search-sdk/src/types.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-search-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-search-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.search./* method */(...);
 > ```
@@ -20,20 +20,20 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Search SDK (`@heossi/qnsi-search-sdk`)
+# Search SDK (`qnsi.search`)
 
 The TypeScript client for `search-service`; equivalent shapes ship in Python, Go, Rust, and JVM/Android. Search indexes are encrypted with tenant-specific PQC algorithms based on crypto policy.
 
 ## Install
 
 ```bash
-pnpm install @heossi/qnsi-search-sdk
+pnpm install @heossihq/qnsi
 ```
 
 ## Create a client
 
 ```ts
-import { SearchClient } from "@heossi/qnsi-search-sdk";
+import { SearchClient } from "@heossihq/qnsi";
 
 const search = new SearchClient({
 	baseUrl: "http://localhost:8101",

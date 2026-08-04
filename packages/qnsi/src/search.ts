@@ -1,5 +1,5 @@
 /**
- * QNSP Search — encrypted vector search with SSE-X. Wraps
+ * QNSP Search - encrypted vector search with SSE-X. Wraps
  * `apps/search-service` (`/search/v1`).
  */
 

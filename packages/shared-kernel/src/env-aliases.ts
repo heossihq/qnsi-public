@@ -1,5 +1,5 @@
 /**
- * QNSI env-var bridge — Phase B of the full-rename migration
+ * QNSI env-var bridge - Phase B of the full-rename migration
  * (docs/operations/QNSI_FULL_RENAME_RUNBOOK.md).
  *
  * Services call this ONCE at the very top of src/config/env.ts, before the
@@ -7,9 +7,9 @@
  * vice-versa (never overwriting a value that is already set). Consequences:
  *
  *  - B1/B2: code keeps its existing `QNSP_*` schema keys while task defs /
- *    SST still inject `QNSP_*` — behavior is byte-identical.
+ *    SST still inject `QNSP_*` - behavior is byte-identical.
  *  - B3: task-def/SST injection flips to `QNSI_*` service-by-service with
- *    ZERO code risk — the bridge back-fills the `QNSP_*` names the schemas
+ *    ZERO code risk - the bridge back-fills the `QNSP_*` names the schemas
  *    still read.
  *  - Phase D: schema keys rename to `QNSI_*` cosmetically; the bridge then
  *    covers any straggling `QNSP_*` injection until it is retired.

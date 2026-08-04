@@ -1,12 +1,12 @@
-# qnsi — Python SDK for the Quantum-Native Security Infrastructure
+# qnsi - Python SDK for the Quantum-Native Security Infrastructure
 
 [![PyPI version](https://img.shields.io/pypi/v/qnsi.svg)](https://pypi.org/project/qnsi/)
 [![Python versions](https://img.shields.io/pypi/pyversions/qnsi.svg)](https://pypi.org/project/qnsi/)
 [![License](https://img.shields.io/pypi/l/qnsi.svg)](./LICENSE)
 
-Typed Python client for QNSI — post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS, immutable audit trails. Same wire contracts as the official `@heossi/qnsi-*` TypeScript SDKs — pick whichever language fits your stack and the byte-for-byte outputs round-trip.
+Typed Python client for QNSI - post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS, immutable audit trails. Same wire contracts as the official `@heossihq/qnsi-*` TypeScript SDKs - pick whichever language fits your stack and the byte-for-byte outputs round-trip.
 
-> **Free tier available.** Free-forever account at <https://cloud.qnsi.heossi.com/auth> — 60-second signup, no credit card. Includes 10 GB PQC storage, 50 000 API calls/month, 20 KMS keys, 25 vault secrets.
+> **Free tier available.** Free-forever account at <https://cloud.qnsi.heossi.com/auth> - 60-second signup, no credit card. Includes 10 GB PQC storage, 50 000 API calls/month, 20 KMS keys, 25 vault secrets.
 
 ## Installation
 
@@ -16,7 +16,7 @@ Base install (HTTP clients for vault, KMS, audit):
 pip install qnsi
 ```
 
-With local PQC primitives (`qnsi.crypto` — wraps `liboqs-python` 0.12.0):
+With local PQC primitives (`qnsi.crypto` - wraps `liboqs-python` 0.12.0):
 
 ```bash
 pip install 'qnsi[crypto]'
@@ -28,7 +28,7 @@ pip install 'qnsi[crypto]'
 | --- | --- |
 | macOS | `brew install liboqs` |
 | Debian/Ubuntu | `apt install liboqs-dev` |
-| From source | `cmake -DBUILD_SHARED_LIBS=ON ...` — see <https://github.com/open-quantum-safe/liboqs> |
+| From source | `cmake -DBUILD_SHARED_LIBS=ON ...` - see <https://github.com/open-quantum-safe/liboqs> |
 
 (A v0.3.x release will ship `cibuildwheel`-built wheels that bundle a self-contained liboqs binary, removing the system prerequisite.)
 
@@ -43,7 +43,7 @@ import base64
 from qnsi import QnsiClient
 
 with QnsiClient(api_key=os.environ["QNSI_API_KEY"]) as qnsi:
-    # ── Vault — PQC-encrypted secret storage ─────────────────────────
+    # ── Vault - PQC-encrypted secret storage ─────────────────────────
     secret = qnsi.vault.create_secret(
         name="openai-api-key",
         payload_b64=base64.b64encode(b"sk-...").decode(),
@@ -51,18 +51,18 @@ with QnsiClient(api_key=os.environ["QNSI_API_KEY"]) as qnsi:
     )
     fresh = qnsi.vault.get_secret(secret["id"])
 
-    # ── KMS — server-side PQC keys ──────────────────────────────────
+    # ── KMS - server-side PQC keys ──────────────────────────────────
     key = qnsi.kms.create_key(algorithm="ml-dsa-65", purpose="signing")
     signature = qnsi.kms.sign(key["keyId"], data=b"hello")
     assert qnsi.kms.verify(key["keyId"], data=b"hello", signature=signature)
 
-    # ── Audit — immutable, hash-chained event log ───────────────────
+    # ── Audit - immutable, hash-chained event log ───────────────────
     qnsi.audit.log_event(
         event_type="model.inference",
         payload={"modelId": "gpt-4o", "latencyMs": 412},
     )
 
-    # ── New in 0.3.0 — full parity with Go and Rust SDKs ────────────
+    # ── New in 0.3.0 - full parity with Go and Rust SDKs ────────────
     qnsi.tenant.get_tenant(qnsi.tenant_id)
     qnsi.access.check_permission(subject_id="user-1", permission="vault.read")
     qnsi.billing.get_entitlements()
@@ -93,7 +93,7 @@ sig_pk, sig_sk = sig.keygen()
 signature = sig.sign(b"hello", sig_sk)
 assert sig.verify(b"hello", signature, sig_pk)
 
-# Stateless hash-based signatures (FIPS 205) — conservative, no lattice assumption
+# Stateless hash-based signatures (FIPS 205) - conservative, no lattice assumption
 slh = SlhDsa("SLH-DSA-SHA2-128f")
 
 # Compact lattice signatures (NIST PQC selection)
@@ -167,31 +167,31 @@ qnsi.has_feature("sseEnabled")  # convenience boolean
 
 If the activation token is rotated server-side, the SDK invalidates its cache and retries the originating request once on a 401.
 
-## What's covered today (v0.3.0 — full parity with Go and Rust SDKs)
+## What's covered today (v0.3.0 - full parity with Go and Rust SDKs)
 
-Customer-facing service modules — every QNSI service callable through the edge gateway:
+Customer-facing service modules - every QNSI service callable through the edge gateway:
 
-- `qnsi.vault` — secrets management (create / get / get-version / rotate / delete / list-versions)
-- `qnsi.kms` — server-side PQC keys (create / list / get / rotate / delete / sign / verify / wrap / unwrap)
-- `qnsi.audit` — immutable hash-chained event log (log-event / ingest-events / list-events)
-- `qnsi.auth` — login, refresh, revoke, WebAuthn passkeys, MFA, SAML/OIDC federation, risk-based auth
-- `qnsi.tenant` — tenant CRUD, crypto-policy management, current-health, current-quotas
-- `qnsi.access` — RBAC roles, role assignments, `check_permission`
-- `qnsi.billing` — entitlements, usage meters (single + batch), invoice listing, credit balance
-- `qnsi.crypto_inventory` — Cryptographic Bill of Materials: assets, discovery runs, PQC readiness
-- `qnsi.storage` — PQC-encrypted object storage with SSE-X
-- `qnsi.search` — encrypted vector search (index lifecycle, `upsert_vectors`, `query`)
-- `qnsi.ai` — model registry, AI workloads with enclave attestation, `invoke_inference`, artifacts
+- `qnsi.vault` - secrets management (create / get / get-version / rotate / delete / list-versions)
+- `qnsi.kms` - server-side PQC keys (create / list / get / rotate / delete / sign / verify / wrap / unwrap)
+- `qnsi.audit` - immutable hash-chained event log (log-event / ingest-events / list-events)
+- `qnsi.auth` - login, refresh, revoke, WebAuthn passkeys, MFA, SAML/OIDC federation, risk-based auth
+- `qnsi.tenant` - tenant CRUD, crypto-policy management, current-health, current-quotas
+- `qnsi.access` - RBAC roles, role assignments, `check_permission`
+- `qnsi.billing` - entitlements, usage meters (single + batch), invoice listing, credit balance
+- `qnsi.crypto_inventory` - Cryptographic Bill of Materials: assets, discovery runs, PQC readiness
+- `qnsi.storage` - PQC-encrypted object storage with SSE-X
+- `qnsi.search` - encrypted vector search (index lifecycle, `upsert_vectors`, `query`)
+- `qnsi.ai` - model registry, AI workloads with enclave attestation, `invoke_inference`, artifacts
 
 Local primitives + integration:
 
-- `qnsi.crypto` (requires `qnsi[crypto]`) — ML-KEM (512/768/1024), ML-DSA (44/65/87), SLH-DSA (8 variants), Falcon (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS — every FIPS 203/204/205 finalist exposed by liboqs 0.12.0
-- `qnsi.parse_qnsi_webhook` / `qnsi.verify_qnsi_webhook_signature` — HMAC-SHA-256 verify + replay protection
-- `qnsi.QnsiClient` — API-key activation with caching and 401 retry
+- `qnsi.crypto` (requires `qnsi[crypto]`) - ML-KEM (512/768/1024), ML-DSA (44/65/87), SLH-DSA (8 variants), Falcon (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS - every FIPS 203/204/205 finalist exposed by liboqs 0.12.0
+- `qnsi.parse_qnsi_webhook` / `qnsi.verify_qnsi_webhook_signature` - HMAC-SHA-256 verify + replay protection
+- `qnsi.QnsiClient` - API-key activation with caching and 401 retry
 
 ## What's coming
 
-- `AsyncQnsiClient` — native-async variants using `httpx.AsyncClient`
+- `AsyncQnsiClient` - native-async variants using `httpx.AsyncClient`
 - A `pytest` plugin that mocks the QNSI API for tests in your codebase
 - Generated typed responses (currently `dict[str, Any]`) for every method
 

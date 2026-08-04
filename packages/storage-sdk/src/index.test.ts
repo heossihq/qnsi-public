@@ -1,4 +1,4 @@
-import { clearActivationCache } from "@heossi/qnsi-sdk-activation";
+import { clearActivationCache } from "@heossihq/qnsi-sdk-activation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StorageClient, StorageEventsClient } from "./index.js";
 

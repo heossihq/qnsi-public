@@ -1,6 +1,6 @@
 """Typed error hierarchy for the QNSP Python SDK.
 
-Mirrors the structure used by the official @heossi/qnsi-* TypeScript SDKs so that
+Mirrors the structure used by the official @heossihq/qnsi-* TypeScript SDKs so that
 log analysis and error-handling code can be consistent across runtimes.
 """
 

@@ -15,11 +15,11 @@ import (
 )
 
 // TestProdSmokeServiceClients is a REAL end-to-end smoke against PRODUCTION through the actual
-// top-level Go SDK (provable-evidence mandate — prove the wire contract with a real call, not a
+// top-level Go SDK (provable-evidence mandate - prove the wire contract with a real call, not a
 // mock). It proves the 2026-06-14 Go SDK remediation:
 //
 //   - service prefixes /proxy/<svc>/v1 (was bare /<svc>/v1 → 404 "No route found");
-//   - central tenantId injection (GET query + write body) — without it kms/vault 400 "missing tenant";
+//   - central tenantId injection (GET query + write body) - without it kms/vault 400 "missing tenant";
 //   - kms field names data/signature/dataKey/wrappedKey + createKey keyId/keyType (was
 //     dataB64/signatureB64 + no keyId → 400);
 //   - vault payload/newPayload (was payloadB64, stripped by the schema → empty secret);
@@ -33,7 +33,7 @@ import (
 func TestProdSmokeServiceClients(t *testing.T) {
 	key := os.Getenv("QNSP_CANARY_KEY")
 	if key == "" {
-		t.Skip("QNSP_CANARY_KEY not set — skipping prod smoke")
+		t.Skip("QNSP_CANARY_KEY not set - skipping prod smoke")
 	}
 	baseURL := os.Getenv("QNSP_E2E_API")
 	if baseURL == "" {
@@ -73,9 +73,9 @@ func TestProdSmokeServiceClients(t *testing.T) {
 	if !valid {
 		t.Fatalf("kms.Verify returned false for a real signature")
 	}
-	t.Logf("kms create/sign/verify OK — %d sig bytes", len(sig))
+	t.Logf("kms create/sign/verify OK - %d sig bytes", len(sig))
 
-	// kms.ListKeys with NO tenantId in the query — proves the central query injection.
+	// kms.ListKeys with NO tenantId in the query - proves the central query injection.
 	if _, err := client.KMS().ListKeys(ctx, nil); err != nil {
 		t.Fatalf("kms.ListKeys (central tenantId query injection): %v", err)
 	}
@@ -122,5 +122,5 @@ func TestProdSmokeServiceClients(t *testing.T) {
 	if !bytes.Equal(got, content) {
 		t.Fatalf("storage round-trip mismatch: got %q want %q", got, content)
 	}
-	t.Logf("storage put/get OK — round-trip bytes match")
+	t.Logf("storage put/get OK - round-trip bytes match")
 }

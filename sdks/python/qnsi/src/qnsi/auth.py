@@ -1,4 +1,4 @@
-"""QNSP Auth — JWT issuance, refresh, revocation, WebAuthn passkeys, MFA,
+"""QNSP Auth - JWT issuance, refresh, revocation, WebAuthn passkeys, MFA,
 federated identity (SAML / OIDC), risk-based authentication."""
 
 from __future__ import annotations
@@ -9,9 +9,9 @@ from qnsi._service import _ServiceClient
 
 
 class AuthClient(_ServiceClient):
-    """Auth client. Wraps ``apps/auth-service`` (``/auth/v1``)."""
+    """Auth client. Wraps ``apps/auth-service`` (``/auth``)."""
 
-    PATH_PREFIX = "/auth/v1"
+    PATH_PREFIX = "/auth"
 
     def login(
         self,

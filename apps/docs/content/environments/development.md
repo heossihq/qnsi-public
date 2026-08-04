@@ -5,10 +5,10 @@ last_updated: 2026-04-23
 copyright: © 2025 HEOSSI. All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-auth-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.auth./* method */(...);
 > ```
@@ -74,8 +74,7 @@ hsm:
 ## SDK configuration
 
 ```typescript
-import { AuthClient } from "@heossi/qnsi-auth-sdk";
-import { VaultClient } from "@heossi/qnsi-vault-sdk";
+import { AuthClient, VaultClient } from "@heossihq/qnsi";
 
 const auth = new AuthClient({
 	baseUrl: process.env["QNSI_EDGE_GATEWAY_URL"] ?? "http://localhost:8107",

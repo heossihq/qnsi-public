@@ -1,9 +1,9 @@
 /**
  * QnsiVectorStore unit tests.
  *
- * Folded in from the former standalone `@heossi/qnsi-llamaindex-qnsp`; the
+ * Folded in from the former standalone `@heossihq/qnsi-llamaindex-qnsp`; the
  * search-service HTTP is now inlined, so these tests mock `globalThis.fetch`
- * (the real seam) rather than the former `@heossi/qnsi-search-sdk` client.
+ * (the real seam) rather than the former `@heossihq/qnsi-search-sdk` client.
  * Same behaviors asserted.
  */
 

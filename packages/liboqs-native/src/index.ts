@@ -1,5 +1,5 @@
 /**
- * @heossi/liboqs-native — typed loader for the liboqs N-API addon.
+ * @heossihq/liboqs-native - typed loader for the liboqs N-API addon.
  *
  * The C++ addon (src/addon.cc) is compiled to a platform-specific
  * `oqs_native.node` by node-gyp and distributed via prebuildify prebuilds.
@@ -8,7 +8,7 @@
  * introspection helpers.
  *
  * This file is the single source of truth. tsc emits dist/index.js +
- * dist/index.d.ts from here — never hand-edit dist/.
+ * dist/index.d.ts from here - never hand-edit dist/.
  *
  * The package is published as CommonJS ("type": "commonjs"). With
  * verbatimModuleSyntax enabled we use TypeScript's classic CJS syntax:
@@ -30,6 +30,8 @@ interface NativeBinding {
 	isKemAlgorithmSupported(algorithm: string): boolean;
 	isSignatureAlgorithmSupported(algorithm: string): boolean;
 	version(): string;
+	clearOpenSslErrorQueue(): void;
+	hasOpenSslErrorQueueEntries(): boolean;
 }
 
 const packageRoot = path.resolve(__dirname, "..");
@@ -83,7 +85,7 @@ declare namespace liboqs {
 		/**
 		 * Deterministic keypair generation from a caller-supplied seed.
 		 * Seed must be exactly `details().lengthKeypairSeed` bytes. INTENDED
-		 * FOR NIST ACVP TEST-VECTOR USE — production code should call
+		 * FOR NIST ACVP TEST-VECTOR USE - production code should call
 		 * generateKeypair() so randomness flows through the OpenSSL DRBG
 		 * (see https://qnsi.heossi.com/trust/entropy).
 		 */
@@ -138,6 +140,12 @@ const liboqs = {
 	},
 	version(): string {
 		return binding.version();
+	},
+	clearOpenSslErrorQueue(): void {
+		binding.clearOpenSslErrorQueue();
+	},
+	hasOpenSslErrorQueueEntries(): boolean {
+		return binding.hasOpenSslErrorQueueEntries();
 	},
 };
 

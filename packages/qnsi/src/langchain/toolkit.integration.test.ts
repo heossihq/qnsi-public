@@ -1,13 +1,13 @@
 /**
- * Integration tests for the @heossi/qnsi/langchain subpath.
+ * Integration tests for the @heossihq/qnsi/langchain subpath.
  *
  * These tests hit the real QNSP API via the edge gateway.
- * Requires QNSI_API_KEY — the API key resolves tenant, tier, and policy.
+ * Requires QNSI_API_KEY - the API key resolves tenant, tier, and policy.
  *
  * Run: QNSI_API_KEY=qnsp_... npx vitest run src/langchain/toolkit.integration.test.ts
  *
  * NOTE: `QnsiToolkit` requires `await toolkit.activate()` (a real
- * billing-service activation handshake) before `getTools()` — the toolkit
+ * billing-service activation handshake) before `getTools()` - the toolkit
  * enforces this with `#assertActivated()`. Every test below activates first,
  * matching the documented API contract and the unit suite's
  * `activatedToolkit()` helper.

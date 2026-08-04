@@ -26,15 +26,15 @@ export type PqcFipsFamily =
  * NIST Additional Signatures Round 2: MAYO, CROSS, UOV, SNOVA
  */
 const PQC_FIPS_FAMILY_BY_ALGORITHM: Partial<Record<PqcAlgorithm, PqcFipsFamily | null>> = {
-	// FIPS 203 — ML-KEM
+	// FIPS 203 - ML-KEM
 	"kyber-512": "ML-KEM",
 	"kyber-768": "ML-KEM",
 	"kyber-1024": "ML-KEM",
-	// FIPS 204 — ML-DSA
+	// FIPS 204 - ML-DSA
 	"dilithium-2": "ML-DSA",
 	"dilithium-3": "ML-DSA",
 	"dilithium-5": "ML-DSA",
-	// FIPS 205 — SLH-DSA
+	// FIPS 205 - SLH-DSA
 	"sphincs-sha2-128f-simple": "SLH-DSA",
 	"sphincs-sha2-128s-simple": "SLH-DSA",
 	"sphincs-sha2-192f-simple": "SLH-DSA",
@@ -47,7 +47,7 @@ const PQC_FIPS_FAMILY_BY_ALGORITHM: Partial<Record<PqcAlgorithm, PqcFipsFamily |
 	"sphincs-shake-192s-simple": "SLH-DSA",
 	"sphincs-shake-256f-simple": "SLH-DSA",
 	"sphincs-shake-256s-simple": "SLH-DSA",
-	// FN-DSA (FIPS 206 — Initial Public Draft)
+	// FN-DSA (FIPS 206 - Initial Public Draft)
 	"falcon-512": "FN-DSA",
 	"falcon-1024": "FN-DSA",
 	// HQC (NIST selected March 2025)
@@ -145,22 +145,22 @@ const PQC_FIPS_FAMILY_BY_ALGORITHM: Partial<Record<PqcAlgorithm, PqcFipsFamily |
  * - Re-added: Use original names (NTRU-HPS-2048-509, sntrup761)
  */
 const PQC_FIPS_LABEL_BY_ALGORITHM: Partial<Record<PqcAlgorithm, string>> = {
-	// FIPS 203 — ML-KEM
+	// FIPS 203 - ML-KEM
 	"kyber-512": "ML-KEM-512",
 	"kyber-768": "ML-KEM-768",
 	"kyber-1024": "ML-KEM-1024",
-	// FIPS 204 — ML-DSA
+	// FIPS 204 - ML-DSA
 	"dilithium-2": "ML-DSA-44",
 	"dilithium-3": "ML-DSA-65",
 	"dilithium-5": "ML-DSA-87",
-	// FIPS 205 — SLH-DSA (SHA-2 variants)
+	// FIPS 205 - SLH-DSA (SHA-2 variants)
 	"sphincs-sha2-128f-simple": "SLH-DSA-SHA2-128f",
 	"sphincs-sha2-128s-simple": "SLH-DSA-SHA2-128s",
 	"sphincs-sha2-192f-simple": "SLH-DSA-SHA2-192f",
 	"sphincs-sha2-192s-simple": "SLH-DSA-SHA2-192s",
 	"sphincs-sha2-256f-simple": "SLH-DSA-SHA2-256f",
 	"sphincs-sha2-256s-simple": "SLH-DSA-SHA2-256s",
-	// FIPS 205 — SLH-DSA (SHAKE variants)
+	// FIPS 205 - SLH-DSA (SHAKE variants)
 	"sphincs-shake-128f-simple": "SLH-DSA-SHAKE-128f",
 	"sphincs-shake-128s-simple": "SLH-DSA-SHAKE-128s",
 	"sphincs-shake-192f-simple": "SLH-DSA-SHAKE-192f",
@@ -256,7 +256,7 @@ const PQC_FIPS_LABEL_BY_ALGORITHM: Partial<Record<PqcAlgorithm, string>> = {
  * Comprehensive mapping from internal algorithm names to NIST/standards display names.
  * Exported as the canonical reference for all SDKs and services.
  * NIST display-name labels for all 90 catalogued algorithm identifiers, including HQC
- * (label reference only — HQC is currently disabled for CVE-2025-48946; the runtime-supported
+ * (label reference only - HQC is currently disabled for CVE-2025-48946; the runtime-supported
  * set is 87, see crypto-policy ALGORITHM_TO_NIST).
  */
 export const ALGORITHM_NIST_NAMES: Readonly<Record<string, string>> =

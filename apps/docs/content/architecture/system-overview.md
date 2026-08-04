@@ -44,7 +44,7 @@ QNSI now integrates with XIIS as an external assurance and trust-verification co
 
 ## Tenant Crypto Policy Integration
 
-Services use the shared `@heossi/qnsi-security` tenant-crypto-policy-client to:
+Services use the shared `@heossihq/qnsi-security` tenant-crypto-policy-client to:
 - Fetch tenant-specific crypto policies from tenant-service
 - Select appropriate PQC algorithms based on billing tier (v0 tiers)
 - Apply custom algorithm allowlists and forbidden lists

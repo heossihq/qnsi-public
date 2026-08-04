@@ -3,10 +3,10 @@ title: SDK Reference
 description: Per-language SDKs (TypeScript, Python, Go, Rust, JVM/Android) and SDK-level guides covering authentication, retries, and error handling.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-auth-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.auth./* method */(...);
 > ```
@@ -20,34 +20,40 @@ Per-language SDKs (TypeScript, Python, Go, Rust, JVM/Android) and SDK-level guid
 
 ## Pages
 
-- [Access Control SDK (@heossi/qnsi-access-control-sdk)](./access-control-sdk)
-- [AI SDK (@heossi/qnsi-ai-sdk)](./ai-sdk)
-- [Audit SDK (@heossi/qnsi-audit-sdk)](./audit-sdk)
-- [Auth SDK (@heossi/qnsi-auth-sdk)](./auth-sdk)
+The pages below document each service's client **shape** - the methods, request bodies and
+error codes. They are accurate at the wire level. They are **not** separate npm packages:
+every client below ships **inside `@heossihq/qnsi`** and is reached as `qnsi.<service>` (or
+imported by name from `@heossihq/qnsi`). There are exactly two public npm packages -
+`@heossihq/qnsi` and `@heossihq/qnsi-mcp`.
+
+- [Access Control client](./access-control-sdk) - `qnsi.access`
+- [AI client](./ai-sdk) - `qnsi.ai`
+- [Audit client](./audit-sdk) - `qnsi.audit`
+- [Auth client](./auth-sdk) - `qnsi.auth`
 - [SDK Authentication](./authentication)
-- [AutoGen Integration (@heossi/qnsi-autogen-qnsp)](./autogen-qnsp)
-- [Billing SDK (@heossi/qnsi-billing-sdk)](./billing-sdk)
-- [Browser SDK (@heossi/qnsi-browser)](./browser-sdk)
+- [AutoGen Integration](./autogen-qnsp)
+- [Billing client](./billing-sdk) - `qnsi.billing`
+- [Browser SDK](./browser-sdk)
 - [SDK Compatibility](./compatibility)
 - [SDK Configuration](./configuration)
 - [Crypto Attestation API](./crypto-attestation-api)
-- [Crypto Inventory SDK (@heossi/qnsi-crypto-inventory-sdk)](./crypto-inventory-sdk)
+- [Crypto Inventory client](./crypto-inventory-sdk) - `qnsi.cryptoInventory`
 - [SDK Error Handling](./error-handling)
-- [KMS Client (@heossi/qnsi-kms-client)](./kms-client)
-- [LangChain Integration (@heossi/qnsi-langchain-qnsp)](./langchain-qnsp)
+- [KMS client](./kms-client) - `qnsi.kms`
+- [LangChain Integration](./langchain-qnsp)
 - [Supported Languages](./languages)
-- [LlamaIndex Integration (@heossi/qnsi-llamaindex-qnsp)](./llamaindex-qnsp)
-- [MCP Server (@heossi/qnsi-mcp)](./mcp-server)
+- [LlamaIndex Integration](./llamaindex-qnsp)
+- [MCP Server (@heossihq/qnsi-mcp)](./mcp-server)
 - [Memory Zeroization](./memory-zeroization)
 - [SDK Overview](./overview)
-- [Resilience Utilities (@heossi/qnsi-resilience)](./resilience)
+- [Resilience Utilities](./resilience)
 - [SDK Retries](./retries)
 - [SDK Activation](./sdk-activation)
-- [Search SDK (@heossi/qnsi-search-sdk)](./search-sdk)
-- [Storage SDK (@heossi/qnsi-storage-sdk)](./storage-sdk)
-- [Tenant SDK (@heossi/qnsi-tenant-sdk)](./tenant-sdk)
+- [Search client](./search-sdk) - `qnsi.search`
+- [Storage client](./storage-sdk) - `qnsi.storage`
+- [Tenant client](./tenant-sdk) - `qnsi.tenant`
 - [Thread Safety](./thread-safety)
-- [Vault SDK (@heossi/qnsi-vault-sdk)](./vault-sdk)
+- [Vault client](./vault-sdk) - `qnsi.vault`
 
 ## Sections
 

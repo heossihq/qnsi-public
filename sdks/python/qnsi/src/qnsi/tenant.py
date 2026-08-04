@@ -1,4 +1,4 @@
-"""QNSP Tenant — tenant CRUD, crypto-policy management, quotas, health."""
+"""QNSP Tenant - tenant CRUD, crypto-policy management, quotas, health."""
 
 from __future__ import annotations
 

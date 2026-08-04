@@ -1,4 +1,4 @@
-# @heossi/qnsi-storage-sdk
+# @heossihq/qnsi-storage-sdk
 
 TypeScript SDK client for the QNSI storage-service API; equivalent shapes ship in Python, Go, and Rust.
 
@@ -7,13 +7,13 @@ Part of the [Quantum-Native Security Infrastructure (QNSI)](https://qnsi.heossi.
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi-storage-sdk
+pnpm add @heossihq/qnsi-storage-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { StorageClient } from "@heossi/qnsi-storage-sdk";
+import { StorageClient } from "@heossihq/qnsi-storage-sdk";
 
 const storage = new StorageClient({
   baseUrl: "https://api.qnsi.heossi.com",
@@ -40,7 +40,7 @@ await storage.completeUpload(upload.uploadId);
 ## Requirements
 
 - Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
-- A QNSI account and API key — [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
+- A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License
 

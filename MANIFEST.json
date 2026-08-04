@@ -1,6 +1,6 @@
 {
   "export": {
-    "fileCount": 764,
+    "fileCount": 909,
     "publicPackages": [
       "access-control-sdk",
       "ai-sdk",
@@ -14,6 +14,7 @@
       "liboqs-native",
       "mcp-server",
       "observability",
+      "product-facts-schema",
       "qnsi",
       "resilience",
       "sdk-activation",
@@ -25,8 +26,8 @@
     ]
   },
   "source": {
-    "generatedAt": "2026-07-06T15:18:57.494263+00:00",
+    "generatedAt": "2026-08-04T10:45:44.486727+00:00",
     "repo": "heossihq/qnsi",
-    "sha": "fd54f3e7d88a23c073b4237e1c45363e374af82b"
+    "sha": "e52d89e872834c8622aabca88c78501cd304c103"
   }
 }

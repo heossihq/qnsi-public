@@ -1,4 +1,4 @@
-//! QNSI Tenant — tenant CRUD, crypto-policy management, sub-tenant
+//! QNSI Tenant - tenant CRUD, crypto-policy management, sub-tenant
 //! onboarding, and quota / health introspection.
 
 use reqwest::Method;

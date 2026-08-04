@@ -9,7 +9,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 import { QnsiWebhookError } from "./errors.js";
 
-/** Default replay-protection window — 5 minutes. */
+/** Default replay-protection window - 5 minutes. */
 export const MAX_WEBHOOK_SKEW_MS = 5 * 60 * 1000;
 
 export interface QnsiWebhookEvent {

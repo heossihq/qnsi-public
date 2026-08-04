@@ -1,4 +1,4 @@
-// Package storage is the QNSP Storage client — PQC-encrypted object
+// Package storage is the QNSP Storage client - PQC-encrypted object
 // storage with SSE-X (server-side encryption with extended PQC).
 //
 // Wraps `apps/storage-service` (see /proxy/storage in production).

@@ -2,12 +2,12 @@
 
 Wraps the open-quantum-safe `liboqs-python` 0.12.0 binding (installed via the
 `qnsi[crypto]` extra) so QNSP customers get the full FIPS 203 / 204 / 205
-algorithm surface — ML-KEM, ML-DSA, SLH-DSA, Falcon, plus the round-2 NIST
-additional signatures (MAYO, CROSS, UOV, SNOVA) — without needing to
+algorithm surface - ML-KEM, ML-DSA, SLH-DSA, Falcon, plus the round-2 NIST
+additional signatures (MAYO, CROSS, UOV, SNOVA) - without needing to
 write `oqs` calls themselves.
 
-The same liboqs C library that backs the TypeScript `@heossi/qnsi-cryptography`
-package powers this module. Outputs are byte-identical between languages —
+The same liboqs C library that backs the TypeScript `@heossihq/qnsi-cryptography`
+package powers this module. Outputs are byte-identical between languages -
 a Python keypair encapsulated by Python decapsulates correctly in TypeScript
 on the other side, and vice versa.
 
@@ -26,7 +26,7 @@ Usage::
     signature = sig.sign(b"hello", sig_sk)
     assert sig.verify(b"hello", signature, sig_pk)
 
-The classes are deliberately thin — they expose the four / five operations
+The classes are deliberately thin - they expose the four / five operations
 NIST defines for each scheme. For higher-level patterns (envelope encryption,
 signed audit records, key-rotation policies) see the `qnsp.vault`,
 `qnsp.kms`, and `qnsp.audit` clients which call QNSP services with these

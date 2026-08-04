@@ -1,5 +1,5 @@
 /**
- * QNSI env-var bridge (SDK-local copy — the published package cannot depend
+ * QNSI env-var bridge (SDK-local copy - the published package cannot depend
  * on internal workspace libs). Mirrors `QNSI_<NAME>` ↔ `QNSP_<NAME>` in
  * process.env without overwriting explicitly-set values, so:
  *   - users following current docs (`QNSI_API_KEY`, `QNSI_TENANT_ID`, …) work;

@@ -1,4 +1,4 @@
-import { clearActivationCache } from "@heossi/qnsi-sdk-activation";
+import { clearActivationCache } from "@heossihq/qnsi-sdk-activation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TenantClient } from "./index.js";
 
@@ -107,7 +107,7 @@ describe("TenantClient Security Tests", () => {
 						password: "secret123",
 					}),
 			});
-			// second call in the IIFE below — activationPromise already resolved
+			// second call in the IIFE below - activationPromise already resolved
 			mockFetch.mockResolvedValueOnce({
 				ok: false,
 				status: 500,

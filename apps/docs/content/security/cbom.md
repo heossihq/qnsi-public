@@ -7,6 +7,7 @@ The Cryptographic Bill of Materials (CBOM) is a machine-verifiable inventory of 
 CBOM extends the concept of Software Bill of Materials (SBOM) to cryptographic assets. It provides:
 
 - **Complete Inventory** - All cryptographic algorithms, keys, and certificates
+- **Source-Code Coverage** - Normalized cryptographic API usage from local repository scans
 - **Lifecycle Tracking** - NIST status and deprecation dates for each algorithm
 - **Compliance Assessment** - Automated checks against CNSA 2.0 and FIPS 140-3
 - **Tamper Evidence** - SHA3-256 document hash and optional PQC signature
@@ -134,6 +135,20 @@ Checks include:
 - Proper key management
 
 ## API Usage
+
+### Add source-code findings
+
+Run the scanner locally to produce a standalone CBOM or upload normalized findings:
+
+```bash
+qnsi crypto scan ./ --format cbom --output qnsi-code.cbom.json
+qnsi crypto scan ./ --upload --repo-id payments-api --repo-name example/payments-api
+```
+
+Uploaded reports are durably acknowledged first. Start a `code_repo` discovery run to
+materialize them as `code_usage` assets in the tenant CBOM. QNSI does not upload source-file
+contents. See [Source-Code Cryptography Scanning](../crypto/source-code-scanning).
+
 
 ### Generate CBOM
 

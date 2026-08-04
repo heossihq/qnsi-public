@@ -1,4 +1,4 @@
-// Package kms is the QNSP KMS client — server-side PQC keys with sign,
+// Package kms is the QNSP KMS client - server-side PQC keys with sign,
 // verify, wrap, and unwrap.
 package kms
 
@@ -31,7 +31,7 @@ type CreateKeyRequest struct {
 
 func (c *Client) CreateKey(ctx context.Context, req CreateKeyRequest, idempotencyKey string) (map[string]any, error) {
 	// Wire contract: createKeySchema = { tenantId(auto-injected), keyId(required), keyType(required:
-	// root|master|data|byok), algorithm, metadata }. The SDK's "purpose" is NOT a backend field —
+	// root|master|data|byok), algorithm, metadata }. The SDK's "purpose" is NOT a backend field -
 	// fold it into metadata, generate a keyId, default keyType "data". (Sending {algorithm,purpose}
 	// alone 400'd "Invalid request body": no keyId/keyType.)
 	metadata := map[string]any{}

@@ -1,13 +1,13 @@
 ---
 title: JVM / Android SDK
-version: 0.1.0
-last_updated: 2026-06-01
+version: 0.4.0
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 ---
 # JVM / Android SDK
 
-QNSI ships a first-party **JVM / Android SDK** — `io.heossi:qnsi` on Maven
+QNSI ships a first-party **JVM / Android SDK** - `com.heossi:qnsi` on Maven
 Central. One artifact serves both **server-side JVM** (Spring Boot, plain
 Java/Kotlin) and **native Android** (API 21+), because its only transport
 dependency, OkHttp, runs on both. It mirrors the wire contract of the
@@ -20,7 +20,7 @@ Gradle (Kotlin DSL):
 
 ```kotlin
 dependencies {
-    implementation("io.heossi:qnsi:0.1.0")
+    implementation("com.heossi:qnsi:0.4.0")
 }
 ```
 
@@ -28,9 +28,9 @@ Maven:
 
 ```xml
 <dependency>
-  <groupId>io.heossi</groupId>
+  <groupId>com.heossi</groupId>
   <artifactId>qnsi</artifactId>
-  <version>0.1.0</version>
+  <version>0.4.0</version>
 </dependency>
 ```
 
@@ -66,7 +66,7 @@ return `ByteArray`, `verify` returns `Boolean`. Webhook verification is in
 
 ## On-device PQC primitives
 
-The SDK is a managed control-plane client — server-side KMS performs PQC key
+The SDK is a managed control-plane client - server-side KMS performs PQC key
 operations. For **on-device** PQC inside an Android app (local ML-KEM / ML-DSA),
 pair the SDK with a JVM PQC library such as Bouncy Castle, or the OS-native PQC
 APIs (Android Keystore PQC, available from Android 17). The byte-for-byte

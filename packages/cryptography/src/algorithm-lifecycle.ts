@@ -38,7 +38,7 @@ export interface AlgorithmLifecycleMetadata {
  * Both services (edge-gateway, crypto-inventory-service) MUST use this as canonical source.
  */
 export const ALGORITHM_LIFECYCLE_REGISTRY: Readonly<Record<string, AlgorithmLifecycleMetadata>> = {
-	// ─── KEM Algorithms (FIPS 203 — ML-KEM) ────────────────────────────
+	// ─── KEM Algorithms (FIPS 203 - ML-KEM) ────────────────────────────
 	"kyber-512": {
 		name: "ML-KEM-512",
 		type: "kem",
@@ -61,7 +61,7 @@ export const ALGORITHM_LIFECYCLE_REGISTRY: Readonly<Record<string, AlgorithmLife
 		securityLevel: 5,
 	},
 
-	// ─── Signature Algorithms (FIPS 204 — ML-DSA) ──────────────────────
+	// ─── Signature Algorithms (FIPS 204 - ML-DSA) ──────────────────────
 	"dilithium-2": {
 		name: "ML-DSA-44",
 		type: "signature",
@@ -84,7 +84,7 @@ export const ALGORITHM_LIFECYCLE_REGISTRY: Readonly<Record<string, AlgorithmLife
 		securityLevel: 5,
 	},
 
-	// ─── SPHINCS+ (FIPS 205 — SLH-DSA) ─────────────────────────────────
+	// ─── SPHINCS+ (FIPS 205 - SLH-DSA) ─────────────────────────────────
 	"sphincs-shake-128f-simple": {
 		name: "SLH-DSA-SHAKE-128f",
 		type: "signature",
@@ -100,7 +100,7 @@ export const ALGORITHM_LIFECYCLE_REGISTRY: Readonly<Record<string, AlgorithmLife
 		securityLevel: 5,
 	},
 
-	// ─── FN-DSA / Falcon (FIPS 206 — Initial Public Draft submitted 2025) ──
+	// ─── FN-DSA / Falcon (FIPS 206 - Initial Public Draft submitted 2025) ──
 	"falcon-512": {
 		name: "FN-DSA-512",
 		type: "signature",

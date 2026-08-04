@@ -6,7 +6,7 @@
  *
  * Schema v3 (2026-05-14):
  *   - Batched memory measurement (RSS over N=200 instances ÷ N for stability)
- *   - Multi-process concurrency (child_process.fork × 1/2/4/8 — real multi-core)
+ *   - Multi-process concurrency (child_process.fork × 1/2/4/8 - real multi-core)
  *   - Noble comparison (@noble/post-quantum side-by-side native-vs-pure-JS)
  *
  * Schema v2 → v3 iteration: v2's single-instance memory measurement was at
@@ -144,9 +144,9 @@ export interface MultiProcessConcurrencyMeasurement {
 
 /**
  * Side-by-side comparison: same operation, same iterations, on the same
- * hardware, executed by @heossi/liboqs-native (native C) vs @noble/post-quantum
+ * hardware, executed by @heossihq/liboqs-native (native C) vs @noble/post-quantum
  * (pure JavaScript). The ratio quantifies the native-vs-pure-JS performance
- * delta — a concrete number for "how much slower is the browser SDK".
+ * delta - a concrete number for "how much slower is the browser SDK".
  *
  * `null` when noble doesn't support the algorithm (e.g., SLH-DSA-SHA2-256f
  * isn't in noble's catalog the same way as ML-KEM).

@@ -1,29 +1,29 @@
 ---
-title: AutoGen Integration (@heossi/qnsi-autogen-qnsp)
-version: 0.2.5
-last_updated: 2026-04-30
+title: AutoGen Integration (@heossihq/qnsi/autogen)
+version: 0.6.0
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
-  - /packages/autogen-qnsp/package.json
-  - /packages/autogen-qnsp/src/index.ts
-  - /packages/autogen-qnsp/src/executor.ts
+  - /packages/qnsi/package.json
+  - /packages/qnsi/src/autogen/index.ts
+  - /packages/qnsi/src/autogen/executor.ts
 ---
 
-# AutoGen Integration (`@heossi/qnsi-autogen-qnsp`)
+# AutoGen Integration (`@heossihq/qnsi/autogen`)
 
 QNSI provides an AutoGen-oriented executor that submits code workloads to QNSI AI orchestration endpoints with tenant-scoped activation.
 
 ## Install
 
 ```bash
-pnpm add @heossi/qnsi-autogen-qnsp autogen
+pnpm add @heossihq/qnsi autogen
 ```
 
 ## Usage
 
 ```ts
-import { QnsiExecutor } from "@heossi/qnsi-autogen-qnsp";
+import { QnsiExecutor } from "@heossihq/qnsi/autogen";
 
 const executor = new QnsiExecutor({
 	apiKey: process.env.QNSI_API_KEY!,

@@ -1,4 +1,4 @@
-//! QNSI Crypto-Inventory (CBOM) — asset catalogue, discovery runs,
+//! QNSI Crypto-Inventory (CBOM) - asset catalogue, discovery runs,
 //! deprecation policies, and PQC migration readiness.
 
 use reqwest::Method;
@@ -30,16 +30,16 @@ impl Client {
         self.sc.request::<()>(Method::GET, &format!("/assets/{}", asset_id), None, None, None).await
     }
 
-    pub async fn get_asset_stats(&self, tenant_id: &str) -> Result<Value, Error> {
-        self.sc.request::<()>(Method::GET, &format!("/assets/stats/{}", tenant_id), None, None, None).await
+    pub async fn get_asset_stats(&self, _tenant_id: &str) -> Result<Value, Error> {
+        self.sc.request::<()>(Method::GET, "/assets/stats", None, None, None).await
     }
 
     pub async fn discover_assets(&self, req: DiscoverAssetsRequest, idempotency_key: Option<&str>) -> Result<Value, Error> {
-        self.sc.request(Method::POST, "/discovery/runs", Some(&req), None, idempotency_key).await
+        self.sc.request(Method::POST, "/assets/discover", Some(&req), None, idempotency_key).await
     }
 
-    pub async fn get_readiness_score(&self, tenant_id: &str) -> Result<Value, Error> {
-        self.sc.request::<()>(Method::GET, &format!("/readiness/{}", tenant_id), None, None, None).await
+    pub async fn get_readiness_score(&self, _tenant_id: &str) -> Result<Value, Error> {
+        self.sc.request::<()>(Method::GET, "/readiness", None, None, None).await
     }
 }
 

@@ -1,4 +1,4 @@
-import { clearActivationCache } from "@heossi/qnsi-sdk-activation";
+import { clearActivationCache } from "@heossihq/qnsi-sdk-activation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { VaultClient } from "./index.js";
 
@@ -132,7 +132,7 @@ describe("VaultClient Security Tests", () => {
 						secret: "my-secret-value",
 					}),
 			});
-			// second call in the IIFE below — activationPromise already resolved
+			// second call in the IIFE below - activationPromise already resolved
 			mockFetch.mockResolvedValueOnce({
 				ok: false,
 				status: 500,
@@ -175,7 +175,7 @@ describe("VaultClient Security Tests", () => {
 		});
 
 		it("should retry on 429 with Retry-After header", async () => {
-			// activation network call — first call on this fresh client instance
+			// activation network call - first call on this fresh client instance
 			mockFetch.mockResolvedValueOnce({
 				ok: true,
 				status: 200,

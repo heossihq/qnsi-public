@@ -5,10 +5,10 @@ last_updated: 2026-04-23
 copyright: © 2025 HEOSSI. All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-auth-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-auth-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.auth./* method */(...);
 > ```
@@ -32,7 +32,7 @@ QNSI was conceived, architected, and engineered starting in December 2020. The c
 
 ### What makes QNSI different from other security platforms?
 
-QNSI is PQC-native by design, not retrofitted. Every component—from authentication tokens to storage encryption—uses NIST-standardized post-quantum algorithms (FIPS 203, 204, 205). The platform provides:
+QNSI is PQC-native by design, not retrofitted. Every component-from authentication tokens to storage encryption-uses NIST-standardized post-quantum algorithms (FIPS 203, 204, 205). The platform provides:
 - Zero-trust ingress with PQC token validation at the edge
 - Hardware enclave support (8 types: Intel SGX, AMD SEV, NVIDIA CC, Intel TDX, ARM TrustZone, ARM CCA, AWS Nitro, IBM Secure Execution)
 - Cryptographic attestation with automated compliance checks (CNSA 2.0, FIPS 140-3)
@@ -97,7 +97,7 @@ QNSI uses a defense-in-depth approach:
 
 ### Can I use classical cryptography instead of PQC?
 
-No. QNSI is PQC-native by design. Classical fallbacks are disabled by default to prevent downgrade attacks. This is a deliberate security decision—organizations using QNSI are explicitly choosing quantum-resistant protection.
+No. QNSI is PQC-native by design. Classical fallbacks are disabled by default to prevent downgrade attacks. This is a deliberate security decision-organizations using QNSI are explicitly choosing quantum-resistant protection.
 
 ### What is the performance impact of PQC?
 
@@ -117,7 +117,7 @@ In practice, the performance impact is negligible for most workloads (<5% overhe
 
 ### How does the free tier work?
 
-The free tier is **free forever** for everyone—from individual users to global enterprises. No credit card required, no time limits.
+The free tier is **free forever** for everyone-from individual users to global enterprises. No credit card required, no time limits.
 
 **Free tier includes**:
 - 10GB quantum-secure storage
@@ -154,30 +154,16 @@ Yes. You can upgrade anytime through the cloud portal with immediate effect. Dow
 
 ### What SDKs are available?
 
-QNSI provides 15 public developer packages across SDKs and tooling, with 12 core service SDKs and 3 additional developer surfaces commonly used during integration and migration.
+QNSI publishes one unified SDK per supported language:
 
-**Core service SDKs**
+- **TypeScript / Node.js:** `@heossihq/qnsi` 0.6.0 on npm. It exposes all 11 service clients and installs the `qnsi` command-line interface.
+- **Python:** `qnsi` 0.4.2 on PyPI.
+- **Go:** `github.com/heossihq/qnsi-public/sdks/go/qnsi`.
+- **Rust:** `qnsi` 0.3.0 on crates.io.
+- **JVM / Android:** `com.heossi:qnsi` 0.4.0 on Maven Central.
+- **AI tooling:** `@heossihq/qnsi-mcp` 0.2.0 on npm.
 
-1. **@heossi/qnsi-auth-sdk** - Authentication, FIDO2 passkeys, Personal Access Tokens (PATs), session management
-2. **@heossi/qnsi-vault-sdk** - Secrets management, credential storage, lease rotation
-3. **@heossi/qnsi-storage-sdk** - Document upload/download, lifecycle management, compliance controls
-4. **@heossi/qnsi-search-sdk** - Full-text search, SSE token filtering, index optimization
-5. **@heossi/qnsi-ai-sdk** - AI workload orchestration, enclave management, GPU scheduling
-6. **@heossi/qnsi-kms-client** - PQC envelope encryption client, BYOK workflows, signing helpers
-7. **@heossi/qnsi-tenant-sdk** - Tenant management, subscription, metadata operations
-8. **@heossi/qnsi-billing-sdk** - Invoice management, usage tracking, payment processing
-9. **@heossi/qnsi-access-control-sdk** - Policy management, capability tokens, authorization flows
-10. **@heossi/qnsi-audit-sdk** - Audit log querying, compliance reporting, event retrieval
-11. **@heossi/qnsi-crypto-inventory-sdk** - Crypto asset discovery, PQC migration tracking, inventory management
-12. **@heossi/qnsi-browser** - Browser-compatible PQC encryption: client-side encryption, signing, key encapsulation
-
-**Developer tooling and agent surfaces**
-
-13. **@heossi/qnsi-cli** - CLI automation, CI/CD, operator workflows
-14. **@heossi/qnsi-mcp** - Official MCP server for AI assistants and agent frameworks
-15. **@heossi/qnsi-agent** - Host-based discovery agent for private and on-prem environments
-
-All SDKs are free and included with every tier. View them at [npmjs.com/package/@heossi/qnsi](https://www.npmjs.com/package/@heossi/qnsi).
+The original TypeScript per-service packages remain available only for migration compatibility; new integrations should use `@heossihq/qnsi`. Host-agent deployment artifacts are provided through tenant onboarding rather than advertised as a public npm install. See the [SDK overview](/sdk/) for registry links and installation commands.
 
 ### What are the tier storage and API limits?
 
@@ -406,7 +392,7 @@ Multi-region deployments allow you to enforce EU data residency for GDPR complia
 
 ### Is QNSI FedRAMP authorized?
 
-No — QNSI is not currently FedRAMP authorized; FedRAMP is on our compliance roadmap. The platform is architected to align with FedRAMP controls. For classified or sensitive government workloads, we offer:
+No - QNSI is not currently FedRAMP authorized; FedRAMP is on our compliance roadmap. The platform is architected to align with FedRAMP controls. For classified or sensitive government workloads, we offer:
 - Private/VPC deployments
 - Air-gapped installations
 - Customer-controlled HSM integration
@@ -580,7 +566,7 @@ Yes. QNSI supports Kubernetes deployments:
 
 1. **Sign up**: [cloud.qnsi.heossi.com/auth](https://cloud.qnsi.heossi.com/auth)
 2. **Create tenant**: Provision your workspace
-3. **Install SDK**: `pnpm add @heossi/qnsi-storage-sdk` (or any SDK)
+3. **Install SDK**: `pnpm add @heossihq/qnsi` (or any SDK)
 4. **Authenticate**: Get API token from cloud portal
 5. **First API call**: Upload a document or create a secret
 

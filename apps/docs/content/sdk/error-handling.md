@@ -1,21 +1,20 @@
 ---
 title: SDK Error Handling
-version: 0.2.0
-last_updated: 2026-04-30
+version: 0.6.0
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
-  - /packages/auth-sdk/src/errors.ts
-  - /packages/vault-sdk/src/errors.ts
+  - /packages/qnsi/src/errors.ts
   - /sdks/python/qnsi/src/qnsi/_errors.py
   - /sdks/go/qnsi/internal/qnsicore/errors.go
   - /sdks/rust/qnsi/src/errors.rs
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-vault-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-vault-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.vault./* method */(...);
 > ```
@@ -39,13 +38,12 @@ The class names differ per language but the taxonomy is identical, so the same `
 ## TypeScript / Node.js
 
 ```typescript
-import { VaultClient } from "@heossi/qnsi-vault-sdk";
-import { QnsiApiError, QnsiNetworkError } from "@heossi/qnsi-vault-sdk/errors";
+import { QnsiApiError, QnsiClient, QnsiNetworkError } from "@heossihq/qnsi";
 
-const vault = new VaultClient({ baseUrl: "https://api.qnsi.heossi.com/proxy/vault", apiKey: "<token>" });
+const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
 try {
-  await vault.getSecret({ tenantId: "<uuid>", id: "missing" });
+  await qnsi.vault.getSecret("missing");
 } catch (err) {
   if (err instanceof QnsiApiError) console.log("HTTP", err.statusCode, err.code);
   else if (err instanceof QnsiNetworkError) console.log("could not reach QNSI:", err.message);
@@ -53,7 +51,7 @@ try {
 }
 ```
 
-Each `@heossi/qnsi-*-sdk` package exports its own typed error classes from `./errors`.
+The unified package exports its typed error classes from `@heossihq/qnsi`.
 
 ## Python
 
@@ -134,7 +132,7 @@ try {
 }
 ```
 
-All SDK errors extend the unchecked `QnsiException` base class — catch `QnsiException` to handle any failure uniformly. `QnsiApiException` exposes `statusCode`, the stable `code` string, and the raw `body`. See [`sdks/jvm/src/main/kotlin/com/heossi/qnsi/QnsiErrors.kt`](https://github.com/heossihq/qnsi-public/blob/main/sdks/jvm/src/main/kotlin/com/heossi/qnsi/QnsiErrors.kt).
+All SDK errors extend the unchecked `QnsiException` base class - catch `QnsiException` to handle any failure uniformly. `QnsiApiException` exposes `statusCode`, the stable `code` string, and the raw `body`. See [`sdks/jvm/src/main/kotlin/com/heossi/qnsi/QnsiErrors.kt`](https://github.com/heossihq/qnsi-public/blob/main/sdks/jvm/src/main/kotlin/com/heossi/qnsi/QnsiErrors.kt).
 
 ## Status-code mapping
 
@@ -160,8 +158,8 @@ Each SDK surfaces the structured body of an API error so you can act on `code` (
 Webhook verification helpers (`parse_qnsi_webhook` in Python, `qnsi.ParseWebhook` in Go, `qnsi::parse_webhook` in Rust, `QnsiWebhooks.parse` on JVM, per-service equivalents in TypeScript) return a typed error whose `.reason` field describes which check failed:
 
 - `signature header must start with 'sha256='`
-- `signature mismatch` — HMAC verification failed
-- `timestamp is too old` / `timestamp is in the future` — replay protection (5-minute window by default)
+- `signature mismatch` - HMAC verification failed
+- `timestamp is too old` / `timestamp is in the future` - replay protection (5-minute window by default)
 - `body is not valid JSON`
 - `missing event_type` / `missing event_id`
 

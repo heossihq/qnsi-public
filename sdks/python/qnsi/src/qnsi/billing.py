@@ -1,4 +1,4 @@
-"""QNSP Billing — entitlement queries, usage meters, invoice listing,
+"""QNSP Billing - entitlement queries, usage meters, invoice listing,
 credit balance."""
 
 from __future__ import annotations

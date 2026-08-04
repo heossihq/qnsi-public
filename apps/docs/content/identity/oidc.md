@@ -1,10 +1,11 @@
 ---
-title: OIDC Federation
+title: OIDC Federation and Enterprise SSO
 version: 0.0.2
-last_updated: 2026-04-23
+last_updated: 2026-07-31
+description: Configure OpenID Connect federation for QNSI workforce sign-in, tenant SSO, authorization-code exchange, claim mapping, and identity linking.
 copyright: 2025 HEOSSI. All rights reserved.
 ---
-# OIDC Federation
+# OIDC Federation and Enterprise SSO
 
 QNSI supports OpenID Connect for workforce federation, tenant SSO, and authenticated identity linking.
 

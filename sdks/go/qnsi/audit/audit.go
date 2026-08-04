@@ -1,4 +1,4 @@
-// Package audit is the QNSP Audit client — immutable, hash-chained event log.
+// Package audit is the QNSP Audit client - immutable, hash-chained event log.
 package audit
 
 import (

@@ -1,20 +1,20 @@
 ---
-title: Browser SDK (@heossi/qnsi-browser)
-version: 0.1.4
-last_updated: 2026-04-30
+title: Browser PQC API (@heossihq/qnsi/browser)
+version: 0.6.0
+last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
-  - /packages/browser-sdk/src/index.ts
-  - /packages/browser-sdk/src/encrypt.ts
-  - /packages/browser-sdk/src/sign.ts
-  - /packages/browser-sdk/src/provider-setup.ts
+  - /packages/qnsi/src/browser/index.ts
+  - /packages/qnsi/src/browser/encrypt.ts
+  - /packages/qnsi/src/browser/sign.ts
+  - /packages/qnsi/src/browser/provider-setup.ts
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-storage-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-storage-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.storage./* method */(...);
 > ```
@@ -22,7 +22,7 @@ source_files:
 > See [SDK overview](../sdk/) for the consolidated package. The per-service shapes documented below remain accurate at the wire level (REST/gRPC) and are kept for reference.
 
 
-# Browser SDK (`@heossi/qnsi-browser`)
+# Browser PQC API (`@heossihq/qnsi/browser`)
 
 Browser-compatible PQC encryption SDK for the QNSI platform. Provides client-side encryption (CSE), digital signatures, and key management using NIST FIPS 203/204/205 standards via `@noble/post-quantum`.
 
@@ -31,8 +31,10 @@ No native dependencies. No `node:` imports. Works in browsers, Deno, Bun, and No
 ## Install
 
 ```bash
-pnpm add @heossi/qnsi-browser
+pnpm add @heossihq/qnsi
 ```
+
+`@heossihq/qnsi/browser` is an exported module path inside the unified `@heossihq/qnsi` package, not a separately installable npm package.
 
 ## Supported Algorithms
 
@@ -52,7 +54,7 @@ import {
   encryptBeforeUpload,
   decryptAfterDownload,
   generateEncryptionKeyPair,
-} from "@heossi/qnsi-browser";
+} from "@heossihq/qnsi/browser";
 
 // Initialize the PQC provider with your QNSI API key
 await initializePqcProvider({ apiKey: "YOUR_API_KEY" });
@@ -80,7 +82,7 @@ import {
   detectRuntime,
   getSupportedAlgorithms,
   resetProvider,
-} from "@heossi/qnsi-browser";
+} from "@heossihq/qnsi/browser";
 
 // Detect runtime environment
 const runtime = detectRuntime(); // "browser" | "edge" | "node"
@@ -112,7 +114,7 @@ import {
   serializeCseEnvelope,
   deserializeCseEnvelope,
   type CseEnvelope,
-} from "@heossi/qnsi-browser";
+} from "@heossihq/qnsi/browser";
 
 // Encrypt
 const envelope: CseEnvelope = await encryptBeforeUpload(
@@ -152,7 +154,7 @@ import {
   generateSigningKeyPair,
   generateEncryptionKeyPair,
   type SignedEnvelope,
-} from "@heossi/qnsi-browser";
+} from "@heossihq/qnsi/browser";
 
 // Generate ML-DSA signing key pair
 const sigKeyPair = await generateSigningKeyPair("dilithium-3");
@@ -190,8 +192,8 @@ The noble provider uses `@noble/post-quantum` which is a pure JavaScript impleme
 ## Integration with Storage SDK
 
 ```ts
-import { initializePqcProvider, encryptBeforeUpload, generateEncryptionKeyPair } from "@heossi/qnsi-browser";
-import { StorageClient } from "@heossi/qnsi-storage-sdk";
+import { initializePqcProvider, encryptBeforeUpload, generateEncryptionKeyPair } from "@heossihq/qnsi/browser";
+import { StorageClient } from "@heossihq/qnsi";
 
 await initializePqcProvider({ apiKey: "YOUR_API_KEY" });
 
@@ -219,30 +221,30 @@ const upload = await storage.initiateUpload({
 ## Key APIs
 
 ### Provider Management
-- `initializePqcProvider({ apiKey })` — Initialize the noble PQC provider with API key
-- `isProviderInitialized()` — Check if provider is ready
-- `getActiveProvider()` — Get the active `PqcProvider` instance
-- `detectRuntime()` — Detect current runtime environment
-- `getSupportedAlgorithms()` — List all 18 supported algorithms
-- `resetProvider()` — Reset provider state
-- `NOBLE_SUPPORTED_ALGORITHMS` — Array of all supported algorithm names
+- `initializePqcProvider({ apiKey })` - Initialize the noble PQC provider with API key
+- `isProviderInitialized()` - Check if provider is ready
+- `getActiveProvider()` - Get the active `PqcProvider` instance
+- `detectRuntime()` - Detect current runtime environment
+- `getSupportedAlgorithms()` - List all 18 supported algorithms
+- `resetProvider()` - Reset provider state
+- `NOBLE_SUPPORTED_ALGORITHMS` - Array of all supported algorithm names
 
 ### Encryption
-- `encryptBeforeUpload(data, publicKey, algorithm)` — Encrypt with ML-KEM + AES-256-GCM
-- `decryptAfterDownload(envelope, privateKey)` — Decrypt CSE envelope
-- `serializeCseEnvelope(envelope)` — Serialize to binary
-- `deserializeCseEnvelope(data)` — Deserialize from binary
+- `encryptBeforeUpload(data, publicKey, algorithm)` - Encrypt with ML-KEM + AES-256-GCM
+- `decryptAfterDownload(envelope, privateKey)` - Decrypt CSE envelope
+- `serializeCseEnvelope(envelope)` - Serialize to binary
+- `deserializeCseEnvelope(data)` - Deserialize from binary
 
 ### Signatures
-- `signData(data, privateKey, algorithm)` — Sign data with ML-DSA or SLH-DSA
-- `verifySignature(data, signature, publicKey, algorithm)` — Verify signature
-- `generateSigningKeyPair(algorithm)` — Generate ML-DSA or SLH-DSA key pair
-- `generateEncryptionKeyPair(algorithm)` — Generate ML-KEM key pair
+- `signData(data, privateKey, algorithm)` - Sign data with ML-DSA or SLH-DSA
+- `verifySignature(data, signature, publicKey, algorithm)` - Verify signature
+- `generateSigningKeyPair(algorithm)` - Generate ML-DSA or SLH-DSA key pair
+- `generateEncryptionKeyPair(algorithm)` - Generate ML-KEM key pair
 
 ### Types
-- `CseEnvelope` — Client-side encryption envelope
-- `SignedEnvelope` — Signed data envelope
-- `RuntimeEnvironment` — `"browser" | "edge" | "node"`
-- `PqcAlgorithm` — Re-exported from `@heossi/qnsi-cryptography`
-- `PqcKeyPair` — Re-exported from `@heossi/qnsi-cryptography`
-- `PqcProvider` — Re-exported from `@heossi/qnsi-cryptography`
+- `CseEnvelope` - Client-side encryption envelope
+- `SignedEnvelope` - Signed data envelope
+- `RuntimeEnvironment` - `"browser" | "edge" | "node"`
+- `PqcAlgorithm` - Re-exported from `@heossihq/qnsi-cryptography`
+- `PqcKeyPair` - Re-exported from `@heossihq/qnsi-cryptography`
+- `PqcProvider` - Re-exported from `@heossihq/qnsi-cryptography`

@@ -1,4 +1,4 @@
-// Package ai is the QNSP AI Orchestrator client — model registry, AI
+// Package ai is the QNSP AI Orchestrator client - model registry, AI
 // workload submission with enclave attestation, inference, and bias /
 // prompt-injection monitoring.
 package ai

@@ -1,4 +1,4 @@
-"""QNSP Crypto-Inventory (CBOM) — asset catalogue, discovery runs,
+"""QNSI Crypto-Inventory (CBOM) - asset catalogue, discovery runs,
 deprecation policies, PQC migration readiness."""
 
 from __future__ import annotations
@@ -20,8 +20,8 @@ class CryptoInventoryClient(_ServiceClient):
     def get_asset(self, asset_id: str) -> dict[str, Any]:
         return self._request("GET", f"/assets/{asset_id}")
 
-    def get_asset_stats(self, tenant_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/assets/stats/{tenant_id}")
+    def get_asset_stats(self, tenant_id: str | None = None) -> dict[str, Any]:
+        return self._request("GET", "/assets/stats")
 
     def discover_assets(
         self,
@@ -39,8 +39,8 @@ class CryptoInventoryClient(_ServiceClient):
         if options is not None:
             body["options"] = options
         return self._request(
-            "POST", "/discovery/runs", json=body, idempotency_key=idempotency_key
+            "POST", "/assets/discover", json=body, idempotency_key=idempotency_key
         )
 
-    def get_readiness_score(self, tenant_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/readiness/{tenant_id}")
+    def get_readiness_score(self, tenant_id: str | None = None) -> dict[str, Any]:
+        return self._request("GET", "/readiness")

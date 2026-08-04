@@ -4,7 +4,7 @@ version = "0.3.0"
 edition = "2021"
 rust-version = "1.75"
 license = "Apache-2.0"
-description = "Official Rust SDK for the QNSI Quantum-Native Security Infrastructure — post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, KMS, and immutable audit trails."
+description = "Official Rust SDK for the QNSI Quantum-Native Security Infrastructure - post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, KMS, and immutable audit trails."
 repository = "https://github.com/heossihq/qnsi-public"
 homepage = "https://cloud.qnsi.heossi.com"
 documentation = "https://docs.qnsi.heossi.com/sdk/rust"
@@ -25,7 +25,7 @@ base64 = "0.22"
 chrono = { version = "0.4", default-features = false, features = ["std", "clock", "serde"] }
 uuid = { version = "1", features = ["v4"] }
 
-# Local PQC primitives — opt-in via the `crypto` feature so the base
+# Local PQC primitives - opt-in via the `crypto` feature so the base
 # crate compiles with no native dependency.
 oqs = { version = "0.11.0", optional = true, default-features = false, features = ["std"] }
 

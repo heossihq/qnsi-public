@@ -1,11 +1,11 @@
-# @heossi/qnsi-events
+# @heossihq/qnsi-events
 
 Canonical event contracts and envelope schemas for messaging inside the Quantum-Native Security Infrastructure (QNSI).
 
 ## Usage
 
 ```ts
-import { eventEnvelopeSchema, createEventEnvelope } from "@heossi/qnsi-events";
+import { eventEnvelopeSchema, createEventEnvelope } from "@heossihq/qnsi-events";
 
 const envelope = createEventEnvelope({
   topic: "auth.user.created",

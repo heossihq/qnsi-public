@@ -9,7 +9,7 @@ import { logger } from "../logger.js";
  * Each control maps to a verifiable platform feature with evidence collection.
  */
 
-export type ControlStatus = "met" | "partial" | "not_met" | "not_applicable";
+export type ControlStatus = "met" | "partial" | "not_met" | "not_applicable" | "not_verified";
 export type FrameworkId = "soc2" | "hipaa" | "gdpr" | "pci-dss" | "iso27001" | "pdpa" | "mas-trm";
 
 export interface ComplianceControl {
@@ -21,20 +21,31 @@ export interface ComplianceControl {
 	readonly lastAssessedAt: string;
 }
 
+export interface EvidenceRequestContext {
+	readonly tenantId: string;
+	readonly traceId: string;
+}
+
+export interface ComplianceEvidenceSummary {
+	/** The stats endpoint does not expose a 24-hour event count. */
+	readonly auditEventsLast24h: null;
+	/** Tenant-scoped all-time count reported by the protected audit stats endpoint. */
+	readonly auditEventsTotal: number | null;
+	readonly kmsOperationsLast24h: number | null;
+	readonly activeAccessPolicies: number | null;
+	/** Checkpoint payloads embed signer keys and are not accepted as trusted evidence. */
+	readonly auditCheckpointsExist: null;
+	readonly securityAlertsLast24h: number | null;
+}
+
 export interface ComplianceFrameworkDetail {
 	readonly id: FrameworkId;
 	readonly name: string;
 	readonly version: string;
 	readonly controls: readonly ComplianceControl[];
-	readonly overallScore: number;
+	readonly overallScore: number | null;
 	readonly lastAssessedAt: string;
-	readonly evidenceSummary?: {
-		readonly auditEventsLast24h: number;
-		readonly kmsOperationsLast24h: number | null;
-		readonly activeAccessPolicies: number | null;
-		readonly auditCheckpointsExist: boolean;
-		readonly securityAlertsLast24h: number | null;
-	};
+	readonly evidenceSummary?: ComplianceEvidenceSummary;
 }
 
 export interface ComplianceReport {
@@ -42,116 +53,104 @@ export interface ComplianceReport {
 	readonly tenantId: string;
 	readonly frameworkId: FrameworkId;
 	readonly generatedAt: string;
-	readonly overallScore: number;
+	readonly overallScore: number | null;
 	readonly controlsSummary: {
 		readonly met: number;
 		readonly partial: number;
 		readonly notMet: number;
 		readonly notApplicable: number;
+		readonly notVerified: number;
 	};
 	readonly controls: readonly ComplianceControl[];
-	readonly evidenceSummary?:
-		| {
-				readonly auditEventsLast24h: number;
-				readonly kmsOperationsLast24h: number | null;
-				readonly activeAccessPolicies: number | null;
-				readonly auditCheckpointsExist: boolean;
-				readonly securityAlertsLast24h: number | null;
-		  }
-		| undefined;
+	readonly evidenceSummary?: ComplianceEvidenceSummary | undefined;
 	readonly assessmentMethod: string;
 }
 
-interface PlatformCapabilities {
-	readonly hasPqcAuth: boolean;
-	readonly hasAuditChain: boolean;
-	readonly hasEncryptionAtRest: boolean;
-	readonly hasEncryptionInTransit: boolean;
-	readonly hasAccessControl: boolean;
-	readonly hasKeyManagement: boolean;
-	readonly hasIncidentResponse: boolean;
-	readonly hasSecurityMonitoring: boolean;
+interface ComplianceServiceConfig {
+	readonly authServiceUrl: string | null;
+	readonly auditServiceUrl: string | null;
+	readonly kmsServiceUrl: string | null;
+	readonly accessControlServiceUrl: string | null;
+	readonly securityMonitoringServiceUrl: string | null;
+	readonly serviceId?: string | null;
+	readonly serviceSecret?: string | null;
 }
 
-interface EvidenceMetrics {
-	readonly auditEventsLast24h: number;
-	/**
-	 * Audit #26: these three are null when not measurable. The previous code reported a
-	 * fabricated `1` whenever the service's /health answered — a liveness probe is not an
-	 * operations/policy/alert count, and no current service surface exposes those counts.
-	 */
-	readonly kmsOperationsLast24h: number | null;
-	readonly activeAccessPolicies: number | null;
-	readonly auditCheckpointsExist: boolean;
-	readonly securityAlertsLast24h: number | null;
-}
+const UNAVAILABLE_EVIDENCE: ComplianceEvidenceSummary = {
+	auditEventsLast24h: null,
+	auditEventsTotal: null,
+	kmsOperationsLast24h: null,
+	activeAccessPolicies: null,
+	auditCheckpointsExist: null,
+	securityAlertsLast24h: null,
+};
 
-async function collectEvidenceMetrics(
-	serviceUrls: {
-		readonly auditServiceUrl: string | null;
-		readonly kmsServiceUrl: string | null;
-		readonly accessControlServiceUrl: string | null;
-		readonly securityMonitoringServiceUrl: string | null;
-	},
-	timeoutMs: number = 5000,
-): Promise<EvidenceMetrics> {
-	const defaults: EvidenceMetrics = {
-		auditEventsLast24h: 0,
-		kmsOperationsLast24h: null,
-		activeAccessPolicies: null,
-		auditCheckpointsExist: false,
-		securityAlertsLast24h: null,
-	};
+async function requestInternalServiceToken(
+	config: ComplianceServiceConfig,
+	timeoutMs: number,
+): Promise<string | null> {
+	if (!config.authServiceUrl || !config.serviceId || !config.serviceSecret) return null;
 
-	// Audit #26: the kms/access/security-monitoring health probes were removed here —
-	// liveness answers were being converted into fabricated "1" counts. Only surfaces
-	// that genuinely report the metric are probed.
-	const probes = await Promise.allSettled([
-		serviceUrls.auditServiceUrl
-			? fetchJsonMetric(serviceUrls.auditServiceUrl, "/audit/v1/stats", timeoutMs)
-			: Promise.resolve(null),
-		serviceUrls.auditServiceUrl
-			? fetchJsonMetric(serviceUrls.auditServiceUrl, "/audit/v1/checkpoints/latest", timeoutMs)
-			: Promise.resolve(null),
-	]);
-
-	const auditStats = probes[0].status === "fulfilled" ? probes[0].value : null;
-	const checkpointData = probes[1].status === "fulfilled" ? probes[1].value : null;
-
-	return {
-		// Real: the audit stats endpoint genuinely reports totalEvents.
-		auditEventsLast24h: extractNumericField(auditStats, "totalEvents", defaults.auditEventsLast24h),
-		// Honest unavailability: kms/access/security health endpoints prove liveness only —
-		// they expose no operation/policy/alert counts, so these are null — never a count
-		// invented from a liveness signal (audit #26).
-		kmsOperationsLast24h: null,
-		activeAccessPolicies: null,
-		auditCheckpointsExist: checkpointData !== null && typeof checkpointData === "object",
-		securityAlertsLast24h: null,
-	};
-}
-
-async function fetchJsonMetric(baseUrl: string, path: string, timeoutMs: number): Promise<unknown> {
 	try {
-		const url = new URL(path, baseUrl);
-		const res = await fetch(url.toString(), {
-			method: "GET",
+		const response = await fetch(new URL("/auth/service-token", config.authServiceUrl), {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${config.serviceSecret}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				serviceId: config.serviceId,
+				audience: "internal-service",
+			}),
 			signal: AbortSignal.timeout(timeoutMs),
-			cache: "no-store",
 		});
-		if (!res.ok) return null;
-		return (await res.json()) as unknown;
+		if (!response.ok) return null;
+		const payload = (await response.json()) as { accessToken?: unknown };
+		return typeof payload.accessToken === "string" && payload.accessToken.length > 0
+			? payload.accessToken
+			: null;
 	} catch {
 		return null;
 	}
 }
 
-function extractNumericField(data: unknown, field: string, fallback: number): number {
-	if (data && typeof data === "object" && field in data) {
-		const val = (data as Record<string, unknown>)[field];
-		return typeof val === "number" ? val : fallback;
+async function collectEvidenceMetrics(
+	config: ComplianceServiceConfig,
+	context: EvidenceRequestContext | undefined,
+	timeoutMs: number = 5_000,
+): Promise<ComplianceEvidenceSummary> {
+	if (!context || !config.auditServiceUrl) return UNAVAILABLE_EVIDENCE;
+
+	const token = await requestInternalServiceToken(config, timeoutMs);
+	if (!token) return UNAVAILABLE_EVIDENCE;
+
+	try {
+		const response = await fetch(new URL("/audit/v1/stats", config.auditServiceUrl), {
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"x-tenant-id": context.tenantId,
+				"x-qnsp-tenant": context.tenantId,
+				"x-qnsp-trace-id": context.traceId,
+			},
+			signal: AbortSignal.timeout(timeoutMs),
+			cache: "no-store",
+		});
+		if (!response.ok) return UNAVAILABLE_EVIDENCE;
+		const payload = (await response.json()) as unknown;
+		return {
+			...UNAVAILABLE_EVIDENCE,
+			auditEventsTotal: extractNumericField(payload, "totalEvents"),
+		};
+	} catch {
+		return UNAVAILABLE_EVIDENCE;
 	}
-	return fallback;
+}
+
+function extractNumericField(data: unknown, field: string): number | null {
+	if (!data || typeof data !== "object" || !(field in data)) return null;
+	const value = (data as Record<string, unknown>)[field];
+	return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 const FRAMEWORK_METADATA: Record<FrameworkId, { name: string; version: string }> = {
@@ -168,119 +167,10 @@ const FRAMEWORK_METADATA: Record<FrameworkId, { name: string; version: string }>
 };
 
 /**
- * Probe a service health endpoint to verify it is actually operational.
- * Returns true only if the service responds with HTTP 200 within the timeout.
+ * Retained for compatibility with existing tests/callers. Compliance effectiveness is no
+ * longer cached or derived from service health, so there is no cache to reset.
  */
-async function probeServiceHealth(
-	baseUrl: string,
-	healthPath: string,
-	timeoutMs: number = 3000,
-): Promise<boolean> {
-	try {
-		const healthUrl = new URL(healthPath, baseUrl);
-		const res = await fetch(healthUrl.toString(), {
-			method: "GET",
-			signal: AbortSignal.timeout(timeoutMs),
-			cache: "no-store",
-		});
-		return res.ok;
-	} catch {
-		return false;
-	}
-}
-
-/**
- * Assess platform capabilities by probing configured service health endpoints.
- * Each capability is verified by an actual HTTP health check — not just URL presence.
- * Results are cached for the specified TTL to avoid excessive health probing.
- */
-let _capabilitiesCache: { capabilities: PlatformCapabilities; expiresAt: number } | null = null;
-const CAPABILITIES_CACHE_TTL_MS = 30_000; // 30 seconds
-
-/** Resets the capabilities cache — used between test runs to ensure isolation */
-export function _resetCapabilitiesCacheForTesting(): void {
-	_capabilitiesCache = null;
-}
-
-async function assessPlatformCapabilities(serviceUrls: {
-	readonly authServiceUrl: string | null;
-	readonly auditServiceUrl: string | null;
-	readonly kmsServiceUrl: string | null;
-	readonly accessControlServiceUrl: string | null;
-	readonly securityMonitoringServiceUrl: string | null;
-}): Promise<PlatformCapabilities> {
-	const now = Date.now();
-	if (_capabilitiesCache && _capabilitiesCache.expiresAt > now) {
-		return _capabilitiesCache.capabilities;
-	}
-
-	const [authUp, auditUp, kmsUp, accessUp, secMonUp] = await Promise.all([
-		serviceUrls.authServiceUrl
-			? probeServiceHealth(serviceUrls.authServiceUrl, "/auth/health")
-			: Promise.resolve(false),
-		serviceUrls.auditServiceUrl
-			? probeServiceHealth(serviceUrls.auditServiceUrl, "/health")
-			: Promise.resolve(false),
-		serviceUrls.kmsServiceUrl
-			? probeServiceHealth(serviceUrls.kmsServiceUrl, "/health")
-			: Promise.resolve(false),
-		serviceUrls.accessControlServiceUrl
-			? probeServiceHealth(serviceUrls.accessControlServiceUrl, "/health")
-			: Promise.resolve(false),
-		serviceUrls.securityMonitoringServiceUrl
-			? probeServiceHealth(serviceUrls.securityMonitoringServiceUrl, "/health")
-			: Promise.resolve(false),
-	]);
-
-	const capabilities: PlatformCapabilities = {
-		hasPqcAuth: authUp,
-		hasAuditChain: auditUp,
-		hasEncryptionAtRest: kmsUp,
-		hasEncryptionInTransit: authUp,
-		hasAccessControl: accessUp,
-		hasKeyManagement: kmsUp,
-		hasIncidentResponse: secMonUp,
-		hasSecurityMonitoring: secMonUp,
-	};
-
-	_capabilitiesCache = { capabilities, expiresAt: now + CAPABILITIES_CACHE_TTL_MS };
-
-	logger.info(
-		{ capabilities, probeResults: { authUp, auditUp, kmsUp, accessUp, secMonUp } },
-		"Platform capabilities assessed via live health probes",
-	);
-
-	return capabilities;
-}
-
-function evaluateControlStatus(
-	control: Omit<ComplianceControl, "status" | "lastAssessedAt">,
-	capabilities: PlatformCapabilities,
-): ControlStatus {
-	const sourceCapabilityMap: Record<string, boolean> = {
-		"auth-service": capabilities.hasPqcAuth,
-		"access-control-service": capabilities.hasAccessControl,
-		"edge-gateway": capabilities.hasEncryptionInTransit,
-		"kms-service": capabilities.hasKeyManagement,
-		"vault-service": capabilities.hasEncryptionAtRest,
-		"storage-service": capabilities.hasEncryptionAtRest,
-		"audit-service": capabilities.hasAuditChain,
-		"security-monitoring-service": capabilities.hasSecurityMonitoring,
-		"observability-service": capabilities.hasSecurityMonitoring,
-		"crypto-inventory-service": true,
-		cryptography: true,
-		"tenant-service": true,
-	};
-
-	const sourcesConfigured = control.evidenceSources.filter(
-		(source) => sourceCapabilityMap[source] === true,
-	);
-	const ratio = sourcesConfigured.length / control.evidenceSources.length;
-
-	if (ratio >= 1) return "met";
-	if (ratio >= 0.5) return "partial";
-	return "not_met";
-}
+export function _resetCapabilitiesCacheForTesting(): void {}
 
 type ControlDef = Omit<ComplianceControl, "status" | "lastAssessedAt">;
 
@@ -608,57 +498,39 @@ const FRAMEWORK_CONTROLS: Record<FrameworkId, readonly ControlDef[]> = {
 };
 
 export class ComplianceService {
-	private readonly serviceUrls: {
-		readonly authServiceUrl: string | null;
-		readonly auditServiceUrl: string | null;
-		readonly kmsServiceUrl: string | null;
-		readonly accessControlServiceUrl: string | null;
-		readonly securityMonitoringServiceUrl: string | null;
-	};
+	private readonly config: ComplianceServiceConfig;
 
-	constructor(serviceUrls: {
-		readonly authServiceUrl: string | null;
-		readonly auditServiceUrl: string | null;
-		readonly kmsServiceUrl: string | null;
-		readonly accessControlServiceUrl: string | null;
-		readonly securityMonitoringServiceUrl: string | null;
-	}) {
-		this.serviceUrls = serviceUrls;
+	constructor(config: ComplianceServiceConfig) {
+		this.config = config;
 		logger.info(
-			"ComplianceService initialized — capabilities assessed via live health probes and evidence collection",
+			"ComplianceService initialized - control effectiveness requires protected evidence and is independent of service liveness",
 		);
 	}
 
 	async getFrameworkDetails(
 		frameworkId: FrameworkId,
 		_tenantComplianceTags: readonly string[],
+		evidenceContext?: EvidenceRequestContext,
 	): Promise<ComplianceFrameworkDetail | null> {
 		const controlDefs = FRAMEWORK_CONTROLS[frameworkId];
 		if (!controlDefs) return null;
 
-		const [capabilities, evidence] = await Promise.all([
-			assessPlatformCapabilities(this.serviceUrls),
-			collectEvidenceMetrics(this.serviceUrls),
-		]);
+		const evidence = await collectEvidenceMetrics(this.config, evidenceContext);
 		const meta = FRAMEWORK_METADATA[frameworkId];
 		const now = new Date().toISOString();
 
 		const controls: ComplianceControl[] = controlDefs.map((def) => ({
 			...def,
-			status: evaluateControlStatus(def, capabilities),
+			status: "not_verified",
 			lastAssessedAt: now,
 		}));
-
-		const met = controls.filter((c) => c.status === "met").length;
-		const total = controls.length;
-		const overallScore = total > 0 ? Math.round((met / total) * 100) : 0;
 
 		return {
 			id: frameworkId,
 			name: meta.name,
 			version: meta.version,
 			controls,
-			overallScore,
+			overallScore: null,
 			lastAssessedAt: now,
 			evidenceSummary: evidence,
 		};
@@ -666,12 +538,15 @@ export class ComplianceService {
 
 	async listFrameworks(
 		tenantComplianceTags: readonly string[],
+		evidenceContext?: EvidenceRequestContext,
 	): Promise<ComplianceFrameworkDetail[]> {
 		const frameworkIds = Object.keys(FRAMEWORK_CONTROLS) as FrameworkId[];
 
 		if (tenantComplianceTags.length === 0) {
 			const results = await Promise.all(
-				frameworkIds.map((id) => this.getFrameworkDetails(id, tenantComplianceTags)),
+				frameworkIds.map((id) =>
+					this.getFrameworkDetails(id, tenantComplianceTags, evidenceContext),
+				),
 			);
 			return results.filter((f): f is ComplianceFrameworkDetail => f !== null);
 		}
@@ -698,15 +573,9 @@ export class ComplianceService {
 			if (fwId) matchedIds.add(fwId);
 		}
 
-		if (matchedIds.size === 0) {
-			const results = await Promise.all(
-				frameworkIds.map((id) => this.getFrameworkDetails(id, tenantComplianceTags)),
-			);
-			return results.filter((f): f is ComplianceFrameworkDetail => f !== null);
-		}
-
+		const selectedIds = matchedIds.size === 0 ? frameworkIds : Array.from(matchedIds);
 		const results = await Promise.all(
-			Array.from(matchedIds).map((id) => this.getFrameworkDetails(id, tenantComplianceTags)),
+			selectedIds.map((id) => this.getFrameworkDetails(id, tenantComplianceTags, evidenceContext)),
 		);
 		return results.filter((f): f is ComplianceFrameworkDetail => f !== null);
 	}
@@ -714,14 +583,16 @@ export class ComplianceService {
 	async generateReport(
 		tenantId: string,
 		frameworkId: FrameworkId,
+		traceId: string = randomUUID(),
 	): Promise<ComplianceReport | null> {
-		const detail = await this.getFrameworkDetails(frameworkId, []);
+		const detail = await this.getFrameworkDetails(frameworkId, [], { tenantId, traceId });
 		if (!detail) return null;
 
 		const met = detail.controls.filter((c) => c.status === "met").length;
 		const partial = detail.controls.filter((c) => c.status === "partial").length;
 		const notMet = detail.controls.filter((c) => c.status === "not_met").length;
 		const notApplicable = detail.controls.filter((c) => c.status === "not_applicable").length;
+		const notVerified = detail.controls.filter((c) => c.status === "not_verified").length;
 
 		const report: ComplianceReport = {
 			id: randomUUID(),
@@ -729,10 +600,10 @@ export class ComplianceService {
 			frameworkId,
 			generatedAt: new Date().toISOString(),
 			overallScore: detail.overallScore,
-			controlsSummary: { met, partial, notMet, notApplicable },
+			controlsSummary: { met, partial, notMet, notApplicable, notVerified },
 			controls: detail.controls,
 			evidenceSummary: detail.evidenceSummary,
-			assessmentMethod: "live-probe-with-evidence-collection",
+			assessmentMethod: "protected-evidence-only; unsupported-controls-not-verified",
 		};
 
 		logger.info(
@@ -744,9 +615,10 @@ export class ComplianceService {
 				met,
 				partial,
 				notMet,
+				notVerified,
 				evidenceSummary: report.evidenceSummary,
 			},
-			"Compliance report generated with evidence summary",
+			"Compliance report generated from protected evidence; unsupported controls remain not verified",
 		);
 
 		return report;

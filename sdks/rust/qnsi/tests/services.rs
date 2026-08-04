@@ -1,5 +1,5 @@
 //! Wire-contract regression guards (wiremock). These assert the REQUEST bodies
-//! the SDK sends — the field names + the central tenantId injection — so they
+//! the SDK sends - the field names + the central tenantId injection - so they
 //! fail if the contract regresses (e.g. vault `payload`->`payloadBase64`, kms
 //! `keyType`->`purpose`, sign `data`->`dataB64`). The live proof is
 //! examples/prod_verify; these guard the shapes offline.
@@ -81,7 +81,7 @@ async fn vault_create_and_get() {
 async fn kms_create_sign_verify() {
     let srv = MockServer::start().await;
     mock_activation(&srv).await;
-    // Guard: create sends `keyType` (default "data") + injected tenantId — NOT the
+    // Guard: create sends `keyType` (default "data") + injected tenantId - NOT the
     // old `purpose` field.
     Mock::given(method("POST"))
         .and(path("/proxy/kms/v1/keys"))

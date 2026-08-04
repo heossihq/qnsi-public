@@ -13,7 +13,7 @@ source_files:
 
 This documentation covers the **Quantum-Native Security Infrastructure (QNSI)** developer-facing APIs, SDKs, and integration patterns.
 
-> **Monorepo**: `@heossi/qnsi-monorepo` v0.0.1  
+> **Monorepo**: `@heossihq/qnsi-monorepo` v0.0.1
 > **Node.js**: ≥24.12.0 | **pnpm**: ≥10.25.0
 
 ## In scope

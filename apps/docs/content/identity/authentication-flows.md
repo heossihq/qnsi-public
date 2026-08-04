@@ -23,12 +23,12 @@ POST /auth/login
 Returns access token + refresh token.
 
 ### WebAuthn flow
-1. `POST /auth/webauthn/authenticate/start` — get challenge
+1. `POST /auth/webauthn/authenticate/start` - get challenge
 2. Client signs with authenticator
-3. `POST /auth/webauthn/authenticate/complete` — verify and get tokens
+3. `POST /auth/webauthn/authenticate/complete` - verify and get tokens
 
 ### OAuth / Social Sign-In
-One-click sign-up and sign-in via GitHub, Google, LinkedIn, or Microsoft. Handled entirely by the Cloud Portal BFF — no direct auth-service API calls required from the client.
+One-click sign-up and sign-in via GitHub, Google, LinkedIn, or Microsoft. Handled entirely by the Cloud Portal BFF - no direct auth-service API calls required from the client.
 
 1. User navigates to `GET /api/auth/oauth/{provider}`
 2. BFF generates a CSRF state (HMAC-SHA256 nonce) and sets `qnsi_oauth_state` cookie (HttpOnly, SameSite=Lax, 10 min TTL)
@@ -36,10 +36,10 @@ One-click sign-up and sign-in via GitHub, Google, LinkedIn, or Microsoft. Handle
    - a login/signup flow, or
    - a link-external-identity flow from profile settings
 4. BFF redirects to the provider's authorization endpoint:
-   - **GitHub**: `https://github.com/login/oauth/authorize` — scopes `user:email read:user`
-   - **Google**: `https://accounts.google.com/o/oauth2/v2/auth` — scopes `openid email profile`
-   - **LinkedIn**: `https://www.linkedin.com/oauth/v2/authorization` — scopes `openid profile email`
-   - **Microsoft**: `https://login.microsoftonline.com/common/oauth2/v2.0/authorize` — scopes `openid profile email User.Read`
+   - **GitHub**: `https://github.com/login/oauth/authorize` - scopes `user:email read:user`
+   - **Google**: `https://accounts.google.com/o/oauth2/v2/auth` - scopes `openid email profile`
+   - **LinkedIn**: `https://www.linkedin.com/oauth/v2/authorization` - scopes `openid profile email`
+   - **Microsoft**: `https://login.microsoftonline.com/common/oauth2/v2.0/authorize` - scopes `openid profile email User.Read`
 5. Provider redirects to `GET /api/auth/oauth/{provider}/callback?code=…&state=…`
 6. BFF verifies the CSRF state against the cookie, exchanges the `code` for an access token, and fetches the user profile from the provider API
 7. **Returning user**: identity lookup via `GET /auth/oauth/identity` → session issued

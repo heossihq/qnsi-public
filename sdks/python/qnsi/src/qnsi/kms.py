@@ -1,17 +1,17 @@
-"""KMS client — server-side PQC key management.
+"""KMS client - server-side PQC key management.
 
-Mirrors the most-used methods of ``@heossi/qnsi-kms-client`` from the TypeScript
+Mirrors the most-used methods of ``@heossihq/qnsi-kms-client`` from the TypeScript
 SDK family. Routes verified against ``apps/kms-service/src/routes/keys.ts``:
 
-  POST   /kms/v1/keys                 — createKey
-  GET    /kms/v1/keys                 — listKeys
-  GET    /kms/v1/keys/{keyId}         — getKey
-  POST   /kms/v1/keys/{keyId}/wrap    — wrapKey
-  POST   /kms/v1/keys/{keyId}/unwrap  — unwrapKey
-  POST   /kms/v1/keys/{keyId}/sign    — signData
-  POST   /kms/v1/keys/{keyId}/verify  — verifySignature
-  POST   /kms/v1/keys/{keyId}/rotate  — rotateKey
-  DELETE /kms/v1/keys/{keyId}         — deleteKey
+  POST   /kms/v1/keys                 - createKey
+  GET    /kms/v1/keys                 - listKeys
+  GET    /kms/v1/keys/{keyId}         - getKey
+  POST   /kms/v1/keys/{keyId}/wrap    - wrapKey
+  POST   /kms/v1/keys/{keyId}/unwrap  - unwrapKey
+  POST   /kms/v1/keys/{keyId}/sign    - signData
+  POST   /kms/v1/keys/{keyId}/verify  - verifySignature
+  POST   /kms/v1/keys/{keyId}/rotate  - rotateKey
+  DELETE /kms/v1/keys/{keyId}         - deleteKey
 
 Server-side keys are tenant-scoped, tier-gated, and (where supported)
 backed by an HSM. For local in-process PQC primitives use ``qnsp.crypto``;
@@ -45,6 +45,7 @@ class KmsClient(_ServiceClient):
         algorithm: str,
         key_type: str = "data",
         key_id: str | None = None,
+        purpose: str | None = None,
         tenant_id: str | None = None,
         metadata: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
@@ -58,11 +59,19 @@ class KmsClient(_ServiceClient):
         to ``"data"`` (the value used for PQC signing keys).
 
         Args:
-            algorithm: PQC algorithm name — e.g. ``"dilithium-3"`` (ML-DSA-65),
+            algorithm: PQC algorithm name - e.g. ``"dilithium-3"`` (ML-DSA-65),
                 ``"ml-kem-768"``, ``"falcon-512"``, ``"slh-dsa-sha2-128f"``.
             key_type: ``"data"`` (default), ``"root"``, ``"master"``, or ``"byok"``.
             key_id: Optional caller-supplied id; a uuid4 is generated otherwise.
+            purpose: Optional hint (``"signing"`` / ``"encryption"`` / ``"kem"``).
+                NOT a backend field - folded into ``metadata``, exactly as the npm,
+                Rust, JVM and Go SDKs do. Python was the only SDK that omitted it,
+                so cross-language sample code did not port.
         """
+        merged_metadata: dict[str, Any] = {**(metadata or {})}
+        if purpose:
+            merged_metadata["purpose"] = purpose
+
         body: dict[str, Any] = {
             "keyId": key_id or str(uuid.uuid4()),
             "keyType": key_type,
@@ -70,8 +79,8 @@ class KmsClient(_ServiceClient):
         }
         if tenant_id:
             body["tenantId"] = tenant_id
-        if metadata:
-            body["metadata"] = metadata
+        if merged_metadata:
+            body["metadata"] = merged_metadata
         return self._request("POST", "/keys", json=body, idempotency_key=idempotency_key)
 
     def list_keys(
@@ -152,7 +161,7 @@ class KmsClient(_ServiceClient):
     def wrap(self, key_id: str, plaintext: bytes) -> bytes:
         """Wrap (encrypt) plaintext using the named server-side key.
 
-        The server returns the wrapped blob — opaque to the caller. Pair
+        The server returns the wrapped blob - opaque to the caller. Pair
         with :meth:`unwrap` to recover the plaintext.
         """
         if not isinstance(plaintext, (bytes, bytearray)):

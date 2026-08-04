@@ -1,4 +1,4 @@
-//! QNSI Auth — password login, JWT session refresh/revocation, MFA, and
+//! QNSI Auth - password login, JWT session refresh/revocation, MFA, and
 //! risk-based authentication, mapped to the REAL auth-service routes
 //! (verified against production; mirrors the cloud portal + the JVM SDK).
 //!
@@ -7,7 +7,7 @@
 //!    token in the body and NO auth header (the session does not exist yet);
 //!  - `revoke` / `mfa_*` / `*risk*` are post-login ops on bare `/auth/*` and
 //!    require the session JWT (Bearer) plus the `x-qnsp-tenant-id` header. Call
-//!    [`Client::login`] first — this client caches the resulting session and
+//!    [`Client::login`] first - this client caches the resulting session and
 //!    uses it automatically.
 //!
 //! WebAuthn passkeys and SAML/OIDC federation are intentionally NOT exposed:

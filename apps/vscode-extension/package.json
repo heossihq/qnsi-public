@@ -1,0 +1,276 @@
+{
+	"name": "qnsi",
+	"displayName": "QNSI - Quantum-Native Security",
+	"description": "Post-quantum security in your editor: scan your workspace for quantum-vulnerable cryptography (CBOM), manage PQC keys & secrets, get inline algorithm guidance, and expose QNSI tools to AI agents via MCP.",
+	"version": "0.1.1",
+	"publisher": "Heossi",
+	"license": "Apache-2.0",
+	"private": true,
+	"icon": "media/icon.png",
+	"engines": {
+		"vscode": "^1.96.0"
+	},
+	"categories": [
+		"Linters",
+		"Other"
+	],
+	"keywords": [
+		"post-quantum",
+		"pqc",
+		"cryptography",
+		"cbom",
+		"ml-kem",
+		"ml-dsa",
+		"security",
+		"mcp",
+		"quantum-safe"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/heossi-hq/qnsi-public",
+		"directory": "apps/vscode-extension"
+	},
+	"homepage": "https://qnsi.heossi.com",
+	"bugs": {
+		"url": "https://github.com/heossi-hq/qnsi-public/issues"
+	},
+	"main": "./dist/extension.js",
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"contributes": {
+		"configuration": {
+			"title": "QNSI",
+			"properties": {
+				"qnsi.platformUrl": {
+					"type": "string",
+					"default": "https://api.qnsi.heossi.com",
+					"description": "QNSI platform (edge gateway) base URL."
+				},
+				"qnsi.scanOnSave": {
+					"type": "boolean",
+					"default": false,
+					"description": "Re-scan a file for quantum-vulnerable cryptography when it is saved."
+				},
+				"qnsi.scan.include": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						"**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,java,rb,php,cs,rs,kt,swift}",
+						"**/*.{pem,crt,cer,der,key,p12,pfx}",
+						"**/*.{yaml,yml,json,toml,env,conf,config}"
+					],
+					"description": "Glob patterns to include when scanning the workspace for cryptographic assets."
+				},
+				"qnsi.scan.exclude": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						"**/node_modules/**",
+						"**/dist/**",
+						"**/build/**",
+						"**/.git/**",
+						"**/vendor/**",
+						"**/.next/**",
+						"**/.open-next/**"
+					],
+					"description": "Glob patterns to exclude when scanning."
+				},
+				"qnsi.scan.maxFiles": {
+					"type": "number",
+					"default": 2000,
+					"description": "Maximum number of files scanned per workspace scan (guards very large repos)."
+				}
+			}
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "qnsi",
+					"title": "QNSI",
+					"icon": "media/qnsi-activity.svg"
+				}
+			]
+		},
+		"views": {
+			"qnsi": [
+				{
+					"id": "qnsi.cbom",
+					"name": "Crypto Inventory (CBOM)"
+				},
+				{
+					"id": "qnsi.kms",
+					"name": "KMS Keys"
+				},
+				{
+					"id": "qnsi.vault",
+					"name": "Vault Secrets"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "qnsi.cbom",
+				"contents": "Sign in with your QNSI API key to scan for quantum-vulnerable cryptography, manage keys and secrets, and connect AI agents.\n[Sign in to QNSI](command:qnsi.signIn)\n\nNo key yet? [Create a free account](https://cloud.qnsi.heossi.com/auth?mode=signup)."
+			}
+		],
+		"commands": [
+			{
+				"command": "qnsi.signIn",
+				"title": "Sign In (API Key)",
+				"category": "QNSI"
+			},
+			{
+				"command": "qnsi.signOut",
+				"title": "Sign Out",
+				"category": "QNSI"
+			},
+			{
+				"command": "qnsi.scanWorkspace",
+				"title": "Scan Workspace for Quantum-Vulnerable Crypto",
+				"category": "QNSI",
+				"icon": "$(search)"
+			},
+			{
+				"command": "qnsi.exportCbom",
+				"title": "Export CBOM (CycloneDX)",
+				"category": "QNSI",
+				"icon": "$(cloud-download)"
+			},
+			{
+				"command": "qnsi.showReadiness",
+				"title": "Show PQC Readiness",
+				"category": "QNSI",
+				"icon": "$(graph)"
+			},
+			{
+				"command": "qnsi.kms.refresh",
+				"title": "Refresh KMS Keys",
+				"category": "QNSI",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "qnsi.kms.createKey",
+				"title": "Create KMS Key",
+				"category": "QNSI",
+				"icon": "$(add)"
+			},
+			{
+				"command": "qnsi.kms.rotateKey",
+				"title": "Rotate KMS Key",
+				"category": "QNSI"
+			},
+			{
+				"command": "qnsi.kms.copyId",
+				"title": "Copy Key ID",
+				"category": "QNSI",
+				"icon": "$(copy)"
+			},
+			{
+				"command": "qnsi.vault.refresh",
+				"title": "Refresh Vault Secrets",
+				"category": "QNSI",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "qnsi.vault.createSecret",
+				"title": "Create Vault Secret",
+				"category": "QNSI",
+				"icon": "$(add)"
+			},
+			{
+				"command": "qnsi.vault.reveal",
+				"title": "Reveal Secret Value",
+				"category": "QNSI"
+			},
+			{
+				"command": "qnsi.conformance.refresh",
+				"title": "Refresh Conformance Status",
+				"category": "QNSI"
+			},
+			{
+				"command": "qnsi.configureMcp",
+				"title": "Configure MCP Server for Agent Mode",
+				"category": "QNSI",
+				"icon": "$(server-process)"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "qnsi.scanWorkspace",
+					"when": "view == qnsi.cbom",
+					"group": "navigation@1"
+				},
+				{
+					"command": "qnsi.exportCbom",
+					"when": "view == qnsi.cbom",
+					"group": "navigation@2"
+				},
+				{
+					"command": "qnsi.kms.createKey",
+					"when": "view == qnsi.kms",
+					"group": "navigation@1"
+				},
+				{
+					"command": "qnsi.kms.refresh",
+					"when": "view == qnsi.kms",
+					"group": "navigation@2"
+				},
+				{
+					"command": "qnsi.vault.createSecret",
+					"when": "view == qnsi.vault",
+					"group": "navigation@1"
+				},
+				{
+					"command": "qnsi.vault.refresh",
+					"when": "view == qnsi.vault",
+					"group": "navigation@2"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "qnsi.kms.rotateKey",
+					"when": "view == qnsi.kms && viewItem == qnsiKey",
+					"group": "inline@1"
+				},
+				{
+					"command": "qnsi.kms.copyId",
+					"when": "view == qnsi.kms && viewItem == qnsiKey",
+					"group": "inline@2"
+				},
+				{
+					"command": "qnsi.vault.reveal",
+					"when": "view == qnsi.vault && viewItem == qnsiSecret",
+					"group": "inline@1"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"build": "node esbuild.mjs",
+		"watch": "node esbuild.mjs --watch",
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"verify:detector": "esbuild test/detector.smoke.ts --bundle --platform=node --format=cjs --outfile=dist/detector.smoke.cjs && node dist/detector.smoke.cjs",
+		"build:test": "node esbuild.test.mjs",
+		"test": "node esbuild.mjs && node esbuild.test.mjs && node test/runTest.mjs",
+		"gen:icon": "node scripts/gen-icon.mjs",
+		"lint": "biome check .",
+		"package": "node esbuild.mjs && pnpm dlx @vscode/vsce@^3.6.0 package --no-dependencies --skip-license -o qnsi.vsix"
+	},
+	"dependencies": {
+		"@heossihq/qnsi": "workspace:*",
+		"@heossihq/qnsi-crypto-inventory-sdk": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^25.5.2",
+		"@types/vscode": "^1.96.0",
+		"@vscode/test-electron": "^2.5.2",
+		"esbuild": "^0.28.1",
+		"typescript": "^6.0.2"
+	}
+}

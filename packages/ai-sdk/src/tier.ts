@@ -9,4 +9,4 @@ export {
 	TIER_LIMITS,
 	TierError,
 	type TierLimits,
-} from "@heossi/qnsi-shared-kernel";
+} from "@heossihq/qnsi-shared-kernel";

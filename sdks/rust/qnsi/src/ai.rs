@@ -1,4 +1,4 @@
-//! QNSI AI Orchestrator — model registry, AI workload submission with
+//! QNSI AI Orchestrator - model registry, AI workload submission with
 //! enclave attestation, inference, and bias / prompt-injection monitoring.
 
 use reqwest::Method;

@@ -2,13 +2,13 @@
 title: Reporting Issues
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-vault-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-vault-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.vault./* method */(...);
 > ```
@@ -24,7 +24,7 @@ This document describes how to report bugs, errors, security vulnerabilities, an
 
 | Type | Channel | Response |
 |------|---------|----------|
-| **Security Vulnerability** | qnsi-security@heossi.com | See [Vulnerability Disclosure](/security/vulnerability-disclosure) |
+| **Security Vulnerability** | qnsi-security@heossi.com | See [Vulnerability Disclosure](/legal/vulnerability-disclosure) |
 | **Service Outage** | [Status Page](https://qnsi.heossi.com#overview) + Support Portal | Per [Support Policy](/support/support-policy) |
 | **Bug Report** | Support Portal or GitHub | Acknowledged within 48 hours |
 | **Feature Request** | Support Portal or GitHub | Reviewed monthly |
@@ -36,7 +36,7 @@ This document describes how to report bugs, errors, security vulnerabilities, an
 
 **Contact:** qnsi-security@heossi.com
 
-See our [Vulnerability Disclosure Policy](/security/vulnerability-disclosure) for:
+See our [Vulnerability Disclosure Policy](/legal/vulnerability-disclosure) for:
 - Responsible disclosure guidelines
 - Safe harbor provisions
 - Response timeline commitments
@@ -111,7 +111,7 @@ A complete bug report should include:
 ```
 
 ## SDK Version (if applicable)
-[e.g., @heossi/qnsi-vault-sdk@1.2.3]
+[e.g., @heossihq/qnsi-vault-sdk@1.2.3]
 
 ## Additional Context
 [Any other relevant information]
@@ -275,12 +275,12 @@ HEOSSI (PTE.) LTD reserves the right to:
 - Close issues that cannot be reproduced or lack sufficient information
 - Modify these procedures with reasonable notice
 
-Issue reporting does not create any obligation beyond the commitments in your subscription agreement and the applicable [Service Level Agreement](/legal/sla).
+Issue reporting does not create any obligation beyond the commitments in your subscription agreement and the applicable [Service Level Agreement](/legal/service-level-agreement).
 
 ---
 
 **HEOSSI (PTE.) LTD**
 
-Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
+UEN: 202532790K
 
 For general inquiries: contact@heossi.com

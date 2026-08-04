@@ -1,4 +1,4 @@
-// Package vault is the QNSP Vault client — PQC-encrypted secret storage
+// Package vault is the QNSP Vault client - PQC-encrypted secret storage
 // with versioning, rotation, and deletion.
 package vault
 

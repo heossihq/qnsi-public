@@ -1,14 +1,14 @@
 ---
 title: Node.js SDK
-version: 0.1.0
-last_updated: 2026-05-05
+version: 0.6.0
+last_updated: 2026-07-20
 copyright: © 2026 HEOSSI. All rights reserved.
 ---
 
-> **Note** — As of 2026-04-30, the per-service `@heossi/qnsi-vault-sdk` package is consolidated into the unified `@heossi/qnsi` SDK (one package per language). New integrations should use:
+> **Note** - As of 2026-04-30, the per-service `@heossihq/qnsi-vault-sdk` package is consolidated into the unified `@heossihq/qnsi` SDK (one package per language). New integrations should use:
 >
 > ```typescript
-> import { QnsiClient } from "@heossi/qnsi";
+> import { QnsiClient } from "@heossihq/qnsi";
 > const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 > await qnsi.vault./* method */(...);
 > ```
@@ -17,46 +17,46 @@ copyright: © 2026 HEOSSI. All rights reserved.
 
 # Node.js SDK
 
-The official QNSI TypeScript / Node.js SDK ships as a single package — `@heossi/qnsi` — covering vault, kms, audit, auth, tenant, access-control, billing, crypto-inventory, storage, search, and ai-orchestrator, plus webhook signature verification. It mirrors the `qnsi` Python / Go / Rust / JVM SDKs byte-for-byte over the same wire contracts.
+The official QNSI TypeScript / Node.js SDK ships as a single package - `@heossihq/qnsi` - covering vault, kms, audit, auth, tenant, access-control, billing, crypto-inventory, storage, search, and ai-orchestrator, plus webhook signature verification. It mirrors the `qnsi` Python / Go / Rust / JVM SDKs byte-for-byte over the same wire contracts.
 
 ## Installation
 
 ```bash
-pnpm add @heossi/qnsi
+pnpm add @heossihq/qnsi
 ```
 
 npm and yarn are also supported:
 
 ```bash
-npm install @heossi/qnsi
+npm install @heossihq/qnsi
 # or
-yarn add @heossi/qnsi
+yarn add @heossihq/qnsi
 ```
 
 ## Requirements
 
-- Node.js 22 or later (the workspace is pinned to 24.14.0 via Volta)
+- Node.js 22 or later (the QNSI workspace uses Node.js 24.18.0 via mise)
 - TypeScript 5.0+ (optional but recommended)
 
 ## Quick start
 
 ```typescript
-import { QnsiClient } from "@heossi/qnsi";
+import { QnsiClient } from "@heossihq/qnsi";
 
 const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
-// Vault — store a PQC-encrypted secret
+// Vault - store a PQC-encrypted secret
 const secret = await qnsi.vault.createSecret({
   name: "openai-api-key",
   payloadB64: Buffer.from("sk-...").toString("base64"),
   algorithm: "ml-kem-768",
 });
 
-// KMS — generate a signing key and sign
+// KMS - generate a signing key and sign
 const key = await qnsi.kms.createKey({ algorithm: "ml-dsa-65", purpose: "signing" });
 const signature = await qnsi.kms.sign(key.keyId, new TextEncoder().encode("hello"));
 
-// Audit — emit a tamper-evident event
+// Audit - emit a tamper-evident event
 await qnsi.audit.logEvent({
   eventType: "model.inference",
   payload: { modelId: "gpt-4o", latencyMs: 412 },
@@ -70,19 +70,19 @@ Get a free API key at <https://cloud.qnsi.heossi.com/auth>.
 The package ships full TypeScript types; no separate `@types/*` install is needed.
 
 ```typescript
-import type { QnsiClientOptions, CreateSecretRequest } from "@heossi/qnsi";
+import type { QnsiClientOptions, CreateSecretRequest } from "@heossihq/qnsi";
 ```
 
 ## ESM and CommonJS
 
-`@heossi/qnsi` is published as ESM. CommonJS consumers can use a dynamic import:
+`@heossihq/qnsi` is published as ESM. CommonJS consumers can use a dynamic import:
 
 ```javascript
 // ESM
-import { QnsiClient } from "@heossi/qnsi";
+import { QnsiClient } from "@heossihq/qnsi";
 
-// CommonJS — dynamic import only
-const { QnsiClient } = await import("@heossi/qnsi");
+// CommonJS - dynamic import only
+const { QnsiClient } = await import("@heossihq/qnsi");
 ```
 
 ## Sub-clients
@@ -108,7 +108,7 @@ All sub-clients share the same `apiKey`, telemetry, and retry configuration.
 ## Webhook signature verification
 
 ```typescript
-import { verifyWebhookSignature } from "@heossi/qnsi";
+import { verifyWebhookSignature } from "@heossihq/qnsi";
 
 const isValid = verifyWebhookSignature({
   payload: rawBody,
@@ -119,4 +119,4 @@ const isValid = verifyWebhookSignature({
 
 ## Migration from per-service SDKs
 
-Earlier releases shipped per-service packages (`@heossi/qnsi-vault-sdk`, `@heossi/qnsi-kms-sdk`, etc.). Those are deprecated on npm; `@heossi/qnsi` is the single canonical entry point. The wire contract is unchanged — only the import surface and field names have been unified across languages (`payloadB64`, `payload_b64`, `PayloadB64`).
+Earlier releases shipped per-service packages (`@heossihq/qnsi-vault-sdk`, `@heossihq/qnsi-kms-sdk`, etc.). Those are deprecated on npm; `@heossihq/qnsi` is the single canonical entry point. The wire contract is unchanged - only the import surface and field names have been unified across languages (`payloadB64`, `payload_b64`, `PayloadB64`).

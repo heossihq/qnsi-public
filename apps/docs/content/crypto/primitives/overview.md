@@ -11,7 +11,7 @@ source_files:
 
 # PQC Primitives Overview
 
-QNSI implements NIST-standardized post-quantum cryptographic primitives via the `@heossi/qnsi-cryptography` package.
+QNSI implements NIST-standardized post-quantum cryptographic primitives via the `@heossihq/qnsi-cryptography` package.
 
 ## Supported Algorithms
 
@@ -74,7 +74,7 @@ interface PqcProvider {
 
 ## Implementation
 
-- **Production**: `liboqs` provider via `@heossi/liboqs-native` 0.15.1 (Open Quantum Safe liboqs 0.15.0, custom-built with `cmake -GNinja -DOQS_USE_OPENSSL=ON -DOQS_BUILD_SHARED_LIBS=OFF`; statically linked, served from ECR `qnsi/liboqs-builder-base:0.15.0` and recompiled on every backend Docker build)
+- **Production**: `liboqs` provider via `@heossihq/liboqs-native` 0.15.1 (Open Quantum Safe liboqs 0.15.0, custom-built with `cmake -GNinja -DOQS_USE_OPENSSL=ON -DOQS_BUILD_SHARED_LIBS=OFF`; statically linked, served from ECR `qnsi/liboqs-builder-base:0.15.0` and recompiled on every backend Docker build)
 - **Cross-verification secondary**: `@noble/post-quantum` 0.6.0 (pure-JS) registered alongside liboqs in `kms-service` + `audit-service` for dual-provider attestation on Maximum / Government policy tiers
 - **Browser SDK**: `@noble/post-quantum` (pure-JS, no native bindings)
 - **Testing**: `deterministic-pqc` provider for reproducible tests; NIST ACVP test-vector harness at `apps/web/scripts/run-nist-acvp-conformance.ts`
@@ -83,8 +83,8 @@ interface PqcProvider {
 
 ## NIST ACVP conformance evidence
 
-- **noble** (cross-verification reference): 435/435 ACVP test cases passed — full coverage of FIPS 203 (ML-KEM keyGen + encapDecap including §7.2/§7.3 input validation), FIPS 204 (ML-DSA keyGen), FIPS 205 (SLH-DSA keyGen, all 12 parameter sets).
-- **liboqs** (primary production engine): 240/240 ML-KEM ACVP test cases passed via `OQS_KEM_keypair_derand` and `OQS_KEM_encaps_derand` bindings shipped in `@heossi/liboqs-native` 0.15.1. The remaining 195 signature-keyGen tests (ML-DSA + SLH-DSA) are deferred upstream because liboqs C library 0.15.0 does not yet expose `OQS_SIG_keypair_derand` — a PR is pending against [open-quantum-safe/liboqs](https://github.com/open-quantum-safe/liboqs).
+- **noble** (cross-verification reference): 435/435 ACVP test cases passed - full coverage of FIPS 203 (ML-KEM keyGen + encapDecap including §7.2/§7.3 input validation), FIPS 204 (ML-DSA keyGen), FIPS 205 (SLH-DSA keyGen, all 12 parameter sets).
+- **liboqs** (primary production engine): 240/240 ML-KEM ACVP test cases passed via `OQS_KEM_keypair_derand` and `OQS_KEM_encaps_derand` bindings shipped in `@heossihq/liboqs-native` 0.15.1. The remaining 195 signature-keyGen tests (ML-DSA + SLH-DSA) are deferred upstream because liboqs C library 0.15.0 does not yet expose `OQS_SIG_keypair_derand` - a PR is pending against [open-quantum-safe/liboqs](https://github.com/open-quantum-safe/liboqs).
 - Live evidence renders at [https://qnsi.heossi.com/verify/conformance](https://qnsi.heossi.com/verify/conformance) with a SHA-3-256 tamper digest binding the evidence JSON.
 
 ## Entropy chain

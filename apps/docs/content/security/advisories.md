@@ -2,7 +2,7 @@
 title: Security Advisories
 version: 1.0.0
 last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 
 # Security Advisories
@@ -46,11 +46,11 @@ No advisories published yet.
 If you have discovered a security vulnerability, please report it responsibly:
 
 - **Email**: qnsi-security@heossi.com
-- **Policy**: See [Vulnerability Disclosure Policy](/security/vulnerability-disclosure)
+- **Policy**: See [Vulnerability Disclosure Policy](/legal/vulnerability-disclosure)
 
 ## Related Documentation
 
-- [Vulnerability Disclosure Policy](/security/vulnerability-disclosure)
+- [Vulnerability Disclosure Policy](/legal/vulnerability-disclosure)
 - [Incident Response](/security/incident-response)
 - [Security Overview](/security/overview)
 
@@ -58,4 +58,4 @@ If you have discovered a security vulnerability, please report it responsibly:
 
 **HEOSSI (PTE.) LTD**
 
-Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
+UEN: 202532790K

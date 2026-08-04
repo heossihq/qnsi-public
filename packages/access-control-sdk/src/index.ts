@@ -1,6 +1,6 @@
 import { performance } from "node:perf_hooks";
 
-import { activateSdk, type SdkActivationConfig } from "@heossi/qnsi-sdk-activation";
+import { activateSdk, type SdkActivationConfig } from "@heossihq/qnsi-sdk-activation";
 
 import type {
 	AccessControlClientTelemetry,
@@ -15,7 +15,7 @@ import { SDK_PACKAGE_VERSION } from "./sdk-package-version.js";
 import { validateUUID } from "./validation.js";
 
 /**
- * @heossi/qnsi-access-control-sdk
+ * @heossihq/qnsi-access-control-sdk
  *
  * TypeScript SDK client for the QNSP access-control-service API.
  * Provides a high-level interface for policy management and capability token operations.
@@ -26,25 +26,25 @@ import { validateUUID } from "./validation.js";
  * Mapping from internal algorithm names to NIST/standards display names.
  * Covers all 87 runtime-supported PQC algorithms (24 KEMs + 63 signatures).
  * HQC's 3 variants are excluded (disabled in the liboqs build for CVE-2025-48946).
- * Canonical source: @heossi/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
+ * Canonical source: @heossihq/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
  */
 export const ALGORITHM_TO_NIST: Record<string, string> = {
-	// FIPS 203 — ML-KEM
+	// FIPS 203 - ML-KEM
 	"kyber-512": "ML-KEM-512",
 	"kyber-768": "ML-KEM-768",
 	"kyber-1024": "ML-KEM-1024",
-	// FIPS 204 — ML-DSA
+	// FIPS 204 - ML-DSA
 	"dilithium-2": "ML-DSA-44",
 	"dilithium-3": "ML-DSA-65",
 	"dilithium-5": "ML-DSA-87",
-	// FIPS 205 — SLH-DSA (SHA-2 variants)
+	// FIPS 205 - SLH-DSA (SHA-2 variants)
 	"sphincs-sha2-128f-simple": "SLH-DSA-SHA2-128f",
 	"sphincs-sha2-128s-simple": "SLH-DSA-SHA2-128s",
 	"sphincs-sha2-192f-simple": "SLH-DSA-SHA2-192f",
 	"sphincs-sha2-192s-simple": "SLH-DSA-SHA2-192s",
 	"sphincs-sha2-256f-simple": "SLH-DSA-SHA2-256f",
 	"sphincs-sha2-256s-simple": "SLH-DSA-SHA2-256s",
-	// FIPS 205 — SLH-DSA (SHAKE variants)
+	// FIPS 205 - SLH-DSA (SHAKE variants)
 	"sphincs-shake-128f-simple": "SLH-DSA-SHAKE-128f",
 	"sphincs-shake-128s-simple": "SLH-DSA-SHAKE-128s",
 	"sphincs-shake-192f-simple": "SLH-DSA-SHAKE-192f",
@@ -807,7 +807,7 @@ export class AccessControlClient {
 		if (!config.apiKey || config.apiKey.trim().length === 0) {
 			throw new Error(
 				"QNSP Access Control SDK: apiKey is required. " +
-					"Get your free API key at https://cloud.qnsi.heossi.com/signup — " +
+					"Get your free API key at https://cloud.qnsi.heossi.com/signup - " +
 					"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
 					"Docs: https://docs.qnsi.heossi.com/sdk/access-control-sdk",
 			);

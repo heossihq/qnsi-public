@@ -2,20 +2,20 @@
 
 All notable changes to `qnsp` (Python SDK) will be documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project follows [Semantic Versioning](https://semver.org/).
 
-## [0.3.0] — 2026-04-30
+## [0.3.0] - 2026-04-30
 
 **Full-parity release.** The Python SDK now exposes the same 11 customer-facing service modules as the Go and Rust SDKs and the TypeScript family.
 
 ### Added
 
-- `qnsp.auth` — `AuthClient`. Login, refresh, revoke, WebAuthn passkeys (register / authenticate start+complete, list, delete), MFA challenge/verify, federated identity (SAML / OIDC), risk-based authentication.
-- `qnsp.tenant` — `TenantClient`. Tenant CRUD, crypto-policy management, current-health snapshot, current-quota readout.
-- `qnsp.access` — `AccessClient`. RBAC roles, role assignments, `check_permission`.
-- `qnsp.billing` — `BillingClient`. `get_entitlements`, `ingest_meter`, `ingest_meters` (batch), invoice listing, credit-balance lookup.
-- `qnsp.crypto_inventory` — `CryptoInventoryClient`. Asset listing, discovery runs, PQC readiness score (CBOM).
-- `qnsp.storage` — `StorageClient`. PQC-encrypted object storage with SSE-X: `put_object`, `get_object` (returns `(bytes, descriptor)`), `delete_object`, `list_objects`, `list_buckets`. Bytes are base64-encoded at the boundary; consumers work with raw `bytes`.
-- `qnsp.search` — `SearchClient`. Encrypted vector search: index lifecycle, `upsert_vectors`, `query`.
-- `qnsp.ai` — `AIClient`. Model registry (register / list / get / update / activate / deploy), workloads (submit / get / list / cancel) with enclave attestation, `invoke_inference`, artifact registration.
+- `qnsp.auth` - `AuthClient`. Login, refresh, revoke, WebAuthn passkeys (register / authenticate start+complete, list, delete), MFA challenge/verify, federated identity (SAML / OIDC), risk-based authentication.
+- `qnsp.tenant` - `TenantClient`. Tenant CRUD, crypto-policy management, current-health snapshot, current-quota readout.
+- `qnsp.access` - `AccessClient`. RBAC roles, role assignments, `check_permission`.
+- `qnsp.billing` - `BillingClient`. `get_entitlements`, `ingest_meter`, `ingest_meters` (batch), invoice listing, credit-balance lookup.
+- `qnsp.crypto_inventory` - `CryptoInventoryClient`. Asset listing, discovery runs, PQC readiness score (CBOM).
+- `qnsp.storage` - `StorageClient`. PQC-encrypted object storage with SSE-X: `put_object`, `get_object` (returns `(bytes, descriptor)`), `delete_object`, `list_objects`, `list_buckets`. Bytes are base64-encoded at the boundary; consumers work with raw `bytes`.
+- `qnsp.search` - `SearchClient`. Encrypted vector search: index lifecycle, `upsert_vectors`, `query`.
+- `qnsp.ai` - `AIClient`. Model registry (register / list / get / update / activate / deploy), workloads (submit / get / list / cancel) with enclave attestation, `invoke_inference`, artifact registration.
 
 ### Changed
 
@@ -25,7 +25,7 @@ All notable changes to `qnsp` (Python SDK) will be documented here. The format i
 
 ### Migration from 0.2.0
 
-Existing `vault` / `kms` / `audit` / `crypto` / `webhooks` usage is unchanged. New modules are additive — no breaking changes:
+Existing `vault` / `kms` / `audit` / `crypto` / `webhooks` usage is unchanged. New modules are additive - no breaking changes:
 
 ```python
 from qnsi import QnsiClient
@@ -44,19 +44,19 @@ with QnsiClient(api_key=...) as q:
     q.crypto_inventory.get_readiness_score("...")       # NEW
 ```
 
-## [0.2.0] — 2026-04-30
+## [0.2.0] - 2026-04-30
 
-**Repositioning release.** The SDK is now general-purpose — every QNSP customer uses the same shape, with no per-partner namespaces.
+**Repositioning release.** The SDK is now general-purpose - every QNSP customer uses the same shape, with no per-partner namespaces.
 
 ### Added
 
-- `qnsp.crypto` — local PQC primitives via `liboqs-python` 0.12.0, opt-in via the `qnsi[crypto]` extra. Covers ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), Falcon, plus the full liboqs 0.12.0 algorithm surface (HQC, BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS). Algorithm names mirror `@heossi/qnsi-cryptography` and the new Go/Rust SDKs.
-- `qnsp.vault` — `VaultClient` with create / get / get-version / rotate / delete / list-versions.
-- `qnsp.kms` — `KmsClient` with create-key / list-keys / get-key / rotate / delete plus sign / verify / wrap / unwrap.
-- `qnsp.audit` — `AuditClient` with log-event, ingest-events (batch), and list-events.
-- `_service.py` — shared HTTP plumbing for service clients, including 401-triggered token refresh + retry.
-- `_activation.py` — `ApiKeyActivation` flow that mirrors `@heossi/qnsi-sdk-activation` from the TypeScript family. Handshake hits `/billing/v1/sdk/activate` with `sdkId="qnsp-python"`, caches the result with a 60 s near-expiry buffer.
-- Generic `parse_qnsi_webhook()` and `verify_qnsi_webhook_signature()` — every QNSP webhook consumer needs these regardless of integration.
+- `qnsp.crypto` - local PQC primitives via `liboqs-python` 0.12.0, opt-in via the `qnsi[crypto]` extra. Covers ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), Falcon, plus the full liboqs 0.12.0 algorithm surface (HQC, BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS). Algorithm names mirror `@heossihq/qnsi-cryptography` and the new Go/Rust SDKs.
+- `qnsp.vault` - `VaultClient` with create / get / get-version / rotate / delete / list-versions.
+- `qnsp.kms` - `KmsClient` with create-key / list-keys / get-key / rotate / delete plus sign / verify / wrap / unwrap.
+- `qnsp.audit` - `AuditClient` with log-event, ingest-events (batch), and list-events.
+- `_service.py` - shared HTTP plumbing for service clients, including 401-triggered token refresh + retry.
+- `_activation.py` - `ApiKeyActivation` flow that mirrors `@heossihq/qnsi-sdk-activation` from the TypeScript family. Handshake hits `/billing/v1/sdk/activate` with `sdkId="qnsp-python"`, caches the result with a 60 s near-expiry buffer.
+- Generic `parse_qnsi_webhook()` and `verify_qnsi_webhook_signature()` - every QNSP webhook consumer needs these regardless of integration.
 - Top-level introspection: `client.tenant_id`, `client.tier`, `client.limits`, `client.has_feature("sseEnabled")`.
 
 ### Changed
@@ -89,6 +89,6 @@ If you used `parse_bee_webhook` for general QNSP webhook verification (its only 
 + event = parse_qnsi_webhook(...)  # identical signature
 ```
 
-## [0.1.0] — 2026-04-30 (yanked)
+## [0.1.0] - 2026-04-30 (yanked)
 
-Initial release — BEE-partner-specific surface (provision / deprovision / status). Yanked from PyPI shortly after publish; superseded by the general-purpose 0.2.0. If you installed 0.1.0, upgrade with `pip install --upgrade qnsp` and follow the migration above.
+Initial release - BEE-partner-specific surface (provision / deprovision / status). Yanked from PyPI shortly after publish; superseded by the general-purpose 0.2.0. If you installed 0.1.0, upgrade with `pip install --upgrade qnsp` and follow the migration above.

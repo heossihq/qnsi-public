@@ -56,7 +56,7 @@ describe("shared-kernel/db-ssl", () => {
 			const result = resolvePgSsl({ mode: "verify-ca", caPath: "/custom/ca.pem" });
 
 			expect(result).toMatchObject({ rejectUnauthorized: true, ca: fakeCa });
-			// verify-ca skips hostname verification — checkServerIdentity returns undefined
+			// verify-ca skips hostname verification - checkServerIdentity returns undefined
 			expect(result).toHaveProperty("checkServerIdentity");
 			const ssl = result as { checkServerIdentity: (host: string, cert: object) => undefined };
 			expect(ssl.checkServerIdentity("any-host", {})).toBeUndefined();
@@ -169,7 +169,7 @@ describe("shared-kernel/db-ssl", () => {
 			const fakeCa = "-----BEGIN CERTIFICATE-----\nNOHOST\n-----END CERTIFICATE-----";
 			mockReadFileSync.mockReturnValueOnce(fakeCa);
 
-			// No hostname — IP guard is skipped, caller is responsible
+			// No hostname - IP guard is skipped, caller is responsible
 			const result = resolvePgSsl({ mode: "verify-full", caPath: "/ca.pem" });
 
 			expect(result).toEqual({ rejectUnauthorized: true, ca: fakeCa });

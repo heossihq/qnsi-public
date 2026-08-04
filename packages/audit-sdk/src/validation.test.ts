@@ -7,7 +7,7 @@ import {
 } from "./observability.js";
 import { uuidSchema, validateUUID } from "./validation.js";
 
-describe("@heossi/qnsi-audit-sdk validation", () => {
+describe("@heossihq/qnsi-audit-sdk validation", () => {
 	it("accepts valid UUIDs", () => {
 		const value = "00000000-0000-0000-0000-000000000000";
 
@@ -20,7 +20,7 @@ describe("@heossi/qnsi-audit-sdk validation", () => {
 	});
 });
 
-describe("@heossi/qnsi-audit-sdk observability type guard", () => {
+describe("@heossihq/qnsi-audit-sdk observability type guard", () => {
 	it("isAuditClientTelemetry distinguishes config from implementation", () => {
 		const telemetry: AuditClientTelemetry = {
 			record() {

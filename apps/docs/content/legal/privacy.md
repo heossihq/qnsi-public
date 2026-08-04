@@ -1,87 +1,19 @@
 ---
 title: Privacy Policy
-version: 1.0.0
-last_updated: 2026-04-23
-copyright: © 2025–2026 HEOSSI (PTE.) LTD All rights reserved.
+description: How HEOSSI handles personal data as controller.
+last_updated: 2026-06-01
+copyright: © 2026 HEOSSI (PTE.) LTD. All rights reserved.
 ---
 # Privacy Policy
 
-This page provides a summary of the QNSI Privacy Policy. HEOSSI (PTE.) LTD processes personal data in accordance with Singapore's Personal Data Protection Act 2012 (PDPA) and other applicable privacy laws.
+Last updated: 2026-06-01 · Effective: 2026-06-01
 
-**Full Privacy Policy:** https://qnsi.heossi.com/terms#privacy-policy
+**The authoritative Privacy Policy is published at [https://qnsi.heossi.com/privacy](https://qnsi.heossi.com/privacy).**
 
-## Data we collect
+This documentation page intentionally does not restate the terms of that document. Two
+versions of a binding instrument is how they drift apart, and a stale copy of a contract
+is worse than no copy. Read the authoritative version at the link above.
 
-### Account data
-- Email address
-- Name
-- Organization
-- Payment information
-
-### Usage data
-- API calls
-- Feature usage
-- Performance metrics
-
-### Technical data
-- IP addresses
-- Device information
-- Browser type
-
-## How we use data
-
-- Provide and improve services
-- Process payments
-- Send service communications
-- Ensure security
-- Comply with legal obligations
-
-## Data sharing
-
-We share data with:
-- Service providers (hosting, payment)
-- As required by law
-- With your consent
-
-We do NOT:
-- Sell your data
-- Share for advertising
-- Access your encrypted data
-
-## Your encrypted data
-
-- Encrypted with your keys
-- We cannot access plaintext
-- You control access
-
-## Data retention
-
-- Account data: Duration of account + 30 days
-- Usage data: 90 days
-- Audit logs: Per your configuration
-
-## Your rights
-
-- Access your data
-- Correct inaccuracies
-- Delete your data
-- Export your data
-- Restrict processing
-
-## Governing Law
-
-This Privacy Policy is governed by the laws of Singapore, including the Personal Data Protection Act 2012 (PDPA).
-
-## Contact
-
-**HEOSSI (PTE.) LTD**
-
-Registered Office: 552 Ang Mo Kio, Avenue 10, #21-1982, Cheng San Place, Singapore 560552
-
-UEN: 202532790K
-
-Privacy inquiries: contact@heossi.com
-
-Data Protection Officer: contact@heossi.com
-
-Full Privacy Policy: https://qnsi.heossi.com/terms#privacy-policy
+> Generated from the single legal source of truth (`apps/web/lib/legal/`). Do not edit
+> by hand - edit the source and run `pnpm gen:legal-docs`. The authoritative published
+> version of every document is on the [QNSI Legal and Trust Center](https://qnsi.heossi.com/legal).

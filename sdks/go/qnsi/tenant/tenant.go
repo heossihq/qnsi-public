@@ -1,4 +1,4 @@
-// Package tenant is the QNSP Tenant client — tenant CRUD, crypto-policy
+// Package tenant is the QNSP Tenant client - tenant CRUD, crypto-policy
 // management, sub-tenant onboarding, and quota / health introspection.
 //
 // This module wraps the routes exposed by `apps/tenant-service` (see

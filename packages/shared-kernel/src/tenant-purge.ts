@@ -3,9 +3,9 @@
  * `DELETE /<svc>/v1/internal/tenant/:tenantId` endpoint (workspace deletion).
  *
  * Each service supplies its OWN ordered list of tenant-scoped DELETE/UPDATE
- * statements (FK order is load-bearing — see WORKSPACE_DELETION_RUNBOOK.md). This
+ * statements (FK order is load-bearing - see WORKSPACE_DELETION_RUNBOOK.md). This
  * module runs them in one transaction and returns per-table row counts for the
- * certificate-of-destruction audit record. Irreversible — the caller is gated to
+ * certificate-of-destruction audit record. Irreversible - the caller is gated to
  * an internal service token.
  */
 
@@ -21,7 +21,7 @@ export interface TenantPurgeResult {
 
 /**
  * Run ordered tenant-scoped statements (each parameterized with $1 = tenantId) in a
- * single transaction. Rolls back on any error. Statement order MUST be preserved —
+ * single transaction. Rolls back on any error. Statement order MUST be preserved -
  * it encodes foreign-key dependencies.
  */
 export async function runTenantPurge(
@@ -54,7 +54,7 @@ export async function runTenantPurge(
 
 /**
  * Validate an internal service bearer token in constant time. Refuses unset or weak
- * (<24 char) expected tokens — fail closed. Used to gate the internal purge endpoints
+ * (<24 char) expected tokens - fail closed. Used to gate the internal purge endpoints
  * (the worker presents the shared INTERNAL_TENANT_PURGE_TOKEN). Established pattern:
  * static internal service tokens (e.g. AUDIT_SERVICE_TOKEN).
  */
