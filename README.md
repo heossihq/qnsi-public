@@ -54,15 +54,56 @@ flowchart LR
 
 ### Platform planes
 
-| Plane | What QNSI operates |
-| --- | --- |
-| Identity and Decision | Authentication, workforce and tenant identity, role and attribute policy, access decisions, and capability enforcement |
-| Control | Tenant lifecycle, entitlements, service configuration, platform administration, and policy distribution |
-| Data | Key management, secrets vault, encrypted object storage, encrypted search, signing, encryption, and cryptographic operations |
-| Evidence | Signed audit evidence, cryptographic attestations, evidence packs, and machine-readable security artifacts |
-| Operations | Cryptographic inventory, posture analysis, migration orchestration, security monitoring, incident workflows, and observability |
+| Plane                 | What QNSI operates                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Identity and Decision | Authentication, workforce and tenant identity, role and attribute policy, access decisions, and capability enforcement         |
+| Control               | Tenant lifecycle, entitlements, service configuration, platform administration, and policy distribution                        |
+| Data                  | Key management, secrets vault, encrypted object storage, encrypted search, signing, encryption, and cryptographic operations   |
+| Evidence              | Signed audit evidence, cryptographic attestations, evidence packs, and machine-readable security artifacts                     |
+| Operations            | Cryptographic inventory, posture analysis, migration orchestration, security monitoring, incident workflows, and observability |
 
 The edge is the transport-policy boundary. It authenticates requests, resolves tenant context, enforces entitlements and capabilities, applies rate limits, and routes calls to the appropriate service plane. Service APIs are not treated as a flat collection of unrelated endpoints.
+
+### A request becomes an evidence-bearing operation
+
+The public SDKs and tools enter the same controlled service boundary. A request is authenticated and tenant-scoped before it reaches an eligible service. Policy decisions, the operation result, and available evidence then travel back through the edge. Signing paths can require independent provider cross-verification when the selected tier and deployment qualify for it.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Workload as Application, agent, CLI or MCP
+  participant Edge as QNSI Edge
+  participant Decision as Identity and Decision
+  participant Service as Eligible service plane
+  participant Verify as Independent provider check
+  participant Evidence as Audit and Evidence
+
+  Workload->>Edge: Authenticated, tenant-scoped request
+  Edge->>Decision: Resolve identity, entitlement, policy and capability
+  Decision-->>Edge: Permit or deny with decision context
+  Edge->>Service: Route permitted operation
+  opt Qualified signing policy
+    Service->>Verify: Cross-verify eligible signature operation
+    Verify-->>Service: Provider attestation or fail closed
+  end
+  Service->>Evidence: Record available operation and decision evidence
+  Service-->>Edge: Result with bounded evidence references
+  Edge-->>Workload: Response
+```
+
+This diagram describes the control flow, not a blanket availability claim. Cross-verification is policy, tier, provider, and deployment dependent. The [capability registry](apps/web/lib/public-capabilities.ts) states the evidence boundary for each public capability.
+
+### Why this is infrastructure, not a toolkit
+
+| A cryptography toolkit gives a team        | QNSI operates around the cryptography                                                                     |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| Primitive implementations and local APIs   | Authenticated tenant boundaries, policy decisions, entitlements, rate limits, and service routing         |
+| Application-owned key and secret lifecycle | Central key, secret, custody, rotation, storage, and access-control surfaces                              |
+| Code-level algorithm selection             | Governed policy, migration waves, compatibility boundaries, and fail-closed controls                      |
+| Local logs and test output                 | Audit-chain contracts, attestations, evidence packs, conformance runners, and operational telemetry       |
+| A component to assemble                    | A multi-plane trust layer consumed through APIs, SDKs, CLI, MCP, agents, and enterprise deployment models |
+
+The public source is intentionally integration-facing. The hosted control, data, evidence, and operations planes remain operated infrastructure.
 
 ### From inventory to operated trust
 
@@ -79,15 +120,45 @@ Read the [migration journey](apps/docs/content/migration/journey.md), [governed 
 
 ### Deployment model
 
-| Topology | Availability boundary |
-| --- | --- |
-| QNSI Cloud | Live managed service and the default self-service topology |
-| VPC-peered | Provisioned per tenant through an enterprise engagement |
-| Private endpoint | Provisioned per tenant using the relevant cloud private-connectivity service |
-| On-premises | Customer-environment deployment delivered through an enterprise engagement |
+| Topology                | Availability boundary                                                            |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| QNSI Cloud              | Live managed service and the default self-service topology                       |
+| VPC-peered              | Provisioned per tenant through an enterprise engagement                          |
+| Private endpoint        | Provisioned per tenant using the relevant cloud private-connectivity service     |
+| On-premises             | Customer-environment deployment delivered through an enterprise engagement       |
 | Air-gapped or sovereign | Isolated, contract-scoped deployment with customer-specific operating procedures |
 
 Cloud is the public live service today. VPC, private endpoint, on-premises, air-gapped, and sovereign topologies are not presented as instant self-service features; they are provisioned and scoped per tenant.
+
+Network topology is only one deployment axis. Enterprise qualification also covers tenancy isolation, custody provider and configuration, region and failover policy, compute class, telemetry handling, and the evidence required by the customer control environment.
+
+## Representative infrastructure scenarios
+
+These are reference operating patterns backed by public contracts and source catalogs. They are not claims about unnamed customer deployments.
+
+### 1. Discover and govern a cryptographic estate
+
+Cloud connectors, TLS and certificate discovery, host agents, repository scanning, secret-manager sources, and normalized inventory imports feed an accountable cryptographic inventory. Teams can then apply policy and exposure context, create a migration backlog, execute governed waves, and reconcile CBOM, QBOM, SBOM, and signed findings after cutover.
+
+**Inspect:** [host discovery](https://docs.qnsi.heossi.com/discovery/host-discovery), [source-code scanning](apps/docs/content/crypto/source-code-scanning.md), [migration journey](apps/docs/content/migration/journey.md), and the [public discovery capability contract](apps/web/lib/public-capabilities.ts).
+
+### 2. Move application trust out of application code
+
+An application calls QNSI through a supported SDK, REST, CLI, or MCP surface. The edge establishes the tenant and entitlement boundary; eligible key, vault, storage, search, or AI operations execute behind policy; and available decision and operation evidence is recorded for later review. Existing workload code consumes a stable integration surface while custody, rotation, authorization, and evidence remain infrastructure concerns.
+
+**Inspect:** the [TypeScript SDK](packages/qnsi/), [Python SDK](sdks/python/qnsi/), [Go SDK](sdks/go/qnsi/), [Rust SDK](sdks/rust/qnsi/), [JVM SDK](sdks/jvm/), and [API documentation](apps/docs/content/api/).
+
+### 3. Qualify a regulated or disconnected deployment
+
+The public cloud service is the default starting point. A regulated program can qualify a VPC-peered, private-endpoint, on-premises, or air-gapped topology per tenant, including network path, tenancy isolation, custody, region, failover, compute, telemetry, and evidence requirements. Local discovery and signed offline evidence contracts support estates where repository contents or runtime telemetry cannot leave the customer boundary.
+
+**Boundary:** enterprise topologies are scope-specific and provisioned through an engagement. Their availability and assurance are not inferred from source presence.
+
+### 4. Preserve existing custody while migrating policy
+
+QNSI defines capability-gated customer-managed custody connectors so an eligible, qualified HSM or vault can remain part of the operating model. Connector source alone does not prove a named device, firmware, mechanism, or deployment. Each custody path must qualify module loading, capabilities, operations, failure behavior, audit effects, and certificate scope before it is represented as supported.
+
+**Inspect:** [HSM integration guidance](apps/docs/content/kms/hsm-integration.md) and the [key-management capability boundary](apps/web/lib/public-capabilities.ts).
 
 ### Post-quantum security is part of the control system
 
@@ -107,20 +178,41 @@ QNSI publishes the source data behind its discovery surfaces instead of presenti
 
 These are solution and integration patterns, not invented customer deployments. Each catalog distinguishes source presence, deployment qualification, and independently verifiable evidence.
 
+### Capability maturity is explicit
+
+| Registry status          | What it means                                                                                               |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `production-surface`     | A public route or experience is exposed, with the registry naming what is and is not independently verified |
+| `source-implemented`     | Relevant contracts or implementation exist in source; deployment behavior is not inferred                   |
+| `deployment-qualified`   | Availability depends on a named, observed deployment qualification                                          |
+| `statement-of-direction` | Directional only; not presented as an available capability                                                  |
+
+Source presence, a package release, a passing test, and production proof are different evidence levels. The [canonical registry](apps/web/lib/public-capabilities.ts) records the current status and boundary rather than allowing pages to invent their own maturity language.
+
+## Enterprise evaluation paths
+
+| Evaluator                          | Start here                                                                                                                                                  | What can be assessed publicly                                                                                         |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Enterprise architect               | [Platform architecture](apps/docs/content/architecture/) and the deployment model above                                                                     | Trust boundaries, integration surfaces, service planes, topology choices, and public/private responsibility split     |
+| Security or cryptography lead      | [Security documentation](apps/docs/content/security/), [conformance runners](apps/web/scripts/), and [published evidence](apps/web/public/pqc-evidence/)    | Algorithm and provider boundaries, reproducibility, evidence limitations, and stated assurance scope                  |
+| Platform engineer                  | [SDK documentation](apps/docs/content/sdk/), packages, agents, CLI, and MCP                                                                                 | Integration contracts, runtime support, local workflows, and migration patterns                                       |
+| Risk, audit, or compliance         | [Audit documentation](apps/docs/content/audit/) and [framework control source](apps/audit-service/src/services/compliance-service.ts)                       | Evidence models, control mappings, retention and export contracts, and where production verification remains required |
+| Procurement or technical diligence | [Capability registry](apps/web/lib/public-capabilities.ts), [system status](https://qnsi.heossi.com/status), licenses, security policy, and export manifest | Maturity boundaries, public artifacts, operating status, licensing, disclosure process, and source provenance         |
+
 ## Integration surfaces
 
 The SDKs are how developers connect workloads to QNSI infrastructure. They are not the entire product.
 
 ## Install
 
-| Runtime | Package | Install |
-| --- | --- | --- |
-| TypeScript / Node.js | [`@heossihq/qnsi`](packages/qnsi/) | `pnpm add @heossihq/qnsi` |
-| Python | [`qnsi`](sdks/python/qnsi/) | `pip install qnsi` |
-| Go | [`qnsi`](sdks/go/qnsi/) | `go get github.com/heossihq/qnsi-public/sdks/go/qnsi@latest` |
-| Rust | [`qnsi`](sdks/rust/qnsi/) | `cargo add qnsi` |
-| JVM / Android | [`com.heossi:qnsi`](sdks/jvm/) | `implementation("com.heossi:qnsi:0.4.0")` |
-| MCP | [`@heossihq/qnsi-mcp`](packages/mcp-server/) | `pnpm add @heossihq/qnsi-mcp` |
+| Runtime              | Package                                      | Install                                                      |
+| -------------------- | -------------------------------------------- | ------------------------------------------------------------ |
+| TypeScript / Node.js | [`@heossihq/qnsi`](packages/qnsi/)           | `pnpm add @heossihq/qnsi`                                    |
+| Python               | [`qnsi`](sdks/python/qnsi/)                  | `pip install qnsi`                                           |
+| Go                   | [`qnsi`](sdks/go/qnsi/)                      | `go get github.com/heossihq/qnsi-public/sdks/go/qnsi@latest` |
+| Rust                 | [`qnsi`](sdks/rust/qnsi/)                    | `cargo add qnsi`                                             |
+| JVM / Android        | [`com.heossi:qnsi`](sdks/jvm/)               | `implementation("com.heossi:qnsi:0.4.0")`          |
+| MCP                  | [`@heossihq/qnsi-mcp`](packages/mcp-server/) | `pnpm add @heossihq/qnsi-mcp`                                |
 
 The unified TypeScript package also installs the `qnsi` CLI.
 
@@ -183,6 +275,6 @@ For security reports, follow [SECURITY.md](SECURITY.md). For contributions and i
 
 ## Export provenance
 
-Private source revision: `da32284092031e437ee18092c18dc46065131a00`
+Private source revision: `d8991f1145e8a77808e7409f69391dedde23afcf`
 
 The machine-readable export inventory and generation timestamp are recorded in [`MANIFEST.json`](MANIFEST.json).
