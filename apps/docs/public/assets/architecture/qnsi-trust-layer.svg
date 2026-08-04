@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">QNSI common trust-layer architecture</title>
+  <desc id="desc">Customer workloads, discovery sources, and key custody connect through the QNSI edge to identity, control, data, operations, and evidence planes.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#101d31"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#11b8a6"/>
+      <stop offset="1" stop-color="#5dd6c8"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#72a9c7"/>
+    </marker>
+    <style>
+      .eyebrow{font:600 15px system-ui,sans-serif;letter-spacing:1.8px;fill:#74e3d5}.heading{font:700 25px system-ui,sans-serif;fill:#f4f8fc}.label{font:600 17px system-ui,sans-serif;fill:#eef5fb}.copy{font:400 14px system-ui,sans-serif;fill:#a9bed0}.panel{fill:#0c1929;stroke:#29435a;stroke-width:1.5}.service{fill:#12243a;stroke:#365b75;stroke-width:1.5}.line{fill:none;stroke:#72a9c7;stroke-width:2;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="680" rx="24" fill="url(#bg)"/>
+  <text x="48" y="52" class="eyebrow">REFERENCE ARCHITECTURE</text>
+  <text x="48" y="88" class="heading">One policy and evidence boundary across the cryptographic estate</text>
+
+  <rect x="48" y="126" width="270" height="456" rx="18" class="panel"/>
+  <text x="72" y="164" class="eyebrow">CUSTOMER ESTATE</text>
+  <rect x="72" y="190" width="222" height="94" rx="12" class="service"/>
+  <text x="92" y="224" class="label">Workloads</text>
+  <text x="92" y="250" class="copy">Applications, APIs, AI</text>
+  <text x="92" y="270" class="copy">and platform integrations</text>
+  <rect x="72" y="308" width="222" height="112" rx="12" class="service"/>
+  <text x="92" y="342" class="label">Discovery sources</text>
+  <text x="92" y="368" class="copy">Cloud, TLS, certificates,</text>
+  <text x="92" y="388" class="copy">hosts, Kubernetes and code</text>
+  <rect x="72" y="444" width="222" height="94" rx="12" class="service"/>
+  <text x="92" y="478" class="label">Key custody</text>
+  <text x="92" y="504" class="copy">Customer key stores and</text>
+  <text x="92" y="524" class="copy">qualified HSMs</text>
+
+  <rect x="378" y="126" width="180" height="456" rx="18" fill="#0c2b31" stroke="#43cabb" stroke-width="2"/>
+  <text x="402" y="164" class="eyebrow">QNSI EDGE</text>
+  <text x="402" y="210" class="label">Identity</text>
+  <text x="402" y="250" class="label">Tenant</text>
+  <text x="402" y="290" class="label">Entitlement</text>
+  <text x="402" y="330" class="label">Policy</text>
+  <text x="402" y="370" class="label">Capability</text>
+  <text x="402" y="410" class="label">Routing</text>
+  <rect x="402" y="458" width="132" height="74" rx="10" fill="url(#edge)"/>
+  <text x="421" y="490" style="font:700 15px system-ui,sans-serif;fill:#062126">Permit or deny</text>
+  <text x="421" y="512" style="font:500 13px system-ui,sans-serif;fill:#0a3b3a">with context</text>
+
+  <rect x="618" y="126" width="534" height="456" rx="18" class="panel"/>
+  <text x="642" y="164" class="eyebrow">QNSI TRUST LAYER</text>
+  <rect x="642" y="190" width="226" height="100" rx="12" class="service"/>
+  <text x="662" y="228" class="label">Identity and decision</text>
+  <text x="662" y="254" class="copy">Tenant-scoped policy context</text>
+  <rect x="892" y="190" width="236" height="100" rx="12" class="service"/>
+  <text x="912" y="228" class="label">Control plane</text>
+  <text x="912" y="254" class="copy">Policy and orchestration</text>
+  <rect x="642" y="314" width="226" height="100" rx="12" class="service"/>
+  <text x="662" y="352" class="label">Data services</text>
+  <text x="662" y="378" class="copy">KMS, vault, storage, search</text>
+  <rect x="892" y="314" width="236" height="100" rx="12" class="service"/>
+  <text x="912" y="352" class="label">Operations</text>
+  <text x="912" y="378" class="copy">Inventory, migration, security</text>
+  <rect x="642" y="462" width="486" height="76" rx="12" fill="#182a43" stroke="#74e3d5" stroke-width="1.5"/>
+  <text x="662" y="494" class="label">Audit and evidence plane</text>
+  <text x="662" y="518" class="copy">Available decisions, operations, checkpoints and exports</text>
+
+  <path d="M318 238H378" class="line"/><path d="M318 364H378" class="line"/><path d="M318 490H378" class="line"/>
+  <path d="M558 240H618" class="line"/><path d="M558 364H618" class="line"/>
+  <path d="M755 290V462" class="line"/><path d="M1010 290V462" class="line"/><path d="M755 414V462" class="line"/><path d="M1010 414V462" class="line"/>
+  <text x="48" y="628" class="copy">Qualification boundary: exact enforcement and evidence coverage remain operation- and deployment-specific.</text>
+</svg>

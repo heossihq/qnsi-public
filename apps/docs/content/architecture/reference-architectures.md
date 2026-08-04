@@ -9,69 +9,27 @@ This packet describes where QNSI sits, which trust boundaries it operates, and w
 
 ## Common trust-layer model
 
-```mermaid
-flowchart LR
-  subgraph Estate["Customer estate"]
-    Workloads["Applications, APIs and AI workloads"]
-    Sources["Cloud, TLS, certificate, host, Kubernetes and code sources"]
-    Custody["Customer key stores and qualified HSMs"]
-  end
-
-  Edge["QNSI Edge\nidentity, tenant, entitlement, policy and capability boundary"]
-
-  subgraph QNSI["QNSI trust layer"]
-    Decision["Identity and decision"]
-    Control["Control plane"]
-    Data["KMS, vault, storage and search"]
-    Operations["Inventory, migration, security and observability"]
-    Evidence["Audit and evidence"]
-  end
-
-  Workloads --> Edge
-  Edge --> Decision
-  Edge --> Control
-  Edge --> Data
-  Sources --> Operations
-  Custody <--> Data
-  Decision --> Evidence
-  Control --> Evidence
-  Data --> Evidence
-  Operations --> Evidence
-```
+![QNSI common trust-layer architecture](/assets/architecture/qnsi-trust-layer.svg)
 
 The edge is the external transport-policy boundary. It resolves identity, tenant, entitlement, policy, capability, and routing context before an eligible service operation. Exact enforcement and evidence coverage remain operation- and deployment-specific.
 
 ## Request lifecycle
 
-```mermaid
-sequenceDiagram
-  participant Workload as Workload or integration
-  participant Edge as QNSI Edge
-  participant Decision as Identity and decision
-  participant Service as Eligible service
-  participant Evidence as Audit and evidence
-
-  Workload->>Edge: Authenticated, tenant-scoped request
-  Edge->>Decision: Resolve identity, entitlement, policy and capability
-  Decision-->>Edge: Permit or deny with context
-  Edge->>Service: Route permitted operation
-  Service->>Evidence: Record available decision and operation evidence
-  Service-->>Edge: Result and bounded evidence references
-  Edge-->>Workload: Response
-```
+| Stage | Boundary | Result |
+| --- | --- | --- |
+| 1. Request | Workload or integration to QNSI Edge | An authenticated, tenant-scoped request enters the external policy boundary. |
+| 2. Decision | Edge to identity and decision | Identity, tenant, entitlement, policy, and capability context resolve to permit or deny. |
+| 3. Operation | Edge to eligible service | A permitted request is routed to the qualified service operation. |
+| 4. Evidence | Service to audit and evidence | Available decision and operation evidence is recorded with bounded references. |
+| 5. Response | Edge to workload | The result returns within the same tenant and policy context. |
 
 This is a control-flow model. It does not assert that every service operation emits every evidence type.
 
 ## Deployment patterns
 
-### QNSI Cloud
+![QNSI enterprise deployment patterns](/assets/architecture/qnsi-deployment-patterns.svg)
 
-```mermaid
-flowchart LR
-  Customer["Customer environment"] -->|"public service boundary"| Edge["QNSI Edge"]
-  Edge --> Planes["QNSI service planes"]
-  Planes --> Evidence["QNSI evidence plane"]
-```
+### QNSI Cloud
 
 - Status: default public service.
 - Customer operates workload identity, integration configuration, data classification, and application authorization.
@@ -80,24 +38,11 @@ flowchart LR
 
 ### VPC-peered
 
-```mermaid
-flowchart LR
-  CustomerVPC["Customer VPC"] <-->|"qualified peering and routes"| QnsiVPC["Tenant-scoped QNSI VPC"]
-  QnsiVPC --> Planes["Qualified QNSI service planes"]
-```
-
 - Status: provisioned per tenant through an enterprise engagement.
 - Qualification covers routes, security groups, DNS, region, tenancy, transport, failover, telemetry, and evidence requirements.
 - Source-defined architecture is not proof that a particular peering path is active.
 
 ### Private endpoint
-
-```mermaid
-flowchart LR
-  Workload["Customer cloud workload"] --> DNS["Customer private DNS"]
-  DNS --> Endpoint["PrivateLink-class endpoint"]
-  Endpoint --> Service["Qualified tenant service surface"]
-```
 
 - Status: provisioned per tenant.
 - Qualification covers the cloud-provider endpoint service, DNS, routing, identity, eligible operations, and assurance evidence.
@@ -105,31 +50,11 @@ flowchart LR
 
 ### On-premises
 
-```mermaid
-flowchart LR
-  subgraph Customer["Customer-managed environment"]
-    Workloads["Workloads"] --> Edge["QNSI ingress"]
-    Edge --> Planes["QNSI control and data services"]
-    Planes --> LocalEvidence["Local evidence and SIEM"]
-    HSM["Qualified customer custody"] <--> Planes
-  end
-```
-
 - Status: customer-environment deployment delivered through an enterprise engagement.
 - Qualification covers compute, storage, networking, custody, updates, backup, recovery, telemetry, support, and evidence handling.
 - No steady-state operating behavior should be inferred from container or deployment source alone.
 
 ### Air-gapped or sovereign
-
-```mermaid
-flowchart LR
-  TransferIn["Approved offline import"] --> Boundary["Disconnected customer boundary"]
-  subgraph Boundary["Disconnected customer boundary"]
-    Workloads["Workloads"] --> QNSI["QNSI services"]
-    QNSI --> Evidence["Local audit, evidence and SIEM"]
-  end
-  Evidence --> TransferOut["Approved offline export"]
-```
 
 - Status: isolated, contract-scoped deployment.
 - Qualification covers offline update provenance, signing, import/export, key custody, local identity, recovery, evidence transfer, and operator procedure.
