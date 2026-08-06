@@ -5,7 +5,7 @@
 		"access": "public"
 	},
 	"type": "module",
-	"description": "QNSP Host Agent - discovers cryptographic assets on customer servers and reports to the QNSP platform.",
+	"description": "QNSI Host Agent - discovers cryptographic assets on customer servers and reports to QNSI for inventory, exposure analysis, and governed post-quantum migration.",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/heossihq/qnsi-public",

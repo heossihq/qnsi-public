@@ -1,0 +1,80 @@
+{
+  "artifacts": [
+    {
+      "ecosystem": "npm",
+      "install": "pnpm add @heossihq/qnsi",
+      "name": "@heossihq/qnsi",
+      "registryUrl": "https://www.npmjs.com/package/@heossihq/qnsi",
+      "role": "primary-sdk-and-cli",
+      "source": "packages/qnsi",
+      "version": "0.6.0"
+    },
+    {
+      "ecosystem": "PyPI",
+      "install": "pip install qnsi",
+      "name": "qnsi",
+      "registryUrl": "https://pypi.org/project/qnsi/",
+      "role": "primary-sdk",
+      "source": "sdks/python/qnsi",
+      "version": "0.4.2"
+    },
+    {
+      "ecosystem": "crates.io",
+      "install": "cargo add qnsi",
+      "name": "qnsi",
+      "registryUrl": "https://crates.io/crates/qnsi",
+      "role": "primary-sdk",
+      "source": "sdks/rust/qnsi",
+      "version": "0.3.0"
+    },
+    {
+      "ecosystem": "Maven Central",
+      "install": "implementation(\"com.heossi:qnsi:0.4.0\")",
+      "name": "com.heossi:qnsi",
+      "registryUrl": "https://central.sonatype.com/artifact/com.heossi/qnsi",
+      "role": "primary-sdk",
+      "source": "sdks/jvm",
+      "version": "0.4.0"
+    },
+    {
+      "ecosystem": "Go modules",
+      "install": "go get github.com/heossihq/qnsi-public/sdks/go/qnsi@v0.4.0",
+      "name": "github.com/heossihq/qnsi-public/sdks/go/qnsi",
+      "registryUrl": "https://pkg.go.dev/github.com/heossihq/qnsi-public/sdks/go/qnsi",
+      "role": "primary-sdk",
+      "source": "sdks/go/qnsi",
+      "version": "0.4.0"
+    },
+    {
+      "ecosystem": "npm",
+      "install": "pnpm add @heossihq/qnsi-mcp",
+      "name": "@heossihq/qnsi-mcp",
+      "registryUrl": "https://www.npmjs.com/package/@heossihq/qnsi-mcp",
+      "role": "integration-server",
+      "source": "packages/mcp-server",
+      "version": "0.2.0"
+    },
+    {
+      "ecosystem": "npm",
+      "install": "pnpm add -g @heossihq/qnsi-agent",
+      "name": "@heossihq/qnsi-agent",
+      "registryUrl": "https://www.npmjs.com/package/@heossihq/qnsi-agent",
+      "role": "discovery-agent",
+      "source": "apps/qnsp-agent",
+      "version": "0.1.2"
+    },
+    {
+      "ecosystem": "npm",
+      "install": "pnpm add @heossihq/product-facts-schema",
+      "name": "@heossihq/product-facts-schema",
+      "registryUrl": "https://www.npmjs.com/package/@heossihq/product-facts-schema",
+      "role": "supporting-protocol",
+      "source": "packages/product-facts-schema",
+      "version": "0.1.0"
+    }
+  ],
+  "canonicalSource": "https://github.com/heossihq/qnsi-public",
+  "distributionPolicy": "canonical-registries",
+  "project": "QNSI",
+  "schemaVersion": 1
+}

@@ -8,7 +8,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.heossi/qnsi)](https://central.sonatype.com/artifact/com.heossi/qnsi)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.md)
 
-[Website](https://qnsi.heossi.com) | [Documentation](https://docs.qnsi.heossi.com) | [Live PQC verification](https://qnsi.heossi.com/verify) | [Benchmarks](https://qnsi.heossi.com/benchmarks) | [System status](https://qnsi.heossi.com/status) | [Start free](https://cloud.qnsi.heossi.com/auth?mode=signup)
+[Website](https://qnsi.heossi.com) | [Documentation](https://docs.qnsi.heossi.com) | [Packages](PACKAGES.md) | [Machine-readable package index](PACKAGE-INDEX.json) | [Live PQC verification](https://qnsi.heossi.com/verify) | [Benchmarks](https://qnsi.heossi.com/benchmarks) | [System status](https://qnsi.heossi.com/status) | [Start free](https://cloud.qnsi.heossi.com/auth?mode=signup)
 
 QNSI is running security infrastructure, not a cryptography wrapper or a single-purpose developer tool. It provides a dedicated trust layer that applications, AI workloads, cloud estates, and customer-controlled hardware consume through authenticated APIs, SDKs, the CLI, and MCP.
 
@@ -207,11 +207,13 @@ The SDKs are how developers connect workloads to QNSI infrastructure. They are n
 
 ## Install
 
+The canonical [package catalog](PACKAGES.md) lists every public integration artifact, exact version, registry, role, source path, and install command. Its machine-readable companion is [`PACKAGE-INDEX.json`](PACKAGE-INDEX.json). Packages are published to their ecosystem registries; they do not expose the private QNSI service monorepo.
+
 | Runtime              | Package                                      | Install                                                      |
 | -------------------- | -------------------------------------------- | ------------------------------------------------------------ |
 | TypeScript / Node.js | [`@heossihq/qnsi`](packages/qnsi/)           | `pnpm add @heossihq/qnsi`                                    |
 | Python               | [`qnsi`](sdks/python/qnsi/)                  | `pip install qnsi`                                           |
-| Go                   | [`qnsi`](sdks/go/qnsi/)                      | `go get github.com/heossihq/qnsi-public/sdks/go/qnsi@latest` |
+| Go                   | [`qnsi`](sdks/go/qnsi/)                      | `go get github.com/heossihq/qnsi-public/sdks/go/qnsi@v0.4.0` |
 | Rust                 | [`qnsi`](sdks/rust/qnsi/)                    | `cargo add qnsi`                                             |
 | JVM / Android        | [`com.heossi:qnsi`](sdks/jvm/)               | `implementation("com.heossi:qnsi:0.4.0")`          |
 | MCP                  | [`@heossihq/qnsi-mcp`](packages/mcp-server/) | `pnpm add @heossihq/qnsi-mcp`                                |
@@ -252,6 +254,7 @@ See the [developer documentation](https://docs.qnsi.heossi.com/getting-started) 
 - [`apps/web/public/pqc-evidence/`](apps/web/public/pqc-evidence/) - published conformance evidence
 - [`apps/web/public/pqc-benchmarks/`](apps/web/public/pqc-benchmarks/) - published benchmark datasets
 - [`apps/web/lib/qnsi-use-cases/`](apps/web/lib/qnsi-use-cases/) - sourced public use-case catalog and reference register
+- [`PACKAGES.md`](PACKAGES.md) and [`PACKAGE-INDEX.json`](PACKAGE-INDEX.json) - canonical human-readable and machine-readable distribution catalog
 - [`SHA256SUMS`](SHA256SUMS) - SHA-256 digest for every exported source file plus the generated README and manifest
 
 The public surface is designed to answer three questions without access to the private service implementation:
@@ -280,7 +283,8 @@ For security reports, follow [SECURITY.md](SECURITY.md). For contributions and i
 
 ## Export provenance
 
-Private source revision: `94dcb49412b90a12015e90b520e03188cb05bee6`
+Private source revision: `9b2d1d04c26831011cb44f582707bcd4dd25c244`
 
 The machine-readable export inventory and generation timestamp are recorded in [`MANIFEST.json`](MANIFEST.json).
 Verify the exported tree with `sha256sum -c SHA256SUMS` from the repository root.
+Verify every catalog version against its canonical registry with `python3 scripts/automation/verify-qnsi-package-index.py PACKAGE-INDEX.json`.
