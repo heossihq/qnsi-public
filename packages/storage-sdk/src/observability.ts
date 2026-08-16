@@ -9,9 +9,10 @@ import {
 } from "@opentelemetry/sdk-metrics";
 
 type TelemetryResourceOptions = {
+	// The only caller (createStorageClientTelemetry) always resolves all three.
 	readonly serviceName: string;
-	readonly serviceVersion?: string;
-	readonly environment?: string;
+	readonly serviceVersion: string;
+	readonly environment: string;
 };
 
 function createMeterProvider(
@@ -20,8 +21,8 @@ function createMeterProvider(
 ): MeterProvider {
 	const attributes: Record<string, string | number | boolean> = {
 		"service.name": options.serviceName,
-		...(options.serviceVersion ? { "service.version": options.serviceVersion } : {}),
-		"deployment.environment": options.environment ?? "development",
+		"service.version": options.serviceVersion,
+		"deployment.environment": options.environment,
 	};
 
 	return new MeterProvider({

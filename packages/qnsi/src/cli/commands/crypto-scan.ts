@@ -250,7 +250,8 @@ export function registerCryptoScanCommands(program: Command, config: CliConfig):
 				);
 			}
 
-			const format = options.format ?? "table";
+			// commander supplies the "table" default, so no fallback arm is reachable.
+			const format = options.format;
 			if (format === "cbom") {
 				const cbom = buildLocalCbom(summary, scannedPath);
 				if (options.output) {

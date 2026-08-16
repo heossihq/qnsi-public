@@ -18,7 +18,10 @@ export interface CryptoFinding {
  * can run on a single document (on-save / on-open) or over many files in a workspace scan.
  * Operates line-by-line so each match carries a precise editor range.
  */
-export function detectInText(text: string): CryptoFinding[] {
+export function detectInText(
+	text: string,
+	rules: readonly (typeof VULN_RULES)[number][] = VULN_RULES,
+): CryptoFinding[] {
 	const findings: CryptoFinding[] = [];
 	const lines = text.split(/\r?\n/);
 	for (let lineNo = 0; lineNo < lines.length; lineNo++) {
@@ -26,7 +29,7 @@ export function detectInText(text: string): CryptoFinding[] {
 		if (line === undefined || line.length === 0 || line.length > 4000) {
 			continue; // skip empty + pathologically long (minified) lines
 		}
-		for (const rule of VULN_RULES) {
+		for (const rule of rules) {
 			const flags = rule.flags.includes("g") ? rule.flags : `${rule.flags}g`;
 			const re = new RegExp(rule.pattern, flags);
 			let match: RegExpExecArray | null = re.exec(line);

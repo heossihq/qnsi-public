@@ -101,6 +101,24 @@ describe("MCP wire contract: vault.createSecret", () => {
 		expect(body["payloadBase64"]).toBeUndefined();
 		expect(body["tenantId"]).toBe(TENANT);
 	});
+
+	it("fails all vault operations locally when the tier disables vault access", async () => {
+		const { ctx, calls } = spy();
+		(ctx.gate as { hasFeature: (feature: string) => boolean }).hasFeature = () => false;
+
+		const results = await Promise.all([
+			tools.vaultCreateSecret(ctx, { name: "a-secret", value: "hello" }),
+			tools.vaultGetSecret(ctx, { secretId: "secret-id" }),
+			tools.vaultListSecrets(ctx, {}),
+		]);
+
+		expect(calls).toHaveLength(0);
+		for (const result of results) {
+			expect(result.isError).toBe(true);
+			expect(result.content[0]?.text).toContain("Quantum-Safe Vault");
+			expect(result.content[0]?.text).toContain("Current tier: free");
+		}
+	});
 });
 
 describe("MCP wire contract: HSPK seal/sign (byohsm/pqc routes)", () => {
@@ -154,6 +172,31 @@ describe("MCP wire contract: cryptoScan", () => {
 });
 
 describe("MCP tools emit only canonically mounted routes", () => {
+	it("forwards optional audit filters", async () => {
+		const { ctx, calls } = spy();
+
+		await tools.auditQuery(ctx, {
+			topic: "kms.key.rotated",
+			sourceService: "kms-service",
+			limit: 7,
+		});
+
+		expect(calls[0]?.path).toBe(
+			`/proxy/audit/v1/events?topic=kms.key.rotated&sourceService=kms-service&tenantId=${TENANT}&limit=7`,
+		);
+	});
+
+	it("fails encrypted search locally when the tier disables SSE", async () => {
+		const { ctx, calls } = spy();
+		(ctx.gate as { hasFeature: (feature: string) => boolean }).hasFeature = () => false;
+
+		const result = await tools.searchQuery(ctx, { query: "sensitive" });
+
+		expect(calls).toHaveLength(0);
+		expect(result.isError).toBe(true);
+		expect(result.content[0]?.text).toContain("Encrypted Search (SSE-X)");
+	});
+
 	it("invokes all 17 tools and resolves every network call exactly once", async () => {
 		const { readFile } = await import("node:fs/promises");
 		const { fileURLToPath } = await import("node:url");

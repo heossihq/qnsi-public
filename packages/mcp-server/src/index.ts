@@ -34,7 +34,7 @@ import * as tools from "./tools.js";
  * with nothing by construction. (The Python SDK had the identical drift: one package
  * carrying three different versions. See .claude/rules/sdk-wire-contract.md.)
  */
-const PACKAGE_VERSION: string = (() => {
+export const PACKAGE_VERSION: string = (() => {
 	try {
 		const require = createRequire(import.meta.url);
 		const pkg = require("../package.json") as { version?: string };
@@ -44,7 +44,7 @@ const PACKAGE_VERSION: string = (() => {
 	}
 })();
 
-function registerTools(server: McpServer, ctx: ToolContext): void {
+export function registerTools(server: McpServer, ctx: ToolContext): void {
 	server.tool(
 		"qnsp_kms_generate_key",
 		// The catalog is 87 algorithms (24 KEMs + 63 signatures across 13 families) - this said
@@ -205,7 +205,7 @@ export function createSandboxServer(): McpServer {
 	return server;
 }
 
-function getRequiredEnv(name: string): string {
+export function getRequiredEnv(name: string): string {
 	const value = process.env[name];
 	if (!value || value.length === 0) {
 		process.stderr.write(
@@ -216,7 +216,7 @@ function getRequiredEnv(name: string): string {
 	return value;
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
 	const apiKey = getRequiredEnv("QNSP_API_KEY");
 	const platformUrl = process.env["QNSP_PLATFORM_URL"] ?? "https://api.qnsi.heossi.com";
 

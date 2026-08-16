@@ -287,6 +287,30 @@ describe("shared-kernel/db-ssl", () => {
 				/sslmode=verify-full requires a DNS hostname, not an IP address/,
 			);
 		});
+
+		it("normalizes prefer and no-verify to SSL without verification", () => {
+			expect(resolvePgSslFromEnv("prefer")).toEqual({ rejectUnauthorized: false });
+			expect(resolvePgSslFromEnv("no-verify")).toEqual({ rejectUnauthorized: false });
+		});
+
+		it("normalizes verify-ca and reads the CA bundle", () => {
+			const fakeCa = "-----BEGIN CERTIFICATE-----\nCA\n-----END CERTIFICATE-----";
+			mockReadFileSync.mockReturnValueOnce(fakeCa);
+
+			const result = resolvePgSslFromEnv("verify-ca", "/custom/ca.pem", "db.example.com");
+
+			expect(result).toMatchObject({ rejectUnauthorized: true, ca: fakeCa });
+		});
+
+		it("stringifies non-Error throws from the CA bundle read", () => {
+			mockReadFileSync.mockImplementationOnce(() => {
+				throw "raw fs failure";
+			});
+
+			expect(() => resolvePgSslFromEnv("verify-full", "/custom/ca.pem")).toThrow(
+				/could not be read: raw fs failure/,
+			);
+		});
 	});
 
 	describe("logSslDiagnostic (opt-in via DB_SSL_DIAGNOSTIC)", () => {

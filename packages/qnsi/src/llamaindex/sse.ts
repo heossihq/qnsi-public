@@ -21,11 +21,11 @@ export interface SseDocumentPayload {
 	readonly tenantId: string;
 	readonly documentId: string;
 	readonly sourceService: string;
-	readonly tags?: readonly string[];
-	readonly metadata?: Record<string, unknown>;
-	readonly body?: string | null;
-	readonly title?: string | null;
-	readonly description?: string | null;
+	readonly tags?: readonly string[] | undefined;
+	readonly metadata?: Record<string, unknown> | undefined;
+	readonly body?: string | null | undefined;
+	readonly title?: string | null | undefined;
+	readonly description?: string | null | undefined;
 }
 
 function toBase64Url(bytes: Uint8Array): string {
@@ -126,8 +126,12 @@ export interface DeriveSseOptions {
 
 function normalizeOptions(options?: DeriveSseOptions): Required<DeriveSseOptions> {
 	return {
-		includeContent: options?.includeContent ?? false,
-		includeBody: options?.includeBody ?? false,
+		// Default ON, matching the 2026-08-15 search-sdk fix: with these off a
+		// document derives zero kw: tokens, so encrypted keyword queries (which
+		// only emit kw: tokens) can never match. The vector store passes both
+		// explicitly; these defaults protect direct users of this subpath.
+		includeContent: options?.includeContent ?? true,
+		includeBody: options?.includeBody ?? true,
 		maxContentTokens: options?.maxContentTokens ?? DEFAULT_TOKENIZATION.maxTokens,
 		minTokenLength: options?.minTokenLength ?? DEFAULT_TOKENIZATION.minTokenLength,
 	};
@@ -144,10 +148,9 @@ export function deriveDocumentSseTokens(
 		maxTokens: normalizedOptions.maxContentTokens,
 		minTokenLength: normalizedOptions.minTokenLength,
 	};
-	const add = (raw?: string | null) => {
-		if (!raw) {
-			return;
-		}
+	// Every call site passes a non-empty template string, so no falsy guard
+	// (mirrors the search-sdk cleanup of the same inlined helper).
+	const add = (raw: string) => {
 		tokens.add(createSseToken(key, raw));
 	};
 

@@ -476,10 +476,11 @@ export class AuditClient {
 	private static isPrivateIpv4(hostname: string): boolean {
 		const m = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
 		if (!m) return false;
-		const parts = m.slice(1).map((x) => Number(x));
-		if (parts.some((n) => Number.isNaN(n) || n < 0 || n > 255)) return false;
-		const [a, b] = parts;
-		if (a == null || b == null) return false;
+		// The pattern guarantees four numeric groups, so the captures always exist. No bounds
+		// check is needed either: an out-of-range octet cannot equal 10, 172 or 192, and Node's
+		// URL parser rejects such hosts before this is ever reached.
+		const a = Number(m[1]);
+		const b = Number(m[2]);
 		if (a === 10) return true;
 		if (a === 172 && b >= 16 && b <= 31) return true;
 		if (a === 192 && b === 168) return true;

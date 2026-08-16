@@ -223,6 +223,15 @@ describe("pqc-tls - Deep Branch Coverage", () => {
 	});
 
 	describe("buildOpenSslConfig - commonName branches", () => {
+		it("generates configuration for a single-label common name", async () => {
+			const result = await generatePqcCertificate({
+				outputDirectory: testDir,
+				filePrefix: "single-label",
+				commonName: "localhost",
+			});
+			expect(result.cert).toBeDefined();
+		});
+
 		it("should use commonName as altName when it contains dots", async () => {
 			const cert: PqcTlsCertificate = {
 				cert: "test-cert",
@@ -264,6 +273,35 @@ describe("pqc-tls - Deep Branch Coverage", () => {
 	});
 
 	describe("ensurePqcCertificateFiles - path derivation branches", () => {
+		it("forwards every explicit generation option", async () => {
+			const result = await ensurePqcCertificateFiles({
+				outputDirectory: testDir,
+				kemAlgorithm: "kyber-768",
+				signatureAlgorithm: "dilithium-3",
+				provider: "oqsprovider",
+				commonName: "explicit.example",
+				organization: "HEOSSI",
+				validityDays: 15,
+				opensslPath: "openssl",
+				opensslEnv: { TEST_OPTION: "1" },
+				filePrefix: "explicit",
+				reuseExisting: false,
+			});
+			expect(result.metadata?.validityDays).toBe(15);
+		});
+
+		it("allows generation with no derived output directory", async () => {
+			vi.spyOn(process, "cwd").mockReturnValue(testDir);
+			const result = await ensurePqcCertificateFiles({ certPath: null, keyPath: null });
+			expect(result.certPath).toContain(testDir);
+		});
+
+		it("uses the process working directory when no output path is supplied", async () => {
+			vi.spyOn(process, "cwd").mockReturnValue(testDir);
+			const result = await generatePqcCertificate({ filePrefix: "cwd-default" });
+			expect(result.certPath).toContain(testDir);
+		});
+
 		it("should derive outputDirectory from certPath when no outputDirectory", async () => {
 			const certPath = join(testDir, "derived", "test.cert.pem");
 

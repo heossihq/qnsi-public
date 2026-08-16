@@ -4,7 +4,7 @@ import * as path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { loadAgentConfig, writeConfigFile } from "./config.js";
+import { bridgeQnsiEnv, loadAgentConfig, writeConfigFile } from "./config.js";
 
 const VALID = {
 	QNSP_AGENT_ID: "11111111-1111-4111-8111-111111111111",
@@ -41,6 +41,24 @@ afterEach(() => {
 });
 
 describe("loadAgentConfig", () => {
+	it("bridges both naming families without overwriting explicit aliases", () => {
+		const env: NodeJS.ProcessEnv = {
+			QNSP_ALPHA: "legacy",
+			QNSI_ALPHA: "canonical",
+			QNSP_BETA: "legacy-only",
+			QNSI_GAMMA: "canonical-only",
+			QNSP_UNSET: undefined,
+		};
+
+		bridgeQnsiEnv(env);
+
+		expect(env["QNSP_ALPHA"]).toBe("legacy");
+		expect(env["QNSI_ALPHA"]).toBe("canonical");
+		expect(env["QNSI_BETA"]).toBe("legacy-only");
+		expect(env["QNSP_GAMMA"]).toBe("canonical-only");
+		expect(env["QNSI_UNSET"]).toBeUndefined();
+	});
+
 	it("loads a valid config from QNSP_* env with sensible defaults", () => {
 		Object.assign(process.env, VALID);
 

@@ -67,13 +67,12 @@ export function findKeySizeNear(lines: readonly string[], lineIndex: number): nu
 	const start = lineIndex;
 	const end = Math.min(lines.length - 1, lineIndex + 4);
 	for (let i = start; i <= end; i++) {
-		const line = lines[i] ?? "";
+		// The loop bound guarantees the index is in range.
+		const line = lines[i] as string;
 		const named = SIZE_PATTERN.exec(line);
 		if (named?.[1]) {
-			const parsed = Number.parseInt(named[1], 10);
-			if (Number.isFinite(parsed)) {
-				return parsed;
-			}
+			// The capture is 3-5 digits, so parseInt is always finite.
+			return Number.parseInt(named[1], 10);
 		}
 		// Inline literal only counts on the firing line itself, e.g. RSA.generate(2048)
 		if (i === start) {

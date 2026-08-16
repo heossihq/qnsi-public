@@ -1,80 +1,65 @@
 ---
 title: Compliance
-version: 1.0.0
-last_updated: 2026-04-23
+version: 2.0.0
+last_updated: 2026-08-10
 copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # Compliance
 
-This page summarizes compliance and assurance programs for QNSI Cloud services provided by HEOSSI (PTE.) LTD ("HEOSSI"), a company incorporated in Singapore (UEN: 202532790K).
+HEOSSI (PTE.) LTD. owns and administers the company compliance programme and is
+the prospective certificate holder. QNSI is a HEOSSI product and may be included
+within the documented organisational or technical scope; it is not a separate
+certificate holder.
 
-## CSA STAR
+| Area | Standard | Posture |
+|---|---|---|
+| Information Security | ISO/IEC 27001:2022 | Evaluated and aligned under ISO/IEC 27001:2022. |
+| AI Governance & Safety | ISO/IEC 42001:2023 | Developed and maintained under ISO/IEC 42001:2023. |
+| Data Encryption Standards | ISO/IEC 19790:2025 | Core cryptographic components verified under ISO/IEC 19790:2025. |
 
-QNSI is listed in the Cloud Security Alliance (CSA) STAR Registry at Level 1 (CAIQ v4.1.0 self-assessment). Level 1 is a public CAIQ self-assessment provided by the vendor.
+These statements describe internal evaluation, alignment, development,
+maintenance, and verification. They do not claim accredited certification or an
+independent conformity assessment.
 
-### What This Means
-- **CAIQ Self-Assessment v4.1.0**: Comprehensive documentation of security controls for IaaS, PaaS, and SaaS services
-- **Mapped to CSA CCM**: Industry-accepted framework for cloud security assurance
-- **Publicly verifiable assurance**: Publicly accessible assurance artifacts for customer due diligence
+ISO/IEC 27001 and ISO/IEC 42001 apply to HEOSSI's defined management-system
+scope. ISO/IEC 19790 applies only to specifically identified cryptographic
+modules or components, not to HEOSSI or QNSI generally.
 
-### Scope
-QNSI cloud service as listed in CSA STAR. Controls vary by deployment model (cloud/private/air-gapped).
+Tentative programme target: Q4 2026 or Q1 2027, subject to funding. This is
+planning information, not a promised certification or completion date.
 
-[View CSA STAR Service Listing →](https://cloudsecurityalliance.org/star/registry/cui-labs-pte-ltd/services/quantum-native-security-platform-qnsi)
+Applicable privacy laws, sector-specific customer requirements, NIST algorithm
+standards, and third-party assurance evidence remain documented in the relevant
+legal and technical material. They are not additional HEOSSI compliance
+frameworks.
 
-## SOC 2
+## Reports
 
-SOC 2 Type II audit is in progress for QNSI Cloud services.
+Authenticated report endpoints expose readiness reports for:
 
-### Trust service criteria
-- Security
-- Availability
-- Confidentiality
-- Processing integrity
+- `iso27001`
+- `iso42001`
+- `iso19790`
 
-### Report availability
-SOC 2 reports will be made available to eligible customers under NDA upon completion.
-
-## PCI DSS
-
-QNSI Cloud does not process or store payment card data directly. Payment processing is handled by third-party payment processors.
-
-## HIPAA
-
-For healthcare customers:
-- BAA available
-- PHI encryption
-- Access controls
-- Audit logging
-
-## GDPR
-
-For EU data:
-- Data processing agreement
-- Data residency options
-- Right to erasure support
-- Data portability
-
-## Compliance reports
-
-Generate compliance reports:
-```
-GET /audit/v1/reports?type=soc2&period=Q1-2024
-```
+Reports default to `NOT VERIFIED` unless protected evidence independently
+supports a narrower claim. Operational health is reported separately and does
+not prove control effectiveness or conformity.
 
 ## Shared responsibility
 
-| Control | QNSI | Customer |
-|---------|------|----------|
-| Infrastructure security | ✓ | |
-| Platform security | ✓ | |
-| Application security | | ✓ |
-| Data classification | | ✓ |
-| Access management | Shared | Shared |
+| Control area | QNSI | Customer |
+|---|---|---|
+| Infrastructure and platform security | Responsible | Informed |
+| Application and workload security | Shared | Responsible |
+| Data classification | Supports controls | Responsible |
+| Identity and access configuration | Shared | Responsible |
+| Evidence review and legal applicability | Provides scoped evidence | Responsible |
 
-## Disclaimer
+## Official references
 
-This page describes HEOSSI' compliance program status and is provided for informational purposes only. It does not constitute a binding commitment, warranty, or certification claim. Any contractual commitments are governed by your signed agreement and the [Terms of Service](https://qnsi.heossi.com/terms).
+- [ISO/IEC 27001:2022](https://www.iso.org/standard/27001)
+- [ISO/IEC 42001:2023](https://www.iso.org/standard/42001)
+- [ISO/IEC 19790:2025](https://www.iso.org/standard/82423.html)
 
 ---
 

@@ -8,12 +8,9 @@ const limitNumberSchema = z
 		if (value === null) {
 			return -1;
 		}
-		if (value === Number.POSITIVE_INFINITY) {
-			return -1;
-		}
-		if (value === Number.NEGATIVE_INFINITY) {
-			return -1;
-		}
+		// No Infinity arms: z.number() rejects non-finite values before the
+		// transform runs (pinned by the entitlement-limits regression test),
+		// so Infinity checks here were unreachable dead branches.
 		return value;
 	})
 	.refine((value) => typeof value === "number" && Number.isFinite(value), {
@@ -35,6 +32,17 @@ export const EntitlementLimitsSchema = z
 		kmsOpsPerMonth: limitNumberSchema,
 		apiKeysCount: limitNumberSchema,
 		cryptoPolicyTier: z.enum(["default", "strict", "maximum", "government"] as const),
+		// Source-code scanning quotas, added to pricing TierLimits after this
+		// schema was written. The drift broke ALL consumers: this schema is
+		// strict, so the 3 extra keys made every parseEntitlementLimits call
+		// return null, and fail-closed count-gates denied paid-sensitive
+		// requests with ENTITLEMENTS_UNAVAILABLE (2026-08-15 incident).
+		// Optional with -1 (unlimited) defaults so pre-drift 13-key payloads
+		// still parse. Keep this schema field-for-field with
+		// packages/pricing/src/tiers.ts TierLimits - the regression test pins it.
+		codeScanRepos: limitNumberSchema.optional().default(-1),
+		codeScanFindingsStored: limitNumberSchema.optional().default(-1),
+		codeScanUploadsPerRepoPerDay: limitNumberSchema.optional().default(-1),
 	})
 	.strict();
 

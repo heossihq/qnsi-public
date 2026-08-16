@@ -10,7 +10,16 @@ import { logger } from "../logger.js";
  */
 
 export type ControlStatus = "met" | "partial" | "not_met" | "not_applicable" | "not_verified";
-export type FrameworkId = "soc2" | "hipaa" | "gdpr" | "pci-dss" | "iso27001" | "pdpa" | "mas-trm";
+export type FrameworkId =
+	| "iso27001"
+	| "iso42001"
+	| "iso19790"
+	| "soc2"
+	| "hipaa"
+	| "gdpr"
+	| "pci-dss"
+	| "pdpa"
+	| "mas-trm";
 
 export interface ComplianceControl {
 	readonly id: string;
@@ -159,6 +168,8 @@ const FRAMEWORK_METADATA: Record<FrameworkId, { name: string; version: string }>
 	gdpr: { name: "GDPR", version: "Regulation (EU) 2016/679" },
 	"pci-dss": { name: "PCI DSS", version: "v4.0.1" },
 	iso27001: { name: "ISO/IEC 27001", version: "2022" },
+	iso42001: { name: "ISO/IEC 42001", version: "2023" },
+	iso19790: { name: "ISO/IEC 19790", version: "2025" },
 	pdpa: { name: "PDPA (Singapore)", version: "Personal Data Protection Act 2012 (Rev. 2021)" },
 	"mas-trm": {
 		name: "MAS TRM Guidelines",
@@ -359,6 +370,79 @@ const FRAMEWORK_CONTROLS: Record<FrameworkId, readonly ControlDef[]> = {
 			evidenceSources: ["audit-service", "crypto-inventory-service", "security-monitoring-service"],
 		},
 	],
+	iso42001: [
+		{
+			id: "AIMS-4",
+			name: "Organizational context",
+			description:
+				"Assess the defined scope, interested parties, and context of the AI management system",
+			evidenceSources: ["ai-orchestrator", "audit-service"],
+		},
+		{
+			id: "AIMS-5",
+			name: "Leadership and policy",
+			description: "Assess leadership accountability, roles, and documented AI policy",
+			evidenceSources: ["ai-orchestrator", "access-control-service", "audit-service"],
+		},
+		{
+			id: "AIMS-6",
+			name: "Risk and objective planning",
+			description: "Assess AI risk treatment, objectives, and planned changes",
+			evidenceSources: ["ai-orchestrator", "security-monitoring-service", "audit-service"],
+		},
+		{
+			id: "AIMS-7",
+			name: "Support and documented information",
+			description: "Assess resources, competence, communication, and controlled documentation",
+			evidenceSources: ["ai-orchestrator", "audit-service"],
+		},
+		{
+			id: "AIMS-8",
+			name: "Operational controls",
+			description:
+				"Assess lifecycle controls for responsible development, provision, and use of AI systems",
+			evidenceSources: ["ai-orchestrator", "security-monitoring-service", "audit-service"],
+		},
+		{
+			id: "AIMS-9",
+			name: "Performance evaluation",
+			description: "Assess monitoring, measurement, internal audit, and management review evidence",
+			evidenceSources: ["ai-orchestrator", "observability-service", "audit-service"],
+		},
+		{
+			id: "AIMS-10",
+			name: "Improvement",
+			description: "Assess nonconformity handling, corrective action, and continual improvement",
+			evidenceSources: ["ai-orchestrator", "audit-service"],
+		},
+	],
+	iso19790: [
+		{
+			id: "CM-1",
+			name: "Cryptographic module specification",
+			description: "Assess the declared module boundary, interfaces, and approved operating modes",
+			evidenceSources: ["kms-service", "crypto-inventory-service", "audit-service"],
+		},
+		{
+			id: "CM-2",
+			name: "Roles, services, and authentication",
+			description: "Assess authorized roles, services, and authentication controls for module use",
+			evidenceSources: ["auth-service", "access-control-service", "kms-service"],
+		},
+		{
+			id: "CM-3",
+			name: "Sensitive security parameter management",
+			description: "Assess lifecycle protection for keys and other sensitive security parameters",
+			evidenceSources: ["kms-service", "vault-service", "audit-service"],
+		},
+		{
+			id: "CM-4",
+			name: "Self-tests and lifecycle assurance",
+			description:
+				"Assess self-tests, configuration control, delivery, operation, and maintenance evidence",
+			evidenceSources: ["kms-service", "security-monitoring-service", "audit-service"],
+		},
+	],
 	pdpa: [
 		{
 			id: "PDPA-S13",
@@ -540,7 +624,7 @@ export class ComplianceService {
 		tenantComplianceTags: readonly string[],
 		evidenceContext?: EvidenceRequestContext,
 	): Promise<ComplianceFrameworkDetail[]> {
-		const frameworkIds = Object.keys(FRAMEWORK_CONTROLS) as FrameworkId[];
+		const frameworkIds: readonly FrameworkId[] = ["iso27001", "iso42001", "iso19790"];
 
 		if (tenantComplianceTags.length === 0) {
 			const results = await Promise.all(
@@ -552,18 +636,12 @@ export class ComplianceService {
 		}
 
 		const tagToFramework: Record<string, FrameworkId> = {
-			soc2: "soc2",
-			"soc-2": "soc2",
-			hipaa: "hipaa",
-			gdpr: "gdpr",
-			"pci-dss": "pci-dss",
-			pci: "pci-dss",
 			iso27001: "iso27001",
 			"iso-27001": "iso27001",
-			pdpa: "pdpa",
-			"mas-trm": "mas-trm",
-			"mas trm": "mas-trm",
-			mastrm: "mas-trm",
+			iso42001: "iso42001",
+			"iso-42001": "iso42001",
+			iso19790: "iso19790",
+			"iso-19790": "iso19790",
 		};
 
 		const matchedIds = new Set<FrameworkId>();

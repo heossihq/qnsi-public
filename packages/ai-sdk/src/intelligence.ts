@@ -279,18 +279,12 @@ export class AiIntelligenceClient {
 
 	private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
 		const url = new URL(path, this.baseUrl);
+		// No caller supplies extra headers; the fixed set is the whole contract.
 		const headers = new Headers({
 			Authorization: `Bearer ${this.token}`,
 			"Content-Type": "application/json",
 			Accept: "application/json",
 		});
-
-		if (init.headers) {
-			const extra = new Headers(init.headers);
-			extra.forEach((value, key) => {
-				headers.set(key, value);
-			});
-		}
 
 		const response = await this.fetchImpl(url, {
 			...init,

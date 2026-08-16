@@ -186,3 +186,18 @@ describe("QnsiToolkit", () => {
 		expect(typeof parsed["rotatedAt"]).toBe("string");
 	});
 });
+
+describe("explicit tenant configuration", () => {
+	it("keeps a caller-supplied tenantId instead of inheriting from activation", async () => {
+		const toolkit = await activatedToolkit({ apiKey: "test-key", tenantId: "explicit-tenant" });
+		const tools = toolkit.getTools();
+		expect(tools.length).toBeGreaterThan(0);
+	});
+});
+
+describe("subpath index", () => {
+	it("bridges env aliases on import and re-exports the toolkit", async () => {
+		const mod = await import("./index.js");
+		expect(mod.QnsiToolkit).toBeDefined();
+	});
+});

@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -27,6 +28,7 @@ vi.mock("./config.js", () => ({
 	writeConfigFile: mocks.writeConfigFile,
 }));
 vi.mock("./logger.js", () => ({
+	formatError: (error: unknown) => (error instanceof Error ? error.message : String(error)),
 	logger: { info: mocks.info, warn: mocks.warn, error: mocks.error },
 	setLogLevel: mocks.setLogLevel,
 }));
@@ -317,6 +319,14 @@ describe("agent CLI", () => {
 		log.mockRestore();
 	});
 
+	it("awaits a bounded daemon command runtime", async () => {
+		const daemon = vi.fn().mockResolvedValue(undefined);
+
+		await main(["node", "qnsp-agent", "daemon"], { runDaemon: daemon });
+
+		expect(daemon).toHaveBeenCalledOnce();
+	});
+
 	it("dispatches documented commands and rejects unknown commands", async () => {
 		const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 		const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
@@ -334,5 +344,37 @@ describe("agent CLI", () => {
 		expect(error).toHaveBeenCalledWith("Unknown command: unknown");
 		log.mockRestore();
 		error.mockRestore();
+	});
+
+	it("does not launch when the process has no executable argument", async () => {
+		const originalArgv = process.argv;
+		try {
+			process.argv = ["node"];
+			vi.resetModules();
+			await import("./index.js");
+			expect(mocks.error).not.toHaveBeenCalledWith("Fatal error", expect.anything());
+		} finally {
+			process.argv = originalArgv;
+		}
+	});
+
+	it("launches the CLI when the module is the direct process entry point", async () => {
+		const originalArgv = process.argv;
+		const originalExitCode = process.exitCode;
+		try {
+			process.argv = ["node", fileURLToPath(new URL("./index.ts", import.meta.url)), "unknown"];
+			process.exitCode = undefined;
+			vi.resetModules();
+			await import("./index.js");
+			await vi.waitFor(() => {
+				expect(mocks.error).toHaveBeenCalledWith("Fatal error", {
+					error: "Unknown command: unknown",
+				});
+				expect(process.exitCode).toBe(1);
+			});
+		} finally {
+			process.argv = originalArgv;
+			process.exitCode = originalExitCode;
+		}
 	});
 });

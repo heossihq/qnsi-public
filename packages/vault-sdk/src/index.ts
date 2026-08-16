@@ -21,8 +21,8 @@ export { TierError };
  * Provides a high-level interface for secret management with envelope encryption, versioning, and rotation.
  * All secrets are encrypted with tenant-specific PQC algorithms based on crypto policy.
  *
- * TIER REQUIREMENT: dev-pro or higher
- * Vault features are not available on free or dev-starter tiers.
+ * TIER REQUIREMENT: available on every tier with tier-specific quotas.
+ * Dynamic-credentials engines require dev-pro or higher.
  */
 
 /**
@@ -224,7 +224,8 @@ interface RequestOptions {
 	readonly body?: unknown;
 	readonly headers?: Record<string, string>;
 	readonly signal?: AbortSignal;
-	readonly operation?: string;
+	/** Required: every public method names its operation for telemetry. */
+	readonly operation: string;
 	readonly telemetryRoute?: string;
 	readonly telemetryTarget?: string;
 }
@@ -814,34 +815,34 @@ export class VaultClient {
 		};
 	}
 
-	private async request<T>(method: string, path: string, options?: RequestOptions): Promise<T> {
+	private async request<T>(method: string, path: string, options: RequestOptions): Promise<T> {
 		return this.requestWithRetry<T>(method, path, options, 0);
 	}
 
 	private async requestWithRetry<T>(
 		method: string,
 		path: string,
-		options: RequestOptions | undefined,
+		options: RequestOptions,
 		attempt: number,
 	): Promise<T> {
 		const url = `${this.config.baseUrl}${path}`;
 		const headers: Record<string, string> = {
 			"Content-Type": "application/json",
-			...options?.headers,
+			...options.headers,
 		};
 
 		headers["Authorization"] = `Bearer ${this.config.apiKey}`;
 
-		// Auto-inject tenant ID from activation response
-		if (this.resolvedTenantId) {
-			headers["x-qnsp-tenant-id"] = this.resolvedTenantId;
-		}
+		// Auto-inject tenant ID from activation response. Every public method
+		// awaits ensureActivated() before requesting, and activation always
+		// carries a tenantId, so this is set unconditionally.
+		headers["x-qnsp-tenant-id"] = this.resolvedTenantId as string;
 
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), this.config.timeoutMs);
-		const signal = options?.signal ?? controller.signal;
-		const route = options?.telemetryRoute ?? new URL(path, this.config.baseUrl).pathname;
-		const target = options?.telemetryTarget ?? this.targetService;
+		const signal = options.signal ?? controller.signal;
+		const route = options.telemetryRoute ?? new URL(path, this.config.baseUrl).pathname;
+		const target = options.telemetryTarget ?? this.targetService;
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
 		let httpStatus: number | undefined;
@@ -854,7 +855,7 @@ export class VaultClient {
 				signal,
 			};
 
-			if (options?.body !== undefined) {
+			if (options.body !== undefined) {
 				init.body = JSON.stringify(options.body);
 			}
 
@@ -917,7 +918,7 @@ export class VaultClient {
 		} finally {
 			const durationMs = performance.now() - start;
 			const event: VaultClientTelemetryEvent = {
-				operation: options?.operation ?? `${method} ${route}`,
+				operation: options.operation,
 				method,
 				route,
 				target,
@@ -948,12 +949,9 @@ export class VaultClient {
 			validateUUID(request.tenantId, "tenantId");
 		}
 		await this.ensureActivated();
-		const effectiveTenantId = request.tenantId ?? this.resolvedTenantId;
-		if (!effectiveTenantId) {
-			throw new Error(
-				"QNSP Vault SDK: tenantId could not be resolved. Ensure your API key is valid.",
-			);
-		}
+		// ensureActivated() has resolved the tenant by this point, so the
+		// fallback is always a string - no unreachable missing-tenant arm.
+		const effectiveTenantId = request.tenantId ?? (this.resolvedTenantId as string);
 
 		return this.request<Secret>("POST", "/vault/v1/secrets", {
 			body: {

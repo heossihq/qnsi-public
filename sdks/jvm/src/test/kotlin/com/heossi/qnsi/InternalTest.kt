@@ -47,7 +47,8 @@ class InternalTest {
         assertEquals("""{"ok":true}""", text)
         assertEquals("/billing/v1/sdk/activate", server.takeRequest().path)
         val req = server.takeRequest()
-        assertEquals("/kms/v1/keys", req.path)
+        // The activated tenantId is injected into every GET query (systemic query-tenantId fix).
+        assertEquals("/kms/v1/keys?tenantId=11111111-1111-1111-1111-111111111111", req.path)
         assertEquals("Bearer key_test", req.getHeader("authorization"))
     }
 

@@ -95,6 +95,10 @@ class ProdSmokeTest {
         assertTrue(sig.isNotEmpty(), "sign should return a non-empty signature (response field 'signature')")
         assertTrue(client.kms.verify(keyId, data, sig), "verify should return valid=true for a real signature")
 
+        // Clean up: the canary tenant has a hard kms.keys quota (100). Months of
+        // smoke runs without cleanup filled it (402 observed 2026-08-17).
+        client.kms.deleteKey(keyId)
+
         // vault createSecret -> rotateSecret. Proves #41 (payload) and #42 (newPayload) request fields.
         val payload = Base64.getEncoder().encodeToString("jvm-secret-value".toByteArray())
         val created = client.vault.createSecret(CreateSecretRequest(name = "jvm-smoke-${System.nanoTime()}", payloadB64 = payload))
@@ -103,5 +107,10 @@ class ProdSmokeTest {
         val newPayload = Base64.getEncoder().encodeToString("jvm-secret-rotated".toByteArray())
         val rotated = client.vault.rotateSecret(secretId!!, newPayload)
         assertNotNull(rotated, "rotateSecret should return a JSON body (proves 'newPayload' accepted)")
+
+        // Clean up: the canary tenant is a FREE tier with a hard vault.secrets quota.
+        // Leaving each run's secret behind eventually fills the quota and turns this
+        // smoke red with 402 "vault.secrets quota exceeded" (observed 2026-08-17).
+        client.vault.deleteSecret(secretId)
     }
 }

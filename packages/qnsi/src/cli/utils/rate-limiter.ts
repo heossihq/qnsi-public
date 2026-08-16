@@ -23,8 +23,10 @@ export class RateLimiter {
 		}
 
 		if (this.requests.length >= this.maxRequests) {
-			const oldestRequest = this.requests[0];
-			const waitMs = this.windowMs - (now - (oldestRequest ?? now));
+			// The list is non-empty here (length >= maxRequests >= 1), so Math.min
+			// over it is always finite; an index fallback was an unreachable arm.
+			const oldestRequest = Math.min(...this.requests);
+			const waitMs = this.windowMs - (now - oldestRequest);
 			throw new RateLimitError(
 				`🛡️  Defensive rate limit exceeded: ${this.maxRequests} requests per ${this.windowMs / 1000}s.\n` +
 					`This protects against runaway scripts and bugs.\n` +

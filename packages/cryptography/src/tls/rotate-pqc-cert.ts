@@ -6,8 +6,8 @@
  * It is designed to be run via cron or systemd timers for scheduled rotation.
  */
 
-import { readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import type { PqcAlgorithm } from "../provider.js";
 import { generatePqcCertificate, type PqcTlsOptions } from "./pqc-tls.js";
 
@@ -51,6 +51,7 @@ async function readMetadata(metadataPath: string): Promise<RotationMetadata | nu
  * Write rotation metadata.
  */
 async function writeMetadata(metadataPath: string, metadata: RotationMetadata): Promise<void> {
+	await mkdir(dirname(metadataPath), { recursive: true });
 	await writeFile(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`, "utf8");
 }
 
@@ -91,33 +92,31 @@ export async function rotatePqcCertificate(options: RotatePqcCertOptions): Promi
 	const existingMetadata = await readMetadata(metadataPath);
 
 	if (!needsRotation(existingMetadata, options)) {
-		if (!existingMetadata) {
-			throw new Error("No existing metadata found and rotation not forced");
-		}
+		const currentMetadata = existingMetadata as RotationMetadata;
 
 		const { readFile: readFileSync } = await import("node:fs/promises");
 		const [cert, key] = await Promise.all([
-			readFileSync(existingMetadata.certPath, "utf8"),
-			readFileSync(existingMetadata.keyPath, "utf8"),
+			readFileSync(currentMetadata.certPath, "utf8"),
+			readFileSync(currentMetadata.keyPath, "utf8"),
 		]);
 
 		return {
 			certificate: {
 				cert,
 				key,
-				algorithm: existingMetadata.algorithm as PqcAlgorithm,
+				algorithm: currentMetadata.algorithm as PqcAlgorithm,
 				provider: options.provider ?? "oqsprovider",
-				certPath: existingMetadata.certPath,
-				keyPath: existingMetadata.keyPath,
+				certPath: currentMetadata.certPath,
+				keyPath: currentMetadata.keyPath,
 				metadata: {
-					generatedAt: existingMetadata.lastRotationAt,
+					generatedAt: currentMetadata.lastRotationAt,
 					validityDays: options.validityDays ?? 30,
 					commonName: options.commonName ?? "qnsp.local",
 					organization: options.organization ?? "Quantum-Native Security Infrastructure",
 					source: "existing",
 				},
 			},
-			metadata: existingMetadata,
+			metadata: currentMetadata,
 			rotated: false,
 		};
 	}
@@ -127,10 +126,6 @@ export async function rotatePqcCertificate(options: RotatePqcCertOptions): Promi
 		filePrefix: options.filePrefix ?? service,
 		commonName: options.commonName ?? `${service}.qnsp.local`,
 	});
-
-	if (!certificate.certPath || !certificate.keyPath) {
-		throw new Error("Certificate generation must specify certPath and keyPath");
-	}
 
 	const certChecksum = await calculateChecksum(certificate.cert);
 	const metadata: RotationMetadata = {
@@ -222,12 +217,7 @@ export async function main(args: string[]): Promise<number> {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-	main(process.argv.slice(2))
-		.then((code) => {
-			process.exit(code);
-		})
-		.catch((error) => {
-			console.error("Fatal error:", error);
-			process.exit(1);
-		});
+	void main(process.argv.slice(2)).then((code) => {
+		process.exitCode = code;
+	});
 }

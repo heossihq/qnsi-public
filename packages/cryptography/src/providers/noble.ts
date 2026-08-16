@@ -70,13 +70,13 @@ interface NobleSigInstance {
 	readonly verify: (signature: Uint8Array, message: Uint8Array, publicKey: Uint8Array) => boolean;
 }
 
-const KEM_INSTANCES: Readonly<Record<string, NobleKemInstance>> = {
+const KEM_INSTANCES = {
 	"kyber-512": ml_kem512,
 	"kyber-768": ml_kem768,
 	"kyber-1024": ml_kem1024,
-};
+} as const satisfies Readonly<Record<string, NobleKemInstance>>;
 
-const SIG_INSTANCES: Readonly<Record<string, NobleSigInstance>> = {
+const SIG_INSTANCES = {
 	"dilithium-2": ml_dsa44,
 	"dilithium-3": ml_dsa65,
 	"dilithium-5": ml_dsa87,
@@ -92,7 +92,7 @@ const SIG_INSTANCES: Readonly<Record<string, NobleSigInstance>> = {
 	"sphincs-shake-192s-simple": slh_dsa_shake_192s,
 	"sphincs-shake-256f-simple": slh_dsa_shake_256f,
 	"sphincs-shake-256s-simple": slh_dsa_shake_256s,
-};
+} as const satisfies Readonly<Record<string, NobleSigInstance>>;
 
 /**
  * All algorithms supported by the noble provider.
@@ -162,9 +162,6 @@ function createNobleProvider(allowed: ReadonlySet<PqcAlgorithm>): PqcProvider {
 
 			if (isKemAlgorithm(algorithm)) {
 				const instance = KEM_INSTANCES[algorithm];
-				if (!instance) {
-					throw new Error(`KEM algorithm '${algorithm}' not found in noble provider`);
-				}
 				const { publicKey, secretKey } = seed ? instance.keygen(seed) : instance.keygen();
 				return {
 					keyPair: {
@@ -175,25 +172,15 @@ function createNobleProvider(allowed: ReadonlySet<PqcAlgorithm>): PqcProvider {
 				};
 			}
 
-			if (isSigAlgorithm(algorithm)) {
-				const instance = SIG_INSTANCES[algorithm];
-				if (!instance) {
-					throw new Error(`Signature algorithm '${algorithm}' not found in noble provider`);
-				}
-				const { publicKey, secretKey } = seed ? instance.keygen(seed) : instance.keygen();
-				return {
-					keyPair: {
-						algorithm,
-						publicKey: new Uint8Array(publicKey),
-						privateKey: new Uint8Array(secretKey),
-					},
-				};
-			}
-
-			throw new Error(
-				`Algorithm '${algorithm}' is not supported by the noble provider. ` +
-					`Supported algorithms: ${NOBLE_SUPPORTED_ALGORITHMS.join(", ")}`,
-			);
+			const instance = SIG_INSTANCES[algorithm as keyof typeof SIG_INSTANCES];
+			const { publicKey, secretKey } = seed ? instance.keygen(seed) : instance.keygen();
+			return {
+				keyPair: {
+					algorithm,
+					publicKey: new Uint8Array(publicKey),
+					privateKey: new Uint8Array(secretKey),
+				},
+			};
 		},
 
 		async encapsulate({ algorithm, publicKey }: EncapsulateOptions): Promise<EncapsulationResult> {
@@ -204,10 +191,6 @@ function createNobleProvider(allowed: ReadonlySet<PqcAlgorithm>): PqcProvider {
 			}
 
 			const instance = KEM_INSTANCES[algorithm];
-			if (!instance) {
-				throw new Error(`KEM algorithm '${algorithm}' not found in noble provider`);
-			}
-
 			const { cipherText, sharedSecret } = instance.encapsulate(publicKey);
 			return {
 				ciphertext: new Uint8Array(cipherText),
@@ -227,10 +210,6 @@ function createNobleProvider(allowed: ReadonlySet<PqcAlgorithm>): PqcProvider {
 			}
 
 			const instance = KEM_INSTANCES[algorithm];
-			if (!instance) {
-				throw new Error(`KEM algorithm '${algorithm}' not found in noble provider`);
-			}
-
 			return new Uint8Array(instance.decapsulate(ciphertext, privateKey));
 		},
 
@@ -242,10 +221,6 @@ function createNobleProvider(allowed: ReadonlySet<PqcAlgorithm>): PqcProvider {
 			}
 
 			const instance = SIG_INSTANCES[algorithm];
-			if (!instance) {
-				throw new Error(`Signature algorithm '${algorithm}' not found in noble provider`);
-			}
-
 			const signature = instance.sign(data, privateKey);
 			return {
 				signature: new Uint8Array(signature),
@@ -261,10 +236,6 @@ function createNobleProvider(allowed: ReadonlySet<PqcAlgorithm>): PqcProvider {
 			}
 
 			const instance = SIG_INSTANCES[algorithm];
-			if (!instance) {
-				throw new Error(`Signature algorithm '${algorithm}' not found in noble provider`);
-			}
-
 			return instance.verify(signature, data, publicKey);
 		},
 
@@ -326,10 +297,6 @@ export function createNobleProviderFactory(): ExternalPqcProviderFactory {
 		probe: async () => true,
 		create: async (options?: ExternalPqcProviderInitOptions) => {
 			const allowed = validateRequestedAlgorithms(options?.algorithms);
-
-			if (allowed.size === 0) {
-				throw new Error("No noble algorithms are available with the current configuration");
-			}
 
 			return createNobleProvider(allowed);
 		},

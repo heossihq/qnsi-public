@@ -45,6 +45,34 @@ export const tenantAlgorithmPolicyProvisionedPayloadSchema = z.object({
 	maxKeyAgeDays: z.number().int().positive(),
 });
 
+/**
+ * Crypto policy tier transition.
+ *
+ * Emitted when a tenant's crypto policy tier changes, carrying the assurance DECISION and
+ * not merely the tier names: whether existing attestations are staled by the change, over
+ * what scope, and which strategy properties moved. An auditor reading this event can tell
+ * whether the tenant's prior cryptographic evidence still supports the tier they now hold.
+ *
+ * There is deliberately no key count. Provider attestations are constructed per operation
+ * and are not persisted per key, so any "keys affected" number would be invented rather
+ * than measured. Absent beats fabricated.
+ */
+export const cryptoPolicyTransitionedPayloadSchema = z.object({
+	previousTier: z.enum(["default", "strict", "maximum", "government"]),
+	newTier: z.enum(["default", "strict", "maximum", "government"]),
+	direction: z.enum(["promotion", "demotion", "lateral"]),
+	reattestationRequired: z.boolean(),
+	reattestationScope: z.enum(["none", "signature", "all"]),
+	staleAttestationProperties: z.array(z.string()),
+	assuranceReduced: z.boolean(),
+	/** SHA3-256 over the transition analysis, so the recorded decision is re-derivable. */
+	analysisDigest: z.string().regex(/^[0-9a-f]{64}$/),
+	/** Who or what caused the transition. */
+	actor: z.string().min(1),
+	reason: z.enum(["billing_tier_change", "admin_override", "compliance_requirement"]),
+	effectiveAt: z.string().datetime({ offset: true }),
+});
+
 export const cryptoCompliancePolicyChangedPayloadSchema = z.object({
 	policyId: z.string(),
 	policyName: z.string(),
@@ -111,6 +139,16 @@ registerEventType({
 	defaultPrivacy: "INTERNAL",
 	producers: ["billing-service"],
 	consumers: ["ai-orchestrator", "crypto-inventory-service", "edge-gateway", "audit-service"],
+});
+
+registerEventType({
+	eventType: "tenant.crypto_policy.transitioned.v1",
+	description:
+		"Emitted when a tenant's crypto policy tier changes, carrying the re-attestation determination",
+	payloadSchema: cryptoPolicyTransitionedPayloadSchema,
+	defaultPrivacy: "INTERNAL",
+	producers: ["tenant-service"],
+	consumers: ["audit-service", "kms-service", "edge-gateway", "crypto-inventory-service"],
 });
 
 registerEventType({

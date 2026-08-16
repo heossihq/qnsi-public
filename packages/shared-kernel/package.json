@@ -73,11 +73,10 @@
 		"typecheck": "tsc --project tsconfig.json --noEmit"
 	},
 	"dependencies": {
-		"@opentelemetry/api": "^1.9.1",
 		"@heossihq/qnsi-cryptography": "workspace:*",
 		"@heossihq/qnsi-resilience": "workspace:*",
+		"@opentelemetry/api": "^1.9.1",
 		"nodemailer": "^8.0.5",
-		"pg": "^8.20.0",
 		"sql.js": "^1.14.1",
 		"zod": "^4.3.6"
 	},
@@ -88,6 +87,8 @@
 		"@types/pg": "^8.20.0",
 		"@types/sql.js": "^1.4.11",
 		"fast-check": "^4.6.0",
+		"pg": "^8.20.0",
+		"pg-mem": "^3.0.14",
 		"vitest": "4.1.2"
 	},
 	"private": true

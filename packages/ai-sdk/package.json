@@ -25,18 +25,18 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"@heossihq/qnsi-sdk-activation": "workspace:*",
+		"@heossihq/qnsi-shared-kernel": "workspace:*",
 		"@opentelemetry/api": "^1.9.1",
 		"@opentelemetry/exporter-metrics-otlp-http": "^0.214.0",
 		"@opentelemetry/resources": "^2.6.1",
 		"@opentelemetry/sdk-metrics": "^2.6.1",
-		"@heossihq/qnsi-shared-kernel": "workspace:*",
-		"@heossihq/qnsi-sdk-activation": "workspace:*",
 		"commander": "^14.0.3",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
 		"@types/node": "^25.5.2",
-		"typescript": "^6.0.2",
+		"typescript": "^6.0.3",
 		"vitest": "4.1.2"
 	},
 	"description": "TypeScript SDK client for the QNSP AI orchestration service. Provides secure AI workload management, enclave inference, and encrypted training.",

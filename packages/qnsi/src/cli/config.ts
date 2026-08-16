@@ -109,8 +109,9 @@ export function loadConfig(overrides?: Partial<CliConfig>): CliConfig {
 	const defaults: CliConfig = {
 		edgeGatewayUrl,
 		cloudPortalUrl,
-		authServiceUrl:
-			process.env["QNSI_AUTH_SERVICE_URL"] ?? edgeGatewayUrl ?? "http://localhost:8081",
+		// edgeGatewayUrl is always a string (env value or the production default),
+		// so no further localhost fallback is reachable here.
+		authServiceUrl: process.env["QNSI_AUTH_SERVICE_URL"] ?? edgeGatewayUrl,
 		apiKey: process.env["QNSI_API_KEY"] ?? process.env["QNSP_API_KEY"] ?? null,
 		serviceId: process.env["QNSI_SERVICE_ID"] ?? null,
 		serviceSecret: process.env["QNSI_SERVICE_SECRET"] ?? null,

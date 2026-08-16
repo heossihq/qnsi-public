@@ -10,8 +10,10 @@ import {
 
 type TelemetryResourceOptions = {
 	readonly serviceName: string;
-	readonly serviceVersion?: string;
-	readonly environment?: string;
+	// Required: the single caller (the telemetry factory below) always
+	// resolves defaults before calling, so optional fallbacks here were dead.
+	readonly serviceVersion: string;
+	readonly environment: string;
 };
 
 function createMeterProvider(
@@ -20,8 +22,8 @@ function createMeterProvider(
 ): MeterProvider {
 	const attributes: Record<string, string | number | boolean> = {
 		"service.name": options.serviceName,
-		...(options.serviceVersion ? { "service.version": options.serviceVersion } : {}),
-		"deployment.environment": options.environment ?? "development",
+		"service.version": options.serviceVersion,
+		"deployment.environment": options.environment,
 	};
 
 	return new MeterProvider({

@@ -118,6 +118,15 @@ describe("noble provider factory", () => {
 			).rejects.toThrow(/not a KEM algorithm/);
 		});
 
+		it("honors an explicit deterministic ML-KEM seed", async () => {
+			const factory = createNobleProviderFactory();
+			const provider = await factory.create({ algorithms: ["kyber-512"] });
+			const seed = new Uint8Array(64).fill(7);
+			const first = await provider.generateKeyPair({ algorithm: "kyber-512", seed });
+			const second = await provider.generateKeyPair({ algorithm: "kyber-512", seed });
+			expect(first.keyPair).toEqual(second.keyPair);
+		});
+
 		it("rejects signature algorithm for decapsulate", async () => {
 			const factory = createNobleProviderFactory();
 			unregisterExternalPqcProvider("noble");
@@ -218,6 +227,15 @@ describe("noble provider factory", () => {
 			).rejects.toThrow(/not a signature algorithm/);
 		});
 
+		it("honors an explicit deterministic ML-DSA seed", async () => {
+			const factory = createNobleProviderFactory();
+			const provider = await factory.create({ algorithms: ["dilithium-2"] });
+			const seed = new Uint8Array(32).fill(11);
+			const first = await provider.generateKeyPair({ algorithm: "dilithium-2", seed });
+			const second = await provider.generateKeyPair({ algorithm: "dilithium-2", seed });
+			expect(first.keyPair).toEqual(second.keyPair);
+		});
+
 		it("rejects KEM algorithm for verify", async () => {
 			const factory = createNobleProviderFactory();
 			unregisterExternalPqcProvider("noble");
@@ -315,6 +333,12 @@ describe("noble provider factory", () => {
 			expect(result.digest.length).toBe(32); // SHA-256 = 32 bytes
 		});
 
+		it("supports sha256 without a separator", async () => {
+			const provider = await createNobleProviderFactory().create();
+			const result = await provider.hash(testData, "sha256");
+			expect(result.digest).toHaveLength(32);
+		});
+
 		it("supports sha-512", async () => {
 			const factory = createNobleProviderFactory();
 			unregisterExternalPqcProvider("noble");
@@ -325,6 +349,12 @@ describe("noble provider factory", () => {
 			expect(result.algorithm).toBe("sha-512");
 			expect(result.digest).toBeInstanceOf(Uint8Array);
 			expect(result.digest.length).toBe(64); // SHA-512 = 64 bytes
+		});
+
+		it("supports sha512 without a separator", async () => {
+			const provider = await createNobleProviderFactory().create();
+			const result = await provider.hash(testData, "sha512");
+			expect(result.digest).toHaveLength(64);
 		});
 
 		it("supports sha3-512", async () => {

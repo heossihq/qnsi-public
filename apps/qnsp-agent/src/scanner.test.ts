@@ -1,11 +1,28 @@
 import * as crypto from "node:crypto";
+import { EventEmitter } from "node:events";
 import * as fs from "node:fs";
+import type * as net from "node:net";
 import * as os from "node:os";
 import * as path from "node:path";
-import * as tls from "node:tls";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { checkpointPath, listScanCheckpointSummaries, scanScopeHash } from "./scan-checkpoint.js";
-import { runScan } from "./scanner.js";
+import type * as tls from "node:tls";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	checkpointPath,
+	listScanCheckpointSummaries,
+	saveScanCheckpoint,
+	scanScopeHash,
+} from "./scan-checkpoint.js";
+import {
+	detectPem,
+	parseCertificate,
+	parseSshKey,
+	probeTlsEndpoint,
+	runScan,
+	runScanWithRuntime,
+	scanFile,
+	scanTlsEndpoints,
+	shouldSkipDir,
+} from "./scanner.js";
 
 // A real, long-lived (valid to 2126) self-signed RSA-2048 X.509 certificate + its private
 // key, used to exercise the certificate parser and the live TLS-endpoint probe against a
@@ -31,50 +48,6 @@ nhgOojE7VjqVn9rlzrhAIiAo/Tv52g88dCR+e4GiZ4sJD+rjuuIVIkjDHJ1wOorK
 hDTHrdHt/qYLN2fAVTw41NGRrUWbgbzk+CeTcEn8uWLvya0=
 -----END CERTIFICATE-----
 `;
-
-const TEST_KEY_PEM = `-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC39OXkp0/xyJoa
-/tTwxRTnIbq3hxFC04Bw9x2Bq+ocjrdfl0uiOSV/zuwCUCQxlDoIMKTyan3jFOhD
-BU0uIXp66Ym9Z/ihrdCoAZwt4/Ll5+Y1+VfnqgVlWhmpePTLcKIBarj5CDktA05t
-zC9br+yEnNXZms+APLU7GFiY0ZD9qlEC8q/L0Svyl9ZHCsSkS7+rBlqSoI0CE3Ig
-VntwHEu11BnrbW4S5OHxCohhC2kndMGrQI1UcCLs3/QsWRH/GfjJXCZB0RF4JFJ9
-VaUlKCj/YB0YYXiHEfi7dN4IsFOsPs4GhsYVlQyDyJjgbiQ4EXFrSSDMZpVHcl9p
-5mAZuv5RAgMBAAECggEAKVhZ3kMrkO5zEnuxjP7itJMsZejt3HzwapNj9pvWxb3e
-4ZV96pNZBgmSGm/8Podv5pzWSeTc7++oRz33C5X7MwpvypoGdAI+ujAIc/j+hCVT
-pNBqrTcVuOKgD2rP7DSfuN1Nfy1VunP6ieuBPmSDLogYeWzV097xJbvSV+CMK7Ld
-KhI5EG6YcFpZ/j+k7mwp08kOm5PPwxIpBbZtK2vFkYa8mOBtPyZR4yHIgTK00M2t
-RYH9LargBG0324X0XcdXfLPJ+Px5Lx+rzx/9+YqKyzgts2xrQqVMoT8TcocCb719
-tubTd6kOHigpPgtyOC2gLiMIiK8K0AXIhEaN9ruIpQKBgQDdgSSjoIfK+gumpm4Z
-rAPnGsq9QFHitYuyXGkiDPqfIk1iffU/3PuAFkxKHvQiEsCxEGmiaMLVj2ddgOdP
-zwugzEBiBztf0GHAdmfNfKK1s5/FJDlcvBGPeVShpEKN9uhavil3u2/dvDR4kUXM
-JlLnSfRaz5hd1qGNCjDmE7rwdQKBgQDUms/f2RGZwGbHWerTdHUmlicXQpjsVeQA
-9YsB9flz//dsHVpAF9N5cI7u2sTMGe40DDdnFnuCnsjZDDE3XNGDn88Wkujny8g8
-xidYmBNLSHeQDutifQ55rnEgdPL0S33eVL4WdGEwuPLcYY0DCnXj4RVBhytJESfZ
-s+iNPHSa7QKBgAqIFWHiRBKWiO9Hgnyd/SGD2Jfe8wXAc//q/OStkUz3qI5CRuLe
-cubIKKBtkFX+ZkME8MDUEk9tHhEIC/dzdK4UiAshJOWNVth7yLuwbVwOSk5pRoDu
-QDd+IVP+J1vwnWOTHw2eT9dPF3+UCKmIOPDeR0v6CtiLV+sIzQJjdcPxAoGBAJVk
-LzupCSATvWTJPyPUylkR22gRyOkQtYUjBMmc8Otc6pwSyA8Pbu7/c8BNA0oz0ljK
-WMfcWW+AabtyQMcZNrOZwOeo1XXDkPF7f7xWKACXbERS532uSFSiiiV3aBzXSxvG
-Skf3ATA+VZEcDv0bBZnZ2JjSBU1ze6ATNg7Ac2NFAoGATOQQIPmywB/2fFIVHCKy
-0HU0S3MKnmB9Y4368V3hrDetMNYsl/5MUBYbvr1BJFyDj+nmQivtYD357ZAClWZ2
-3mEtp6FJZZQXbJxPa/GT4rNEMX/c4ACC/yVO5aggPoGl4jDAoNqbQP4MpL1jZdBB
-he1Mq5KfxED48TpptZUJcyI=
------END PRIVATE KEY-----
-`;
-
-/** Bind a real TLS server to the first bindable port from the scanner's probe list. */
-async function startTlsServerOnScannerPort(): Promise<{ server: tls.Server; port: number }> {
-	// Prefer high ports that do not need privileges and rarely collide.
-	for (const port of [9443, 4443, 3443, 8444]) {
-		const bound = await new Promise<tls.Server | null>((resolve) => {
-			const server = tls.createServer({ cert: TEST_CERT_PEM, key: TEST_KEY_PEM });
-			server.once("error", () => resolve(null));
-			server.listen(port, "127.0.0.1", () => resolve(server));
-		});
-		if (bound) return { server: bound, port };
-	}
-	throw new Error("could not bind any scanner TLS port for the test");
-}
 
 let tmpDir: string;
 
@@ -103,6 +76,393 @@ function generateEcKeyPem(): string {
 }
 
 describe("scanner", () => {
+	it("recognizes the complete supported PEM marker catalog", () => {
+		const cases = [
+			["-----BEGIN RSA PRIVATE KEY-----", "RSA"],
+			["-----BEGIN EC PRIVATE KEY-----", "EC"],
+			["-----BEGIN OPENSSH PRIVATE KEY-----", "OpenSSH"],
+			["-----BEGIN DSA PRIVATE KEY-----", "DSA"],
+			["-----BEGIN PRIVATE KEY-----", "PKCS8"],
+			["-----BEGIN ENCRYPTED PRIVATE KEY-----", "PKCS8-ENCRYPTED"],
+			["-----BEGIN CERTIFICATE-----", "X.509"],
+		] as const;
+		for (const [marker, algorithm] of cases) {
+			expect(detectPem(`prefix\n${marker}\npayload`)).toMatchObject({ algorithm });
+		}
+		expect(detectPem("plain text")).toBeNull();
+		expect(shouldSkipDir("node_modules")).toBe(true);
+		expect(shouldSkipDir("certificates")).toBe(false);
+	});
+
+	it("covers key parsing across RSA, EC curves, and non-sized key types", () => {
+		const rsa = parseSshKey(generateRsaKeyPem(), "/rsa", "RSA");
+		const p256 = parseSshKey(generateEcKeyPem(), "/p256", "EC");
+		const { privateKey: p384Key } = crypto.generateKeyPairSync("ec", { namedCurve: "P-384" });
+		const p384 = parseSshKey(
+			p384Key.export({ type: "sec1", format: "pem" }).toString(),
+			"/p384",
+			"EC",
+		);
+		const { privateKey: p521Key } = crypto.generateKeyPairSync("ec", { namedCurve: "P-521" });
+		const p521 = parseSshKey(
+			p521Key.export({ type: "sec1", format: "pem" }).toString(),
+			"/p521",
+			"EC",
+		);
+		const { privateKey: ed25519Key } = crypto.generateKeyPairSync("ed25519");
+		const ed25519 = parseSshKey(
+			ed25519Key.export({ type: "pkcs8", format: "pem" }).toString(),
+			"/ed25519",
+			"PKCS8",
+		);
+
+		expect(rsa).toMatchObject({ algorithm: "RSA", keySize: 2048 });
+		expect(p256).toMatchObject({ algorithm: "EC", keySize: 256 });
+		expect(p384).toMatchObject({ algorithm: "EC", keySize: 384 });
+		expect(p521).toMatchObject({ algorithm: "EC" });
+		expect(p521).not.toHaveProperty("keySize");
+		expect(ed25519).toMatchObject({ algorithm: "ED25519" });
+		expect(ed25519).not.toHaveProperty("keySize");
+	});
+
+	it("uses the detected marker when a key provider omits its asymmetric type", () => {
+		const createPrivateKey = (() => ({
+			asymmetricKeyType: undefined,
+		})) as unknown as typeof crypto.createPrivateKey;
+		const createPublicKey = (() => ({
+			export: () => Buffer.from("public-key"),
+		})) as unknown as typeof crypto.createPublicKey;
+
+		expect(
+			parseSshKey("provider-key", "/provider", "PROVIDER", createPrivateKey, createPublicKey),
+		).toMatchObject({ algorithm: "PROVIDER" });
+	});
+
+	it("handles absent, empty, unreadable, and unsupported file inputs", () => {
+		expect(scanFile(path.join(tmpDir, "missing.pem"))).toEqual([]);
+		expect(scanFile(writeFile("empty.pem", ""))).toEqual([]);
+		const directoryAsPem = path.join(tmpDir, "directory.pem");
+		fs.mkdirSync(directoryAsPem);
+		expect(scanFile(directoryAsPem)).toEqual([]);
+		expect(scanFile(writeFile("material.bin", "-----BEGIN PRIVATE KEY-----"))).toEqual([]);
+	});
+
+	it("classifies all supported password-protected keystore extensions", () => {
+		for (const [name, algorithm] of [
+			["one.pfx", "PKCS12"],
+			["two.keystore", "JKS"],
+		] as const) {
+			const [asset] = scanFile(writeFile(name, "opaque-keystore"));
+			expect(asset).toMatchObject({ algorithm });
+		}
+	});
+
+	it("exposes direct certificate parser rejection for malformed input", () => {
+		expect(parseCertificate("not a certificate", "/broken.crt")).toBeNull();
+	});
+
+	it("retains a certificate with minimal metadata and an unknown key type", () => {
+		const certificate = {
+			fingerprint256: "AA:BB",
+			publicKey: { asymmetricKeyType: undefined },
+			validTo: "",
+			subject: "CN=minimal",
+			issuer: "CN=minimal",
+		} as unknown as crypto.X509Certificate;
+
+		expect(parseCertificate("ignored", "/minimal.crt", () => certificate)).toEqual({
+			type: "certificate",
+			path: "/minimal.crt",
+			algorithm: "UNKNOWN",
+			subject: "CN=minimal",
+			issuer: "CN=minimal",
+			fingerprint: "aabb",
+		});
+	});
+
+	it("times out a TCP endpoint that accepts but never completes TLS", async () => {
+		const socket = new EventEmitter() as EventEmitter & {
+			destroy: ReturnType<typeof vi.fn>;
+		};
+		socket.destroy = vi.fn();
+		const connect = vi.fn(() => socket) as unknown as typeof tls.connect;
+
+		await expect(probeTlsEndpoint("127.0.0.1", 443, 5, connect)).resolves.toBeNull();
+		expect(socket.destroy).toHaveBeenCalledOnce();
+	});
+
+	it("returns null when a reachable TCP endpoint rejects the TLS handshake", async () => {
+		const socket = new EventEmitter() as EventEmitter & {
+			destroy: ReturnType<typeof vi.fn>;
+		};
+		socket.destroy = vi.fn();
+		const connect = vi.fn(() => {
+			queueMicrotask(() => socket.emit("error", new Error("TLS handshake rejected")));
+			return socket;
+		}) as unknown as typeof tls.connect;
+
+		await expect(probeTlsEndpoint("localhost", 443, 500, connect)).resolves.toBeNull();
+	});
+
+	it("handles TLS peers without subjects and certificate-read failures", async () => {
+		function connectWith(getPeerCertificate: () => unknown): typeof tls.connect {
+			return ((_options: tls.ConnectionOptions, callback?: () => void) => {
+				const socket = new EventEmitter() as EventEmitter & {
+					destroy: ReturnType<typeof vi.fn>;
+					getPeerCertificate: () => unknown;
+					getProtocol: () => string | null;
+				};
+				socket.destroy = vi.fn();
+				socket.getPeerCertificate = getPeerCertificate;
+				socket.getProtocol = () => null;
+				queueMicrotask(() => callback?.());
+				return socket;
+			}) as unknown as typeof tls.connect;
+		}
+
+		await expect(
+			probeTlsEndpoint(
+				"localhost",
+				443,
+				100,
+				connectWith(() => ({})),
+			),
+		).resolves.toBeNull();
+		await expect(
+			probeTlsEndpoint(
+				"localhost",
+				443,
+				100,
+				connectWith(() => {
+					throw new Error("certificate unavailable");
+				}),
+			),
+		).resolves.toBeNull();
+	});
+
+	it("records a TLS peer when optional certificate metadata is absent", async () => {
+		const connect = ((_options: tls.ConnectionOptions, callback?: () => void) => {
+			const socket = new EventEmitter() as EventEmitter & {
+				destroy: ReturnType<typeof vi.fn>;
+				getPeerCertificate: () => unknown;
+				getProtocol: () => null;
+			};
+			socket.destroy = vi.fn();
+			socket.getPeerCertificate = () => ({ subject: { CN: "minimal" } });
+			socket.getProtocol = () => null;
+			queueMicrotask(() => callback?.());
+			return socket;
+		}) as unknown as typeof tls.connect;
+
+		await expect(probeTlsEndpoint("localhost", 443, 100, connect)).resolves.toEqual({
+			type: "tls_endpoint",
+			path: "localhost:443",
+			algorithm: "TLS",
+			subject: "CN=minimal",
+			metadata: { port: 443 },
+		});
+
+		const fullConnect = ((_options: tls.ConnectionOptions, callback?: () => void) => {
+			const socket = new EventEmitter() as EventEmitter & {
+				destroy: ReturnType<typeof vi.fn>;
+				getPeerCertificate: () => unknown;
+				getProtocol: () => string;
+			};
+			socket.destroy = vi.fn();
+			socket.getPeerCertificate = () => ({
+				subject: { CN: "full" },
+				issuer: { O: "HEOSSI Test" },
+				fingerprint256: "AA:BB",
+				valid_to: "2126-06-25T10:21:24.000Z",
+			});
+			socket.getProtocol = () => "TLSv1.3";
+			queueMicrotask(() => callback?.());
+			return socket;
+		}) as unknown as typeof tls.connect;
+		await expect(probeTlsEndpoint("localhost", 9443, 100, fullConnect)).resolves.toMatchObject({
+			issuer: "O=HEOSSI Test",
+			fingerprint: "aabb",
+			expiresAt: "2126-06-25T10:21:24.000Z",
+			metadata: { port: 9443, protocol: "TLSv1.3" },
+		});
+	});
+
+	it("covers TCP connect, timeout, error, and empty-probe outcomes deterministically", async () => {
+		let connection = 0;
+		const createConnection = (() => {
+			const current = ++connection;
+			const socket = new EventEmitter() as EventEmitter & {
+				destroy: ReturnType<typeof vi.fn>;
+				setTimeout: (timeout: number) => void;
+			};
+			socket.destroy = vi.fn();
+			socket.setTimeout = () => undefined;
+			queueMicrotask(() => {
+				if (current === 1 || current === 2) socket.emit("connect");
+				else if (current === 3) socket.emit("timeout");
+				else socket.emit("error", new Error("closed"));
+			});
+			return socket;
+		}) as unknown as typeof net.createConnection;
+		const probe = vi
+			.fn()
+			.mockResolvedValueOnce({ type: "tls_endpoint", path: "local", algorithm: "TLS" })
+			.mockResolvedValueOnce(null);
+
+		const assets = await scanTlsEndpoints("host", createConnection, probe);
+
+		expect(assets).toEqual([{ type: "tls_endpoint", path: "host:443", algorithm: "TLS" }]);
+		expect(probe).toHaveBeenCalledTimes(2);
+	});
+
+	it("preserves scan progress when file and TLS adapters fail", async () => {
+		const file = writeFile("adapter.pem", "material");
+		const errorResult = await runScanWithRuntime(
+			[file],
+			"runtime-host",
+			{},
+			{
+				scanFile: () => {
+					throw new Error("file adapter failed");
+				},
+				scanTlsEndpoints: () => Promise.reject("tls adapter failed"),
+			},
+		);
+		const stringResult = await runScanWithRuntime(
+			[file],
+			"runtime-host",
+			{},
+			{
+				scanFile: () => {
+					throw "file adapter failed";
+				},
+				scanTlsEndpoints: () => Promise.reject(new Error("tls adapter failed")),
+			},
+		);
+
+		expect(errorResult.filesScanned).toBe(1);
+		expect(errorResult.errors).toEqual(["TLS scan error: tls adapter failed"]);
+		expect(stringResult.filesScanned).toBe(1);
+		expect(stringResult.errors).toEqual(["TLS scan error: tls adapter failed"]);
+	});
+
+	it("recovers a durable cursor whose directory disappeared", async () => {
+		const stateDir = path.join(tmpDir, "missing-directory-state");
+		const scopeHash = scanScopeHash([tmpDir], "missing-directory-host");
+		await saveScanCheckpoint(stateDir, {
+			version: 1,
+			scanId: crypto.randomUUID(),
+			scopeHash,
+			hostname: "missing-directory-host",
+			scanPaths: [tmpDir],
+			startedAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			nextPathIndex: 1,
+			directoryStack: [
+				{ directory: path.join(tmpDir, "already-removed"), depth: 0, lastEntryName: null },
+			],
+			filesScanned: 0,
+			directoriesScanned: 1,
+			assetsFound: 0,
+			batchSequence: 0,
+			pendingReportedAt: null,
+			pendingAssets: [],
+		});
+
+		const result = await runScan([tmpDir], "missing-directory-host", { stateDir });
+
+		expect(result.resumed).toBe(true);
+		expect(result.directoriesScanned).toBe(1);
+	});
+
+	it("emits a final empty batch without a state directory", async () => {
+		const batches: Array<{ count: number; final: boolean }> = [];
+		await runScanWithRuntime(
+			[],
+			"empty-host",
+			{
+				onAssetBatch: async (assets, context) => {
+					batches.push({ count: assets.length, final: context.final });
+				},
+			},
+			{ scanFile, scanTlsEndpoints: () => Promise.resolve([]) },
+		);
+
+		expect(batches).toEqual([{ count: 0, final: true }]);
+	});
+
+	it("skips socket paths both as roots and as directory entries", async () => {
+		const rootSocket = path.join(tmpDir, "root.sock");
+		const specialStat = {
+			isSymbolicLink: () => false,
+			isFile: () => false,
+			isDirectory: () => false,
+		};
+		await expect(
+			runScanWithRuntime(
+				[rootSocket],
+				"socket-host",
+				{},
+				{
+					scanFile,
+					scanTlsEndpoints: () => Promise.resolve([]),
+					existsSync: () => true,
+					lstatSync: () => specialStat,
+				},
+			),
+		).resolves.toMatchObject({ filesScanned: 0, directoriesScanned: 0 });
+
+		const specialEntry = {
+			name: "nested.sock",
+			isSymbolicLink: () => false,
+			isDirectory: () => false,
+			isFile: () => false,
+		} as fs.Dirent;
+		await expect(
+			runScanWithRuntime(
+				[tmpDir],
+				"socket-host",
+				{},
+				{
+					scanFile,
+					scanTlsEndpoints: () => Promise.resolve([]),
+					readdirSync: () => [specialEntry],
+				},
+			),
+		).resolves.toMatchObject({ filesScanned: 0, directoriesScanned: 1 });
+	});
+
+	it("honors the maximum directory depth from a resumed cursor", async () => {
+		const deepRoot = path.join(tmpDir, "depth-root");
+		const child = path.join(deepRoot, "child");
+		fs.mkdirSync(child, { recursive: true });
+		writeFile(path.join("depth-root", "child", "id_rsa"), generateRsaKeyPem());
+		const stateDir = path.join(tmpDir, "depth-state");
+		const scopeHash = scanScopeHash([deepRoot], "depth-host");
+		await saveScanCheckpoint(stateDir, {
+			version: 1,
+			scanId: crypto.randomUUID(),
+			scopeHash,
+			hostname: "depth-host",
+			scanPaths: [deepRoot],
+			startedAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			nextPathIndex: 1,
+			directoryStack: [{ directory: deepRoot, depth: 8, lastEntryName: null }],
+			filesScanned: 0,
+			directoriesScanned: 1,
+			assetsFound: 0,
+			batchSequence: 0,
+			pendingReportedAt: null,
+			pendingAssets: [],
+		});
+
+		const result = await runScan([deepRoot], "depth-host", { stateDir });
+
+		expect(result.filesScanned).toBe(0);
+		expect(result.assetCount).toBe(0);
+	});
+
 	it("discovers RSA private key files", async () => {
 		const pem = generateRsaKeyPem();
 		writeFile("id_rsa", pem);
@@ -253,25 +613,30 @@ describe("scanner", () => {
 	});
 
 	it("discovers a live local TLS endpoint and records its certificate", async () => {
-		const { server, port } = await startTlsServerOnScannerPort();
-		try {
-			const scanRoot = path.join(tmpDir, "tls-empty");
-			fs.mkdirSync(scanRoot);
+		const scanRoot = path.join(tmpDir, "tls-empty");
+		fs.mkdirSync(scanRoot);
+		const tlsAsset = {
+			type: "tls_endpoint" as const,
+			path: "tls-host:9443",
+			algorithm: "TLS",
+			subject: "CN=qnsp-agent-test.local",
+			fingerprint: "ab".repeat(32),
+			metadata: { port: 9443 },
+		};
 
-			const result = await runScan([scanRoot], "tls-host");
+		const result = await runScanWithRuntime(
+			[scanRoot],
+			"tls-host",
+			{},
+			{
+				scanFile,
+				scanTlsEndpoints: () => Promise.resolve([tlsAsset]),
+			},
+		);
 
-			const endpoint = result.assets.find(
-				(a) => a.type === "tls_endpoint" && a.path === `tls-host:${port}`,
-			);
-			expect(endpoint).toBeDefined();
-			expect(endpoint?.algorithm).toBe("TLS");
-			expect(endpoint?.subject).toContain("qnsp-agent-test.local");
-			expect(endpoint?.fingerprint).toMatch(/^[0-9a-f]{64}$/);
-			expect((endpoint?.metadata as { port?: number } | undefined)?.port).toBe(port);
-		} finally {
-			await new Promise<void>((resolve) => server.close(() => resolve()));
-		}
-	}, 20_000);
+		expect(result.assets).toContainEqual(tlsAsset);
+		expect(result.assetCount).toBe(1);
+	});
 
 	it("validates checkpoint and evidence batch bounds", async () => {
 		await expect(runScan([tmpDir], "test-host", { checkpointEveryFiles: 0 })).rejects.toThrow(

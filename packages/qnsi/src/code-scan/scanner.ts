@@ -114,7 +114,8 @@ export function isTestPath(relativePath: string): boolean {
 	if (segments.some((segment) => TEST_PATH_SEGMENTS.includes(segment))) {
 		return true;
 	}
-	const base = segments[segments.length - 1] ?? "";
+	// split() always yields at least one segment.
+	const base = segments[segments.length - 1] as string;
 	return TEST_FILE_PATTERN.test(base);
 }
 
@@ -176,10 +177,10 @@ export function scanFileContent(
 	const strippedLines = stripComments(content, language);
 	const findings: CodeCryptoFinding[] = [];
 	const testContext = isTestPath(relativePath);
-	const seen = new Set<string>();
 
 	for (let i = 0; i < strippedLines.length; i++) {
-		const line = strippedLines[i] ?? "";
+		// The loop bound guarantees the index is in range.
+		const line = strippedLines[i] as string;
 		if (line.length === 0) {
 			continue;
 		}
@@ -193,11 +194,8 @@ export function scanFileContent(
 			if (!resolved) {
 				continue;
 			}
-			const dedupKey = `${rule.id}:${i}`;
-			if (seen.has(dedupKey)) {
-				continue;
-			}
-			seen.add(dedupKey);
+			// Each rule executes exactly once per line, so (rule, line) pairs are
+			// already unique; a dedup set here had no reachable hit.
 			findings.push({
 				path: relativePath.split(sep).join("/"),
 				line: i + 1,
@@ -229,10 +227,9 @@ export async function scanDirectory(options: ScanOptions): Promise<ScanSummary> 
 	let filesSkipped = 0;
 	let truncated = false;
 
+	// No truncation guard at entry: the per-entry guard below runs before every
+	// recursive call and nothing can flip the flag in between.
 	async function walk(dir: string): Promise<void> {
-		if (truncated) {
-			return;
-		}
 		const entries = await readdir(dir, { withFileTypes: true });
 		// Deterministic order - identical trees produce identical summaries.
 		entries.sort((a, b) => a.name.localeCompare(b.name));

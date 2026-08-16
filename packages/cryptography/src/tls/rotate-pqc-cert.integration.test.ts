@@ -31,7 +31,13 @@ async function hasOpenSslWithOqsProvider(): Promise<boolean> {
 
 const hasOqsProvider = await hasOpenSslWithOqsProvider();
 
-describe.skipIf(!hasOqsProvider)("rotatePqcCertificate integration", () => {
+if (!hasOqsProvider) {
+	throw new Error(
+		"OpenSSL 3 with oqsprovider is required for PQC certificate rotation integration verification",
+	);
+}
+
+describe("rotatePqcCertificate integration", () => {
 	it("generates new PQC certificate with OpenSSL", async () => {
 		const tempDir = await mkdtemp(join(tmpdir(), "pqc-rotate-integration-"));
 		try {

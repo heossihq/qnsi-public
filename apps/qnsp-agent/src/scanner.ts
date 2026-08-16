@@ -17,7 +17,7 @@ import * as net from "node:net";
 import * as path from "node:path";
 import * as tls from "node:tls";
 
-import { logger } from "./logger.js";
+import { formatError, logger } from "./logger.js";
 import {
 	loadScanCheckpoint,
 	removeScanCheckpoint,
@@ -70,7 +70,7 @@ const MAX_SCAN_DEPTH = 8;
 const DEFAULT_CHECKPOINT_EVERY_FILES = 250;
 const DEFAULT_ASSET_BATCH_SIZE = 250;
 
-function shouldSkipDir(name: string): boolean {
+export function shouldSkipDir(name: string): boolean {
 	const skip = new Set([
 		"node_modules",
 		".git",
@@ -92,7 +92,9 @@ function shouldSkipDir(name: string): boolean {
 /**
  * Detect PEM content and return asset type + algorithm.
  */
-function detectPem(content: string): { type: ScannedAsset["type"]; algorithm: string } | null {
+export function detectPem(
+	content: string,
+): { type: ScannedAsset["type"]; algorithm: string } | null {
 	for (const [marker, info] of Object.entries(PEM_MARKERS)) {
 		if (content.includes(marker)) {
 			return info;
@@ -104,9 +106,14 @@ function detectPem(content: string): { type: ScannedAsset["type"]; algorithm: st
 /**
  * Parse an X.509 certificate from PEM and extract metadata.
  */
-function parseCertificate(pemContent: string, filePath: string): ScannedAsset | null {
+export function parseCertificate(
+	pemContent: string,
+	filePath: string,
+	createCertificate: (content: string) => crypto.X509Certificate = (content) =>
+		new crypto.X509Certificate(content),
+): ScannedAsset | null {
 	try {
-		const cert = new crypto.X509Certificate(pemContent);
+		const cert = createCertificate(pemContent);
 		const fingerprint = cert.fingerprint256.replace(/:/g, "").toLowerCase();
 		const algorithm = cert.publicKey.asymmetricKeyType?.toUpperCase() ?? "UNKNOWN";
 		const keySize =
@@ -136,13 +143,15 @@ function parseCertificate(pemContent: string, filePath: string): ScannedAsset | 
 /**
  * Parse an SSH private key and extract algorithm + key size.
  */
-function parseSshKey(
+export function parseSshKey(
 	pemContent: string,
 	filePath: string,
 	detectedAlgorithm: string,
-): ScannedAsset | null {
+	createPrivateKey: typeof crypto.createPrivateKey = crypto.createPrivateKey,
+	createPublicKey: typeof crypto.createPublicKey = crypto.createPublicKey,
+): ScannedAsset {
 	try {
-		const keyObj = crypto.createPrivateKey({ key: pemContent, format: "pem" });
+		const keyObj = createPrivateKey({ key: pemContent, format: "pem" });
 		const algorithm = keyObj.asymmetricKeyType?.toUpperCase() ?? detectedAlgorithm;
 		const keySize =
 			keyObj.asymmetricKeyType === "rsa"
@@ -161,7 +170,7 @@ function parseSshKey(
 					: undefined;
 
 		// Compute fingerprint from public key
-		const pubKey = crypto.createPublicKey(keyObj);
+		const pubKey = createPublicKey(keyObj);
 		const pubDer = pubKey.export({ type: "spki", format: "der" });
 		const fingerprint = crypto.createHash("sha256").update(pubDer).digest("hex");
 
@@ -186,7 +195,7 @@ function parseSshKey(
 /**
  * Scan a single file and return discovered assets.
  */
-function scanFile(filePath: string): ScannedAsset[] {
+export function scanFile(filePath: string): ScannedAsset[] {
 	const ext = path.extname(filePath).toLowerCase();
 	const basename = path.basename(filePath);
 	const assets: ScannedAsset[] = [];
@@ -212,13 +221,7 @@ function scanFile(filePath: string): ScannedAsset[] {
 	}
 
 	// Only read text-based files for PEM detection
-	if (!CERT_EXTENSIONS.has(ext) && !SSH_KEY_PATTERNS.some((p) => p.test(basename))) {
-		// Check if it might be a JWT key by name pattern
-		const isJwtKey = JWT_KEY_PATTERNS.some((p) => p.test(filePath));
-		if (!isJwtKey && ext !== ".key" && ext !== ".pem") {
-			return assets;
-		}
-	}
+	if (!CERT_EXTENSIONS.has(ext) && !SSH_KEY_PATTERNS.some((p) => p.test(basename))) return assets;
 
 	let content: string;
 	try {
@@ -244,9 +247,9 @@ function scanFile(filePath: string): ScannedAsset[] {
 	if (detected.type === "certificate") {
 		const cert = parseCertificate(content, filePath);
 		if (cert) assets.push(cert);
-	} else if (detected.type === "ssh_key" || detected.type === "key") {
+	} else {
 		const key = parseSshKey(content, filePath, detected.algorithm);
-		if (key) assets.push(key);
+		assets.push(key);
 	}
 
 	return assets;
@@ -255,10 +258,11 @@ function scanFile(filePath: string): ScannedAsset[] {
 /**
  * Probe a TCP port for TLS and extract certificate info.
  */
-async function probeTlsEndpoint(
+export async function probeTlsEndpoint(
 	host: string,
 	port: number,
 	timeoutMs = 3000,
+	connect: typeof tls.connect = tls.connect,
 ): Promise<ScannedAsset | null> {
 	return new Promise((resolve) => {
 		const timer = setTimeout(() => {
@@ -266,7 +270,7 @@ async function probeTlsEndpoint(
 			resolve(null);
 		}, timeoutMs);
 
-		const socket = tls.connect(
+		const socket = connect(
 			{
 				host,
 				port,
@@ -285,11 +289,9 @@ async function probeTlsEndpoint(
 
 					const fingerprint = cert.fingerprint256?.replace(/:/g, "").toLowerCase();
 					const expiresAt = cert.valid_to ? new Date(cert.valid_to).toISOString() : undefined;
-					const subject = cert.subject
-						? Object.entries(cert.subject)
-								.map(([k, v]) => `${k}=${v}`)
-								.join(", ")
-						: undefined;
+					const subject = Object.entries(cert.subject)
+						.map(([k, v]) => `${k}=${v}`)
+						.join(", ");
 					const issuer = cert.issuer
 						? Object.entries(cert.issuer)
 								.map(([k, v]) => `${k}=${v}`)
@@ -303,7 +305,7 @@ async function probeTlsEndpoint(
 						path: `${host}:${port}`,
 						algorithm: "TLS",
 						...(expiresAt !== undefined ? { expiresAt } : {}),
-						...(subject !== undefined ? { subject } : {}),
+						subject,
 						...(issuer !== undefined ? { issuer } : {}),
 						...(fingerprint !== undefined ? { fingerprint } : {}),
 						metadata: {
@@ -328,7 +330,11 @@ async function probeTlsEndpoint(
 /**
  * Discover locally listening TLS ports and probe them.
  */
-async function scanTlsEndpoints(hostname: string): Promise<ScannedAsset[]> {
+export async function scanTlsEndpoints(
+	hostname: string,
+	createConnection: typeof net.createConnection = net.createConnection,
+	probe: typeof probeTlsEndpoint = probeTlsEndpoint,
+): Promise<ScannedAsset[]> {
 	// Common TLS ports to probe on localhost
 	const TLS_PORTS = [443, 8443, 8080, 8444, 9443, 3443, 4443];
 	const assets: ScannedAsset[] = [];
@@ -337,7 +343,7 @@ async function scanTlsEndpoints(hostname: string): Promise<ScannedAsset[]> {
 		TLS_PORTS.map(async (port) => {
 			// Quick TCP check first to avoid TLS handshake on closed ports
 			const isOpen = await new Promise<boolean>((resolve) => {
-				const sock = net.createConnection({ host: "127.0.0.1", port });
+				const sock = createConnection({ host: "127.0.0.1", port });
 				sock.setTimeout(500);
 				sock.on("connect", () => {
 					sock.destroy();
@@ -352,7 +358,7 @@ async function scanTlsEndpoints(hostname: string): Promise<ScannedAsset[]> {
 
 			if (!isOpen) return;
 
-			const asset = await probeTlsEndpoint("127.0.0.1", port);
+			const asset = await probe("127.0.0.1", port);
 			if (asset) {
 				assets.push({ ...asset, path: `${hostname}:${port}` });
 			}
@@ -391,6 +397,21 @@ export interface ScanOptions {
 	) => Promise<void>;
 }
 
+export interface ScannerRuntime {
+	readonly scanFile: typeof scanFile;
+	readonly scanTlsEndpoints: (hostname: string) => Promise<ScannedAsset[]>;
+	readonly existsSync?: (path: fs.PathLike) => boolean;
+	readonly lstatSync?: (
+		path: fs.PathLike,
+	) => Pick<fs.Stats, "isSymbolicLink" | "isFile" | "isDirectory">;
+	readonly readdirSync?: (path: fs.PathLike, options: { withFileTypes: true }) => fs.Dirent[];
+}
+
+const DEFAULT_SCANNER_RUNTIME: ScannerRuntime = {
+	scanFile,
+	scanTlsEndpoints,
+};
+
 function updateCheckpoint(
 	checkpoint: ScanCheckpoint,
 	changes: Partial<ScanCheckpoint>,
@@ -406,6 +427,15 @@ export async function runScan(
 	hostname: string,
 	options: ScanOptions = {},
 ): Promise<ScanResult> {
+	return runScanWithRuntime(scanPaths, hostname, options, DEFAULT_SCANNER_RUNTIME);
+}
+
+export async function runScanWithRuntime(
+	scanPaths: string[],
+	hostname: string,
+	options: ScanOptions,
+	runtime: ScannerRuntime,
+): Promise<ScanResult> {
 	const startMs = Date.now();
 	const errors: string[] = [];
 	const checkpointEveryFiles = options.checkpointEveryFiles ?? DEFAULT_CHECKPOINT_EVERY_FILES;
@@ -416,6 +446,9 @@ export async function runScan(
 	}
 
 	const normalizedPaths = scanPaths.map((scanPath) => path.resolve(scanPath));
+	const existsPath = runtime.existsSync ?? fs.existsSync;
+	const lstatPath = runtime.lstatSync ?? fs.lstatSync;
+	const readDirectory = runtime.readdirSync ?? fs.readdirSync;
 	const now = new Date().toISOString();
 	const checkpoint = options.stateDir
 		? await loadScanCheckpoint(options.stateDir, normalizedPaths, hostname)
@@ -443,7 +476,7 @@ export async function runScan(
 		checkpoint.batchSequence > 0;
 	let state = checkpoint;
 	const stateDir = options.stateDir;
-	const scannedPaths = state.scanPaths.filter((scanPath) => fs.existsSync(scanPath));
+	const scannedPaths = state.scanPaths.filter((scanPath) => existsPath(scanPath));
 	const directoryEntryCache = new Map<string, fs.Dirent[]>();
 
 	const persist = async (): Promise<void> => {
@@ -451,10 +484,10 @@ export async function runScan(
 	};
 
 	const emitPendingBatch = async (final: boolean): Promise<void> => {
-		if (!options.onAssetBatch || (state.pendingAssets.length === 0 && !final)) return;
+		const onAssetBatch = options.onAssetBatch as NonNullable<ScanOptions["onAssetBatch"]>;
 		const reportedAt = state.pendingReportedAt ?? state.startedAt;
 		await persist();
-		await options.onAssetBatch(state.pendingAssets, {
+		await onAssetBatch(state.pendingAssets, {
 			scanId: state.scanId,
 			sequence: state.batchSequence,
 			reportedAt,
@@ -475,11 +508,11 @@ export async function runScan(
 	const processFile = async (filePath: string): Promise<void> => {
 		let found: ScannedAsset[] = [];
 		try {
-			found = scanFile(filePath);
+			found = runtime.scanFile(filePath);
 		} catch (err) {
 			logger.debug("Error scanning file", {
 				path: filePath,
-				error: err instanceof Error ? err.message : String(err),
+				error: formatError(err),
 			});
 		}
 		state = updateCheckpoint(state, {
@@ -509,11 +542,11 @@ export async function runScan(
 		if (state.directoryStack.length === 0) {
 			const scanPath = state.scanPaths[state.nextPathIndex];
 			state = updateCheckpoint(state, { nextPathIndex: state.nextPathIndex + 1 });
-			if (!scanPath || !fs.existsSync(scanPath)) {
+			if (!scanPath || !existsPath(scanPath)) {
 				logger.debug("Scan path does not exist, skipping", { path: scanPath });
 				continue;
 			}
-			const stat = fs.lstatSync(scanPath);
+			const stat = lstatPath(scanPath);
 			if (stat.isSymbolicLink()) continue;
 			if (stat.isFile()) {
 				await processFile(scanPath);
@@ -530,16 +563,19 @@ export async function runScan(
 			logger.debug("Scanning path", { path: scanPath, scanId: state.scanId });
 		}
 
-		const frame = state.directoryStack[state.directoryStack.length - 1];
-		if (!frame) continue;
+		const frame = state.directoryStack[state.directoryStack.length - 1] as {
+			directory: string;
+			depth: number;
+			lastEntryName: string | null;
+		};
 		let entries: fs.Dirent[];
 		try {
 			const cached = directoryEntryCache.get(frame.directory);
 			entries =
 				cached ??
-				fs
-					.readdirSync(frame.directory, { withFileTypes: true })
-					.sort((a, b) => a.name.localeCompare(b.name));
+				readDirectory(frame.directory, { withFileTypes: true }).sort((a, b) =>
+					a.name.localeCompare(b.name),
+				);
 			if (!cached) directoryEntryCache.set(frame.directory, entries);
 		} catch {
 			directoryEntryCache.delete(frame.directory);
@@ -578,7 +614,7 @@ export async function runScan(
 
 	// TLS endpoint scan
 	try {
-		const tlsAssets = await scanTlsEndpoints(hostname);
+		const tlsAssets = await runtime.scanTlsEndpoints(hostname);
 		state = updateCheckpoint(state, {
 			assetsFound: state.assetsFound + tlsAssets.length,
 			pendingReportedAt:
@@ -591,7 +627,7 @@ export async function runScan(
 			logger.info("Discovered TLS endpoints", { count: tlsAssets.length });
 		}
 	} catch (err) {
-		errors.push(`TLS scan error: ${err instanceof Error ? err.message : String(err)}`);
+		errors.push(`TLS scan error: ${formatError(err)}`);
 	}
 
 	if (options.onAssetBatch) await emitPendingBatch(true);

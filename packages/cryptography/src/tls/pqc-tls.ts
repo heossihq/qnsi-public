@@ -112,17 +112,28 @@ export interface PqcTlsArtifact extends PqcTlsCertificate {
 	readonly keyPath: string;
 }
 
+export function formatPqcTlsError(error: unknown): string {
+	return error instanceof Error ? error.message : String(error);
+}
+
+export function normalizeOpenSslError(error: unknown): unknown {
+	return error instanceof Error && "stderr" in error
+		? new Error(
+				`OpenSSL command failed: ${error.message}\nstderr: ${(error as Error & { stderr?: string }).stderr}`,
+			)
+		: error;
+}
+
 /**
  * Check if the current Node.js/OpenSSL build supports PQC-TLS.
  * Full PQC-TLS support requires OpenSSL 3.x with PQC extensions.
  */
-export function checkPqcTlsSupport(): {
+export function checkPqcTlsSupport(runtime?: { readonly opensslVersion?: string }): {
 	supported: boolean;
 	opensslVersion?: string;
 	message: string;
 } {
-	const opensslVersion = process.versions.openssl;
-
+	const opensslVersion = runtime ? runtime.opensslVersion : process.versions.openssl;
 	if (!opensslVersion) {
 		return {
 			supported: false,
@@ -130,7 +141,7 @@ export function checkPqcTlsSupport(): {
 		};
 	}
 
-	const opensslMajor = parseInt(opensslVersion.split(".")[0] ?? "0", 10);
+	const opensslMajor = Number.parseInt(opensslVersion, 10);
 	const supported = opensslMajor >= 3;
 
 	return {
@@ -154,9 +165,7 @@ export async function generatePqcCertificate(options: PqcTlsOptions = {}): Promi
 	const commonName = options.commonName ?? DEFAULT_COMMON_NAME;
 	const organization = options.organization ?? DEFAULT_ORGANIZATION;
 	const outputDirectory = resolve(options.outputDirectory ?? join(process.cwd(), "var", "pqc-tls"));
-	const filePrefix = sanitizeFileSegment(
-		options.filePrefix ?? commonName ?? `pqc-${signatureProfile.opensslName}`,
-	);
+	const filePrefix = sanitizeFileSegment(options.filePrefix ?? commonName);
 	const certPath = resolve(options.certPath ?? resolve(outputDirectory, `${filePrefix}.cert.pem`));
 	const keyPath = resolve(options.keyPath ?? resolve(outputDirectory, `${filePrefix}.key.pem`));
 
@@ -231,7 +240,7 @@ export async function generatePqcCertificate(options: PqcTlsOptions = {}): Promi
 		};
 	} catch (error) {
 		throw new Error(
-			`Failed to generate PQC-TLS certificate via OpenSSL: ${error instanceof Error ? error.message : String(error)}`,
+			`Failed to generate PQC-TLS certificate via OpenSSL: ${formatPqcTlsError(error)}`,
 		);
 	} finally {
 		await rm(tempDir, { recursive: true, force: true });
@@ -262,7 +271,7 @@ export async function ensurePqcCertificateFiles(
 				certPath: normalizedCertPath,
 				keyPath: normalizedKeyPath,
 				metadata: {
-					generatedAt: (await fileStatTimestamp(normalizedCertPath)) ?? new Date().toISOString(),
+					generatedAt: await fileStatTimestamp(normalizedCertPath),
 					validityDays: options.validityDays ?? DEFAULT_VALIDITY_DAYS,
 					commonName: options.commonName ?? DEFAULT_COMMON_NAME,
 					organization: options.organization ?? DEFAULT_ORGANIZATION,
@@ -288,16 +297,8 @@ export async function ensurePqcCertificateFiles(
 		...(options.opensslPath ? { opensslPath: options.opensslPath } : {}),
 		...(options.opensslEnv ? { opensslEnv: options.opensslEnv } : {}),
 		...(options.filePrefix ? { filePrefix: options.filePrefix } : {}),
-		...(normalizedCertPath
-			? { certPath: normalizedCertPath }
-			: options.certPath
-				? { certPath: options.certPath }
-				: {}),
-		...(normalizedKeyPath
-			? { keyPath: normalizedKeyPath }
-			: options.keyPath
-				? { keyPath: options.keyPath }
-				: {}),
+		...(normalizedCertPath ? { certPath: normalizedCertPath } : {}),
+		...(normalizedKeyPath ? { keyPath: normalizedKeyPath } : {}),
 	};
 	return generatePqcCertificate(generateOptions);
 }
@@ -465,12 +466,7 @@ async function runOpenSsl(
 			},
 		});
 	} catch (error) {
-		if (error instanceof Error && "stderr" in error) {
-			throw new Error(
-				`OpenSSL command failed: ${error.message}\nstderr: ${(error as Error & { stderr?: string }).stderr}`,
-			);
-		}
-		throw error;
+		throw normalizeOpenSslError(error);
 	}
 }
 
@@ -483,11 +479,11 @@ async function fileExists(path: string): Promise<boolean> {
 	}
 }
 
-async function fileStatTimestamp(path: string): Promise<string | null> {
+export async function fileStatTimestamp(path: string): Promise<string> {
 	try {
 		const fileStat = await stat(path);
 		return fileStat.mtime.toISOString();
 	} catch {
-		return null;
+		return new Date().toISOString();
 	}
 }

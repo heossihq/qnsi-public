@@ -504,15 +504,16 @@ const SCENARIOS: readonly ScenarioPattern[] = [
 const EVIDENCE_BOUNDARY =
 	"This page is an evaluation pattern, not evidence that a customer deployment, regulatory outcome, or stated control has been completed. QNSI capabilities remain subject to the selected deployment, policy, integration, qualification, and independently verified production evidence.";
 
+export function truncateSeoDescription(draft: string): string {
+	return draft.length <= 158 ? draft : `${draft.slice(0, 155).replace(/\s+\S*$/, "")}…`;
+}
+
 function buildUseCase(industry: IndustryContext, scenario: ScenarioPattern): BuyerUseCase {
 	const title = `${scenario.titlePrefix} ${industry.name}`;
 	const descriptionDraft = `${industry.name}: ${scenario.name.toLowerCase()} for ${industry.assets
 		.slice(0, 3)
 		.join(", ")}. Connect ${industry.executiveConcern} to an evidence-bound PQC evaluation.`;
-	const seoDescription =
-		descriptionDraft.length <= 158
-			? descriptionDraft
-			: `${descriptionDraft.slice(0, 155).replace(/\s+\S*$/, "")}…`;
+	const seoDescription = truncateSeoDescription(descriptionDraft);
 	return {
 		slug: `${industry.slug}-${scenario.slug}`,
 		name: `${scenario.name} - ${industry.name}`,

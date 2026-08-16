@@ -65,7 +65,7 @@ function shouldRedactKey(key: string, paths: readonly string[]): boolean {
 	return paths.some((path) => {
 		const lowerPath = path.toLowerCase();
 		if (lowerPath.startsWith("$.")) {
-			const fieldName = lowerPath.slice(2).split(".").pop() ?? "";
+			const fieldName = lowerPath.slice(2).split(".").pop() as string;
 			return lowerKey === fieldName.toLowerCase();
 		}
 		return lowerKey === lowerPath || lowerKey.includes(lowerPath);

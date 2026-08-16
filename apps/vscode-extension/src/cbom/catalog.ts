@@ -110,6 +110,15 @@ export const VULN_RULES: readonly VulnRule[] = [
 		reason: "SHA-1 is collision-broken; migrate to SHA-2/SHA-3.",
 	},
 	{
+		id: "Blowfish",
+		pattern: "\\bblowfish\\b",
+		flags: "gi",
+		urgency: "low",
+		recommend: "AES-256-GCM",
+		reason:
+			"Blowfish's 64-bit block enables birthday-bound attacks (SWEET32-class) on long sessions.",
+	},
+	{
 		id: "AES-128/192",
 		pattern: "\\baes-?(128|192)\\b",
 		flags: "gi",

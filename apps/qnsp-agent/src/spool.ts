@@ -11,7 +11,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
 import type { AgentConfig } from "./config.js";
-import { logger } from "./logger.js";
+import { formatError, logger } from "./logger.js";
 import type { ReportPayload } from "./reporter.js";
 import { submitReportPayload } from "./reporter.js";
 
@@ -153,7 +153,7 @@ export async function flushQueuedReports(config: AgentConfig): Promise<SpoolFlus
 		} catch (error) {
 			logger.warn("Queued report delivery deferred", {
 				file: path.basename(file),
-				error: error instanceof Error ? error.message : String(error),
+				error: formatError(error),
 			});
 			break;
 		}

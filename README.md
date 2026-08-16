@@ -283,7 +283,7 @@ For security reports, follow [SECURITY.md](SECURITY.md). For contributions and i
 
 ## Export provenance
 
-Private source revision: `9b2d1d04c26831011cb44f582707bcd4dd25c244`
+Private source revision: `cab1457178c19cec0cd49ed624ddae1802d57147`
 
 The machine-readable export inventory and generation timestamp are recorded in [`MANIFEST.json`](MANIFEST.json).
 Verify the exported tree with `sha256sum -c SHA256SUMS` from the repository root.

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
-import { basename, dirname, join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
 
 import type { ModelPackageManifest, ModelPackageManifestFile } from "./types.js";
 
@@ -48,7 +48,8 @@ async function collectFiles(
 	const hash = createHash("sha3-512").update(contents).digest("hex");
 	return [
 		{
-			path: relative(baseDir, target) || basename(target),
+			// baseDir is always a proper ancestor of target, so relative() is non-empty.
+			path: relative(baseDir, target),
 			sizeBytes: stats.size,
 			checksumSha3_512: hash,
 		},

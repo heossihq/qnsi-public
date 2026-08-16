@@ -65,7 +65,11 @@ export class Internal {
 	async ensureActivated(): Promise<SdkActivationResponse> {
 		const cached = this.cached;
 		if (cached !== null) {
-			const expiresAtMs = parseExpiresAt(cached.response);
+			// expiresInSeconds is the documented validity window. (The previous
+			// version read an `expiresAt` field that the activation schema strips
+			// from every parsed response, so the instance cache silently fell back
+			// to a 5-minute default regardless of the real token lifetime.)
+			const expiresAtMs = cached.cachedAt + cached.response.expiresInSeconds * 1000;
 			if (expiresAtMs - Date.now() > EXPIRY_BUFFER_MS) {
 				return cached.response;
 			}
@@ -166,9 +170,9 @@ export class Internal {
 		method: string,
 		path: string,
 		body: unknown,
-		options: RequestOptions | undefined,
+		options: ResolvedRequestOptions,
 	): Promise<Response> {
-		const url = buildUrl(this.baseUrl, path, options?.query);
+		const url = buildUrl(this.baseUrl, path, options.query);
 		const headers: Record<string, string> = {
 			authorization: `Bearer ${this.apiKey}`,
 			accept: "application/json",
@@ -178,7 +182,7 @@ export class Internal {
 			headers["content-type"] = "application/json";
 			init.body = JSON.stringify(body);
 		}
-		if (options?.idempotencyKey) {
+		if (options.idempotencyKey) {
 			headers["idempotency-key"] = options.idempotencyKey;
 		}
 		const controller = new AbortController();
@@ -205,24 +209,25 @@ export class Internal {
  * from the query and 400 without it). Returns the options unchanged when no tenant is known or the
  * caller already supplied a query tenantId (caller wins). Reaudit 2026-06-13 #29/#31.
  */
+/** RequestOptions after tenant injection: the query always carries a tenantId. */
+type ResolvedRequestOptions = RequestOptions & {
+	readonly query: Record<string, string | number | boolean | undefined>;
+};
+
 function withTenantIdQuery(
 	options: RequestOptions | undefined,
 	tenantId: string,
-): RequestOptions | undefined {
-	if (!tenantId) return options;
+): ResolvedRequestOptions {
+	// tenantId comes from the activation schema (z.string().uuid()), never empty.
 	const query = options?.query;
-	if (query && query["tenantId"] !== undefined) return options;
+	if (query && query["tenantId"] !== undefined) {
+		return { ...options, query };
+	}
 	return { ...options, query: { ...(query ?? {}), tenantId } };
 }
 
 function withTenantId(body: unknown, tenantId: string): unknown {
-	if (
-		body === undefined ||
-		body === null ||
-		typeof body !== "object" ||
-		Array.isArray(body) ||
-		!tenantId
-	) {
+	if (body === undefined || body === null || typeof body !== "object" || Array.isArray(body)) {
 		return body;
 	}
 	const obj = body as Record<string, unknown>;
@@ -230,20 +235,15 @@ function withTenantId(body: unknown, tenantId: string): unknown {
 	return { tenantId, ...obj };
 }
 
-function buildUrl(base: string, path: string, query: RequestOptions["query"]): string {
-	let url = `${base}${path}`;
-	if (query) {
-		const usp = new URLSearchParams();
-		for (const [key, value] of Object.entries(query)) {
-			if (value === undefined) continue;
-			usp.set(key, String(value));
-		}
-		const encoded = usp.toString();
-		if (encoded.length > 0) {
-			url += url.includes("?") ? `&${encoded}` : `?${encoded}`;
-		}
+function buildUrl(base: string, path: string, query: ResolvedRequestOptions["query"]): string {
+	const usp = new URLSearchParams();
+	for (const [key, value] of Object.entries(query)) {
+		if (value === undefined) continue;
+		usp.set(key, String(value));
 	}
-	return url;
+	// The injected tenantId guarantees at least one query parameter.
+	const encoded = usp.toString();
+	return `${base}${path}${path.includes("?") ? "&" : "?"}${encoded}`;
 }
 
 async function safeReadText(response: Response): Promise<string> {
@@ -275,15 +275,4 @@ function parseApiError(status: number, raw: string): QnsiApiError {
 		message = raw;
 	}
 	return new QnsiApiError(message, status, code, body);
-}
-
-function parseExpiresAt(response: SdkActivationResponse): number {
-	const { expiresAt } = response as unknown as { expiresAt?: string | number };
-	if (typeof expiresAt === "number") return expiresAt;
-	if (typeof expiresAt === "string") {
-		const parsed = Date.parse(expiresAt);
-		if (!Number.isNaN(parsed)) return parsed;
-	}
-	// Conservative default - 5 minutes from now.
-	return Date.now() + 5 * 60_000;
 }

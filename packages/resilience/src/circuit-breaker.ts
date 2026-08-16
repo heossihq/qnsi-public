@@ -24,15 +24,19 @@ export class CircuitBreaker {
 	private failures = 0;
 	private lastFailureTime?: Date;
 	private halfOpenCalls = 0;
+	private readonly options: {
+		readonly failureThreshold: number;
+		readonly timeout: number;
+		readonly halfOpenMaxCalls: number;
+		readonly onStateChange?: (state: CircuitState) => void;
+	};
 
-	constructor(private readonly options: CircuitBreakerOptions = {}) {
-		const { failureThreshold = 5, timeout = 60_000, halfOpenMaxCalls = 3 } = options;
-
+	constructor(options: CircuitBreakerOptions = {}) {
 		this.options = {
-			failureThreshold,
-			timeout,
-			halfOpenMaxCalls,
-			...options,
+			failureThreshold: options.failureThreshold ?? 5,
+			timeout: options.timeout ?? 60_000,
+			halfOpenMaxCalls: options.halfOpenMaxCalls ?? 3,
+			...(options.onStateChange ? { onStateChange: options.onStateChange } : {}),
 		};
 	}
 
@@ -43,11 +47,11 @@ export class CircuitBreaker {
 		// Check if circuit is open
 		if (this.state === "open") {
 			const now = Date.now();
-			const lastFailure = this.lastFailureTime?.getTime() ?? 0;
+			const lastFailure = (this.lastFailureTime as Date).getTime();
 			const elapsed = now - lastFailure;
 
 			// Try to transition to half-open
-			if (elapsed >= (this.options.timeout ?? 60_000)) {
+			if (elapsed >= this.options.timeout) {
 				this.transitionTo("half-open");
 			} else {
 				throw new CircuitBreakerOpenError();
@@ -61,7 +65,7 @@ export class CircuitBreaker {
 			// Success - reset failures and close circuit if half-open
 			if (this.state === "half-open") {
 				this.halfOpenCalls++;
-				if (this.halfOpenCalls >= (this.options.halfOpenMaxCalls ?? 3)) {
+				if (this.halfOpenCalls >= this.options.halfOpenMaxCalls) {
 					this.transitionTo("closed");
 				}
 			} else {
@@ -75,10 +79,7 @@ export class CircuitBreaker {
 			this.lastFailureTime = new Date();
 
 			// Open circuit if threshold reached
-			if (this.failures >= (this.options.failureThreshold ?? 5)) {
-				this.transitionTo("open");
-			} else if (this.state === "half-open") {
-				// If half-open fails, immediately open
+			if (this.failures >= this.options.failureThreshold) {
 				this.transitionTo("open");
 			}
 
@@ -114,10 +115,6 @@ export class CircuitBreaker {
 	 * Transition to a new state
 	 */
 	private transitionTo(newState: CircuitState): void {
-		if (this.state === newState) {
-			return;
-		}
-
 		this.state = newState;
 
 		if (newState === "half-open") {

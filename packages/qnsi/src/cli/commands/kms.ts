@@ -25,9 +25,16 @@ export function registerKmsCommands(program: Command, config: CliConfig): void {
 
 			try {
 				const effectiveConfig = getEffectiveConfig(config, command);
+				// Fail closed like the sibling commands: a blank global --tenant-id
+				// override previously fell through to an empty tenantId query param.
+				const tenantId = effectiveConfig.tenantId;
+				if (!tenantId) {
+					printError("QNSI_TENANT_ID must be set");
+					return process.exit(EXIT_CODES.INVALID_ARGUMENTS);
+				}
 				const headers = await getAuthHeaders(effectiveConfig);
 				const url = new URL(`${effectiveConfig.kmsServiceUrl}/kms/v1/keys`);
-				url.searchParams.set("tenantId", effectiveConfig.tenantId ?? "");
+				url.searchParams.set("tenantId", tenantId);
 				url.searchParams.set("limit", options.limit);
 				if (options.cursor) {
 					url.searchParams.set("cursor", options.cursor);

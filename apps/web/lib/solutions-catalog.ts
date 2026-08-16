@@ -16,7 +16,7 @@
  * to read differentiated, broad enough to cover QNSI's real ICP.
  *
  * Compliance-anchor policy: anchors pointing at /security/compliance
- * resolve only for the 7 frameworks live-evaluated in
+ * resolve only for the three company frameworks published in
  * apps/audit-service/src/services/compliance-service.ts (soc2, hipaa,
  * gdpr, pci-dss, iso27001, pdpa, mas-trm). Frameworks beyond that
  * (CNSA 2.0, FedRAMP, NIS2, NERC CIP, FERPA, SOX, DORA, FIPS

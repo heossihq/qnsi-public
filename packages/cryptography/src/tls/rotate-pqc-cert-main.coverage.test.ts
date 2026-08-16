@@ -1,6 +1,7 @@
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as pqcTls from "./pqc-tls.js";
@@ -41,6 +42,21 @@ describe("rotate-pqc-cert CLI - Coverage", () => {
 	});
 
 	describe("CLI argument parsing", () => {
+		it("runs when loaded as the direct command entry point", async () => {
+			const originalArgv = process.argv;
+			const originalExitCode = process.exitCode;
+			try {
+				process.argv = ["node", fileURLToPath(new URL("./rotate-pqc-cert.ts", import.meta.url))];
+				process.exitCode = undefined;
+				vi.resetModules();
+				await import("./rotate-pqc-cert.js");
+				await vi.waitFor(() => expect(process.exitCode).toBe(1));
+			} finally {
+				process.argv = originalArgv;
+				process.exitCode = originalExitCode;
+			}
+		});
+
 		it("should return error code when --service is missing", async () => {
 			const exitCode = await main([]);
 
@@ -64,6 +80,11 @@ describe("rotate-pqc-cert CLI - Coverage", () => {
 			expect(consoleLogSpy).toHaveBeenCalledWith(
 				expect.stringContaining("Rotated PQC-TLS certificate for test-service"),
 			);
+		});
+
+		it("uses the default CLI output directory when none is supplied", async () => {
+			vi.spyOn(process, "cwd").mockReturnValue(testDir);
+			await expect(main(["--service=default-output"])).resolves.toBe(0);
 		});
 
 		it("should parse --force argument", async () => {
@@ -133,6 +154,30 @@ describe("rotate-pqc-cert CLI - Coverage", () => {
 	});
 
 	describe("CLI output", () => {
+		it("reports a still-valid certificate without rotating it", async () => {
+			const service = "still-valid";
+			const certPath = join(testDir, `${service}.cert.pem`);
+			const keyPath = join(testDir, `${service}.key.pem`);
+			await writeFile(certPath, "CERT");
+			await writeFile(keyPath, "KEY");
+			await writeFile(
+				join(testDir, `${service}-rotation-metadata.json`),
+				JSON.stringify({
+					lastRotationAt: new Date().toISOString(),
+					version: 3,
+					certPath,
+					keyPath,
+					algorithm: "dilithium-3",
+					checksum: "abc",
+				}),
+			);
+
+			const code = await main([`--service=${service}`, `--output-dir=${testDir}`]);
+
+			expect(code).toBe(0);
+			expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining("is still valid"));
+		});
+
 		it("should log success message on rotation", async () => {
 			await main(["--service=success-test", `--output-dir=${testDir}`]);
 

@@ -533,7 +533,8 @@ interface RequestOptions {
 	readonly body?: unknown;
 	readonly headers?: Record<string, string>;
 	readonly signal?: AbortSignal;
-	readonly operation?: string;
+	/** Required: every public method names its operation for telemetry. */
+	readonly operation: string;
 	readonly telemetryRoute?: string;
 	readonly telemetryTarget?: string;
 }
@@ -621,34 +622,34 @@ export class BillingClient {
 		};
 	}
 
-	private async request<T>(method: string, path: string, options?: RequestOptions): Promise<T> {
+	private async request<T>(method: string, path: string, options: RequestOptions): Promise<T> {
 		return this.requestWithRetry<T>(method, path, options, 0);
 	}
 
 	private async requestWithRetry<T>(
 		method: string,
 		path: string,
-		options: RequestOptions | undefined,
+		options: RequestOptions,
 		attempt: number,
 	): Promise<T> {
 		const url = `${this.config.baseUrl}${path}`;
 		const headers: Record<string, string> = {
 			"Content-Type": "application/json",
-			...options?.headers,
+			...options.headers,
 		};
 
 		headers["Authorization"] = `Bearer ${this.config.apiKey}`;
 
-		// Auto-inject tenant ID from activation response
-		if (this.resolvedTenantId) {
-			headers["x-qnsp-tenant-id"] = this.resolvedTenantId;
-		}
+		// Auto-inject tenant ID from activation response. Every public method
+		// awaits ensureActivated() before requesting, and activation always
+		// carries a tenantId, so this is set unconditionally.
+		headers["x-qnsp-tenant-id"] = this.resolvedTenantId as string;
 
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), this.config.timeoutMs);
-		const signal = options?.signal ?? controller.signal;
-		const route = options?.telemetryRoute ?? new URL(path, this.config.baseUrl).pathname;
-		const target = options?.telemetryTarget ?? this.targetService;
+		const signal = options.signal ?? controller.signal;
+		const route = options.telemetryRoute ?? new URL(path, this.config.baseUrl).pathname;
+		const target = options.telemetryTarget ?? this.targetService;
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
 		let httpStatus: number | undefined;
@@ -661,7 +662,7 @@ export class BillingClient {
 				signal,
 			};
 
-			if (options?.body !== undefined) {
+			if (options.body !== undefined) {
 				init.body = JSON.stringify(options.body);
 			}
 
@@ -724,7 +725,7 @@ export class BillingClient {
 		} finally {
 			const durationMs = performance.now() - start;
 			const event: BillingClientTelemetryEvent = {
-				operation: options?.operation ?? `${method} ${route}`,
+				operation: options.operation,
 				method,
 				route,
 				target,

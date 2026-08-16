@@ -156,9 +156,8 @@ export class AiOrchestratorClient {
 			}
 		}
 
-		this.baseUrl = new URL(
-			baseUrlNormalized.endsWith("/") ? baseUrlNormalized : `${baseUrlNormalized}/`,
-		);
+		// baseUrlNormalized has its trailing slash stripped above, so append one.
+		this.baseUrl = new URL(`${baseUrlNormalized}/`);
 		this.apiKey = options.apiKey;
 		this.tier = options.tier;
 		this.maxRetries = options.maxRetries ?? 3;
@@ -171,11 +170,8 @@ export class AiOrchestratorClient {
 				: createAiClientTelemetry(options.telemetry)
 			: null;
 
-		try {
-			this.targetService = new URL(baseUrlNormalized).host;
-		} catch {
-			this.targetService = "ai-orchestrator";
-		}
+		// new URL(...) above already validated the base, so host always parses.
+		this.targetService = this.baseUrl.host;
 
 		this.activationConfig = {
 			apiKey: options.apiKey,
@@ -334,7 +330,7 @@ export class AiOrchestratorClient {
 
 	async cancelWorkload(input: CancelWorkloadRequest) {
 		await this.ensureActivated();
-		const init: RequestInit = {
+		const init: RequestInit & { method: string } = {
 			method: "POST",
 		};
 		if (input.reason) {
@@ -833,7 +829,7 @@ export class AiOrchestratorClient {
 		});
 	}
 
-	private async request<T>(path: string | URL, init: RequestInit = {}): Promise<T> {
+	private async request<T>(path: string | URL, init: RequestInit & { method: string }): Promise<T> {
 		const response = await this.requestRaw(path, init);
 		if (response.status === 204) {
 			return undefined as T;
@@ -841,13 +837,16 @@ export class AiOrchestratorClient {
 		return (await response.json()) as T;
 	}
 
-	private async requestRaw(path: string | URL, init: RequestInit = {}): Promise<Response> {
+	private async requestRaw(
+		path: string | URL,
+		init: RequestInit & { method: string },
+	): Promise<Response> {
 		return this.requestRawWithRetry(path, init, 0);
 	}
 
 	private async requestRawWithRetry(
 		path: string | URL,
-		init: RequestInit,
+		init: RequestInit & { method: string },
 		attempt: number,
 	): Promise<Response> {
 		const url = typeof path === "string" ? new URL(path, this.baseUrl) : path;
@@ -870,7 +869,8 @@ export class AiOrchestratorClient {
 		}
 
 		const route = url.pathname;
-		const method = (init.method ?? "GET").toUpperCase();
+		// Every caller states its method explicitly, so no silent GET default.
+		const method = init.method.toUpperCase();
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
 		let httpStatus: number | undefined;

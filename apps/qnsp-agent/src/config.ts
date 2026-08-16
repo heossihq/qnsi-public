@@ -96,7 +96,7 @@ const DEFAULT_SCAN_PATHS = [
  * variables/config-file keys - mirror each family into the other without
  * overwriting, so the QNSP_-keyed schema below accepts both.
  */
-function bridgeQnsiEnv(env: NodeJS.ProcessEnv = process.env): void {
+export function bridgeQnsiEnv(env: NodeJS.ProcessEnv = process.env): void {
 	for (const [key, value] of Object.entries(env)) {
 		if (value === undefined) continue;
 		if (key.startsWith("QNSP_")) {

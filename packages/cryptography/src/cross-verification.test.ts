@@ -245,6 +245,57 @@ describe("CrossVerificationService", () => {
 
 			unregisterPqcProvider("throwing-provider");
 		});
+
+		it("records a mismatch when the secondary provider rejects the signature", async () => {
+			const rejectingProvider = createDeterministicTestPqcProvider({
+				seed,
+				name: "rejecting-provider",
+			});
+			(rejectingProvider as { verify: typeof rejectingProvider.verify }).verify = async () => false;
+			const mismatchService = new CrossVerificationService({
+				primaryProvider,
+				primaryProviderName: primaryName,
+				secondaryProvider: rejectingProvider,
+				secondaryProviderName: "rejecting-provider",
+			});
+			const algorithm = "dilithium-3" satisfies PqcAlgorithm;
+			const { keyPair } = await primaryProvider.generateKeyPair({ algorithm });
+
+			const result = await mismatchService.crossVerifySignature({
+				algorithm,
+				data: new Uint8Array([1]),
+				privateKey: keyPair.privateKey,
+				publicKey: keyPair.publicKey,
+			});
+
+			expect(result.verified).toBe(false);
+			expect(result.attestation.crossVerificationResult).toBe("mismatch");
+			expect(result.error).toContain("rejected signature");
+		});
+
+		it("normalizes non-Error signature verification failures", async () => {
+			const throwingProvider = createDeterministicTestPqcProvider({ seed, name: "throw-string" });
+			(throwingProvider as { verify: typeof throwingProvider.verify }).verify = async () => {
+				throw "signature backend offline";
+			};
+			const errorService = new CrossVerificationService({
+				primaryProvider,
+				primaryProviderName: primaryName,
+				secondaryProvider: throwingProvider,
+				secondaryProviderName: "throw-string",
+			});
+			const algorithm = "dilithium-3" satisfies PqcAlgorithm;
+			const { keyPair } = await primaryProvider.generateKeyPair({ algorithm });
+
+			const result = await errorService.crossVerifySignature({
+				algorithm,
+				data: new Uint8Array([2]),
+				privateKey: keyPair.privateKey,
+				publicKey: keyPair.publicKey,
+			});
+
+			expect(result.error).toContain("signature backend offline");
+		});
 	});
 
 	describe("crossVerifyVerification", () => {
@@ -357,6 +408,58 @@ describe("CrossVerificationService", () => {
 			expect(result.error).toContain(errorMessage);
 
 			unregisterPqcProvider("throwing-verify-provider");
+		});
+
+		it("records a mismatch when providers disagree on a verification verdict", async () => {
+			const rejectingProvider = createDeterministicTestPqcProvider({ seed, name: "rejecting" });
+			(rejectingProvider as { verify: typeof rejectingProvider.verify }).verify = async () => false;
+			const mismatchService = new CrossVerificationService({
+				primaryProvider,
+				primaryProviderName: primaryName,
+				secondaryProvider: rejectingProvider,
+				secondaryProviderName: "rejecting",
+			});
+			const algorithm = "dilithium-3" satisfies PqcAlgorithm;
+			const { keyPair } = await primaryProvider.generateKeyPair({ algorithm });
+			const data = new Uint8Array([3]);
+			const { signature } = await primaryProvider.sign({
+				algorithm,
+				data,
+				privateKey: keyPair.privateKey,
+			});
+
+			const result = await mismatchService.crossVerifyVerification({
+				algorithm,
+				data,
+				signature,
+				publicKey: keyPair.publicKey,
+			});
+
+			expect(result.verified).toBe(false);
+			expect(result.attestation.crossVerificationResult).toBe("mismatch");
+			expect(result.error).toContain(`${primaryName}=true`);
+		});
+
+		it("normalizes non-Error dual-verification failures", async () => {
+			const throwingProvider = createDeterministicTestPqcProvider({ seed, name: "throw-string" });
+			(throwingProvider as { verify: typeof throwingProvider.verify }).verify = async () => {
+				throw "dual verification offline";
+			};
+			const errorService = new CrossVerificationService({
+				primaryProvider,
+				primaryProviderName: primaryName,
+				secondaryProvider: throwingProvider,
+				secondaryProviderName: "throw-string",
+			});
+
+			const result = await errorService.crossVerifyVerification({
+				algorithm: "dilithium-3",
+				data: new Uint8Array([4]),
+				signature: new Uint8Array(32),
+				publicKey: new Uint8Array(32),
+			});
+
+			expect(result.error).toContain("dual verification offline");
 		});
 	});
 });

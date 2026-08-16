@@ -17,10 +17,9 @@ export function sanitizeOutput(message: string): string {
 				const [key] = match.split(":");
 				return `${key}: [REDACTED]`;
 			}
-			if (match.includes("Bearer")) {
-				return "Bearer [REDACTED]";
-			}
-			return match.replace(/"[^"]+"/g, '"[REDACTED]"');
+			// Every pattern without a colon is a bare Bearer token; a further
+			// quoted-value fallback here was unreachable.
+			return "Bearer [REDACTED]";
 		});
 	}
 	return sanitized;

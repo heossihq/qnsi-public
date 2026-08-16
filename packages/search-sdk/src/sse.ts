@@ -117,8 +117,13 @@ export interface DeriveSseOptions {
 
 function normalizeOptions(options?: DeriveSseOptions): Required<DeriveSseOptions> {
 	return {
-		includeContent: options?.includeContent ?? false,
-		includeBody: options?.includeBody ?? false,
+		// Content keywords ON by default: deriveQuerySseTokens always derives
+		// kw: tokens, so documents must too or encrypted keyword search can
+		// NEVER match. The previous false default meant documents indexed via
+		// the auto-SSE path carried no kw: tokens at all - queries against
+		// them silently returned nothing.
+		includeContent: options?.includeContent ?? true,
+		includeBody: options?.includeBody ?? true,
 		maxContentTokens: options?.maxContentTokens ?? DEFAULT_TOKENIZATION.maxTokens,
 		minTokenLength: options?.minTokenLength ?? DEFAULT_TOKENIZATION.minTokenLength,
 	};
@@ -145,10 +150,8 @@ export function deriveDocumentSseTokens(
 		maxTokens: normalizedOptions.maxContentTokens,
 		minTokenLength: normalizedOptions.minTokenLength,
 	};
-	const add = (raw?: string | null) => {
-		if (!raw) {
-			return;
-		}
+	// Every call site passes a non-empty template string, so no falsy guard.
+	const add = (raw: string) => {
 		tokens.add(createSseToken(key, raw));
 	};
 

@@ -1,10 +1,41 @@
 import { describe, expect, it } from "vitest";
 
 import type { PqcTlsCertificate } from "./pqc-tls.js";
-import { checkPqcTlsSupport, getPqcTlsOptions } from "./pqc-tls.js";
+import {
+	checkPqcTlsSupport,
+	fileStatTimestamp,
+	formatPqcTlsError,
+	getPqcTlsOptions,
+	normalizeOpenSslError,
+} from "./pqc-tls.js";
 
 describe("pqc-tls", () => {
+	it("normalizes operational errors and missing stat evidence", async () => {
+		expect(formatPqcTlsError(new Error("boom"))).toBe("boom");
+		expect(formatPqcTlsError("offline")).toBe("offline");
+		const stderrError = Object.assign(new Error("openssl failed"), { stderr: "provider missing" });
+		expect(normalizeOpenSslError(stderrError)).toMatchObject({
+			message: expect.stringContaining("provider missing"),
+		});
+		expect(normalizeOpenSslError("offline")).toBe("offline");
+		await expect(fileStatTimestamp("/definitely/missing/qnsi-cert.pem")).resolves.toMatch(
+			/^\d{4}-\d{2}-\d{2}T/,
+		);
+	});
+
 	describe("checkPqcTlsSupport", () => {
+		it("reports an unavailable OpenSSL runtime explicitly", () => {
+			expect(checkPqcTlsSupport({})).toEqual({
+				supported: false,
+				message: "OpenSSL version not available",
+			});
+		});
+
+		it("distinguishes pre-3 and OpenSSL 3 runtimes", () => {
+			expect(checkPqcTlsSupport({ opensslVersion: "2.0.0" }).supported).toBe(false);
+			expect(checkPqcTlsSupport({ opensslVersion: "3.5.0" }).supported).toBe(true);
+		});
+
 		it("should return support status based on OpenSSL version", () => {
 			const result = checkPqcTlsSupport();
 

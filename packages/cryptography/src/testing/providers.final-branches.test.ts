@@ -70,6 +70,17 @@ describe("Test PQC Providers - Final Branch Coverage", () => {
 			}
 		});
 
+		it("rejects ciphertexts that were not produced by the provider", async () => {
+			const provider = createTestPqcProvider();
+			await expect(
+				provider.decapsulate({
+					algorithm: "kyber-768",
+					privateKey: new Uint8Array(32),
+					ciphertext: new Uint8Array([1, 2, 3]),
+				}),
+			).rejects.toThrow("Unknown ciphertext for algorithm 'kyber-768'");
+		});
+
 		it("should handle hash with various algorithms", async () => {
 			const provider = createTestPqcProvider();
 			const data = new TextEncoder().encode("test data");
@@ -164,6 +175,17 @@ describe("Test PQC Providers - Final Branch Coverage", () => {
 
 			expect(secret1).toEqual(encap1.sharedSecret);
 			expect(secret2).toEqual(encap2.sharedSecret);
+		});
+
+		it("rejects unknown deterministic ciphertexts", async () => {
+			const provider = createDeterministicTestPqcProvider({ seed: "unknown-ciphertext" });
+			await expect(
+				provider.decapsulate({
+					algorithm: "kyber-1024",
+					privateKey: new Uint8Array(32),
+					ciphertext: new Uint8Array([4, 5, 6]),
+				}),
+			).rejects.toThrow("Unknown ciphertext for algorithm 'kyber-1024'");
 		});
 
 		it("should handle signing with all dilithium variants", async () => {

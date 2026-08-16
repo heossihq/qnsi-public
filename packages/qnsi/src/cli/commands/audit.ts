@@ -28,9 +28,17 @@ export function registerAuditCommands(program: Command, config: CliConfig): void
 
 			try {
 				const effectiveConfig = getEffectiveConfig(config, command);
+				// Fail closed like the sibling commands: a blank global --tenant-id
+				// override previously fell through to an empty tenantId query param.
+				const tenantId = effectiveConfig.tenantId;
+				if (!tenantId) {
+					printError("QNSI_TENANT_ID must be set");
+					process.exit(EXIT_CODES.INVALID_ARGUMENTS);
+					return;
+				}
 				const headers = await getAuthHeaders(effectiveConfig);
 				const url = new URL(`${effectiveConfig.auditServiceUrl}/audit/v1/events`);
-				url.searchParams.set("tenantId", effectiveConfig.tenantId ?? "");
+				url.searchParams.set("tenantId", tenantId);
 				url.searchParams.set("limit", options.limit);
 				if (options.cursor) {
 					url.searchParams.set("cursor", options.cursor);

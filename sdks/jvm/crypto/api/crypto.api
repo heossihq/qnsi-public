@@ -1,0 +1,43 @@
+public final class com/heossi/qnsi/crypto/QnsiDevicePqc {
+	public static final field INSTANCE Lcom/heossi/qnsi/crypto/QnsiDevicePqc;
+	public static final field PROVIDER Ljava/lang/String;
+	public static final fun decapsulate (Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KemAlgorithm;[B[B)[B
+	public static final fun encapsulate (Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KemAlgorithm;[B)Lcom/heossi/qnsi/crypto/QnsiDevicePqc$Encapsulation;
+	public static final fun generateKemKeyPair (Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KemAlgorithm;)Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KeyPair;
+	public static final fun generateSigningKeyPair (Lcom/heossi/qnsi/crypto/QnsiDevicePqc$SignatureAlgorithm;)Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KeyPair;
+	public static final fun sign (Lcom/heossi/qnsi/crypto/QnsiDevicePqc$SignatureAlgorithm;[B[B)[B
+	public static final fun verify (Lcom/heossi/qnsi/crypto/QnsiDevicePqc$SignatureAlgorithm;[B[B[B)Z
+}
+
+public final class com/heossi/qnsi/crypto/QnsiDevicePqc$Encapsulation {
+	public final fun getAlgorithm ()Ljava/lang/String;
+	public final fun getCiphertext ()[B
+	public final fun getProvider ()Ljava/lang/String;
+	public final fun getSharedSecret ()[B
+}
+
+public final class com/heossi/qnsi/crypto/QnsiDevicePqc$KemAlgorithm : java/lang/Enum {
+	public static final field ML_KEM_1024 Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KemAlgorithm;
+	public static final field ML_KEM_768 Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KemAlgorithm;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getLabel ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KemAlgorithm;
+	public static fun values ()[Lcom/heossi/qnsi/crypto/QnsiDevicePqc$KemAlgorithm;
+}
+
+public final class com/heossi/qnsi/crypto/QnsiDevicePqc$KeyPair {
+	public final fun getAlgorithm ()Ljava/lang/String;
+	public final fun getPrivateKey ()[B
+	public final fun getProvider ()Ljava/lang/String;
+	public final fun getPublicKey ()[B
+}
+
+public final class com/heossi/qnsi/crypto/QnsiDevicePqc$SignatureAlgorithm : java/lang/Enum {
+	public static final field ML_DSA_65 Lcom/heossi/qnsi/crypto/QnsiDevicePqc$SignatureAlgorithm;
+	public static final field ML_DSA_87 Lcom/heossi/qnsi/crypto/QnsiDevicePqc$SignatureAlgorithm;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getLabel ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lcom/heossi/qnsi/crypto/QnsiDevicePqc$SignatureAlgorithm;
+	public static fun values ()[Lcom/heossi/qnsi/crypto/QnsiDevicePqc$SignatureAlgorithm;
+}
+

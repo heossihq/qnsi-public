@@ -249,7 +249,8 @@ export function deserializeCseEnvelope(data: Uint8Array): CseEnvelope {
 	if (offset + 1 > data.length) {
 		throw new Error("Invalid CSE envelope: missing IV length");
 	}
-	const ivLen = data[offset] ?? 0;
+	// The preceding bound check guarantees the index is in range.
+	const ivLen = data[offset] as number;
 	offset += 1;
 	if (offset + ivLen > data.length) {
 		throw new Error("Invalid CSE envelope: IV length exceeds data");

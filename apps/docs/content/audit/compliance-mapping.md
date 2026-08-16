@@ -1,69 +1,45 @@
 ---
-title: Compliance Mapping
-version: 0.0.1
-last_updated: 2026-04-23
-description: Map QNSI audit events to compliance controls for SOC 2, PCI DSS, HIPAA, and GDPR, linking auth, access, KMS, and security events to specific requirements.
-copyright: © 2025 HEOSSI. All rights reserved.
+title: Compliance Evidence Mapping
+version: 1.0.0
+last_updated: 2026-08-10
+description: QNSI evidence areas for ISO/IEC 27001:2022, ISO/IEC 42001:2023, and ISO/IEC 19790:2025.
+copyright: © 2025-2026 HEOSSI. All rights reserved.
 ---
-# Compliance Mapping
+# Compliance Evidence Mapping
 
-How QNSI audit events map to compliance requirements.
+HEOSSI (PTE.) LTD. owns and administers the company compliance programme and is
+the prospective certificate holder. QNSI is a HEOSSI product that may be
+included within the documented scope; it is not a separate certificate holder.
+QNSI exposes readiness evidence for the three HEOSSI compliance frameworks:
 
-## SOC 2
+- ISO/IEC 27001:2022 - information security management.
+- ISO/IEC 42001:2023 - AI governance and safety.
+- ISO/IEC 19790:2025 - cryptographic module security.
 
-| Control | QNSI audit events |
-|---------|-------------------|
-| CC6.1 Logical access | `auth.login.*`, `access.*` |
-| CC6.2 Access removal | `auth.token.revoked`, `access.policy.*` |
-| CC6.3 Role-based access | `access.policy.evaluated` |
-| CC7.1 Monitoring | All events |
-| CC7.2 Anomaly detection | `security.*` |
+The mappings are internal assessment aids. They are not accredited
+certification, independent conformity assessment, legal advice, or proof that a
+control is effective.
 
-## PCI DSS
+ISO/IEC 19790 applies only to specifically identified cryptographic modules or
+components, not to HEOSSI or QNSI generally.
 
-| Requirement | QNSI audit events |
-|-------------|-------------------|
-| 10.1 Audit trails | All events with actor |
-| 10.2 Automated audit | `auth.*`, `kms.*`, `access.*` |
-| 10.3 Event attributes | All events (timestamp, actor, resource) |
-| 10.5 Secure audit trails | Merkle checkpointing |
-| 10.7 Retention | Configurable retention |
+## Evidence boundaries
 
-## HIPAA
+Audit events, service telemetry, signed attestations, configuration records, and
+cryptographic test results have different evidentiary value. A report must state
+which source supports each assessment and must use `NOT VERIFIED` when the
+available evidence does not independently test the claim.
 
-| Safeguard | QNSI audit events |
-|-----------|-------------------|
-| Access controls | `auth.*`, `access.*` |
-| Audit controls | All events |
-| Integrity controls | `kms.*`, checksums |
-| Transmission security | TLS events |
+Service-health responses are liveness observations only. They do not establish
+framework conformity or control effectiveness.
 
-## GDPR
+## Report endpoints
 
-| Article | QNSI audit events |
-|---------|-------------------|
-| Art. 5 Accountability | All events |
-| Art. 30 Records | Event exports |
-| Art. 32 Security | `security.*`, `access.*` |
-| Art. 33 Breach notification | `security.breach.*` |
+Generate or download readiness reports using one of the supported identifiers:
 
-## Compliance reports
-
-Generate compliance-specific reports:
-```
-POST /audit/v1/reports
-{
-  "type": "soc2",
-  "period": {
-    "start": "2024-01-01",
-    "end": "2024-03-31"
-  }
-}
-```
-
-Available report types:
-- `soc2`
-- `pci-dss`
-- `hipaa`
-- `gdpr`
 - `iso27001`
+- `iso42001`
+- `iso19790`
+
+The tentative programme target is Q4 2026 or Q1 2027, subject to funding. This
+target is planning information, not a certification promise.

@@ -1,21 +1,12 @@
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { defineConfig, mergeConfig } from "vitest/config";
-import { boundedPool } from "../../tooling/vitest/pool";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { boundedPool } from "../../tooling/vitest/pool.ts";
 
 export default mergeConfig(
 	defineConfig({
-		resolve: {
-			alias: {
-				"@opentelemetry/api": resolve(__dirname, "src/__mocks__/otel-api.ts"),
-				"@opentelemetry/resources": resolve(__dirname, "src/__mocks__/otel-resources.ts"),
-				"@opentelemetry/sdk-metrics": resolve(__dirname, "src/__mocks__/otel-metrics.ts"),
-				"@opentelemetry/sdk-trace-node": resolve(__dirname, "src/__mocks__/otel-trace.ts"),
-			},
-		},
+		// No module aliases: earlier versions substituted hand-written fakes for
+		// ALL of OpenTelemetry, so the suite measured the mocks, not the SDK.
+		// Tests now run against the real @opentelemetry packages with in-memory
+		// exporters.
 		test: {
 			globals: true,
 			environment: "node",
@@ -23,6 +14,18 @@ export default mergeConfig(
 			exclude: ["src/**/*.integration.ts"],
 			passWithNoTests: false,
 			pool: "forks",
+			coverage: {
+				provider: "v8",
+				reporter: ["text", "lcov"],
+				include: ["src/**/*.ts"],
+				exclude: [
+					"src/**/*.test.ts",
+					"src/**/*.spec.ts",
+					"src/**/*.integration.ts",
+					"src/**/*.d.ts",
+				],
+				thresholds: { lines: 100, statements: 100, functions: 100, branches: 100 },
+			},
 		},
 	}),
 	boundedPool,

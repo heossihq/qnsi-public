@@ -10,6 +10,7 @@ const pgState: {
 	instances: Array<{
 		connect: ReturnType<typeof vi.fn>;
 		end: ReturnType<typeof vi.fn>;
+		on: ReturnType<typeof vi.fn>;
 		totalCount: number;
 	}>;
 	client: { query: ReturnType<typeof vi.fn>; release: ReturnType<typeof vi.fn> };
@@ -102,6 +103,31 @@ describe("shared-kernel/db-retry", () => {
 		expect(pgState.instances[0]?.connect).toHaveBeenCalledTimes(1);
 		expect(pgState.client.query).toHaveBeenCalledWith("SELECT 1");
 		expect(pgState.client.release).toHaveBeenCalledTimes(1);
+	});
+
+	it("routes client-level socket errors to onClientError when supplied", async () => {
+		pgState.instances.length = 0;
+		pgState.client.query.mockClear();
+		pgState.client.release.mockClear();
+
+		const onClientError = vi.fn();
+		await createDatabasePoolWithRetry(
+			{ connectionString: "postgresql://test:test@localhost:5432/test" },
+			{ maxRetries: 0, onClientError },
+		);
+
+		const instance = pgState.instances[0];
+		if (!instance) throw new Error("expected a pool instance");
+		const connectCall = instance.on.mock.calls.find(([event]: unknown[]) => event === "connect");
+		if (!connectCall) throw new Error("expected a connect handler");
+		const fakeClient = { on: vi.fn() };
+		(connectCall[1] as (client: unknown) => void)(fakeClient);
+		const errorCall = fakeClient.on.mock.calls.find(([event]: unknown[]) => event === "error");
+		if (!errorCall) throw new Error("expected a client error handler");
+
+		const socketError = new Error("TLS reset");
+		(errorCall[1] as (error: Error) => void)(socketError);
+		expect(onClientError).toHaveBeenCalledWith(socketError);
 	});
 
 	it("waitForPostgres ends the pool after checking availability", async () => {

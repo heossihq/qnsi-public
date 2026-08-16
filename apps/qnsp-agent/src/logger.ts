@@ -19,6 +19,10 @@ export function setLogLevel(level: LogLevel): void {
 	currentLevel = level;
 }
 
+export function formatError(error: unknown): string {
+	return error instanceof Error ? error.message : String(error);
+}
+
 function log(
 	level: Exclude<LogLevel, "silent">,
 	msg: string,

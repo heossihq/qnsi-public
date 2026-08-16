@@ -7,8 +7,7 @@ function generateUUIDv7(): string {
 	const randomBytes = new Uint8Array(10);
 	crypto.getRandomValues(randomBytes);
 
-	const byte0 = randomBytes[0] ?? 0;
-	const byte2 = randomBytes[2] ?? 0;
+	const [byte0, , byte2] = randomBytes as unknown as [number, number, number];
 	randomBytes[0] = (byte0 & 0x0f) | 0x70;
 	randomBytes[2] = (byte2 & 0x3f) | 0x80;
 
@@ -154,10 +153,8 @@ export function parseEventType(eventType: string): {
 	const match = eventType.match(/^([a-z]+)\.([a-z_]+)\.([a-z_]+)\.v(\d+)$/);
 	if (!match) return null;
 
-	const [, domain, entity, action, versionStr] = match;
-	if (!domain || !entity || !action || !versionStr) {
-		return null;
-	}
+	const [, domain, entity, action, versionStr] = match as RegExpMatchArray &
+		[string, string, string, string, string];
 	return {
 		domain,
 		entity,

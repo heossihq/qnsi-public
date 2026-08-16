@@ -26,7 +26,9 @@ export function isLocalhostUrl(url: string): boolean {
 		return (
 			parsed.hostname === "localhost" ||
 			parsed.hostname === "127.0.0.1" ||
-			parsed.hostname === "::1" ||
+			// URL.hostname keeps the brackets for IPv6 literals, so the bare "::1"
+			// comparison alone never matched and IPv6 loopback was treated as remote.
+			parsed.hostname === "[::1]" ||
 			parsed.hostname.endsWith(".local")
 		);
 	} catch {

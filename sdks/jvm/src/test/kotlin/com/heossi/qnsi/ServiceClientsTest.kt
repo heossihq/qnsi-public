@@ -45,7 +45,7 @@ class ServiceClientsTest {
         server.takeRequest() // activation
         val req = server.takeRequest()
         assertEquals("POST", req.method)
-        assertEquals("/proxy/kms/v1/keys", req.path)
+        assertEquals("/proxy/kms/v1/keys?tenantId=11111111-1111-1111-1111-111111111111", req.path)
         assertTrue(req.body.readUtf8().contains(""""algorithm":"ml-dsa-65""""))
     }
 
@@ -59,7 +59,7 @@ class ServiceClientsTest {
         assertEquals(byteArrayOf(1, 2, 3).toList(), sig.toList())
         server.takeRequest()
         val req = server.takeRequest()
-        assertEquals("/proxy/kms/v1/keys/k1/sign", req.path)
+        assertEquals("/proxy/kms/v1/keys/k1/sign?tenantId=11111111-1111-1111-1111-111111111111", req.path)
         // Request field is `data` (NOT dataB64) - the 2026-06-13 contract, prod-proven.
         assertTrue(req.body.readUtf8().contains(""""data":"""))
     }
@@ -80,7 +80,7 @@ class ServiceClientsTest {
         client().kms.listKeys(mapOf("limit" to "5"))
 
         server.takeRequest()
-        assertEquals("/proxy/kms/v1/keys?limit=5", server.takeRequest().path)
+        assertEquals("/proxy/kms/v1/keys?limit=5&tenantId=11111111-1111-1111-1111-111111111111", server.takeRequest().path)
     }
 
     @Test
@@ -93,7 +93,7 @@ class ServiceClientsTest {
         assertEquals(byteArrayOf(1, 2, 3).toList(), obj.data.toList())
         assertEquals("text/plain", obj.descriptor["contentType"]!!.jsonPrimitive.content)
         server.takeRequest()
-        assertEquals("/proxy/storage/v1/buckets/b1/objects/k1", server.takeRequest().path)
+        assertEquals("/proxy/storage/v1/buckets/b1/objects/k1?tenantId=11111111-1111-1111-1111-111111111111", server.takeRequest().path)
     }
 
     @Test
@@ -127,6 +127,6 @@ class ServiceClientsTest {
         client().search.query("idx1", QueryRequest(vector = listOf(0.1, 0.2), topK = 5))
 
         server.takeRequest()
-        assertEquals("/proxy/search/v1/indexes/idx1/query", server.takeRequest().path)
+        assertEquals("/proxy/search/v1/indexes/idx1/query?tenantId=11111111-1111-1111-1111-111111111111", server.takeRequest().path)
     }
 }

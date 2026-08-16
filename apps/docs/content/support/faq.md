@@ -170,15 +170,15 @@ The original TypeScript per-service packages remain available only for migration
 | Tier | Storage | API Calls/Month | Price |
 |------|---------|-----------------|-------|
 | Free | 10GB | 50,000 | $0 forever |
-| Dev Starter | 100GB | 100,000 | $149/mo |
-| Dev Pro | 250GB | 500,000 | $590/mo |
-| Dev Elite | 500GB | 750,000 | $790/mo |
-| Dev Team | 1TB | 1M | $1,499/mo |
-| Business Team | 5TB | 1.5M | $2,199/mo |
-| Business Advanced | 10TB | 7.5M | $5,499/mo |
-| Business Elite | 15TB | 10M | $8,499/mo |
-| Enterprise Standard | 20TB | 15M | $12,999/mo |
-| Enterprise Pro | 25TB | 30M | $19,999/mo |
+| Dev Starter | 100GB | 100,000 | $150/mo |
+| Dev Pro | 250GB | 500,000 | $600/mo |
+| Dev Elite | 500GB | 750,000 | $800/mo |
+| Dev Team | 1TB | 1M | $1,500/mo |
+| Business Team | 5TB | 1.5M | $2,500/mo |
+| Business Advanced | 10TB | 7.5M | $5,500/mo |
+| Business Elite | 15TB | 10M | $8,500/mo |
+| Enterprise Standard | 20TB | 15M | $15,000/mo |
+| Enterprise Pro | 25TB | 30M | $25,000/mo |
 | Enterprise Elite | Unlimited | Unlimited | Custom |
 | Specialized | Custom | Custom | Custom |
 
@@ -402,22 +402,19 @@ Contact qnsi-sales@heossi.com for government deployment options.
 
 ### What compliance certifications does QNSI have?
 
-**Current Status**:
-- SOC 2 Type II: In progress
-- ISO 27001 (ISMS): In progress
-- ISO 9001 (QMS): In progress
-- ISO 14001 (EMS): In progress
-- ISO 45001 (OH&S): In progress
-- ISO 22301 (BCMS): In progress
-- HIPAA: Compliant architecture (BAA available for Enterprise)
-- GDPR: Compliant
-- PCI DSS: Not applicable (no payment card processing)
+HEOSSI has selected three company compliance frameworks:
 
-**Compliance Frameworks Supported**:
-- NIST Cybersecurity Framework
-- NIST 800-53 controls
-- CIS Controls
-- CNSA 2.0 (Commercial National Security Algorithm Suite)
+- Information Security: evaluated and aligned under ISO/IEC 27001:2022.
+- AI Governance & Safety: developed and maintained under ISO/IEC 42001:2023.
+- Data Encryption Standards: core cryptographic components verified under ISO/IEC 19790:2025.
+
+These are internal posture statements, not accredited certifications or
+independent conformity assessments. HEOSSI (PTE.) LTD. owns and administers the
+programme and is the prospective certificate holder. QNSI is a HEOSSI product
+that may be included within the documented scope; it is not a separate
+certificate holder. ISO/IEC 19790 applies only to specifically identified
+cryptographic modules or components. The tentative programme target is Q4 2026
+or Q1 2027, subject to funding.
 
 ### How does QNSI handle security incidents?
 

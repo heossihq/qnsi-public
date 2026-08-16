@@ -271,6 +271,6 @@
 		"@types/vscode": "^1.96.0",
 		"@vscode/test-electron": "^2.5.2",
 		"esbuild": "^0.28.1",
-		"typescript": "^6.0.2"
+		"typescript": "^6.0.3"
 	}
 }

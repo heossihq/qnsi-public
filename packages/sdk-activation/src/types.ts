@@ -42,6 +42,7 @@ export const SdkIdentifierSchema = z.enum([
 	"qnsi-go",
 	"qnsi-rust",
 	"qnsi-jvm",
+	"qnsi-swift",
 	"langchain-qnsi",
 	"llamaindex-qnsi",
 	"autogen-qnsi",
@@ -58,8 +59,8 @@ export const SdkActivationRequestSchema = z.object({
 	sdkId: SdkIdentifierSchema,
 	/** SDK version string (e.g., "0.1.0") */
 	sdkVersion: z.string().min(1).max(32),
-	/** Runtime environment. JS family: "browser" | "node" | "edge". Native SDKs: "python" | "go" | "rust" | "jvm". */
-	runtime: z.enum(["browser", "node", "edge", "python", "go", "rust", "jvm"]),
+	/** Runtime environment. JS family: "browser" | "node" | "edge". Native SDKs: "python" | "go" | "rust" | "jvm" | "swift". */
+	runtime: z.enum(["browser", "node", "edge", "python", "go", "rust", "jvm", "swift"]),
 });
 
 export type SdkActivationRequest = z.infer<typeof SdkActivationRequestSchema>;

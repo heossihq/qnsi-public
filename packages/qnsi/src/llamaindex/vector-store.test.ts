@@ -242,3 +242,187 @@ describe("QnsiVectorStore", () => {
 		});
 	});
 });
+
+describe("transport tails", () => {
+	const ACTIVATION_BODY = {
+		activated: true,
+		tenantId: "33333333-3333-4333-8333-333333333333",
+		tier: "dev-pro",
+		limits: {
+			storageGB: 10,
+			apiCalls: 50_000,
+			enclavesEnabled: false,
+			aiTrainingEnabled: false,
+			aiInferenceEnabled: true,
+			sseEnabled: true,
+			vaultEnabled: true,
+		},
+		activationToken: "act-1",
+		expiresInSeconds: 3_600,
+		activatedAt: "2026-08-16T00:00:00.000Z",
+	};
+
+	function textNode(id: string) {
+		return { id_: id, getContent: () => "quantum rotation evidence", metadata: {} } as never;
+	}
+
+	it("refuses plain-http base urls for non-local hosts and tolerates unparseable urls", () => {
+		expect(() => makeStore({ baseUrl: "http://api.example.com" })).toThrow(
+			"baseUrl must use HTTPS in production",
+		);
+		expect(() => makeStore({ baseUrl: "http://[not-a-valid-url" })).toThrow(
+			"baseUrl must use HTTPS in production",
+		);
+		// .internal hosts are the service-mesh exception.
+		expect(() => makeStore({ baseUrl: "http://search.qnsp.internal" })).not.toThrow();
+	});
+
+	it("resolves the tenant through the activation handshake when none is configured", async () => {
+		fetchMock.mockImplementation(async (url: string) => {
+			if (String(url).includes("/billing/v1/sdk/activate")) {
+				return searchResponse(ACTIVATION_BODY);
+			}
+			return okResponse();
+		});
+		const store = makeStore({ tenantId: undefined });
+		await store.add([textNode("n1")]);
+		const activationCalls = fetchMock.mock.calls.filter(([url]) =>
+			String(url).includes("activate"),
+		);
+		expect(activationCalls).toHaveLength(1);
+		const indexCall = fetchMock.mock.calls.find(([url]) =>
+			String(url).includes("/documents/index"),
+		) as [string, RequestInit];
+		expect(JSON.parse(String(indexCall[1].body))).toMatchObject({
+			tenantId: ACTIVATION_BODY.tenantId,
+		});
+		expect((indexCall[1].headers as Record<string, string>)["x-qnsp-tenant-id"]).toBe(
+			ACTIVATION_BODY.tenantId,
+		);
+
+		// A second call reuses the resolved tenant without re-activating.
+		await store.add([textNode("n2")]);
+		expect(fetchMock.mock.calls.filter(([url]) => String(url).includes("activate"))).toHaveLength(
+			1,
+		);
+	});
+
+	it("derives sse tokens for indexing and querying when an sseKey is configured", async () => {
+		const sseKey = Buffer.from(new Uint8Array(32).fill(9)).toString("base64");
+		const store = makeStore({ sseKey });
+		await store.add([textNode("n1")]);
+		const indexCall = fetchMock.mock.calls.find(([url]) =>
+			String(url).includes("/documents/index"),
+		) as [string, RequestInit];
+		const body = JSON.parse(String(indexCall[1].body)) as { sseTokens?: string[] };
+		expect(body.sseTokens?.length).toBeGreaterThan(0);
+
+		fetchMock.mockResolvedValueOnce(searchResponse({ items: [], total: 0 }));
+		await store.query({ queryStr: "rotation", similarityTopK: 3 } as never);
+		const searchUrl = fetchMock.mock.calls.find(([url]) =>
+			String(url).includes("/search/v1/documents?"),
+		) as [string];
+		expect(String(searchUrl[0])).toContain("sse=");
+	});
+
+	it("retries 429s honoring Retry-After, backing off exponentially, and failing after the cap", async () => {
+		vi.useFakeTimers();
+		try {
+			const rateLimited = (retryAfter: string | null) =>
+				({
+					ok: false,
+					status: 429,
+					statusText: "Too Many Requests",
+					headers: { get: (name: string) => (name === "Retry-After" ? retryAfter : null) },
+					text: async () => "",
+					json: async () => ({}),
+				}) as unknown as Response;
+
+			// Retry-After: 1 -> exact 1s delay, then invalid header -> exponential, then success.
+			fetchMock
+				.mockResolvedValueOnce(rateLimited("1"))
+				.mockResolvedValueOnce(rateLimited("not-a-number"))
+				.mockResolvedValueOnce(rateLimited(null))
+				.mockResolvedValueOnce(okResponse());
+			const store = makeStore();
+			const pending = store.add([textNode("n1")]);
+			await vi.advanceTimersByTimeAsync(40_000);
+			await pending;
+			expect(fetchMock.mock.calls.length).toBe(4);
+
+			// Four consecutive 429s exhaust the three retries.
+			fetchMock.mockReset();
+			fetchMock.mockResolvedValue(rateLimited(null));
+			const failing = makeStore().add([textNode("n2")]);
+			const failure = failing.catch((e: unknown) => e);
+			await vi.advanceTimersByTimeAsync(120_000);
+			expect((failure && (await failure)) as Error).toMatchObject({
+				message: expect.stringContaining("Rate limit exceeded after 3 retries"),
+			});
+		} finally {
+			vi.useRealTimers();
+		}
+	});
+
+	it("aborts slow index and search requests through the configured timeout", async () => {
+		fetchMock.mockImplementation(
+			async (_url: string, init?: RequestInit) =>
+				new Promise((_resolve, reject) => {
+					init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+				}),
+		);
+		const store = makeStore({ timeoutMs: 10 });
+		await expect(store.add([textNode("n1")])).rejects.toThrow("aborted");
+
+		fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+			if (String(url).includes("/documents/index")) return okResponse();
+			return new Promise((_resolve, reject) => {
+				init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+			});
+		});
+		await expect(
+			makeStore({ timeoutMs: 10 }).query({ queryStr: "x", similarityTopK: 1 } as never),
+		).rejects.toThrow("aborted");
+	});
+});
+
+describe("concurrent activation", () => {
+	it("coalesces parallel tenant resolutions into one handshake", async () => {
+		let resolveActivation: ((r: Response) => void) | undefined;
+		fetchMock.mockImplementation(async (url: string) => {
+			if (String(url).includes("/billing/v1/sdk/activate")) {
+				return new Promise<Response>((resolve) => {
+					resolveActivation = resolve;
+				});
+			}
+			return okResponse();
+		});
+		// A unique key sidesteps the module-global activation cache.
+		const store = makeStore({ tenantId: undefined, apiKey: `concurrent-${Math.random()}` });
+		const first = store.add([{ id_: "c1", getContent: () => "x", metadata: {} } as never]);
+		const second = store.add([{ id_: "c2", getContent: () => "y", metadata: {} } as never]);
+		resolveActivation?.(
+			searchResponse({
+				activated: true,
+				tenantId: "44444444-4444-4444-8444-444444444444",
+				tier: "dev-pro",
+				limits: {
+					storageGB: 1,
+					apiCalls: 1,
+					enclavesEnabled: false,
+					aiTrainingEnabled: false,
+					aiInferenceEnabled: false,
+					sseEnabled: true,
+					vaultEnabled: true,
+				},
+				activationToken: "act",
+				expiresInSeconds: 3600,
+				activatedAt: "2026-08-16T00:00:00.000Z",
+			}),
+		);
+		await Promise.all([first, second]);
+		expect(fetchMock.mock.calls.filter(([url]) => String(url).includes("activate"))).toHaveLength(
+			1,
+		);
+	});
+});

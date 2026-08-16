@@ -48,6 +48,12 @@ describe("rotate-pqc-cert - Comprehensive Coverage", () => {
 	});
 
 	describe("rotation logic", () => {
+		it("uses default service and output paths", async () => {
+			vi.spyOn(process, "cwd").mockReturnValue(testDir);
+			const result = await rotatePqcCertificate({});
+			expect(result.rotated).toBe(true);
+		});
+
 		it("should create new certificate when none exists", async () => {
 			const result = await rotatePqcCertificate({
 				service: "new-service",

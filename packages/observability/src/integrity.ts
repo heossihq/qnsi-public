@@ -32,22 +32,11 @@ export function extractProvenanceAttributes(
 	sourceService?: string,
 	requestContext?: RequestContextValue,
 ): ProvenanceAttributes {
-	let spanContext: { traceId?: string; spanId?: string } | undefined;
-	try {
-		const activeSpan = trace.getActiveSpan();
-		spanContext = activeSpan?.spanContext();
-	} catch {
-		// OpenTelemetry may not be initialized in all contexts
-		spanContext = undefined;
-	}
-
-	let reqCtx: RequestContextValue | undefined;
-	try {
-		reqCtx = requestContext ?? getRequestContext();
-	} catch {
-		// Request context may not be available
-		reqCtx = undefined;
-	}
+	// The real OpenTelemetry API never throws here: getActiveSpan and
+	// context.getValue return undefined when nothing is registered, so the
+	// old defensive try/catch guards were unreachable and are removed.
+	const spanContext = trace.getActiveSpan()?.spanContext();
+	const reqCtx = requestContext ?? getRequestContext();
 
 	const attributes: ProvenanceAttributes = {};
 

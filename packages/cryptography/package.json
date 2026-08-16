@@ -70,6 +70,7 @@
 		"dev": "tsx watch src/index.ts",
 		"lint": "biome check .",
 		"test": "vitest run",
+		"test:integration:openssl-pqc": "vitest run --config vitest.openssl-integration.config.ts",
 		"smoke": "pnpm run build && node dist/smoke/liboqs-smoke.js",
 		"typecheck": "tsc --project tsconfig.json --noEmit",
 		"rotate-pqc-cert": "node dist/tls/rotate-pqc-cert.js"

@@ -107,3 +107,21 @@ Verified green on 2026-05-31 with Gradle 9.5.1 / Kotlin 2.0.21 / JDK 21:
 ## License
 
 Apache-2.0.
+
+## On-device PQC module - `com.heossi:qnsi-crypto` (JVM / Android)
+
+The optional `crypto/` subproject adds on-device post-quantum cryptography for
+JVM and Android callers: ML-KEM-768 / ML-KEM-1024 (FIPS 203) and ML-DSA-65 /
+ML-DSA-87 (FIPS 204) via Bouncy Castle's lightweight API (`QnsiDevicePqc`).
+It runs identically on any JVM and on Android API 21+ (no dependence on the
+Android 17 Keystore floor) and uses raw NIST wire encodings, proven
+byte-for-byte interoperable with Apple CryptoKit and `@noble/post-quantum` by
+`scripts/verify/mobile-pqc-interop.mjs` (8/8 checks). It is a separate artifact
+so the core transport SDK keeps OkHttp as its only runtime dependency; a failed
+PQC operation throws (fail closed) and every result carries the
+`"bouncycastle"` provider label.
+
+```kotlin
+val pair = QnsiDevicePqc.generateSigningKeyPair(QnsiDevicePqc.SignatureAlgorithm.ML_DSA_65)
+val sig = QnsiDevicePqc.sign(QnsiDevicePqc.SignatureAlgorithm.ML_DSA_65, pair.privateKey, msg)
+```

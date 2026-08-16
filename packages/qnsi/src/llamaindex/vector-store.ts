@@ -219,17 +219,13 @@ class SearchTransport {
 		this.#tenantId = tenantId;
 	}
 
-	get sseKey(): Uint8Array | string | null {
-		return this.#sseKey;
-	}
-
 	async #fetchWithRetry(url: string, init: RequestInit, attempt: number): Promise<Response> {
 		const headers: Record<string, string> = {
 			...(init.headers as Record<string, string> | undefined),
 		};
-		if (this.#tenantId) {
-			headers["x-qnsp-tenant-id"] = this.#tenantId;
-		}
+		// Every public entry point resolves the tenant before any transport fetch,
+		// so the header value is always present here.
+		headers["x-qnsp-tenant-id"] = this.#tenantId as string;
 		const response = await fetch(url, { ...init, headers });
 		if (response.status === 429) {
 			if (attempt < this.#maxRetries) {
@@ -276,34 +272,22 @@ class SearchTransport {
 		}
 	}
 
+	// query and limit are required: searchWithAutoSse is the only entry point
+	// and always supplies both (the store validates emptiness earlier), so the
+	// former optional arms and empty-query guard were unreachable.
 	async search(params: {
 		tenantId: string;
-		query?: string;
-		limit?: number;
-		cursor?: string | null;
-		language?: string;
+		query: string;
+		limit: number;
 		sseTokens?: readonly string[];
 	}): Promise<SearchQueryResponse> {
-		if (!params.query && (!params.sseTokens || params.sseTokens.length === 0)) {
-			throw new Error("search query requires either plaintext query or SSE tokens");
-		}
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.#timeoutMs);
 		try {
 			const query = new URLSearchParams();
 			query.set("tenantId", params.tenantId);
-			if (params.query && params.query.length > 0) {
-				query.set("q", params.query);
-			}
-			if (params.limit) {
-				query.set("limit", params.limit.toString());
-			}
-			if (params.cursor) {
-				query.set("cursor", params.cursor);
-			}
-			if (params.language) {
-				query.set("language", params.language);
-			}
+			query.set("q", params.query);
+			query.set("limit", params.limit.toString());
 			for (const token of params.sseTokens ?? []) {
 				query.append("sse", token);
 			}
@@ -326,17 +310,20 @@ class SearchTransport {
 	}
 
 	async indexDocumentWithAutoSse(document: Omit<IndexDocumentRequest, "sseTokens">): Promise<void> {
+		// Both call sites (add and the delete tombstone) supply every optional
+		// field explicitly, and the derivation itself defaults absent values, so
+		// pass-through needs no fallback arms here.
 		const sseTokens = this.#sseKey
 			? deriveDocumentSseTokens(
 					{
 						tenantId: document.tenantId,
 						documentId: document.documentId,
 						sourceService: document.sourceService,
-						tags: document.tags ?? [],
-						metadata: document.metadata ?? {},
-						title: document.title ?? null,
-						description: document.description ?? null,
-						body: document.body ?? null,
+						tags: document.tags,
+						metadata: document.metadata,
+						title: document.title,
+						description: document.description,
+						body: document.body,
 					},
 					this.#sseKey,
 					{ includeContent: true, includeBody: true },
@@ -352,7 +339,7 @@ class SearchTransport {
 	async searchWithAutoSse(params: {
 		tenantId: string;
 		query: string;
-		limit?: number;
+		limit: number;
 	}): Promise<SearchQueryResponse> {
 		const sseTokens = this.#sseKey ? deriveQuerySseTokens(params.query, this.#sseKey) : undefined;
 		return this.search({

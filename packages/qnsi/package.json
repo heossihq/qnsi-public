@@ -72,7 +72,7 @@
 		"@heossihq/qnsi-enforcement-contract": "workspace:*",
 		"@langchain/core": "^0.3.80",
 		"@types/node": "^25.5.2",
-		"typescript": "^6.0.2",
+		"typescript": "^6.0.3",
 		"vitest": "4.1.2"
 	},
 	"engines": {

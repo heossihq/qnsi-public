@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { createTelemetryResource } from "./resource.js";
 
@@ -23,5 +23,16 @@ describe("resource", () => {
 		expect(resource.attributes["deployment.environment"]).toBe("staging");
 		expect(resource.attributes["deployment.id"]).toBe("abc123");
 		expect(resource.attributes["qnsp.cluster"]).toBe("cluster-a");
+	});
+
+	it("enables OpenTelemetry diagnostics when requested", async () => {
+		const { diag } = await import("@opentelemetry/api");
+		const spy = vi.spyOn(diag, "setLogger").mockReturnValue(true as never);
+		try {
+			createTelemetryResource({ serviceName: "observability-test", diagnosticsEnabled: true });
+			expect(spy).toHaveBeenCalledTimes(1);
+		} finally {
+			spy.mockRestore();
+		}
 	});
 });

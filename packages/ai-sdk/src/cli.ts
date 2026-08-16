@@ -254,12 +254,10 @@ program.parseAsync(process.argv).catch((error) => {
 });
 
 function createClient(options: GlobalOptions | undefined) {
-	const baseUrl =
-		options?.baseUrl ?? process.env["QNSP_AI_BASE_URL"] ?? "https://api.qnsi.heossi.com";
-	const token = options?.token ?? process.env["QNSP_AI_TOKEN"];
-	if (!baseUrl) {
-		throw new Error("AI orchestrator base URL is required (--base-url or QNSP_AI_BASE_URL)");
-	}
+	// commander binds QNSP_AI_BASE_URL / QNSP_AI_TOKEN into the options via
+	// .env(), so a separate process.env fallback here could never run.
+	const baseUrl = options?.baseUrl ?? "https://api.qnsi.heossi.com";
+	const token = options?.token;
 	if (!token) {
 		throw new Error("AI orchestrator API token is required (--token or QNSP_AI_TOKEN)");
 	}
@@ -403,13 +401,15 @@ function buildResources(options: Record<string, unknown>): WorkloadResources {
 
 async function resolveInferencePayload(options: {
 	input?: string;
-	"input-file"?: string;
+	// commander camelCases --input-file into inputFile; the previous
+	// "input-file" key never existed, so the flag was silently ignored.
+	inputFile?: string;
 }): Promise<Record<string, unknown>> {
-	if (options.input && options["input-file"]) {
+	if (options.input && options.inputFile) {
 		throw new Error("Provide either --input or --input-file, not both");
 	}
-	if (options["input-file"]) {
-		const data = await readFile(options["input-file"], "utf-8");
+	if (options.inputFile) {
+		const data = await readFile(options.inputFile, "utf-8");
 		return JSON.parse(data) as Record<string, unknown>;
 	}
 	if (options.input) {

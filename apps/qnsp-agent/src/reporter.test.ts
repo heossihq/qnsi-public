@@ -113,6 +113,16 @@ describe("reporter", () => {
 		expect(vi.mocked(globalThis.fetch)).toHaveBeenCalledTimes(3);
 	});
 
+	it("normalizes a non-Error network rejection", async () => {
+		vi.useFakeTimers({ shouldAdvanceTime: true });
+		vi.stubGlobal("fetch", vi.fn().mockRejectedValue("offline"));
+
+		const caught = submitReport(testConfig, []).catch((error: unknown) => error);
+		await vi.advanceTimersByTimeAsync(60_000);
+
+		await expect(caught).resolves.toMatchObject({ message: "offline" });
+	});
+
 	it("maps a fetch AbortError to a request-timeout error", async () => {
 		vi.useFakeTimers({ shouldAdvanceTime: true });
 		const abort = new Error("The operation was aborted");
@@ -146,6 +156,18 @@ describe("reporter", () => {
 
 		expect(result.accepted).toBe(true);
 		expect(fetchMock).toHaveBeenCalledTimes(2);
+	});
+
+	it("fails with the generic terminal error after repeated rate limits", async () => {
+		vi.useFakeTimers({ shouldAdvanceTime: true });
+		vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ status: 429 }));
+
+		const caught = submitReport(testConfig, []).catch((error: unknown) => error);
+		await vi.advanceTimersByTimeAsync(180_000);
+
+		await expect(caught).resolves.toMatchObject({
+			message: "Failed to submit report after retries",
+		});
 	});
 
 	it("rejects a queued payload whose agentId does not match the configured agent", async () => {

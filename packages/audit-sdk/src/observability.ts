@@ -8,10 +8,15 @@ import {
 	PeriodicExportingMetricReader,
 } from "@opentelemetry/sdk-metrics";
 
+/**
+ * Resource attributes for the meter provider. version and environment are REQUIRED: this
+ * helper is private with a single caller that already resolves both, so optional fields here
+ * only produced defaulting branches no input could reach.
+ */
 type TelemetryResourceOptions = {
 	readonly serviceName: string;
-	readonly serviceVersion?: string;
-	readonly environment?: string;
+	readonly serviceVersion: string;
+	readonly environment: string;
 };
 
 function createMeterProvider(
@@ -20,8 +25,8 @@ function createMeterProvider(
 ): MeterProvider {
 	const attributes: Record<string, string | number | boolean> = {
 		"service.name": options.serviceName,
-		...(options.serviceVersion ? { "service.version": options.serviceVersion } : {}),
-		"deployment.environment": options.environment ?? "development",
+		"service.version": options.serviceVersion,
+		"deployment.environment": options.environment,
 	};
 
 	return new MeterProvider({

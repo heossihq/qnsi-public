@@ -7,13 +7,7 @@ import {
 } from "./external.js";
 import { createLiboqsProviderFactory } from "./liboqs.js";
 
-const runNativeIntegration = process.env["QNSP_RUN_LIBOQS_INTEGRATION_TESTS"] === "1";
-
 async function canRunNativeIntegration(): Promise<boolean> {
-	if (!runNativeIntegration) {
-		return false;
-	}
-
 	try {
 		const factory = createLiboqsProviderFactory();
 		return (await factory.probe?.()) ?? true;
@@ -24,7 +18,13 @@ async function canRunNativeIntegration(): Promise<boolean> {
 
 const shouldRun = await canRunNativeIntegration();
 
-describe.skipIf(!shouldRun)("liboqs provider - Real Native Library Integration", () => {
+if (!shouldRun) {
+	throw new Error(
+		"The required @heossihq/liboqs-native provider is unavailable; native PQC verification cannot be skipped",
+	);
+}
+
+describe("liboqs provider - Real Native Library Integration", () => {
 	let provider: PqcProvider;
 
 	beforeAll(async () => {
@@ -330,6 +330,34 @@ describe.skipIf(!shouldRun)("liboqs provider - Real Native Library Integration",
 	});
 
 	describe("Error handling", () => {
+		it("rejects seeded native key generation and cross-family operations", async () => {
+			await expect(
+				provider.generateKeyPair({ algorithm: "kyber-512", seed: new Uint8Array(64) }),
+			).rejects.toThrow("Seeded KEM key generation is not supported");
+			await expect(
+				provider.generateKeyPair({ algorithm: "dilithium-2", seed: new Uint8Array(32) }),
+			).rejects.toThrow("Seeded signature key generation is not supported");
+			await expect(
+				provider.encapsulate({ algorithm: "dilithium-2", publicKey: new Uint8Array(32) }),
+			).rejects.toThrow("not a KEM algorithm");
+			await expect(
+				provider.sign({
+					algorithm: "kyber-512",
+					data: new Uint8Array(1),
+					privateKey: new Uint8Array(32),
+				}),
+			).rejects.toThrow("not a signature algorithm");
+		});
+
+		it("enforces the factory algorithm allowlist", async () => {
+			const restricted = await createLiboqsProviderFactory().create({
+				algorithms: ["kyber-512"],
+			});
+			await expect(restricted.generateKeyPair({ algorithm: "kyber-768" })).rejects.toThrow(
+				"not enabled",
+			);
+		});
+
 		it("should handle empty message signing", async () => {
 			const emptyMessage = new Uint8Array(0);
 

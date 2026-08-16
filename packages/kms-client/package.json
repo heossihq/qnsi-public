@@ -26,15 +26,15 @@
 	},
 	"devDependencies": {
 		"@types/node": "^25.5.2",
-		"typescript": "^6.0.2",
+		"typescript": "^6.0.3",
 		"vitest": "4.1.2"
 	},
 	"dependencies": {
+		"@heossihq/qnsi-sdk-activation": "workspace:*",
 		"@opentelemetry/api": "^1.9.1",
 		"@opentelemetry/exporter-metrics-otlp-http": "^0.214.0",
 		"@opentelemetry/resources": "^2.6.1",
 		"@opentelemetry/sdk-metrics": "^2.6.1",
-		"@heossihq/qnsi-sdk-activation": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"keywords": [

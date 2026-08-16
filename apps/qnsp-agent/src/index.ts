@@ -24,7 +24,7 @@ import * as path from "node:path";
 import * as readline from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 import { loadAgentConfig, writeConfigFile } from "./config.js";
-import { logger, setLogLevel } from "./logger.js";
+import { formatError, logger, setLogLevel } from "./logger.js";
 import {
 	createOfflineReportBundle,
 	listOfflineReportBundles,
@@ -100,9 +100,7 @@ export async function runDaemon(): Promise<void> {
 		try {
 			await runOnce();
 		} catch (err) {
-			logger.error("Report cycle failed", {
-				error: err instanceof Error ? err.message : String(err),
-			});
+			logger.error("Report cycle failed", { error: formatError(err) });
 		}
 
 		logger.info("Sleeping until next scan", { intervalSecs: config.intervalSecs });
@@ -228,7 +226,7 @@ export async function printStatus(): Promise<void> {
 			),
 		);
 	} catch (err) {
-		console.error(err instanceof Error ? err.message : String(err));
+		console.error(formatError(err));
 		throw err;
 	}
 }
@@ -298,7 +296,16 @@ SYSTEMD EXAMPLE
 `);
 }
 
-export async function main(argv: readonly string[] = process.argv): Promise<void> {
+export interface AgentCommandRuntime {
+	readonly runDaemon: typeof runDaemon;
+}
+
+const DEFAULT_COMMAND_RUNTIME: AgentCommandRuntime = { runDaemon };
+
+export async function main(
+	argv: readonly string[] = process.argv,
+	runtime: AgentCommandRuntime = DEFAULT_COMMAND_RUNTIME,
+): Promise<void> {
 	const command = argv[2] ?? "help";
 
 	switch (command) {
@@ -306,7 +313,7 @@ export async function main(argv: readonly string[] = process.argv): Promise<void
 			await runOnce();
 			break;
 		case "daemon":
-			await runDaemon();
+			await runtime.runDaemon();
 			break;
 		case "export":
 			await runOfflineExport(argv[3]);
@@ -342,7 +349,7 @@ const isDirectExecution =
 
 if (isDirectExecution) {
 	main().catch((err) => {
-		logger.error("Fatal error", { error: err instanceof Error ? err.message : String(err) });
+		logger.error("Fatal error", { error: formatError(err) });
 		process.exitCode = 1;
 	});
 }

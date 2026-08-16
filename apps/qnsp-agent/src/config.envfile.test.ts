@@ -58,6 +58,22 @@ afterEach(() => {
 });
 
 describe("loadAgentConfig - config-file discovery (loadEnvFile)", () => {
+	it("writes to the default private user configuration directory", async () => {
+		const home = fs.mkdtempSync(path.join(os.tmpdir(), "qnsp-agent-default-home-"));
+		tmpDirs.push(home);
+		const { writeConfigFile } = await importConfigWithHome(home);
+
+		const written = writeConfigFile({
+			agentId: VALID.QNSP_AGENT_ID,
+			agentSecret: VALID.QNSP_AGENT_SECRET,
+			endpoint: VALID.QNSP_ENDPOINT,
+			tenantId: VALID.QNSP_TENANT_ID,
+		});
+
+		expect(written).toBe(path.join(home, ".qnsp-agent", "config.env"));
+		expect(fs.statSync(written).mode & 0o777).toBe(0o600);
+	});
+
 	it("reads and parses variables from ~/.qnsp-agent/config.env", async () => {
 		clearAgentEnv();
 		const home = makeHomeWithConfig([

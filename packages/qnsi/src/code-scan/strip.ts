@@ -11,7 +11,8 @@
 
 import type { Language } from "./types.js";
 
-type CommentStyle = "c" | "hash" | "none";
+// Every supported language uses c- or hash-style comments; a "none" style had no members.
+type CommentStyle = "c" | "hash";
 
 const COMMENT_STYLE: Record<Language, CommentStyle> = {
 	javascript: "c",
@@ -56,7 +57,8 @@ function stripCFamilyLine(line: string, state: StripState): string {
 	let i = 0;
 
 	while (i < line.length) {
-		const ch = line[i] ?? "";
+		// The loop bound guarantees the index is in range.
+		const ch = line[i] as string;
 		const next = line[i + 1] ?? "";
 
 		if (state.inBlockComment) {
@@ -113,7 +115,8 @@ function stripHashFamilyLine(line: string, state: StripState): string {
 	let i = 0;
 
 	while (i < line.length) {
-		const ch = line[i] ?? "";
+		// The loop bound guarantees the index is in range.
+		const ch = line[i] as string;
 
 		if (state.inTripleQuote !== null) {
 			if (line.startsWith(state.inTripleQuote, i)) {
@@ -165,9 +168,6 @@ function stripHashFamilyLine(line: string, state: StripState): string {
 export function stripComments(content: string, language: Language): string[] {
 	const style = COMMENT_STYLE[language];
 	const lines = content.split(/\r?\n/);
-	if (style === "none") {
-		return lines;
-	}
 
 	const state = createStripState();
 	const stripped: string[] = [];

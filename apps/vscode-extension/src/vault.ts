@@ -113,12 +113,9 @@ export async function revealSecretCommand(
 				void vscode.window.showWarningMessage("QNSI: secret has no readable payload field.");
 				return;
 			}
-			let value: string;
-			try {
-				value = Buffer.from(b64, "base64").toString("utf8");
-			} catch {
-				value = b64;
-			}
+			// Buffer.from(_, "base64") is total (invalid input decodes best-effort),
+			// so no fallback arm exists.
+			const value = Buffer.from(b64, "base64").toString("utf8");
 			await vscode.env.clipboard.writeText(value);
 			void vscode.window.showInformationMessage(
 				`QNSI: value of "${ref.name}" copied to clipboard.`,

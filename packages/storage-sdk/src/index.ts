@@ -310,7 +310,8 @@ interface RequestOptions {
 	readonly body?: unknown;
 	readonly headers?: Record<string, string>;
 	readonly signal?: AbortSignal;
-	readonly operation?: string;
+	// Every call site names its operation, so telemetry never invents one.
+	readonly operation: string;
 	readonly telemetryRoute?: string;
 	readonly telemetryTarget?: string;
 }
@@ -399,20 +400,20 @@ export class StorageClient {
 		};
 	}
 
-	private async request<T>(method: string, path: string, options?: RequestOptions): Promise<T> {
+	private async request<T>(method: string, path: string, options: RequestOptions): Promise<T> {
 		return this.requestWithRetry<T>(method, path, options, 0);
 	}
 
 	private async requestWithRetry<T>(
 		method: string,
 		path: string,
-		options: RequestOptions | undefined,
+		options: RequestOptions,
 		attempt: number,
 	): Promise<T> {
 		const url = `${this.config.baseUrl}${path}`;
 		const headers: Record<string, string> = {
 			"Content-Type": "application/json",
-			...options?.headers,
+			...options.headers,
 		};
 
 		headers["Authorization"] = `Bearer ${this.config.apiKey}`;
@@ -424,9 +425,9 @@ export class StorageClient {
 
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), this.config.timeoutMs);
-		const signal = options?.signal ?? controller.signal;
-		const route = options?.telemetryRoute ?? new URL(path, this.config.baseUrl).pathname;
-		const target = options?.telemetryTarget ?? this.targetService;
+		const signal = options.signal ?? controller.signal;
+		const route = options.telemetryRoute ?? new URL(path, this.config.baseUrl).pathname;
+		const target = options.telemetryTarget ?? this.targetService;
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
 		let httpStatus: number | undefined;
@@ -439,7 +440,7 @@ export class StorageClient {
 				signal,
 			};
 
-			if (options?.body !== undefined) {
+			if (options.body !== undefined) {
 				init.body = JSON.stringify(options.body);
 			}
 
@@ -500,7 +501,7 @@ export class StorageClient {
 		} finally {
 			const durationMs = performance.now() - start;
 			const event: StorageClientTelemetryEvent = {
-				operation: options?.operation ?? `${method} ${route}`,
+				operation: options.operation,
 				method,
 				route,
 				target,

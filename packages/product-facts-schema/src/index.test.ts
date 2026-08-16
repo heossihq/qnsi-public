@@ -2,6 +2,8 @@ import { generateKeyPairSync, type KeyObject } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
 	canonicalPreimage,
+	canonicalPreimageBytes,
+	publicKeyFingerprint,
 	publicKeysFromDocument,
 	signFactsDocument,
 	stableStringify,
@@ -20,6 +22,178 @@ describe("product facts signature protocol", () => {
 			'{"a":"first","z":[2,{"a":null,"b":true}]}',
 		);
 		expect(canonicalPreimage({ z: 2, signature: { ignored: true }, a: 1 })).toBe('{"a":1,"z":2}');
+	});
+
+	it("rejects unsupported canonical values and non-finite numbers", () => {
+		for (const value of [Number.NaN, Number.POSITIVE_INFINITY]) {
+			expect(() => stableStringify(value)).toThrow(/finite numbers/);
+		}
+		for (const value of [undefined, 1n, Symbol("x"), () => undefined]) {
+			expect(() => stableStringify(value)).toThrow(/does not support/);
+		}
+		expect(canonicalPreimageBytes({ value: true })).toEqual(Buffer.from('{"value":true}', "utf8"));
+	});
+
+	it("validates the published key document shape and fingerprints both key forms", () => {
+		const ed25519 = generateKeyPairSync("ed25519");
+		expect(publicKeyFingerprint(ed25519.publicKey)).toBe(
+			publicKeyFingerprint(pem(ed25519.publicKey)),
+		);
+		for (const invalid of [
+			null,
+			{},
+			{ algorithms: null },
+			{ algorithms: { "ML-DSA-65": {}, Ed25519: null } },
+			{ algorithms: { "ML-DSA-65": { publicKeyPem: 1 }, Ed25519: { publicKeyPem: "x" } } },
+			{ algorithms: { "ML-DSA-65": { publicKeyPem: "x" }, Ed25519: { publicKeyPem: 1 } } },
+		]) {
+			expect(() => publicKeysFromDocument(invalid)).toThrow();
+		}
+	});
+
+	it("fails closed for every malformed signature field and key mismatch", () => {
+		const mldsa = generateKeyPairSync("ml-dsa-65");
+		const ed25519 = generateKeyPairSync("ed25519");
+		const keysUrl = "https://example.test/keys";
+		const unsigned = { product: "QNSI", count: 1 };
+		const signature = signFactsDocument(unsigned, {
+			mldsaPrivateKeyPem: pem(mldsa.privateKey),
+			ed25519PrivateKeyPem: pem(ed25519.privateKey),
+			keysUrl,
+			signedAt: "2026-08-14T00:00:00.000Z",
+		});
+		const document = { ...unsigned, signature };
+		const keys = {
+			mldsaPublicKeyPem: pem(mldsa.publicKey),
+			ed25519PublicKeyPem: pem(ed25519.publicKey),
+		};
+		const malformed: object[] = [
+			unsigned,
+			{ ...document, signature: { ...signature, canonicalization: "other" } },
+			{ ...document, signature: { ...signature, keysUrl: 1 } },
+			{ ...document, signature: { ...signature, algorithms: null } },
+			{
+				...document,
+				signature: { ...signature, algorithms: { ...signature.algorithms, Ed25519: null } },
+			},
+			{
+				...document,
+				signature: {
+					...signature,
+					algorithms: {
+						...signature.algorithms,
+						"ML-DSA-65": { ...signature.algorithms["ML-DSA-65"], signature: 1 },
+					},
+				},
+			},
+			{
+				...document,
+				signature: {
+					...signature,
+					algorithms: {
+						...signature.algorithms,
+						Ed25519: { ...signature.algorithms.Ed25519, signature: 1 },
+					},
+				},
+			},
+			{
+				...document,
+				signature: {
+					...signature,
+					algorithms: {
+						...signature.algorithms,
+						"ML-DSA-65": { ...signature.algorithms["ML-DSA-65"], publicKeyFingerprint: 1 },
+					},
+				},
+			},
+			{
+				...document,
+				signature: {
+					...signature,
+					algorithms: {
+						...signature.algorithms,
+						Ed25519: { ...signature.algorithms.Ed25519, publicKeyFingerprint: 1 },
+					},
+				},
+			},
+		];
+		for (const candidate of malformed) {
+			expect(verifyFactsSignature(candidate, keys, keysUrl).ok).toBe(false);
+		}
+
+		const wrongMldsa = generateKeyPairSync("ml-dsa-65");
+		const wrongEd25519 = generateKeyPairSync("ed25519");
+		expect(
+			verifyFactsSignature(
+				document,
+				{ ...keys, mldsaPublicKeyPem: pem(wrongMldsa.publicKey) },
+				keysUrl,
+			).ok,
+		).toBe(false);
+		expect(
+			verifyFactsSignature(
+				document,
+				{ ...keys, ed25519PublicKeyPem: pem(wrongEd25519.publicKey) },
+				keysUrl,
+			).ok,
+		).toBe(false);
+		expect(
+			verifyFactsSignature(document, { ...keys, mldsaPublicKeyPem: "invalid" }, keysUrl).reason,
+		).toMatch(/verification error/);
+	});
+
+	it("reports each individual proof failure", () => {
+		const mldsa = generateKeyPairSync("ml-dsa-65");
+		const ed25519 = generateKeyPairSync("ed25519");
+		const unsigned = { product: "QNSI" };
+		const signature = signFactsDocument(unsigned, {
+			mldsaPrivateKeyPem: pem(mldsa.privateKey),
+			ed25519PrivateKeyPem: pem(ed25519.privateKey),
+			keysUrl: "https://example.test/keys",
+			signedAt: "2026-08-14T00:00:00.000Z",
+		});
+		const keys = {
+			mldsaPublicKeyPem: pem(mldsa.publicKey),
+			ed25519PublicKeyPem: pem(ed25519.publicKey),
+		};
+		const corrupt = (value: string) =>
+			Buffer.concat([Buffer.from(value, "base64"), Buffer.from([0])]).toString("base64");
+		const badMldsa = {
+			...unsigned,
+			signature: {
+				...signature,
+				algorithms: {
+					...signature.algorithms,
+					"ML-DSA-65": {
+						...signature.algorithms["ML-DSA-65"],
+						signature: corrupt(signature.algorithms["ML-DSA-65"].signature),
+					},
+				},
+			},
+		};
+		const badEd25519 = {
+			...unsigned,
+			signature: {
+				...signature,
+				algorithms: {
+					...signature.algorithms,
+					Ed25519: {
+						...signature.algorithms.Ed25519,
+						signature: corrupt(signature.algorithms.Ed25519.signature),
+					},
+				},
+			},
+		};
+		expect(verifyFactsSignature(badMldsa, keys)).toMatchObject({
+			mldsa: false,
+			ed25519: true,
+			ok: false,
+		});
+		expect(verifyFactsSignature(badEd25519, keys)).toMatchObject({
+			mldsa: true,
+			ed25519: false,
+			ok: false,
+		});
 	});
 
 	it("executes and verifies both ML-DSA-65 and Ed25519 signatures", () => {

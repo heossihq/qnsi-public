@@ -1,4 +1,5 @@
 import * as crypto from "node:crypto";
+import type { Dirent, Stats } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
@@ -129,11 +130,15 @@ export async function readOfflineReportBundle(file: string): Promise<OfflineRepo
 	return parsed;
 }
 
-export async function listOfflineReportBundles(inputPath: string): Promise<string[]> {
-	const stat = await fs.stat(inputPath);
+export async function listOfflineReportBundles(
+	inputPath: string,
+	statPath: (path: string) => Promise<Pick<Stats, "isFile" | "isDirectory">> = fs.stat,
+	readDirectory: (path: string, options: { withFileTypes: true }) => Promise<Dirent[]> = fs.readdir,
+): Promise<string[]> {
+	const stat = await statPath(inputPath);
 	if (stat.isFile()) return [inputPath];
 	if (!stat.isDirectory()) throw new Error("Offline bundle input must be a file or directory");
-	const entries = await fs.readdir(inputPath, { withFileTypes: true });
+	const entries = await readDirectory(inputPath, { withFileTypes: true });
 	return entries
 		.filter((entry) => entry.isFile() && entry.name.endsWith(BUNDLE_SUFFIX))
 		.map((entry) => path.join(inputPath, entry.name))

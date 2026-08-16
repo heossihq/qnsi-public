@@ -333,8 +333,9 @@ export class QnsiExecutor {
 		}
 
 		const maxAttempts = 3;
-		let lastErr: unknown;
-		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		// Every exit is explicit inside the loop (return or throw), so no
+		// unreachable terminator is needed after it.
+		for (let attempt = 1; ; attempt++) {
 			const controller = new AbortController();
 			const timer = setTimeout(() => controller.abort(), this.#requestTimeoutMs);
 			try {
@@ -343,7 +344,6 @@ export class QnsiExecutor {
 				if (!response.ok) {
 					// Retry only transient 5xx; surface 4xx (incl. tier 402/403) immediately.
 					if (response.status >= 500 && attempt < maxAttempts) {
-						lastErr = new Error(`AI orchestrator ${response.status}: ${text}`);
 						await delay(1_000);
 						continue;
 					}
@@ -362,7 +362,6 @@ export class QnsiExecutor {
 				}
 				return JSON.parse(text) as T;
 			} catch (err) {
-				lastErr = err;
 				const isAbort = err instanceof Error && err.name === "AbortError";
 				if (attempt < maxAttempts && (isAbort || err instanceof TypeError)) {
 					await delay(1_000);
@@ -373,7 +372,6 @@ export class QnsiExecutor {
 				clearTimeout(timer);
 			}
 		}
-		throw lastErr instanceof Error ? lastErr : new Error("AI orchestrator request failed");
 	}
 
 	/**
@@ -459,12 +457,9 @@ export class QnsiExecutor {
 		if (idempotencyKey) {
 			extraHeaders["idempotency-key"] = idempotencyKey;
 		}
-		return this.#request<SubmitWorkloadResponse>(
-			"POST",
-			"/ai/v1/workloads",
-			{ ...payload, env: payload.env ?? {} },
-			extraHeaders,
-		);
+		// execute() always defaults env before building the payload, so no
+		// second fallback is reachable here.
+		return this.#request<SubmitWorkloadResponse>("POST", "/ai/v1/workloads", payload, extraHeaders);
 	}
 
 	async #getWorkload(workloadId: string): Promise<WorkloadDetail> {

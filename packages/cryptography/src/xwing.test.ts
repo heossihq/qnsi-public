@@ -66,4 +66,11 @@ describe("X-Wing composite KEM (ML-KEM-768 + X25519, SP 800-227)", () => {
 		const ss2 = xwingDecapsulate(mlkem, bad, kp.secretKey);
 		expect(eq(enc.sharedSecret, ss2)).toBe(false);
 	});
+
+	it("rejects malformed public keys and ciphertexts before cryptographic use", () => {
+		expect(() => xwingEncapsulate(mlkem, new Uint8Array(1))).toThrow("XWING_BAD_PUBLIC_KEY_LEN: 1");
+		expect(() => xwingDecapsulate(mlkem, new Uint8Array(1), new Uint8Array(1))).toThrow(
+			"XWING_BAD_CIPHERTEXT_LEN: 1",
+		);
+	});
 });

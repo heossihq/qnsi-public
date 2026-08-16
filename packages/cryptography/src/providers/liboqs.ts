@@ -30,26 +30,35 @@ const runtimeImport = new Function("modulePath", "return import(modulePath);") a
 	modulePath: string,
 ) => Promise<{ default?: LiboqsModule } | LiboqsModule>;
 
-let liboqsPackageVersion: string | undefined;
-let liboqsPackageAuthor: string | undefined;
-
-try {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	const pkg = require("@heossihq/liboqs-native/package.json") as {
-		readonly version?: string;
-		readonly liboqsVersion?: string;
-		readonly author?: string;
-	};
-	liboqsPackageVersion =
-		typeof pkg.liboqsVersion === "string"
-			? pkg.liboqsVersion
-			: typeof pkg.version === "string"
-				? pkg.version
-				: undefined;
-	liboqsPackageAuthor = typeof pkg.author === "string" ? pkg.author : undefined;
-} catch {
-	// Best-effort metadata lookup; ignore if package.json cannot be resolved.
+interface LiboqsPackageMetadata {
+	readonly version: string;
+	readonly author: string;
 }
+
+export function loadLiboqsPackageMetadata(
+	load: () => unknown = () => require("@heossihq/liboqs-native/package.json"),
+): LiboqsPackageMetadata {
+	try {
+		const pkg = load() as {
+			readonly version?: string;
+			readonly liboqsVersion?: string;
+			readonly author?: string;
+		};
+		return {
+			version:
+				typeof pkg.liboqsVersion === "string"
+					? pkg.liboqsVersion
+					: typeof pkg.version === "string"
+						? pkg.version
+						: "unavailable",
+			author: typeof pkg.author === "string" ? pkg.author : "Open Quantum Safe",
+		};
+	} catch {
+		return { version: "unavailable", author: "Open Quantum Safe" };
+	}
+}
+
+const liboqsPackageMetadata = loadLiboqsPackageMetadata();
 
 const liboqsConfigurationSchema = z
 
@@ -339,11 +348,13 @@ const SUPPORTED_ALGORITHMS: readonly PqcAlgorithm[] = (
 	Object.keys(KEM_ALGORITHM_MAP) as PqcAlgorithm[]
 ).filter((algorithm) => !DISABLED_ALGORITHMS.has(algorithm));
 
-function normalizeUint8Array(value: Uint8Array): Uint8Array {
+export function normalizeUint8Array(value: Uint8Array): Uint8Array {
 	return value instanceof Uint8Array ? value : Uint8Array.from(value);
 }
 
-function resolveImportedModule(imported: LiboqsModule | DefaultModuleNamespace): LiboqsModule {
+export function resolveImportedModule(
+	imported: LiboqsModule | DefaultModuleNamespace,
+): LiboqsModule {
 	if ("default" in imported && imported.default) {
 		return imported.default;
 	}
@@ -359,7 +370,7 @@ const LIBOQS_MISSING_MESSAGE =
 	"Alternatively, use the pure-JS noble provider via " +
 	"`initializeExternalPqcProvider('noble')`, which is always available.";
 
-function isModuleNotFoundError(error: unknown): boolean {
+export function isModuleNotFoundError(error: unknown): boolean {
 	if (!(error instanceof Error)) {
 		return false;
 	}
@@ -371,12 +382,15 @@ function isModuleNotFoundError(error: unknown): boolean {
 	);
 }
 
-async function defaultLoadModule(moduleId: string): Promise<LiboqsModule> {
+export async function defaultLoadModule(
+	moduleId: string,
+	importModule: typeof runtimeImport = runtimeImport,
+	importDefault: () => Promise<LiboqsModule | DefaultModuleNamespace> = async () =>
+		(await import("@heossihq/liboqs-native")) as LiboqsModule | DefaultModuleNamespace,
+): Promise<LiboqsModule> {
 	try {
 		const imported: LiboqsModule | DefaultModuleNamespace =
-			moduleId === DEFAULT_MODULE_ID
-				? ((await import("@heossihq/liboqs-native")) as LiboqsModule | DefaultModuleNamespace)
-				: await runtimeImport(moduleId);
+			moduleId === DEFAULT_MODULE_ID ? await importDefault() : await importModule(moduleId);
 		return resolveImportedModule(imported);
 	} catch (error) {
 		if (moduleId === DEFAULT_MODULE_ID && isModuleNotFoundError(error)) {
@@ -449,7 +463,7 @@ function detectCapabilities(liboqs: LiboqsModule): LiboqsCapabilities {
 	return { kem, signatures };
 }
 
-function isKemSupported(liboqs: LiboqsModule, algorithm: string): boolean {
+export function isKemSupported(liboqs: LiboqsModule, algorithm: string): boolean {
 	if (typeof liboqs.isKemAlgorithmSupported === "function") {
 		return liboqs.isKemAlgorithmSupported(algorithm);
 	}
@@ -467,7 +481,7 @@ function isKemSupported(liboqs: LiboqsModule, algorithm: string): boolean {
 	}
 }
 
-function isSignatureSupported(liboqs: LiboqsModule, algorithm: string): boolean {
+export function isSignatureSupported(liboqs: LiboqsModule, algorithm: string): boolean {
 	if (typeof liboqs.isSignatureAlgorithmSupported === "function") {
 		return liboqs.isSignatureAlgorithmSupported(algorithm);
 	}
@@ -485,7 +499,7 @@ function isSignatureSupported(liboqs: LiboqsModule, algorithm: string): boolean 
 	}
 }
 
-function toInternalKemAlgorithm(algorithm: string): KemAlgorithm {
+export function toInternalKemAlgorithm(algorithm: string): KemAlgorithm {
 	const entry = Object.entries(KEM_ALGORITHM_MAP).find(
 		([, value]) => Array.isArray(value) && value.includes(algorithm),
 	);
@@ -495,7 +509,7 @@ function toInternalKemAlgorithm(algorithm: string): KemAlgorithm {
 	return entry[0] as KemAlgorithm;
 }
 
-function toInternalSignatureAlgorithm(algorithm: string): SignatureAlgorithm {
+export function toInternalSignatureAlgorithm(algorithm: string): SignatureAlgorithm {
 	const entry = Object.entries(SIGNATURE_ALGORITHM_MAP).find(
 		([, value]) => Array.isArray(value) && value.includes(algorithm),
 	);
@@ -505,7 +519,7 @@ function toInternalSignatureAlgorithm(algorithm: string): SignatureAlgorithm {
 	return entry[0] as SignatureAlgorithm;
 }
 
-function resolveKemAlias(liboqs: LiboqsModule, algorithm: KemAlgorithm): string {
+export function resolveKemAlias(liboqs: LiboqsModule, algorithm: KemAlgorithm): string {
 	const aliases = KEM_ALGORITHM_MAP[algorithm];
 	if (!aliases || aliases.length === 0) {
 		throw new Error(`No liboqs aliases defined for KEM algorithm '${algorithm}'`);
@@ -527,7 +541,7 @@ function resolveKemAlias(liboqs: LiboqsModule, algorithm: KemAlgorithm): string 
 	);
 }
 
-function resolveSignatureAlias(liboqs: LiboqsModule, algorithm: SignatureAlgorithm): string {
+export function resolveSignatureAlias(liboqs: LiboqsModule, algorithm: SignatureAlgorithm): string {
 	const aliases = SIGNATURE_ALGORITHM_MAP[algorithm];
 	if (!aliases || aliases.length === 0) {
 		throw new Error(`No liboqs aliases defined for signature algorithm '${algorithm}'`);
@@ -703,9 +717,9 @@ export function createLiboqsProviderFactory(
 	return {
 		metadata: {
 			name: "liboqs",
-			author: liboqsPackageAuthor ?? "Open Quantum Safe",
+			author: liboqsPackageMetadata.author,
 			supportedAlgorithms: SUPPORTED_ALGORITHMS,
-			...(liboqsPackageVersion ? { version: liboqsPackageVersion } : {}),
+			version: liboqsPackageMetadata.version,
 		},
 		probe: async () => {
 			const moduleId = resolveModuleId();

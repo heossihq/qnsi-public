@@ -157,11 +157,13 @@ export class SearchClient {
 		init: UndiciRequestInit,
 		attempt: number,
 	): Promise<Response> {
-		// Auto-inject tenant ID header from activation response
-		if (this.resolvedTenantId) {
+		// Auto-inject tenant ID header from activation response. Every public
+		// method awaits ensureActivated() before requesting, and activation
+		// always carries a tenantId, so this is set unconditionally.
+		{
 			const headers = {
 				...(init.headers as Record<string, string> | undefined),
-				"x-qnsp-tenant-id": this.resolvedTenantId,
+				"x-qnsp-tenant-id": this.resolvedTenantId as string,
 			};
 			init = { ...init, headers };
 		}

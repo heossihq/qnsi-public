@@ -23,7 +23,7 @@ source_files:
 
 TypeScript client for `vault-service`. All secrets are encrypted with tenant-specific PQC algorithms based on crypto policy.
 
-**Tier Requirement**: dev-pro or higher. Vault features are not available on free or dev-starter tiers.
+**Tier Requirement**: Core Vault access is available on every tier with tier-specific secret and version quotas. Dynamic-credentials engines require dev-pro or higher.
 
 ## Install
 
