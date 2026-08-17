@@ -146,7 +146,7 @@ Cloud connectors, TLS and certificate discovery, host agents, repository scannin
 
 An application calls QNSI through a supported SDK, REST, CLI, or MCP surface. The edge establishes the tenant and entitlement boundary; eligible key, vault, storage, search, or AI operations execute behind policy; and available decision and operation evidence is recorded for later review. Existing workload code consumes a stable integration surface while custody, rotation, authorization, and evidence remain infrastructure concerns.
 
-**Inspect:** the [TypeScript SDK](packages/qnsi/), [Python SDK](sdks/python/qnsi/), [Go SDK](sdks/go/qnsi/), [Rust SDK](sdks/rust/qnsi/), [JVM SDK](sdks/jvm/), and [API documentation](apps/docs/content/api/).
+**Inspect:** the [TypeScript SDK](packages/qnsi/), [Python SDK](sdks/python/qnsi/), [Go SDK](sdks/go/qnsi/), [Rust SDK](sdks/rust/qnsi/), [JVM SDK](sdks/jvm/), [Swift SDK](sdks/swift/), and [API documentation](apps/docs/content/api/).
 
 ### 3. Qualify a regulated or disconnected deployment
 
@@ -216,6 +216,8 @@ The canonical [package catalog](PACKAGES.md) lists every public integration arti
 | Go                   | [`qnsi`](sdks/go/qnsi/)                      | `go get github.com/heossihq/qnsi-public/sdks/go/qnsi@v0.4.0` |
 | Rust                 | [`qnsi`](sdks/rust/qnsi/)                    | `cargo add qnsi`                                             |
 | JVM / Android        | [`com.heossi:qnsi`](sdks/jvm/)               | `implementation("com.heossi:qnsi:0.4.0")`          |
+| iOS / macOS (Swift)  | [`qnsi-swift`](sdks/swift/)                  | `.package(url: "https://github.com/heossihq/qnsi-public.git", exact: "0.1.0")` |
+| Device PQC (JVM / Android) | [`com.heossi:qnsi-crypto`](sdks/jvm/crypto/) | `implementation("com.heossi:qnsi-crypto:0.1.0")` |
 | MCP                  | [`@heossihq/qnsi-mcp`](packages/mcp-server/) | `pnpm add @heossihq/qnsi-mcp`                                |
 
 The unified TypeScript package also installs the `qnsi` CLI.
@@ -248,7 +250,7 @@ See the [developer documentation](https://docs.qnsi.heossi.com/getting-started) 
 - [`packages/cryptography/`](packages/cryptography/) - shared PQC abstractions
 - [`apps/qnsp-agent/`](apps/qnsp-agent/) - public host discovery agent with offline evidence support
 - [`apps/vscode-extension/`](apps/vscode-extension/) - Apache-2.0 workspace scanning and QNSI editor integration
-- [`sdks/`](sdks/) - Python, Go, Rust, and JVM / Android SDK source
+- [`sdks/`](sdks/) - Python, Go, Rust, JVM / Android, and Swift SDK source (device PQC modules included)
 - [`apps/docs/content/`](apps/docs/content/) - public product and API documentation
 - [`apps/web/scripts/`](apps/web/scripts/) - reproducible conformance and benchmark runners
 - [`apps/web/public/pqc-evidence/`](apps/web/public/pqc-evidence/) - published conformance evidence
@@ -283,7 +285,7 @@ For security reports, follow [SECURITY.md](SECURITY.md). For contributions and i
 
 ## Export provenance
 
-Private source revision: `cab1457178c19cec0cd49ed624ddae1802d57147`
+Private source revision: `defa5406f82b3fb4d5628cd17d97870ee29effcf`
 
 The machine-readable export inventory and generation timestamp are recorded in [`MANIFEST.json`](MANIFEST.json).
 Verify the exported tree with `sha256sum -c SHA256SUMS` from the repository root.

@@ -46,6 +46,15 @@
       "version": "0.1.0"
     },
     {
+      "ecosystem": "Maven Central",
+      "install": "implementation(\"com.heossi:qnsi-crypto:0.1.0\")",
+      "name": "com.heossi:qnsi-crypto",
+      "registryUrl": "https://central.sonatype.com/artifact/com.heossi/qnsi-crypto",
+      "role": "device-pqc",
+      "source": "sdks/jvm/crypto",
+      "version": "0.1.0"
+    },
+    {
       "ecosystem": "Go modules",
       "install": "go get github.com/heossihq/qnsi-public/sdks/go/qnsi@v0.4.0",
       "name": "github.com/heossihq/qnsi-public/sdks/go/qnsi",
