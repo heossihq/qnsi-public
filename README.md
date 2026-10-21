@@ -196,7 +196,7 @@ Source presence, a package release, a passing test, and production proof are dif
 | Enterprise architect               | [Platform architecture](apps/docs/content/architecture/) and the deployment model above                                                                     | Trust boundaries, integration surfaces, service planes, topology choices, and public/private responsibility split     |
 | Security or cryptography lead      | [Security documentation](apps/docs/content/security/), [conformance runners](apps/web/scripts/), and [published evidence](apps/web/public/pqc-evidence/)    | Algorithm and provider boundaries, reproducibility, evidence limitations, and stated assurance scope                  |
 | Platform engineer                  | [SDK documentation](apps/docs/content/sdk/), packages, agents, CLI, and MCP                                                                                 | Integration contracts, runtime support, local workflows, and migration patterns                                       |
-| Risk, audit, or compliance         | [Audit documentation](apps/docs/content/audit/) and [framework control source](apps/audit-service/src/services/compliance-service.ts)                       | Evidence models, control mappings, retention and export contracts, and where production verification remains required |
+| Risk, audit, or compliance         | [Audit documentation](apps/docs/content/audit/) and [compliance posture](https://qnsi.heossi.com/trust)                       | Evidence models, control mappings, retention and export contracts, and where production verification remains required |
 | Procurement or technical diligence | [Capability registry](apps/web/lib/public-capabilities.ts), [system status](https://qnsi.heossi.com/status), licenses, security policy, and export manifest | Maturity boundaries, public artifacts, operating status, licensing, disclosure process, and source provenance         |
 
 For a consolidated review, use the [enterprise reference architectures](apps/docs/content/architecture/reference-architectures.md) and [enterprise diligence index](apps/docs/content/security/enterprise-diligence.md).
@@ -285,7 +285,7 @@ For security reports, follow [SECURITY.md](SECURITY.md). For contributions and i
 
 ## Export provenance
 
-Private source revision: `e7ef4a7f1a00a8ed451ba93a5ca7dd3382ca097c`
+Private source revision: `d1f4566b38fcf14b6b3b2d5bb4a080adba1c2309`
 
 The machine-readable export inventory and generation timestamp are recorded in [`MANIFEST.json`](MANIFEST.json).
 Verify the exported tree with `sha256sum -c SHA256SUMS` from the repository root.
