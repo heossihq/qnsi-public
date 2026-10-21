@@ -1,14 +1,14 @@
 import { bridgeQnsiEnv } from "../internal/env-aliases.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 /**
- * `@heossihq/qnsi/autogen` - AutoGen function executor for QNSP.
+ * `@heossihq/qnsi/autogen` - AutoGen function executor for QNSI.
  *
- * Submits code workloads to QNSP AI orchestrator enclaves with PQC
+ * Submits code workloads to QNSI AI orchestrator enclaves with PQC
  * attestation. Folded in from the former standalone
- * `@heossihq/qnsi-autogen-qnsp` package (2026-05-16).
+ * `former standalone AutoGen integration package` package (2026-05-16).
  *
  * @example
  * ```typescript

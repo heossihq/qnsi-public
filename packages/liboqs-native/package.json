@@ -1,10 +1,10 @@
 {
 	"name": "@heossihq/liboqs-native",
-	"version": "0.15.1",
+	"version": "0.16.0",
 	"type": "commonjs",
 	"license": "BUSL-1.1",
-	"description": "Native liboqs bindings wrapper for the QNSP platform.",
-	"liboqsVersion": "0.15.0",
+	"description": "Native liboqs bindings wrapper for the QNSI platform.",
+	"liboqsVersion": "0.16.0",
 	"publishConfig": {
 		"registry": "https://registry.npmjs.org/",
 		"access": "public"
@@ -28,22 +28,24 @@
 		"lint": "biome check src tools vendor/path-key-shim.js",
 		"prepare": "pnpm run check-dist",
 		"prepublishOnly": "pnpm run build && pnpm run build:native",
-		"test": "echo 'Run smoke tests via @heossihq/qnsi-cryptography'",
+		"test": "vitest run --coverage",
 		"typecheck": "tsc --project tsconfig.json --noEmit",
 		"install": "node ./tools/install.js"
 	},
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=24.18.0"
 	},
 	"dependencies": {
-		"node-addon-api": "^8.7.0",
+		"node-addon-api": "^8.9.2",
 		"node-gyp-build": "^4.8.4"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2",
-		"node-gyp": "^12.2.0",
+		"@types/node": "^26.6.2",
+		"@vitest/coverage-v8": "5.0.1",
+		"node-gyp": "^13.0.2",
 		"prebuildify": "^6.0.1",
-		"typescript": "^6.0.3"
+		"typescript": "^7.0.2",
+		"vitest": "5.0.1"
 	},
 	"private": true
 }

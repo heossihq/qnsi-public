@@ -1,5 +1,5 @@
 /**
- * QNSP MCP Session Manager
+ * QNSI MCP Session Manager
  *
  * Handles SDK activation (API key → tenant ID → tier → limits) and provides
  * tier-gated access checks for MCP tools. All tier limits are resolved from billing-service

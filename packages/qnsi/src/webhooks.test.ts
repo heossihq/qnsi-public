@@ -55,7 +55,7 @@ describe("parseQnsiWebhook", () => {
 		});
 		expect(event.eventType).toBe("key.rotated");
 		expect(event.eventId).toBe("evt-001");
-		expect(event.payload.keyId).toBe("key-abc");
+		expect(event.payload["keyId"]).toBe("key-abc");
 	});
 
 	it("rejects an old timestamp", () => {

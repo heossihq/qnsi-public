@@ -11,6 +11,8 @@ export default mergeConfig(
 			passWithNoTests: false,
 			coverage: {
 				provider: "v8",
+				include: ["src/**/*.{ts,tsx,js,jsx,mjs,cjs}"],
+				exclude: ["**/*.test.ts", "**/*.spec.ts", "**/*.integration.ts", "**/*.d.ts"],
 				reporter: ["text", "json", "html"],
 				reportsDirectory: "coverage",
 				thresholds: {

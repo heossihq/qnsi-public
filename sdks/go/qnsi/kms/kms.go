@@ -27,6 +27,9 @@ type CreateKeyRequest struct {
 	Algorithm string         `json:"algorithm"`
 	Purpose   string         `json:"purpose"` // "signing", "encryption", "kem"
 	Metadata  map[string]any `json:"metadata,omitempty"`
+	// Service-enforced custody policy, distinct from caller metadata and HSM proof.
+	Exportable         *bool  `json:"exportable,omitempty"`
+	CustodyEnforcement string `json:"custodyEnforcement,omitempty"`
 }
 
 func (c *Client) CreateKey(ctx context.Context, req CreateKeyRequest, idempotencyKey string) (map[string]any, error) {
@@ -47,6 +50,12 @@ func (c *Client) CreateKey(ctx context.Context, req CreateKeyRequest, idempotenc
 	}
 	if len(metadata) > 0 {
 		body["metadata"] = metadata
+	}
+	if req.Exportable != nil {
+		body["exportable"] = *req.Exportable
+	}
+	if req.CustodyEnforcement != "" {
+		body["custodyEnforcement"] = req.CustodyEnforcement
 	}
 	return c.base.Do(ctx, http.MethodPost, "/keys", body, nil, idempotencyKey)
 }

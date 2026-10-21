@@ -4,8 +4,8 @@ import XCTest
 /// REAL end-to-end smoke against PRODUCTION through the actual Swift SDK
 /// (provable-evidence mandate: prove the wire contract with a real call, not a
 /// mock). Gated on QNSP_CANARY_KEY (the persistent synthetic-canary free-tenant
-/// key in Secrets Manager qnsp/prod/synthetic-canary-key); skips cleanly when
-/// unset so a normal `swift test` (mocked suites) never hits the network.
+/// key in Secrets Manager qnsp/prod/synthetic-canary-key). Missing credentials
+/// fail the production verifier; local regressions do not replace live acceptance.
 ///
 ///   QNSP_CANARY_KEY=... swift test --filter ProdSmokeTests
 ///
@@ -22,7 +22,8 @@ final class ProdSmokeTests: XCTestCase {
 
     func testSwiftSdkActivatesAndReachesStoragePlusKmsViaProxyAgainstProd() async throws {
         guard let key = canaryKey, !key.isEmpty else {
-            throw XCTSkip("QNSP_CANARY_KEY not set - skipping prod smoke")
+            XCTFail("QNSP_CANARY_KEY is required for the production verifier")
+            return
         }
         let client = try QnsiClient(apiKey: key, baseUrl: baseUrl)
 
@@ -43,7 +44,8 @@ final class ProdSmokeTests: XCTestCase {
 
     func testKmsSignVerifyAndVaultCreateRotateAgainstProd() async throws {
         guard let key = canaryKey, !key.isEmpty else {
-            throw XCTSkip("QNSP_CANARY_KEY not set - skipping prod smoke")
+            XCTFail("QNSP_CANARY_KEY is required for the production verifier")
+            return
         }
         let client = try QnsiClient(apiKey: key, baseUrl: baseUrl)
         try await client.ensureActivated()
@@ -96,7 +98,9 @@ final class ProdSmokeTests: XCTestCase {
     /// smoke because it proves the on-device leg of the client-side PQC story.
     func testDevicePqcOperationsExecuteReal() throws {
         guard QnsiDevicePqc.isAvailable else {
-            throw XCTSkip("CryptoKit PQC unavailable on this OS - device PQC fails closed")
+            XCTAssertThrowsError(try QnsiDevicePqc.generateSigningKeyPair(.mlDsa65))
+            XCTAssertThrowsError(try QnsiDevicePqc.generateKemKeyPair(.mlKem768))
+            return
         }
         let signPair = try QnsiDevicePqc.generateSigningKeyPair(.mlDsa65)
         let message = Data("device-attested".utf8)

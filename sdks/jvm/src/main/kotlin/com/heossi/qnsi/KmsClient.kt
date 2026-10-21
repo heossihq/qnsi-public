@@ -15,11 +15,42 @@ private const val PREFIX = "/proxy/kms/v1"
 
 /** Create a server-side PQC key. `purpose` is one of `"signing"`, `"encryption"`, `"kem"`. */
 @Serializable
-public data class CreateKeyRequest @JvmOverloads constructor(
+public data class CreateKeyRequest constructor(
     public val algorithm: String,
     public val purpose: String,
     public val metadata: JsonObject? = null,
-)
+    public val exportable: Boolean? = null,
+    public val custodyEnforcement: String? = null,
+) {
+    // Retain the original Kotlin default-constructor descriptor as well as Java overloads.
+    @JvmOverloads
+    public constructor(algorithm: String, purpose: String, metadata: JsonObject? = null) :
+        this(algorithm, purpose, metadata, null, null)
+
+    public constructor(algorithm: String, purpose: String, metadata: JsonObject?, exportable: Boolean?) :
+        this(algorithm, purpose, metadata, exportable, null)
+
+    // Old compiled consumers call the three-field copy descriptor. Preserve custody policy.
+    public fun copy(algorithm: String, purpose: String, metadata: JsonObject?): CreateKeyRequest =
+        CreateKeyRequest(algorithm, purpose, metadata, exportable, custodyEnforcement)
+
+    public companion object {
+        @JvmStatic
+        @JvmName("copy\$default")
+        public fun legacyCopyDefault(
+            source: CreateKeyRequest,
+            algorithm: String?,
+            purpose: String?,
+            metadata: JsonObject?,
+            mask: Int,
+            marker: Any?,
+        ): CreateKeyRequest = source.copy(
+            if (mask and 1 != 0) source.algorithm else requireNotNull(algorithm),
+            if (mask and 2 != 0) source.purpose else requireNotNull(purpose),
+            if (mask and 4 != 0) source.metadata else metadata,
+        )
+    }
+}
 
 /** Server-side PQC keys: create / rotate / sign / verify / wrap / unwrap. Wraps kms-service `/kms/v1`. */
 public class KmsClient internal constructor(private val transport: Internal) {
@@ -38,6 +69,8 @@ public class KmsClient internal constructor(private val transport: Internal) {
             put("keyType", "data")
             put("algorithm", req.algorithm)
             put("metadata", meta)
+            req.exportable?.let { put("exportable", it) }
+            req.custodyEnforcement?.let { put("custodyEnforcement", it) }
         }.toString()
         return transport.requestJson(
             "POST", "$PREFIX/keys", body,

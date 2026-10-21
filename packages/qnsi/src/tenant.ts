@@ -1,5 +1,5 @@
 /**
- * QNSP Tenant - tenant CRUD, crypto-policy management, current-health,
+ * QNSI Tenant - tenant CRUD, crypto-policy management, current-health,
  * current-quotas. Wraps `apps/tenant-service` (`/tenant/v1`).
  */
 

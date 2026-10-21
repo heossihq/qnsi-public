@@ -1,11 +1,11 @@
 /**
  * SDK Activation Client
  *
- * Handles activation handshake with the QNSP billing-service.
+ * Handles activation handshake with the QNSI billing-service.
  * Browser-compatible - uses global fetch, no node: imports.
  *
  * Every SDK must call `activateSdk()` before performing operations.
- * The activation validates the API key against the QNSP backend,
+ * The activation validates the API key against the QNSI backend,
  * returns tier limits, and issues a short-lived activation token.
  *
  * Activation tokens are cached in-memory and auto-refreshed before expiry.
@@ -55,7 +55,7 @@ interface ActivationState {
  * Configuration for SDK activation.
  */
 export interface SdkActivationConfig {
-	/** QNSP API key (required - get one at https://cloud.qnsi.heossi.com/signup) */
+	/** QNSI API key (required - get one at https://cloud.qnsi.heossi.com/signup) */
 	readonly apiKey: string;
 	/** SDK package identifier */
 	readonly sdkId: SdkIdentifier;
@@ -90,7 +90,7 @@ function detectRuntime(): "browser" | "node" | "edge" {
 }
 
 /**
- * Activate an SDK against the QNSP platform.
+ * Activate an SDK against the QNSI platform.
  *
  * This must be called before any SDK operations. It validates the API key,
  * returns the tenant's tier and limits, and caches the activation token.
@@ -104,7 +104,7 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 	if (!config.apiKey || config.apiKey.trim().length === 0) {
 		throw new SdkActivationError_(
 			"INVALID_API_KEY",
-			`QNSP ${config.sdkId}: apiKey is required. ` +
+			`QNSI ${config.sdkId}: apiKey is required. ` +
 				"Get your free API key at https://cloud.qnsi.heossi.com/signup - " +
 				"no credit card required (FREE tier: 10 GB storage, 50,000 API calls/month). " +
 				`Docs: https://docs.qnsi.heossi.com/sdk/${config.sdkId}`,
@@ -145,7 +145,7 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 	} catch (cause) {
 		throw new SdkActivationError_(
 			"SERVICE_UNAVAILABLE",
-			`QNSP ${config.sdkId}: Failed to reach QNSP platform for activation. ` +
+			`QNSI ${config.sdkId}: Failed to reach QNSI platform for activation. ` +
 				`Ensure network connectivity to ${platformUrl}. ` +
 				`Error: ${cause instanceof Error ? cause.message : String(cause)}`,
 			503,
@@ -171,7 +171,7 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 		if (response.status === 401) {
 			throw new SdkActivationError_(
 				"INVALID_API_KEY",
-				`QNSP ${config.sdkId}: Invalid API key. ` +
+				`QNSI ${config.sdkId}: Invalid API key. ` +
 					"Get your API key at https://cloud.qnsi.heossi.com/api-keys",
 				401,
 			);
@@ -180,14 +180,14 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 		if (response.status === 429) {
 			throw new SdkActivationError_(
 				"RATE_LIMITED",
-				`QNSP ${config.sdkId}: Activation rate limited. Please retry after a short delay.`,
+				`QNSI ${config.sdkId}: Activation rate limited. Please retry after a short delay.`,
 				429,
 			);
 		}
 
 		throw new SdkActivationError_(
 			"SERVICE_UNAVAILABLE",
-			`QNSP ${config.sdkId}: Activation failed with HTTP ${response.status}`,
+			`QNSI ${config.sdkId}: Activation failed with HTTP ${response.status}`,
 			response.status,
 		);
 	}
@@ -197,7 +197,7 @@ export async function activateSdk(config: SdkActivationConfig): Promise<SdkActiv
 	if (!parsed.success) {
 		throw new SdkActivationError_(
 			"SERVICE_UNAVAILABLE",
-			`QNSP ${config.sdkId}: Invalid activation response from platform`,
+			`QNSI ${config.sdkId}: Invalid activation response from platform`,
 			502,
 		);
 	}

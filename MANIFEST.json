@@ -4,7 +4,7 @@
       "algorithm": "SHA-256",
       "file": "SHA256SUMS"
     },
-    "fileCount": 1012,
+    "fileCount": 997,
     "generatedFiles": [
       "MANIFEST.json",
       "PACKAGE-INDEX.json",
@@ -37,8 +37,8 @@
     ]
   },
   "source": {
-    "generatedAt": "2026-08-17T09:25:22.112563+00:00",
+    "generatedAt": "2026-10-21T09:03:46.884904+00:00",
     "repo": "heossihq/qnsi",
-    "sha": "defa5406f82b3fb4d5628cd17d97870ee29effcf"
+    "sha": "e7ef4a7f1a00a8ed451ba93a5ca7dd3382ca097c"
   }
 }

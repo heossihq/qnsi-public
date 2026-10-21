@@ -4,9 +4,25 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/qnsi.svg)](https://pypi.org/project/qnsi/)
 [![License](https://img.shields.io/pypi/l/qnsi.svg)](./LICENSE)
 
-Typed Python client for QNSI - post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS, immutable audit trails. Same wire contracts as the official `@heossihq/qnsi-*` TypeScript SDKs - pick whichever language fits your stack and the byte-for-byte outputs round-trip.
+Python client for QNSI with service convenience APIs, optional local PQC primitives
+through liboqs, and webhook verification. Language SDKs are independently versioned;
+complete wire-schema parity and production acceptance require separate evidence.
 
 > **Free tier available.** Free-forever account at <https://cloud.qnsi.heossi.com/auth> - 60-second signup, no credit card. Includes 10 GB PQC storage, 50 000 API calls/month, 20 KMS keys, 25 vault secrets.
+
+## Manifest operation access (unreleased source)
+
+`qnsi.surface.operations()` returns the bundled catalog of 880 manifest
+declarations across 15 services. `qnsi.surface.call_operation(operation_id,
+path_parameters=..., body=..., query=..., idempotency_key=...)` uses the existing
+activation, tenant binding and retry transport. Reserved query characters and
+path parameters are encoded; invalid or dot-segment parameters fail before HTTP.
+Existing service methods remain available.
+
+This is JSON operation access, not a typed payload schema for every route.
+Backend schemas, permissions and endpoint-specific authentication still apply.
+Catalog presence does not verify live availability. Publication, full-source
+coverage and production acceptance of these additions are **NOT VERIFIED**.
 
 ## Installation
 
@@ -16,7 +32,8 @@ Base install (HTTP clients for vault, KMS, audit):
 pip install qnsi
 ```
 
-With local PQC primitives (`qnsi.crypto` - wraps `liboqs-python` 0.12.0):
+With local PQC primitives (`qnsi.crypto` - wraps `liboqs-python` 0.16.0.1 and
+loads the host liboqs runtime, including liboqs 0.16.0 identifiers when present):
 
 ```bash
 pip install 'qnsi[crypto]'
@@ -30,9 +47,15 @@ pip install 'qnsi[crypto]'
 | Debian/Ubuntu | `apt install liboqs-dev` |
 | From source | `cmake -DBUILD_SHARED_LIBS=ON ...` - see <https://github.com/open-quantum-safe/liboqs> |
 
-(A v0.3.x release will ship `cibuildwheel`-built wheels that bundle a self-contained liboqs binary, removing the system prerequisite.)
+The Python wheel does not bundle a native library. Install a shared liboqs library
+before importing the optional crypto module. Static archives are not sufficient.
+Treat native-library paths and build environment variables as trusted configuration.
+The binding pin includes the fix for
+[GHSA-pw23-r5gj-42g8](https://github.com/open-quantum-safe/liboqs-python/security/advisories/GHSA-pw23-r5gj-42g8).
 
-Requires Python 3.10+ and `httpx`. Tested on CPython 3.10, 3.11, 3.12, 3.13.
+Declares Python 3.10+ support and requires `httpx`. The current source and patched
+crypto binding passed the complete local suite on CPython 3.13 and 3.14 on macOS
+ARM64. Current acceptance on other interpreters and platforms is **NOT VERIFIED**.
 
 ## Quick start
 
@@ -62,14 +85,14 @@ with QnsiClient(api_key=os.environ["QNSI_API_KEY"]) as qnsi:
         payload={"modelId": "gpt-4o", "latencyMs": 412},
     )
 
-    # ── New in 0.3.0 - full parity with Go and Rust SDKs ────────────
+    # Service convenience APIs
     qnsi.tenant.get_tenant(qnsi.tenant_id)
     qnsi.access.check_permission(subject_id="user-1", permission="vault.read")
     qnsi.billing.get_entitlements()
     qnsi.crypto_inventory.get_readiness_score(qnsi.tenant_id)
     qnsi.storage.put_object("uploads", "report.pdf", data=b"...")
     qnsi.search.query("docs", vector=[0.1] * 768, top_k=5)
-    qnsi.ai.invoke_inference(model_id="gpt-4o", input={"prompt": "..."})
+    qnsi.ai.invoke_inference(model_deployment_id="your-deployment-id", input={"prompt": "..."})
     qnsi.auth.login(email="user@example.com", password="...", tenant_id=qnsi.tenant_id)
 ```
 
@@ -82,16 +105,16 @@ from qnsi.crypto import MlKem, MlDsa, SlhDsa, Falcon
 
 # Module-Lattice KEM (FIPS 203)
 kem = MlKem("ML-KEM-768")
-pk, sk = kem.keygen()
-enc = kem.encapsulate(pk)
-recovered = kem.decapsulate(enc.ciphertext, sk)
+pair = kem.keygen()
+enc = kem.encapsulate(pair.public_key)
+recovered = kem.decapsulate(enc.ciphertext, pair.secret_key)
 assert recovered == enc.shared_secret
 
 # Module-Lattice signatures (FIPS 204)
 sig = MlDsa("ML-DSA-65")
-sig_pk, sig_sk = sig.keygen()
-signature = sig.sign(b"hello", sig_sk)
-assert sig.verify(b"hello", signature, sig_pk)
+sig_pair = sig.keygen()
+signature = sig.sign(b"hello", sig_pair.secret_key)
+assert sig.verify(b"hello", signature, sig_pair.public_key)
 
 # Stateless hash-based signatures (FIPS 205) - conservative, no lattice assumption
 slh = SlhDsa("SLH-DSA-SHA2-128f")
@@ -167,11 +190,21 @@ qnsi.has_feature("sseEnabled")  # convenience boolean
 
 If the activation token is rotated server-side, the SDK invalidates its cache and retries the originating request once on a 401.
 
-## What's covered today (v0.3.0 - full parity with Go and Rust SDKs)
+## Service convenience APIs
 
-Customer-facing service modules - every QNSI service callable through the edge gateway:
+Tenant creation and single-meter ingestion accept a `request` dictionary with
+the backend's required fields, including caller-supplied security evidence.
+Model registration requires `model_type` or `request["modelType"]`; workloads
+require a complete `request` including the signed manifest. Artifact registration
+requires `document_id` and `version`. Inference requires `model_deployment_id`,
+not a model registry ID. WebAuthn credential deletion requires `user_id`.
+Legacy keywords remain accepted where possible, but cannot invent missing
+security envelopes, signatures, deployment identities or document versions.
+The backend remains authoritative for schema and cryptographic validation.
 
-- `qnsi.vault` - secrets management (create / get / get-version / rotate / delete / list-versions)
+The convenience modules below expose subsets of service contracts:
+
+- `qnsi.vault` - secrets management (create / get / get-version / rotate / soft-delete / list-versions), dynamic engine catalog/configuration, credential issuance, lease lifecycle and measured statistics
 - `qnsi.kms` - server-side PQC keys (create / list / get / rotate / delete / sign / verify / wrap / unwrap)
 - `qnsi.audit` - immutable hash-chained event log (log-event / ingest-events / list-events)
 - `qnsi.auth` - login, refresh, revoke, WebAuthn passkeys, MFA, SAML/OIDC federation, risk-based auth
@@ -185,7 +218,7 @@ Customer-facing service modules - every QNSI service callable through the edge g
 
 Local primitives + integration:
 
-- `qnsi.crypto` (requires `qnsi[crypto]`) - ML-KEM (512/768/1024), ML-DSA (44/65/87), SLH-DSA (8 variants), Falcon (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS - every FIPS 203/204/205 finalist exposed by liboqs 0.12.0
+- `qnsi.crypto` (requires `qnsi[crypto]`) - ML-KEM (512/768/1024), HQC (1/3/5 when exposed by the host liboqs runtime), ML-DSA (44/65/87), SLH-DSA (12 variants using liboqs 0.16 `SLH_DSA_*` identifiers with legacy SPHINCS+ fallbacks), Falcon/FN-DSA (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS. Available algorithms depend on the installed native build; unavailable algorithms fail closed.
 - `qnsi.parse_qnsi_webhook` / `qnsi.verify_qnsi_webhook_signature` - HMAC-SHA-256 verify + replay protection
 - `qnsi.QnsiClient` - API-key activation with caching and 401 retry
 
@@ -194,6 +227,42 @@ Local primitives + integration:
 - `AsyncQnsiClient` - native-async variants using `httpx.AsyncClient`
 - A `pytest` plugin that mocks the QNSI API for tests in your codebase
 - Generated typed responses (currently `dict[str, Any]`) for every method
+
+## Local verification
+
+The new dynamic Vault methods use the mounted `engineType`, `connectionRef`,
+`roleTemplate` and TTL contract. They retain engine-specific credential fields,
+nullable recovery metadata and lifecycle states. Configuration creation requires
+an approved connection reference; it does not provision account resources or
+send inline admin credentials. `revoke_lease()` returns a queued acknowledgement,
+not proof of completed provider revocation. Renewal is provider-backed when the
+configured engine supports it; other engines reject unsupported renewal.
+
+The existing `algorithm` keyword on secret creation remains request metadata,
+not an authoritative crypto selector. Inspect the returned authenticated envelope
+for the executing algorithm. Secret deletion is soft deletion, not destruction of
+all historical values.
+
+On local CPython 3.14 with the pinned liboqs build, the complete gate passes
+223 tests with no skips, plus seven coverage-gate self-tests. Full-source coverage
+measures 1,042 executable statements/lines, 274 branches and 327 function entries
+across 22 Python production files, all at 100 percent. HTTP contract fixtures do
+not establish live account behavior. Publication, other language parity,
+distribution-matrix acceptance and production assurance remain NOT VERIFIED.
+
+Crypto-inventory statistics and readiness calls now forward an explicitly supplied
+`tenant_id` instead of silently discarding it. Omission selects the activated
+tenant. Backend authorization still determines whether the requested tenant is
+permitted; this client change does not approve tenant delegation.
+
+From the monorepo root, `pnpm test:sdk-python` builds the pinned upstream liboqs
+0.16.0 commit in an ignored cache, installs the optional crypto extra in an
+isolated environment, and runs the entire suite. Every production Python source
+file must be measured with no exclusions, 100 percent executable statement
+lines and branches, and actual calls into every compiled source function,
+including lambdas, generator expressions and lazy annotation functions. Skips and
+expected failures reject the run. Coverage is local regression evidence, not
+proof of production behavior or platform-wide assurance.
 
 ## License
 

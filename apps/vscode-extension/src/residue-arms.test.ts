@@ -17,6 +17,13 @@ import { activate } from "./extension";
 import { registerIntelliSense } from "./intellisense";
 import { configureMcpCommand } from "./mcp";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 const sdk = {
 	ensureActivated: vi.fn(),
 	tenantId: vi.fn(),
@@ -149,7 +156,9 @@ describe("hover for NIST names", () => {
 			getText: vi.fn(() => "ML-KEM-768"),
 		};
 		const result = hover.provideHover(doc, new Position(0, 0));
-		expect((result?.contents as { value: string }).value).toContain("ML-KEM-768");
+		expect((required(result?.contents, "the hover contents") as { value: string }).value).toContain(
+			"ML-KEM-768",
+		);
 	});
 });
 

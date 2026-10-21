@@ -4,7 +4,7 @@
  * FIPS 204 (ML-DSA), and FIPS 205 (SLH-DSA).
  *
  * Vectors are sourced from paulmillr/acvp-vectors which mirrors the
- * canonical usnistgov/ACVP-Server gen-val/json-files directory tree.
+ * canonical usnistgov/ACVP-Server vector directory tree.
  * Each algorithm-operation has three files (gzipped JSON):
  *
  *   prompt.json.gz           - test inputs (seeds, messages, sigs)
@@ -102,8 +102,8 @@ const ACVP_VECTORS_REPO = "paulmillr/acvp-vectors";
 // Pin to a known commit - bump intentionally when re-running with a
 // newer NIST vector snapshot. Recorded in the evidence file so an
 // auditor can verify the same bytes we tested against.
-const ACVP_VECTORS_REF = "main";
-const RAW_BASE = `https://raw.githubusercontent.com/${ACVP_VECTORS_REPO}/${ACVP_VECTORS_REF}`;
+const ACVP_VECTORS_REF = "56669e07d50cd6b0c19d81a63be2e987dd5beeee";
+const RAW_BASE = `https://raw.githubusercontent.com/${ACVP_VECTORS_REPO}/${ACVP_VECTORS_REF}/acvp`;
 
 const CACHE_DIR = join(APP_ROOT, ".cache", "acvp-vectors");
 const EVIDENCE_OUT = join(APP_ROOT, "public", "pqc-evidence", "acvp-latest.json");
@@ -140,7 +140,7 @@ async function fetchVectorFile(algoDir: string, filename: string): Promise<unkno
 		return JSON.parse(readFileSync(cachePath, "utf8")) as unknown;
 	}
 	mkdirSync(cacheDir, { recursive: true });
-	const url = `${RAW_BASE}/gen-val/json-files/${algoDir}/${filename}.json.gz`;
+	const url = `${RAW_BASE}/${algoDir}/${filename}.json.gz`;
 	const res = await fetch(url);
 	if (!res.ok) {
 		throw new Error(`Failed to fetch ${url}: HTTP ${res.status}`);
@@ -724,24 +724,21 @@ function runSlhDsaKeyGen(prompt: VectorFile, expected: VectorFile): PerOperation
 
 /**
  * Wraps a liboqs `KEM` so it exposes the same surface as our noble-backed
- * `MlKemImpl`. The two seed-controlled operations (`keygen(seed)`,
- * `encapsulate(pk, m)`) throw a sentinel error because the @heossihq/
- * liboqs-native Node addon does not yet bind `OQS_KEM_keypair_derand` /
- * `OQS_KEM_encaps_derand`. The runner upgrades that sentinel to a
- * `skipped` row with an audit-trail reason. `decapsulate(ct, dk)` is the
- * deterministic operation we DO drive against liboqs - that's the path
- * that backs production decap calls in vault-service, kms-service, etc.
+ * `MlKemImpl`. The @heossihq/liboqs-native addon binds deterministic ML-KEM
+ * keypair and encapsulation entry points, so the ACVP ML-KEM keyGen and
+ * encapsulation groups execute against the same native engine used by backend
+ * services.
  */
 /**
  * NIST ACVP keyGen tests for ML-DSA + SLH-DSA require a deterministic
- * keypair-from-seed API. liboqs 0.15.0 exposes OQS_KEM_keypair_derand for
+ * keypair-from-seed API. liboqs 0.16.0 exposes OQS_KEM_keypair_derand for
  * KEMs but does NOT yet expose OQS_SIG_keypair_derand for signatures -
  * the C library lacks a seed-controlled keypair function for ML-DSA /
  * SLH-DSA. Upstream PR proposed against open-quantum-safe/liboqs to add
  * this; meanwhile signature-keyGen tests are deferred against liboqs.
  */
 const LIBOQS_SIG_DERAND_GAP_MSG =
-	"liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA " +
+	"liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA " +
 	"keypair generation in liboqs uses internal randombytes(); there is no " +
 	"seed-controlled keypair API in the upstream C library yet. Upstream PR " +
 	"tracked separately at github.com/open-quantum-safe/liboqs.";
@@ -751,7 +748,7 @@ function makeLiboqsMlKemImpl(algorithm: string): MlKemImpl {
 	return {
 		keygen(seed: Uint8Array): { publicKey: Uint8Array; secretKey: Uint8Array } {
 			// FIPS 203 keyGen uses a 64-byte seed (d || z). Caller passes the
-			// concatenated seed; @heossihq/liboqs-native 0.15.1 binds
+			// concatenated seed; @heossihq/liboqs-native 0.16.0 binds
 			// OQS_KEM_keypair_derand directly.
 			const kem = newKem();
 			try {
@@ -1424,8 +1421,8 @@ async function main(): Promise<void> {
 		results: liboqsResults,
 		summary: summariseResults(liboqsResults),
 		scopeNotes: [
-			"@heossihq/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
-			"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.15.0 upstream does NOT expose OQS_SIG_keypair_derand - the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
+			"@heossihq/liboqs-native 0.16.0 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
+			"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.16.0 upstream does NOT expose OQS_SIG_keypair_derand - the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
 			"The liboqs C library's own ACVP test record is maintained upstream by the Open Quantum Safe project at github.com/open-quantum-safe/liboqs.",
 		],
 	};
@@ -1436,10 +1433,10 @@ async function main(): Promise<void> {
 		nobleVersion: noblePkg.version,
 		liboqsVersion: liboqsVer,
 		vectorSource: {
-			repo: `github.com/${ACVP_VECTORS_REPO}`,
+			repo: ACVP_VECTORS_REPO,
 			ref: ACVP_VECTORS_REF,
 			canonicalSource:
-				"https://github.com/usnistgov/ACVP-Server/tree/master/gen-val/json-files (mirror)",
+				"https://github.com/usnistgov/ACVP-Server/tree/v1.1.0.43/gen-val/json-files (mirror)",
 		},
 		environment: {
 			node: process.version,

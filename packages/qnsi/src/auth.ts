@@ -17,6 +17,15 @@ export interface LoginRequest {
 export class AuthClient {
 	constructor(private readonly internal: Internal) {}
 
+	/** Read activity for the authenticated tenant only, never the operator cross-tenant view. */
+	getFederationAuditActivity(hours = 24) {
+		if (!Number.isInteger(hours) || hours < 1 || hours > 168)
+			throw new RangeError("Audit window must be an integer between 1 and 168 hours");
+		return this.internal.request("GET", `${PATH_PREFIX}/federation/audit/activity`, undefined, {
+			query: { hours },
+		});
+	}
+
 	login(req: LoginRequest) {
 		return this.internal.request("POST", `${PATH_PREFIX}/login`, req);
 	}

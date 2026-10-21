@@ -20,6 +20,13 @@ import {
 	validateUUID,
 } from "./index.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 global.fetch = vi.fn();
 
 const TENANT = "a1b2c3d4-e5f6-4789-8abc-def012345678";
@@ -72,7 +79,9 @@ function lastUrl(): string {
 
 function lastBody(): Record<string, unknown> {
 	const calls = vi.mocked(fetch).mock.calls;
-	return JSON.parse(String((calls[calls.length - 1]?.[1] as RequestInit).body));
+	return JSON.parse(
+		String((required(calls[calls.length - 1]?.[1], "the last request init") as RequestInit).body),
+	);
 }
 
 async function call<T>(fn: (c: AuthClient) => Promise<T>, response: unknown): Promise<T> {
@@ -221,11 +230,25 @@ describe("auth flows", () => {
 		);
 		expect(lastBody()["attributes"]).toEqual({});
 
-		await call((c) => c.federateOIDC({ providerId: "p1", code: "code", state: "s" }), {
-			accessToken: "a",
-		});
-		await call((c) => c.federateOIDC({ providerId: "p1", code: "code" }), { accessToken: "a" });
+		await call(
+			(c) => c.federateOIDC({ providerId: "p1", code: "code", state: "one-time-request-state" }),
+			{
+				accessToken: "a",
+			},
+		);
+		expect(lastBody()["state"]).toBe("one-time-request-state");
 	});
+	it.each([undefined, "", "short", "x".repeat(257), "invalid request state"])(
+		"rejects invalid OIDC state before activation or token requests %s",
+		async (state) => {
+			const c = client();
+			vi.mocked(fetch).mockClear();
+			await expect(
+				c.federateOIDC({ providerId: "p1", code: "code", state: state as string }),
+			).rejects.toThrow("OIDC request state");
+			expect(fetch).not.toHaveBeenCalled();
+		},
+	);
 });
 
 describe("risk and audit", () => {
@@ -352,6 +375,43 @@ describe("risk and audit", () => {
 		await call((c) => c.getCrossTenantActivity(24), { items: [] });
 		expect(lastUrl()).toContain("?hours=24");
 		await call((c) => c.getCrossTenantActivity(), { items: [] });
+	});
+	it("retains CSV export artifacts on report creation and retrieval", async () => {
+		const report = {
+			id: CRED,
+			reportType: "security",
+			generatedAt: "2026-10-01T00:00:00Z",
+			period: { start: "2026-09-01T00:00:00Z", end: "2026-10-01T00:00:00Z" },
+			summary: {
+				totalEvents: 0,
+				uniqueUsers: 0,
+				jitProvisioned: 0,
+				eventsByType: {},
+				byProvider: [],
+			},
+			export: {
+				format: "csv",
+				mediaType: "text/csv",
+				content: '"section","name","value","details"\r\n',
+				detailsIncluded: false,
+				detailsTruncated: false,
+			},
+		};
+		const created = await call(
+			(c) =>
+				c.createFederatedAuditReport({
+					reportType: "security",
+					startDate: report.period.start,
+					endDate: report.period.end,
+					format: "csv",
+					includeDetails: false,
+				}),
+			report,
+		);
+		expect(created.export).toEqual(report.export);
+		expect(lastBody()).toMatchObject({ format: "csv", includeDetails: false });
+		const retrieved = await call((c) => c.getFederatedAuditReport(CRED), report);
+		expect(retrieved.export).toEqual(report.export);
 	});
 });
 

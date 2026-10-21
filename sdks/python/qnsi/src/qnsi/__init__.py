@@ -1,9 +1,8 @@
 """QNSI - official Python SDK for the Quantum-Native Security Infrastructure.
 
-Mirrors the surface of the ``@heossihq/qnsi-*`` TypeScript SDK family for the Python
-ecosystem. Same wire contracts, same algorithm names, same FIPS 203/204/205
-posture - pick whichever language fits your stack and the byte-for-byte
-outputs round-trip.
+Python service conveniences, a manifest operation catalog and optional native
+cryptography. Cross-language wire parity and production assurance require
+separate verification; importing this module does not establish either.
 
 Quick start::
 
@@ -29,9 +28,9 @@ Local PQC primitives (requires ``qnsi[crypto]``)::
     from qnsi.crypto import MlKem, MlDsa
 
     kem = MlKem("ML-KEM-768")
-    pk, sk = kem.keygen()
-    enc = kem.encapsulate(pk)
-    assert kem.decapsulate(enc.ciphertext, sk) == enc.shared_secret
+    pair = kem.keygen()
+    enc = kem.encapsulate(pair.public_key)
+    assert kem.decapsulate(enc.ciphertext, pair.secret_key) == enc.shared_secret
 
 Webhook verification::
 
@@ -47,6 +46,10 @@ Webhook verification::
 Free signup at https://cloud.qnsi.heossi.com/auth - no credit card.
 """
 
+# DERIVED, never hand-typed. This literal said "0.4.0" while pip installed 0.4.1 and the
+# activation handshake reported "0.3.0" - three versions in one package. See
+# _activation._package_version for the full story.
+from qnsi._activation import SDK_VERSION
 from qnsi._client import QnsiClient
 from qnsi._errors import (
     QnsiApiError,
@@ -72,10 +75,7 @@ from qnsi.webhooks import (
     verify_qnsi_webhook_signature,
 )
 
-# DERIVED, never hand-typed. This literal said "0.4.0" while pip installed 0.4.1 and the
-# activation handshake reported "0.3.0" - three versions in one package. See
-# _activation._package_version for the full story.
-from qnsi._activation import SDK_VERSION as __version__  # noqa: E402
+__version__ = SDK_VERSION
 
 # --- Deprecated pre-rebrand aliases (product is QNSI; use the Qnsi* names) ---
 QnspClient = QnsiClient
@@ -89,8 +89,8 @@ parse_qnsp_webhook = parse_qnsi_webhook
 verify_qnsp_webhook_signature = verify_qnsi_webhook_signature
 
 __all__ = [
-    "AccessClient",
     "AIClient",
+    "AccessClient",
     "AuditClient",
     "AuthClient",
     "BillingClient",
@@ -103,20 +103,21 @@ __all__ = [
     "QnsiNetworkError",
     "QnsiWebhookError",
     "QnsiWebhookEvent",
+    "QnspApiError",
+    "QnspAuthError",
+    # Deprecated pre-rebrand aliases
+    "QnspClient",
+    "QnspError",
+    "QnspNetworkError",
+    "QnspWebhookError",
+    "QnspWebhookEvent",
     "SearchClient",
     "StorageClient",
     "TenantClient",
     "VaultClient",
+    "__version__",
     "parse_qnsi_webhook",
-    "verify_qnsi_webhook_signature",
-    # Deprecated pre-rebrand aliases
-    "QnspClient",
-    "QnspError",
-    "QnspApiError",
-    "QnspAuthError",
-    "QnspNetworkError",
-    "QnspWebhookError",
-    "QnspWebhookEvent",
     "parse_qnsp_webhook",
+    "verify_qnsi_webhook_signature",
     "verify_qnsp_webhook_signature",
 ]

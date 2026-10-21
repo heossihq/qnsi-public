@@ -29,6 +29,7 @@ from qnsi.crypto_inventory import CryptoInventoryClient
 from qnsi.kms import KmsClient
 from qnsi.search import SearchClient
 from qnsi.storage import StorageClient
+from qnsi.surface import SurfaceClient
 from qnsi.tenant import TenantClient
 from qnsi.vault import VaultClient
 
@@ -67,9 +68,11 @@ class QnsiClient:
             http_client=self._http,
         )
 
-        kw: dict[str, Any] = dict(
-            activation=self._activation, http_client=self._http, timeout=timeout
-        )
+        kw: dict[str, Any] = {
+            "activation": self._activation,
+            "http_client": self._http,
+            "timeout": timeout,
+        }
         self.vault = VaultClient(**kw)
         self.kms = KmsClient(**kw)
         self.audit = AuditClient(**kw)
@@ -81,6 +84,7 @@ class QnsiClient:
         self.storage = StorageClient(**kw)
         self.search = SearchClient(**kw)
         self.ai = AIClient(**kw)
+        self.surface = SurfaceClient(**kw)
 
     # ── activation introspection ─────────────────────────────────────────
 

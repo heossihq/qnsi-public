@@ -2,6 +2,15 @@
 
 All notable changes to the QNSP Rust SDK (`qnsp` on crates.io) will be documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-08-18
+
+**Metadata only. No code changes.**
+
+### Changed
+
+- `homepage` now points at the canonical product site `https://qnsi.heossi.com` instead of the console, matching npm and Maven Central.
+- `repository` is published correctly as `https://github.com/heossihq/qnsi-public`. The 0.3.0 release carried `heossi-hq` (hyphenated), an organisation that does not exist; GitHub 301-redirected it to the real repository, so it resolved for users but advertised a name we do not own.
+
 ## [0.2.0] - 2026-04-30
 
 **Full-parity release.** Adds the two customer-facing service modules that were missing in 0.1.0, bringing the Rust SDK to feature parity with the TypeScript family (11 service modules total).
@@ -32,7 +41,7 @@ Initial release. The SDK is general-purpose - every QNSP customer uses the same 
 - `qnsi::crypto_inventory::Client` - Cryptographic Bill of Materials: asset listing, discovery runs, PQC readiness score.
 - `qnsi::storage::Client` - PQC-encrypted object storage (SSE-X): `put_object`, `get_object`, `delete_object`, `list_objects`, `list_buckets`.
 - `qnsi::search::Client` - encrypted vector search: index lifecycle, `upsert_vectors`, `query`.
-- `qnsi::crypto` (feature-gated on `crypto`) - local PQC primitives wrapping `oqs` 0.11. Covers ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), Falcon, plus HQC, BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS. Algorithm names mirror `@heossihq/qnsp-cryptography` (TypeScript), `qnsp.crypto` (Python), and `qnsp/crypto` (Go).
+- `qnsi::crypto` (feature-gated on `crypto`) - local PQC primitives wrapping `oqs` 0.11. Covers ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), Falcon, plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS. HQC is omitted from Rust until liboqs-rust exposes the liboqs 0.16.0 HQC-1/3/5 identifiers. Algorithm names mirror `@heossihq/qnsp-cryptography` (TypeScript), `qnsp.crypto` (Python), and `qnsp/crypto` (Go).
 - `qnsi::Activation` - one-shot handshake against `/billing/v1/sdk/activate` with `sdkId="qnsp-rust"`, cached with a 60 s near-expiry buffer.
 - `qnsi::parse_webhook` and `qnsi::verify_webhook_signature` - HMAC-SHA-256 verify, replay protection (`qnsi::MAX_WEBHOOK_SKEW = chrono::Duration::minutes(5)`), typed `qnsi::WebhookEvent`.
 - Top-level introspection: `Client::tenant_id`, `Client::tier`, `Client::limits`, `Client::has_feature`.

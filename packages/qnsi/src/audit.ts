@@ -1,5 +1,5 @@
 /**
- * QNSP Audit - immutable, hash-chained event log. Wraps
+ * QNSI Audit - immutable, hash-chained event log. Wraps
  * `apps/audit-service` (`/audit/v1`).
  */
 

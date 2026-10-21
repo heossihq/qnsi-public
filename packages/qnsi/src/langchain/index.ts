@@ -1,17 +1,17 @@
 import { bridgeQnsiEnv } from "../internal/env-aliases.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 /**
- * @heossihq/qnsi-langchain-qnsp
+ * former standalone LangChain integration package
  *
- * LangChain tools for QNSP - governed agents with PQC-encrypted secrets,
+ * LangChain tools for QNSI - governed agents with PQC-encrypted secrets,
  * quantum-safe signing, and immutable audit trails.
  *
  * @example
  * ```typescript
- * import { QnsiToolkit } from "@heossihq/qnsi-langchain-qnsp";
+ * import { QnsiToolkit } from "former standalone LangChain integration package";
  *
  * const toolkit = new QnsiToolkit({ apiKey: process.env.QNSI_API_KEY });
  * const tools = toolkit.getTools();

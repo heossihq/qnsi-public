@@ -189,6 +189,34 @@ func TestKMS_CreateSignVerify(t *testing.T) {
 	}
 }
 
+func TestKMS_CustodyFlagsSeparateFromMetadata(t *testing.T) {
+	b := &fakeBackend{t: t}
+	b.kms = func(w http.ResponseWriter, r *http.Request) {
+		var body map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Fatal(err)
+		}
+		if body["exportable"] != false || body["custodyEnforcement"] != "service" {
+			t.Errorf("missing authoritative custody request: %v", body)
+		}
+		if body["metadata"].(map[string]any)["exportable"] != true {
+			t.Error("caller metadata was rewritten")
+		}
+		_ = json.NewEncoder(w).Encode(map[string]any{"keyId": "owned-key", "exportable": false, "custodyPolicy": map[string]any{"enforcement": "service", "hardwareNonExportability": "not_verified"}})
+	}
+	c, srv := newClient(t, b)
+	defer srv.Close()
+	defer c.Close()
+	exportable := false
+	key, err := c.KMS().CreateKey(context.Background(), kms.CreateKeyRequest{Algorithm: "ml-dsa-65", Exportable: &exportable, CustodyEnforcement: "service", Metadata: map[string]any{"exportable": true}}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if key["exportable"] != false {
+		t.Error("authoritative response not preserved")
+	}
+}
+
 func TestAudit_LogEvent(t *testing.T) {
 	b := &fakeBackend{t: t}
 	b.audit = func(w http.ResponseWriter, r *http.Request) {

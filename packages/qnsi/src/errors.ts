@@ -1,12 +1,12 @@
 /**
- * Typed error hierarchy for the QNSP SDK.
+ * Typed error hierarchy for the QNSI SDK.
  *
  * Every method in `@heossihq/qnsi` rejects with an instance of one of these
  * classes - never with a bare `Error` or a string. Callers can branch on
  * the failure mode without parsing error messages.
  */
 
-/** Base class - all QNSP SDK errors inherit. */
+/** Base class - all QNSI SDK errors inherit. */
 export class QnsiError extends Error {
 	constructor(message: string, options?: ErrorOptions) {
 		super(message, options);
@@ -14,12 +14,12 @@ export class QnsiError extends Error {
 	}
 }
 
-/** DNS, TLS, timeout, or connection failure reaching the QNSP edge gateway. */
+/** DNS, TLS, timeout, or connection failure reaching the QNSI edge gateway. */
 export class QnsiNetworkError extends QnsiError {
 	readonly op: string;
 	readonly url: string;
 	constructor(op: string, url: string, cause?: unknown) {
-		super(`qnsp: network error on ${op} ${url}: ${stringifyCause(cause)}`, { cause });
+		super(`qnsi: network error on ${op} ${url}: ${stringifyCause(cause)}`, { cause });
 		this.name = "QnsiNetworkError";
 		this.op = op;
 		this.url = url;
@@ -30,13 +30,13 @@ export class QnsiNetworkError extends QnsiError {
 export class QnsiAuthError extends QnsiError {
 	readonly code: string | null;
 	constructor(message: string, code: string | null = null) {
-		super(`qnsp: auth error${code ? ` (${code})` : ""}: ${message}`);
+		super(`qnsi: auth error${code ? ` (${code})` : ""}: ${message}`);
 		this.name = "QnsiAuthError";
 		this.code = code;
 	}
 }
 
-/** A QNSP service returned a 4xx/5xx with a structured body. */
+/** A QNSI service returned a 4xx/5xx with a structured body. */
 export class QnsiApiError extends QnsiError {
 	readonly statusCode: number;
 	readonly code: string | null;
@@ -47,7 +47,7 @@ export class QnsiApiError extends QnsiError {
 		code: string | null = null,
 		body: unknown = null,
 	) {
-		super(`qnsp: api error ${statusCode}${code ? ` ${code}` : ""}: ${message}`);
+		super(`qnsi: api error ${statusCode}${code ? ` ${code}` : ""}: ${message}`);
 		this.name = "QnsiApiError";
 		this.statusCode = statusCode;
 		this.code = code;
@@ -59,7 +59,7 @@ export class QnsiApiError extends QnsiError {
 export class QnsiWebhookError extends QnsiError {
 	readonly reason: string;
 	constructor(reason: string) {
-		super(`qnsp: webhook error: ${reason}`);
+		super(`qnsi: webhook error: ${reason}`);
 		this.name = "QnsiWebhookError";
 		this.reason = reason;
 	}

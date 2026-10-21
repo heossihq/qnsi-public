@@ -7,7 +7,13 @@ import {
 } from "@opentelemetry/sdk-metrics";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { SearchClient } from "./client.js";
+import {
+	InvalidSynonymCursorError,
+	InvalidSynonymImportError,
+	SearchClient,
+	SearchTenantMismatchError,
+	UnsupportedSynonymFormatError,
+} from "./client.js";
 import { createSearchClientTelemetry, isSearchClientTelemetry } from "./observability.js";
 import {
 	analyzeTokenFrequency,
@@ -88,6 +94,128 @@ const DOC = {
 	},
 };
 
+const BACKEND_SYNONYM_INPUT = {
+	name: "Documents",
+	description: "Document terminology",
+	synonymType: "equivalent" as const,
+	language: "en",
+	terms: ["document", "report"],
+	primaryTerm: null,
+	enabled: true,
+	weight: 1,
+	indexIds: [],
+	metadata: { source: "contract-test" },
+};
+
+const BACKEND_SYNONYM_GROUP = {
+	id: ID,
+	tenantId: TENANT,
+	...BACKEND_SYNONYM_INPUT,
+	createdAt: "2026-08-16T00:00:00.000Z",
+	updatedAt: "2026-08-16T00:00:00.000Z",
+};
+
+const PUBLIC_SYNONYM_GROUP = {
+	id: ID,
+	tenantId: TENANT,
+	name: "Documents",
+	description: "Document terminology",
+	synonyms: ["document", "report"],
+	isExpanded: true,
+	language: "en",
+	createdAt: "2026-08-16T00:00:00.000Z",
+	updatedAt: "2026-08-16T00:00:00.000Z",
+};
+
+const BACKEND_HEALTH_SNAPSHOT = {
+	id: ID,
+	tenantId: TENANT,
+	indexId: ID,
+	indexName: "documents-primary",
+	healthStatus: "unknown" as const,
+	actualHealthStatus: "unknown" as const,
+	reportedAssessment: "healthy" as const,
+	verificationStatus: "unverified" as const,
+	measurementSource: "client_reported" as const,
+	totalDocuments: 10,
+	totalDocumentsExact: "10",
+	totalSizeBytes: 100,
+	totalSizeBytesExact: "100",
+	indexSizeBytes: 80,
+	indexSizeBytesExact: "80",
+	fragmentationPercent: 0,
+	avgDocumentSizeBytes: 10,
+	lastIndexedAt: null,
+	lastOptimizedAt: null,
+	searchLatencyP50Ms: 0,
+	searchLatencyP95Ms: 0,
+	searchLatencyP99Ms: 0,
+	indexLatencyP50Ms: 0,
+	indexLatencyP95Ms: 0,
+	errorRate: 0,
+	metadata: {},
+	collectedAt: "2026-08-16T00:00:00.000Z",
+};
+
+const BACKEND_HEALTH_ALERT = {
+	id: ID,
+	tenantId: TENANT,
+	indexId: ID,
+	indexName: "documents-primary",
+	alertType: "custom" as const,
+	severity: "medium" as const,
+	status: "active" as const,
+	message: "Client-reported condition",
+	thresholdValue: 0,
+	currentValue: 0,
+	metadata: {},
+	reportingSource: "client_reported" as const,
+	verificationStatus: "unverified" as const,
+	triggeredAt: "2026-08-16T00:00:00.000Z",
+	acknowledgedAt: null,
+	acknowledgedBy: null,
+	acknowledgedNotes: null,
+	resolvedAt: null,
+	resolvedBy: null,
+	resolutionNotes: null,
+};
+
+const BACKEND_CURRENT_HEALTH = {
+	tenantId: TENANT,
+	overallStatus: "unknown" as const,
+	actualHealthStatus: "unknown" as const,
+	verificationStatus: "unverified" as const,
+	summary: {
+		totalIndices: 1,
+		actualHealthStatus: "unknown" as const,
+		reportedAssessmentCounts: { healthy: 1, degraded: 0, unhealthy: 0 },
+		activeReportedAlerts: 1,
+	},
+	indices: [BACKEND_HEALTH_SNAPSHOT],
+	alerts: [BACKEND_HEALTH_ALERT],
+};
+
+const BACKEND_MAINTENANCE_WINDOW = {
+	id: ID,
+	tenantId: TENANT,
+	indexId: ID,
+	indexName: "documents-primary",
+	maintenanceType: "optimize" as const,
+	scheduledAt: "2026-08-16T01:00:00.000Z",
+	estimatedDurationMinutes: 30,
+	scheduleStatus: "scheduled" as const,
+	executionStatus: "unavailable" as const,
+	executionStatusReason: "No maintenance executor is configured",
+	recordedStartedAt: null,
+	recordedCompletedAt: null,
+	metadata: {},
+	createdBy: "service:cloud",
+	cancelledAt: null,
+	cancelledBy: null,
+	createdAt: "2026-08-16T00:00:00.000Z",
+	observedAt: "2026-08-16T00:00:00.000Z",
+};
+
 beforeEach(() => {
 	clearActivationCache();
 });
@@ -161,80 +289,101 @@ describe("every client method, ok and error paths", () => {
 		],
 		[
 			"createSynonymGroup",
-			(c) => c.createSynonymGroup({ tenantId: TENANT, terms: ["a", "b"] } as never),
-			"/search/v1/synonyms/groups",
-			{ id: ID },
+			(c) =>
+				c.createSynonymGroup({
+					tenantId: TENANT,
+					name: "Documents",
+					synonyms: ["document", "report"],
+				}),
+			"/search/v1/synonyms",
+			BACKEND_SYNONYM_GROUP,
 		],
 		[
 			"listSynonymGroups",
-			(c) => c.listSynonymGroups({ tenantId: TENANT } as never),
-			"/search/v1/synonyms/groups",
-			{ items: [] },
+			(c) => c.listSynonymGroups({ tenantId: TENANT }),
+			"/search/v1/synonyms",
+			{ groups: [], pagination: { limit: 100, offset: 0, total: 0 } },
 		],
 		[
 			"updateSynonymGroup",
-			(c) => c.updateSynonymGroup(ID, { terms: ["a"] } as never),
-			`/search/v1/synonyms/groups/${ID}`,
-			{ id: ID },
+			(c) => c.updateSynonymGroup(ID, { synonyms: ["document", "report"] }),
+			`/search/v1/synonyms/${ID}`,
+			BACKEND_SYNONYM_GROUP,
 		],
 		[
 			"deleteSynonymGroup",
 			(c) => c.deleteSynonymGroup(ID),
-			`/search/v1/synonyms/groups/${ID}`,
+			`/search/v1/synonyms/${ID}`,
 			{ ok: true },
 		],
 		[
 			"expandTerm",
-			(c) => c.expandTerm({ tenantId: TENANT, term: "a" } as never),
+			(c) => c.expandTerm({ tenantId: TENANT, term: "document" }),
 			"/search/v1/synonyms/expand",
-			{ terms: [] },
+			{ inputTerm: "document", expansions: [] },
 		],
 		[
 			"importSynonyms",
-			(c) => c.importSynonyms({ tenantId: TENANT, groups: [] } as never),
+			(c) =>
+				c.importSynonyms({
+					tenantId: TENANT,
+					format: "json",
+					data: JSON.stringify([BACKEND_SYNONYM_INPUT]),
+				}),
 			"/search/v1/synonyms/import",
-			{ imported: 0 },
+			{ imported: 1, failed: 0 },
 		],
 		[
 			"exportSynonyms",
-			(c) => c.exportSynonyms({ tenantId: TENANT } as never),
+			(c) => c.exportSynonyms({ tenantId: TENANT, format: "json" }),
 			"/search/v1/synonyms/export",
-			{ groups: [] },
+			{ count: 0, groups: [] },
 		],
 		[
 			"recordHealthSnapshot",
-			(c) => c.recordHealthSnapshot({ tenantId: TENANT, metrics: {} } as never),
-			"/search/v1/health/snapshots",
-			{ id: ID },
+			(c) =>
+				c.recordHealthSnapshot({
+					tenantId: TENANT,
+					indexId: ID,
+					indexName: "documents-primary",
+					totalDocuments: 10,
+					totalSizeBytes: 100,
+					indexSizeBytes: 80,
+					fragmentationPercent: 0,
+				}),
+			"/search/v2/health/snapshots",
+			BACKEND_HEALTH_SNAPSHOT,
 		],
 		[
 			"getIndexHealth",
-			(c) => c.getIndexHealth({ tenantId: TENANT } as never),
-			"/search/v1/health",
-			{ id: ID },
+			(c) => c.getIndexHealth({ tenantId: TENANT }),
+			"/search/v2/health/current",
+			BACKEND_CURRENT_HEALTH,
 		],
 		[
 			"listHealthAlerts",
-			(c) => c.listHealthAlerts({ tenantId: TENANT } as never),
-			"/search/v1/health/alerts",
-			{ items: [] },
+			(c) => c.listHealthAlerts({ tenantId: TENANT }),
+			"/search/v2/health/alerts",
+			{ alerts: [], count: 0, nextCursor: null },
 		],
 		[
 			"acknowledgeAlert",
-			(c) => c.acknowledgeAlert({ alertId: ID, tenantId: TENANT, acknowledgedBy: "ops" } as never),
-			`/search/v1/health/alerts/${ID}/acknowledge`,
-			{ id: ID },
+			(c) => c.acknowledgeAlert({ alertId: ID, tenantId: TENANT }),
+			`/search/v2/health/alerts/${ID}/acknowledge`,
+			BACKEND_HEALTH_ALERT,
 		],
 		[
 			"createMaintenanceWindow",
 			(c) =>
 				c.createMaintenanceWindow({
 					tenantId: TENANT,
-					startsAt: "2026-08-16T00:00:00Z",
-					endsAt: "2026-08-16T01:00:00Z",
-				} as never),
-			"/search/v1/health/maintenance",
-			{ id: ID },
+					indexId: ID,
+					indexName: "documents-primary",
+					maintenanceType: "optimize",
+					scheduledAt: "2026-08-16T01:00:00Z",
+				}),
+			"/search/v2/health/maintenance",
+			BACKEND_MAINTENANCE_WINDOW,
 		],
 		[
 			"createIsolationPolicy",
@@ -320,6 +469,426 @@ describe("every client method, ok and error paths", () => {
 		await expect(invoke(client)).rejects.toThrow(/fetch queue empty/);
 		expect(events[events.length - 1]).toMatchObject({ status: "error" });
 	});
+});
+
+describe("index telemetry response contracts", () => {
+	it("accepts coherent unsafe integer projections and rejects contradictory projections", async () => {
+		const { client, queue } = makeClient();
+		queue({ body: ACTIVATION });
+		queue({
+			body: {
+				...BACKEND_CURRENT_HEALTH,
+				indices: [
+					{
+						...BACKEND_HEALTH_SNAPSHOT,
+						totalDocuments: null,
+						totalDocumentsExact: "9007199254740993",
+					},
+				],
+			},
+		});
+		await expect(client.getIndexHealth({ tenantId: TENANT })).resolves.toMatchObject({
+			indices: [{ totalDocuments: null, totalDocumentsExact: "9007199254740993" }],
+		});
+
+		for (const contradictorySnapshot of [
+			{ ...BACKEND_HEALTH_SNAPSHOT, totalDocuments: 9, totalDocumentsExact: "10" },
+			{
+				...BACKEND_HEALTH_SNAPSHOT,
+				totalDocuments: 9_007_199_254_740_991,
+				totalDocumentsExact: "9007199254740993",
+			},
+			{ ...BACKEND_HEALTH_SNAPSHOT, totalDocuments: null, totalDocumentsExact: "10" },
+		]) {
+			queue({
+				body: { ...BACKEND_CURRENT_HEALTH, indices: [contradictorySnapshot] },
+			});
+			await expect(client.getIndexHealth({ tenantId: TENANT })).rejects.toThrow(
+				/totalDocuments must be the safe projection/,
+			);
+		}
+	});
+
+	it("passes through opaque alert cursors and rejects inconsistent page counts", async () => {
+		const { client, queue, calls } = makeClient();
+		queue({ body: ACTIVATION });
+		queue({
+			body: { alerts: [BACKEND_HEALTH_ALERT], count: 1, nextCursor: "opaque-next" },
+		});
+		await expect(
+			client.listHealthAlerts({ tenantId: TENANT, cursor: "opaque-current" }),
+		).resolves.toEqual({ items: [BACKEND_HEALTH_ALERT], nextCursor: "opaque-next" });
+		expect(calls.at(-1)?.url).toContain("cursor=opaque-current");
+
+		queue({ body: { alerts: [BACKEND_HEALTH_ALERT], count: 0, nextCursor: null } });
+		await expect(client.listHealthAlerts({ tenantId: TENANT })).rejects.toThrow(
+			/count must equal the number of returned alerts/,
+		);
+	});
+});
+
+describe("synonym management wire contract", () => {
+	it("maps create, list, update, and delete to the mounted CRUD contract", async () => {
+		const { client, queue, calls } = makeClient();
+		queue({ body: ACTIVATION });
+		queue({ body: BACKEND_SYNONYM_GROUP });
+		queue({
+			body: {
+				groups: [BACKEND_SYNONYM_GROUP],
+				pagination: { limit: 2, offset: 4, total: 7 },
+			},
+		});
+		queue({
+			body: {
+				...BACKEND_SYNONYM_GROUP,
+				terms: ["document", "file"],
+				enabled: false,
+				updated: true,
+			},
+		});
+		queue({ body: null });
+
+		await expect(
+			client.createSynonymGroup({
+				tenantId: TENANT,
+				name: "Documents",
+				description: "Document terminology",
+				synonyms: ["document", "report"],
+				isExpanded: true,
+				language: "en",
+			}),
+		).resolves.toEqual(PUBLIC_SYNONYM_GROUP);
+		const createCall = calls[1];
+		expect(createCall?.url).toBe(
+			`https://search.example.com/search/v1/synonyms?tenantId=${TENANT}`,
+		);
+		expect(createCall?.init.method).toBe("POST");
+		expect(createCall?.init.headers).toMatchObject({
+			"Content-Type": "application/json",
+			"x-qnsp-tenant-id": TENANT,
+		});
+		expect(JSON.parse(String(createCall?.init.body))).toEqual({
+			name: "Documents",
+			description: "Document terminology",
+			terms: ["document", "report"],
+			enabled: true,
+			language: "en",
+		});
+
+		await expect(
+			client.listSynonymGroups({ tenantId: TENANT, language: "en", limit: 2, cursor: "4" }),
+		).resolves.toEqual({ items: [PUBLIC_SYNONYM_GROUP], nextCursor: "6" });
+		const listCall = calls[2];
+		expect(listCall?.url).toBe(
+			`https://search.example.com/search/v1/synonyms?tenantId=${TENANT}&language=en&limit=2&offset=4`,
+		);
+		expect(listCall?.init.method).toBe("GET");
+
+		await expect(
+			client.updateSynonymGroup(ID, {
+				name: "Documents",
+				description: "Document terminology",
+				synonyms: ["document", "file"],
+				isExpanded: false,
+				language: "en",
+			}),
+		).resolves.toEqual({
+			...PUBLIC_SYNONYM_GROUP,
+			synonyms: ["document", "file"],
+			isExpanded: false,
+		});
+		const updateCall = calls[3];
+		expect(updateCall?.url).toBe(`https://search.example.com/search/v1/synonyms/${ID}`);
+		expect(updateCall?.init.method).toBe("PATCH");
+		expect(JSON.parse(String(updateCall?.init.body))).toEqual({
+			name: "Documents",
+			description: "Document terminology",
+			terms: ["document", "file"],
+			enabled: false,
+			language: "en",
+		});
+
+		await expect(client.deleteSynonymGroup(ID)).resolves.toBeUndefined();
+		const deleteCall = calls[4];
+		expect(deleteCall?.url).toBe(`https://search.example.com/search/v1/synonyms/${ID}`);
+		expect(deleteCall?.init.method).toBe("DELETE");
+		expect(deleteCall?.init.body).toBeUndefined();
+	});
+
+	it("maps absent descriptions and omits unchanged synonym fields", async () => {
+		const { client, queue, calls } = makeClient();
+		queue({ body: ACTIVATION });
+		queue({
+			body: {
+				groups: [{ ...BACKEND_SYNONYM_GROUP, description: null }],
+				pagination: { limit: 50, offset: 0, total: 1 },
+			},
+		});
+		queue({ body: { ...BACKEND_SYNONYM_GROUP, description: null } });
+
+		const listed = await client.listSynonymGroups({ tenantId: TENANT });
+		expect(listed.items).toHaveLength(1);
+		expect(listed.items[0]).not.toHaveProperty("description");
+		await client.updateSynonymGroup(ID, { name: "Renamed" });
+
+		expect(JSON.parse(String(calls[2]?.init.body))).toEqual({ name: "Renamed" });
+	});
+
+	it("fails closed when activation does not resolve a tenant", async () => {
+		const { client, calls } = makeClient();
+		const state = client as unknown as {
+			activationPromise: Promise<void>;
+			resolvedTenantId: string | null;
+		};
+		state.activationPromise = Promise.resolve();
+		state.resolvedTenantId = null;
+
+		await expect(client.listHealthAlerts()).rejects.toThrow(
+			"SDK activation did not return a tenantId",
+		);
+		expect(calls).toHaveLength(0);
+	});
+
+	it("posts expansion JSON and maps terms plus distinct matched group IDs", async () => {
+		const secondGroupId = "c1b2c3d4-e5f6-4789-8abc-def012345678";
+		const { client, queue, calls } = makeClient();
+		queue({ body: ACTIVATION });
+		queue({
+			body: {
+				inputTerm: "report",
+				language: "en",
+				expansions: [
+					{
+						term: "document",
+						groupId: ID,
+						groupName: "Documents",
+						synonymType: "equivalent",
+						weight: 1,
+					},
+					{
+						term: "file",
+						groupId: ID,
+						groupName: "Documents",
+						synonymType: "equivalent",
+						weight: 1,
+					},
+					{
+						term: "paper",
+						groupId: secondGroupId,
+						groupName: "Papers",
+						synonymType: "equivalent",
+						weight: 1,
+					},
+				],
+				totalExpansions: 3,
+				matchedGroups: 2,
+			},
+		});
+
+		await expect(
+			client.expandTerm({ tenantId: TENANT, term: "report", language: "en" }),
+		).resolves.toEqual({
+			originalTerm: "report",
+			expandedTerms: ["document", "file", "paper"],
+			matchedGroups: [ID, secondGroupId],
+		});
+		const call = calls[1];
+		expect(call?.url).toBe(
+			`https://search.example.com/search/v1/synonyms/expand?tenantId=${TENANT}`,
+		);
+		expect(call?.init.method).toBe("POST");
+		expect(JSON.parse(String(call?.init.body))).toEqual({ term: "report", language: "en" });
+	});
+
+	it("validates JSON import and maps mounted import and export contracts", async () => {
+		const { client, queue, calls } = makeClient();
+		queue({ body: ACTIVATION });
+		queue({ body: { imported: 1, failed: 0 } });
+		queue({ body: { count: 1, groups: [BACKEND_SYNONYM_INPUT] } });
+
+		await expect(
+			client.importSynonyms({
+				tenantId: TENANT,
+				format: "json",
+				data: JSON.stringify([BACKEND_SYNONYM_INPUT]),
+				replaceExisting: true,
+				language: "en",
+			}),
+		).resolves.toEqual({ imported: 1, skipped: 0, errors: [] });
+		const importCall = calls[1];
+		expect(importCall?.url).toBe(
+			`https://search.example.com/search/v1/synonyms/import?tenantId=${TENANT}`,
+		);
+		expect(importCall?.init.method).toBe("POST");
+		expect(JSON.parse(String(importCall?.init.body))).toEqual({
+			groups: [BACKEND_SYNONYM_INPUT],
+			replaceExisting: true,
+			language: "en",
+		});
+
+		await expect(
+			client.exportSynonyms({ tenantId: TENANT, format: "json", language: "en" }),
+		).resolves.toEqual({
+			data: JSON.stringify([BACKEND_SYNONYM_INPUT]),
+			count: 1,
+			format: "json",
+		});
+		const exportCall = calls[2];
+		expect(exportCall?.url).toBe(
+			`https://search.example.com/search/v1/synonyms/export?tenantId=${TENANT}&language=en`,
+		);
+		expect(exportCall?.url).not.toContain("format=");
+		expect(exportCall?.init.method).toBe("GET");
+	});
+
+	it.each([
+		[
+			"create",
+			(client: SearchClient, tenantId: string) =>
+				client.createSynonymGroup({
+					tenantId,
+					name: "Documents",
+					synonyms: ["document", "report"],
+				}),
+		],
+		["list", (client: SearchClient, tenantId: string) => client.listSynonymGroups({ tenantId })],
+		[
+			"expand",
+			(client: SearchClient, tenantId: string) => client.expandTerm({ tenantId, term: "report" }),
+		],
+		[
+			"import",
+			(client: SearchClient, tenantId: string) =>
+				client.importSynonyms({
+					tenantId,
+					format: "json",
+					data: JSON.stringify([BACKEND_SYNONYM_INPUT]),
+				}),
+		],
+		[
+			"export",
+			(client: SearchClient, tenantId: string) =>
+				client.exportSynonyms({ tenantId, format: "json" }),
+		],
+	] as const)(
+		"rejects a tenant mismatch before the %s operation request",
+		async (_name, invoke) => {
+			clearActivationCache();
+			const { client, queue, calls } = makeClient();
+			queue({ body: ACTIVATION });
+			await expect(invoke(client, "d1b2c3d4-e5f6-4789-8abc-def012345678")).rejects.toBeInstanceOf(
+				SearchTenantMismatchError,
+			);
+			expect(calls).toHaveLength(1);
+		},
+	);
+
+	it("rejects mismatched required and optional tenants outside synonym operations", async () => {
+		const mismatch = "d1b2c3d4-e5f6-4789-8abc-def012345678";
+
+		const indexed = makeClient();
+		indexed.queue({ body: ACTIVATION });
+		await expect(
+			indexed.client.indexDocument({ ...DOC, tenantId: mismatch } as never),
+		).rejects.toBeInstanceOf(SearchTenantMismatchError);
+		expect(indexed.calls).toHaveLength(1);
+
+		clearActivationCache();
+		const metrics = makeClient();
+		metrics.queue({ body: ACTIVATION });
+		await expect(metrics.client.getQueryMetrics({ tenantId: mismatch })).rejects.toBeInstanceOf(
+			SearchTenantMismatchError,
+		);
+		expect(metrics.calls).toHaveLength(1);
+	});
+
+	it("validates all batch tenants before sending an index operation", async () => {
+		const mismatch = "d1b2c3d4-e5f6-4789-8abc-def012345678";
+		const { client, queue, calls } = makeClient();
+		queue({ body: ACTIVATION });
+		await expect(
+			client.batchIndexDocuments([DOC as never, { ...DOC, tenantId: mismatch } as never]),
+		).rejects.toBeInstanceOf(SearchTenantMismatchError);
+		expect(calls).toHaveLength(1);
+	});
+
+	it("rejects unsupported synonym formats without making a network request", async () => {
+		const imported = makeClient();
+		await expect(
+			imported.client.importSynonyms({ tenantId: TENANT, format: "csv", data: "a,b" }),
+		).rejects.toBeInstanceOf(UnsupportedSynonymFormatError);
+		expect(imported.calls).toHaveLength(0);
+
+		const exported = makeClient();
+		await expect(
+			exported.client.exportSynonyms({ tenantId: TENANT, format: "solr" }),
+		).rejects.toBeInstanceOf(UnsupportedSynonymFormatError);
+		expect(exported.calls).toHaveLength(0);
+	});
+
+	it.each([
+		"not-json",
+		"[]",
+		"[{}]",
+		JSON.stringify([{ ...BACKEND_SYNONYM_INPUT, unknown: true }]),
+	])("rejects malformed or empty JSON import data before transport: %s", async (data) => {
+		const { client, calls } = makeClient();
+		await expect(
+			client.importSynonyms({ tenantId: TENANT, format: "json", data }),
+		).rejects.toBeInstanceOf(InvalidSynonymImportError);
+		expect(calls).toHaveLength(0);
+	});
+
+	it.each([
+		{
+			...BACKEND_SYNONYM_INPUT,
+			synonymType: "one_way",
+			primaryTerm: null,
+		},
+		{
+			...BACKEND_SYNONYM_INPUT,
+			synonymType: "one_way",
+			primaryTerm: "missing",
+		},
+	])("rejects invalid one-way synonym semantics before transport", async (group) => {
+		const { client, calls } = makeClient();
+		await expect(
+			client.importSynonyms({ tenantId: TENANT, format: "json", data: JSON.stringify([group]) }),
+		).rejects.toBeInstanceOf(InvalidSynonymImportError);
+		expect(calls).toHaveLength(0);
+	});
+
+	it("accepts a one-way synonym whose primary term belongs to the group", async () => {
+		const { client, queue, calls } = makeClient();
+		queue({ body: ACTIVATION });
+		queue({ body: { imported: 1, failed: 0 } });
+
+		await expect(
+			client.importSynonyms({
+				tenantId: TENANT,
+				format: "json",
+				data: JSON.stringify([
+					{
+						...BACKEND_SYNONYM_INPUT,
+						synonymType: "one_way",
+						primaryTerm: "document",
+					},
+				]),
+			}),
+		).resolves.toBeDefined();
+		expect(calls).toHaveLength(2);
+	});
+
+	it.each(["", "-1", "1.5", "01", "abc", "9007199254740992"])(
+		"rejects invalid offset cursor %j before transport",
+		async (cursor) => {
+			const { client, calls } = makeClient();
+			await expect(client.listSynonymGroups({ tenantId: TENANT, cursor })).rejects.toBeInstanceOf(
+				InvalidSynonymCursorError,
+			);
+			expect(calls).toHaveLength(0);
+		},
+	);
 });
 
 describe("retry, batching, auto-SSE", () => {
@@ -417,18 +986,17 @@ describe("retry, batching, auto-SSE", () => {
 		expect(Array.isArray(minimalBody.sseTokens)).toBe(true);
 	});
 
-	it("acknowledgeAlert carries an optional note", async () => {
+	it("acknowledgeAlert carries optional notes without a caller-supplied actor", async () => {
 		clearActivationCache();
 		const { client, queue, calls } = makeClient();
 		queue({ body: ACTIVATION });
-		queue({ body: { id: ID } });
+		queue({ body: BACKEND_HEALTH_ALERT });
 		await client.acknowledgeAlert({
 			alertId: ID,
 			tenantId: TENANT,
-			acknowledgedBy: "ops",
-			note: "checked",
-		} as never);
-		expect(JSON.parse(String(calls[calls.length - 1]?.init.body)).note).toBe("checked");
+			notes: "checked",
+		});
+		expect(JSON.parse(String(calls[calls.length - 1]?.init.body))).toEqual({ notes: "checked" });
 	});
 
 	it("indexDocumentWithAutoSse attaches derived tokens", async () => {
@@ -590,23 +1158,24 @@ describe("full-filter variants", () => {
 						tenantId: TENANT,
 						language: "en",
 						limit: 5,
-						cursor: "c",
-					} as never),
-				{ items: [] },
+						cursor: "5",
+					}),
+				{ groups: [], pagination: { limit: 5, offset: 5, total: 5 } },
 			),
 		).toContain("language=en");
 
 		expect(
-			await full((c) => c.expandTerm({ tenantId: TENANT, term: "a", language: "en" } as never), {
-				terms: [],
+			await full((c) => c.expandTerm({ tenantId: TENANT, term: "a", language: "en" }), {
+				inputTerm: "a",
+				expansions: [],
 			}),
-		).toContain("language=en");
+		).not.toContain("language=en");
 
 		expect(
-			await full(
-				(c) => c.exportSynonyms({ tenantId: TENANT, format: "json", language: "en" } as never),
-				{ groups: [] },
-			),
+			await full((c) => c.exportSynonyms({ tenantId: TENANT, format: "json", language: "en" }), {
+				count: 0,
+				groups: [],
+			}),
 		).toContain("language=en");
 
 		expect(
@@ -614,15 +1183,26 @@ describe("full-filter variants", () => {
 				(c) =>
 					c.listHealthAlerts({
 						tenantId: TENANT,
-						status: "open",
+						status: "active",
 						severity: "high",
 						limit: 5,
-						cursor: "c",
-					} as never),
-				{ items: [] },
+						cursor: "opaque-cursor",
+					}),
+				{ alerts: [], count: 0, nextCursor: null },
 			),
 		).toContain("severity=high");
-		await full((c) => c.listHealthAlerts(), { items: [] });
+		expect(
+			await full((c) => c.listHealthAlerts({ tenantId: TENANT, cursor: "opaque-cursor" }), {
+				alerts: [],
+				count: 0,
+				nextCursor: null,
+			}),
+		).toContain("cursor=opaque-cursor");
+		await full((c) => c.listHealthAlerts(), {
+			alerts: [],
+			count: 0,
+			nextCursor: null,
+		});
 
 		expect(
 			await full(

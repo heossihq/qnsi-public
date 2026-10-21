@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -8,6 +9,7 @@ import {
 	SdkActivationError_,
 } from "./_activation/index.js";
 import { Internal, SDK_ID, SDK_VERSION } from "./_internal.js";
+import { SDK_PACKAGE_VERSION } from "./browser/sdk-package-version.js";
 import { QnsiClient } from "./client.js";
 import {
 	QnsiApiError,
@@ -60,22 +62,29 @@ describe("errors", () => {
 		expect(new QnsiNetworkError("GET", "u", 42).message).toContain("unknown error");
 
 		const auth = new QnsiAuthError("bad key", "INVALID_API_KEY");
-		expect(auth.message).toBe("qnsp: auth error (INVALID_API_KEY): bad key");
-		expect(new QnsiAuthError("bad key").message).toBe("qnsp: auth error: bad key");
+		expect(auth.message).toBe("qnsi: auth error (INVALID_API_KEY): bad key");
+		expect(new QnsiAuthError("bad key").message).toBe("qnsi: auth error: bad key");
 
 		const api = new QnsiApiError("denied", 403, "FORBIDDEN", { detail: 1 });
-		expect(api.message).toBe("qnsp: api error 403 FORBIDDEN: denied");
+		expect(api.message).toBe("qnsi: api error 403 FORBIDDEN: denied");
 		expect(api.statusCode).toBe(403);
 		expect(api.body).toEqual({ detail: 1 });
-		expect(new QnsiApiError("oops", 500).message).toBe("qnsp: api error 500: oops");
+		expect(new QnsiApiError("oops", 500).message).toBe("qnsi: api error 500: oops");
 
 		const webhook = new QnsiWebhookError("hmac mismatch");
 		expect(webhook.reason).toBe("hmac mismatch");
-		expect(webhook.message).toBe("qnsp: webhook error: hmac mismatch");
+		expect(webhook.message).toBe("qnsi: webhook error: hmac mismatch");
 	});
 });
 
 describe("activation client", () => {
+	it("identifies the actual SDK package version during activation", () => {
+		const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
+			version: string;
+		};
+		expect(SDK_VERSION).toBe(pkg.version);
+		expect(SDK_PACKAGE_VERSION).toBe(pkg.version);
+	});
 	const config = {
 		apiKey: "qnsi_pqc_api_test-key-000001",
 		sdkId: "qnsi",
@@ -386,13 +395,13 @@ describe("Internal", () => {
 		const codeOnly = await makeInternal()
 			.request("GET", "/kms/v1/keys")
 			.catch((e: QnsiApiError) => e);
-		expect((codeOnly as QnsiApiError).message).toBe("qnsp: api error 500 OPAQUE: HTTP 500");
+		expect((codeOnly as QnsiApiError).message).toBe("qnsi: api error 500 OPAQUE: HTTP 500");
 
 		stubFetch([() => new Response(null, { status: 500 })]);
 		const empty = await makeInternal()
 			.request("GET", "/kms/v1/keys")
 			.catch((e: QnsiApiError) => e);
-		expect((empty as QnsiApiError).message).toBe("qnsp: api error 500: HTTP 500");
+		expect((empty as QnsiApiError).message).toBe("qnsi: api error 500: HTTP 500");
 	});
 
 	it("aborts requests that exceed the configured timeout", async () => {

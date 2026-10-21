@@ -16,6 +16,7 @@ import type {
 	SignOptions,
 	VerifyOptions,
 } from "../provider.js";
+import { PqcAlgorithmUnavailableError } from "../provider.js";
 import {
 	type ExternalPqcProviderFactory,
 	type ExternalPqcProviderInitOptions,
@@ -196,18 +197,66 @@ const SIGNATURE_ALGORITHM_MAP: Record<PqcAlgorithm, readonly string[] | null> = 
 	"dilithium-3": ["ML-DSA-65", "Dilithium3"],
 	"dilithium-5": ["ML-DSA-87", "Dilithium5"],
 	// FIPS 205 - SLH-DSA
-	"sphincs-sha2-128f-simple": ["SLH-DSA-SHA2-128f", "SPHINCS+-SHA2-128f-simple"],
-	"sphincs-sha2-128s-simple": ["SLH-DSA-SHA2-128s", "SPHINCS+-SHA2-128s-simple"],
-	"sphincs-sha2-192f-simple": ["SLH-DSA-SHA2-192f", "SPHINCS+-SHA2-192f-simple"],
-	"sphincs-sha2-192s-simple": ["SLH-DSA-SHA2-192s", "SPHINCS+-SHA2-192s-simple"],
-	"sphincs-sha2-256f-simple": ["SLH-DSA-SHA2-256f", "SPHINCS+-SHA2-256f-simple"],
-	"sphincs-sha2-256s-simple": ["SLH-DSA-SHA2-256s", "SPHINCS+-SHA2-256s-simple"],
-	"sphincs-shake-128f-simple": ["SLH-DSA-SHAKE-128f", "SPHINCS+-SHAKE-128f-simple"],
-	"sphincs-shake-128s-simple": ["SLH-DSA-SHAKE-128s", "SPHINCS+-SHAKE-128s-simple"],
-	"sphincs-shake-192f-simple": ["SLH-DSA-SHAKE-192f", "SPHINCS+-SHAKE-192f-simple"],
-	"sphincs-shake-192s-simple": ["SLH-DSA-SHAKE-192s", "SPHINCS+-SHAKE-192s-simple"],
-	"sphincs-shake-256f-simple": ["SLH-DSA-SHAKE-256f", "SPHINCS+-SHAKE-256f-simple"],
-	"sphincs-shake-256s-simple": ["SLH-DSA-SHAKE-256s", "SPHINCS+-SHAKE-256s-simple"],
+	"sphincs-sha2-128f-simple": [
+		"SLH_DSA_PURE_SHA2_128F",
+		"SLH-DSA-SHA2-128f",
+		"SPHINCS+-SHA2-128f-simple",
+	],
+	"sphincs-sha2-128s-simple": [
+		"SLH_DSA_PURE_SHA2_128S",
+		"SLH-DSA-SHA2-128s",
+		"SPHINCS+-SHA2-128s-simple",
+	],
+	"sphincs-sha2-192f-simple": [
+		"SLH_DSA_PURE_SHA2_192F",
+		"SLH-DSA-SHA2-192f",
+		"SPHINCS+-SHA2-192f-simple",
+	],
+	"sphincs-sha2-192s-simple": [
+		"SLH_DSA_PURE_SHA2_192S",
+		"SLH-DSA-SHA2-192s",
+		"SPHINCS+-SHA2-192s-simple",
+	],
+	"sphincs-sha2-256f-simple": [
+		"SLH_DSA_PURE_SHA2_256F",
+		"SLH-DSA-SHA2-256f",
+		"SPHINCS+-SHA2-256f-simple",
+	],
+	"sphincs-sha2-256s-simple": [
+		"SLH_DSA_PURE_SHA2_256S",
+		"SLH-DSA-SHA2-256s",
+		"SPHINCS+-SHA2-256s-simple",
+	],
+	"sphincs-shake-128f-simple": [
+		"SLH_DSA_PURE_SHAKE_128F",
+		"SLH-DSA-SHAKE-128f",
+		"SPHINCS+-SHAKE-128f-simple",
+	],
+	"sphincs-shake-128s-simple": [
+		"SLH_DSA_PURE_SHAKE_128S",
+		"SLH-DSA-SHAKE-128s",
+		"SPHINCS+-SHAKE-128s-simple",
+	],
+	"sphincs-shake-192f-simple": [
+		"SLH_DSA_PURE_SHAKE_192F",
+		"SLH-DSA-SHAKE-192f",
+		"SPHINCS+-SHAKE-192f-simple",
+	],
+	"sphincs-shake-192s-simple": [
+		"SLH_DSA_PURE_SHAKE_192S",
+		"SLH-DSA-SHAKE-192s",
+		"SPHINCS+-SHAKE-192s-simple",
+	],
+	"sphincs-shake-256f-simple": [
+		"SLH_DSA_PURE_SHAKE_256F",
+		"SLH-DSA-SHAKE-256f",
+		"SPHINCS+-SHAKE-256f-simple",
+	],
+	"sphincs-shake-256s-simple": [
+		"SLH_DSA_PURE_SHAKE_256S",
+		"SLH-DSA-SHAKE-256s",
+		"SPHINCS+-SHAKE-256s-simple",
+	],
 	// Falcon (NIST selected)
 	"falcon-512": ["Falcon-512"],
 	"falcon-1024": ["Falcon-1024"],
@@ -536,7 +585,8 @@ export function resolveKemAlias(liboqs: LiboqsModule, algorithm: KemAlgorithm): 
 		}
 	}
 
-	throw new Error(
+	throw new PqcAlgorithmUnavailableError(
+		algorithm,
 		`None of the aliases (${aliases.join(", ")}) are supported for KEM '${algorithm}'`,
 	);
 }
@@ -557,7 +607,8 @@ export function resolveSignatureAlias(liboqs: LiboqsModule, algorithm: Signature
 		}
 	}
 
-	throw new Error(
+	throw new PqcAlgorithmUnavailableError(
+		algorithm,
 		`None of the aliases (${aliases.join(", ")}) are supported for signature algorithm '${algorithm}'`,
 	);
 }
@@ -567,7 +618,10 @@ function createProvider(liboqs: LiboqsModule, allowed: ReadonlySet<PqcAlgorithm>
 
 	const ensureAllowed = (algorithm: PqcAlgorithm): void => {
 		if (!allowedAlgorithms.has(algorithm)) {
-			throw new Error(`Algorithm '${algorithm}' is not enabled for this liboqs provider`);
+			throw new PqcAlgorithmUnavailableError(
+				algorithm,
+				`Algorithm '${algorithm}' is not enabled for this liboqs provider`,
+			);
 		}
 	};
 

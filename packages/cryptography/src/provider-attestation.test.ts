@@ -154,19 +154,18 @@ describe("createProviderAttestation", () => {
 			expect(attestation.operation).toBe(operation);
 		});
 
-		it.each<PqcAlgorithm>([
-			"kyber-512",
-			"kyber-768",
-			"kyber-1024",
-		])("supports FIPS KEM algorithm: %s", (algorithm) => {
-			const attestation = createProviderAttestation({
-				providerName: "liboqs",
-				algorithm,
-				operation: "keygen",
-			});
+		it.each<PqcAlgorithm>(["kyber-512", "kyber-768", "kyber-1024"])(
+			"supports FIPS KEM algorithm: %s",
+			(algorithm) => {
+				const attestation = createProviderAttestation({
+					providerName: "liboqs",
+					algorithm,
+					operation: "keygen",
+				});
 
-			expect(attestation.algorithm).toBe(algorithm);
-		});
+				expect(attestation.algorithm).toBe(algorithm);
+			},
+		);
 
 		it.each<PqcAlgorithm>([
 			"dilithium-2",

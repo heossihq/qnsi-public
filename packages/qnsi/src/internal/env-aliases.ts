@@ -1,9 +1,9 @@
 /**
  * QNSI env-var bridge (SDK-local copy - the published package cannot depend
- * on internal workspace libs). Mirrors `QNSI_<NAME>` ↔ `QNSP_<NAME>` in
+ * on internal workspace libs). Mirrors canonical names to legacy-prefixed names in
  * process.env without overwriting explicitly-set values, so:
  *   - users following current docs (`QNSI_API_KEY`, `QNSI_TENANT_ID`, …) work;
- *   - users with legacy `QNSP_*` variables keep working forever.
+ *   - users with legacy-prefixed variables keep working forever.
  * Call once, idempotently, before reading either family.
  */
 export function bridgeQnsiEnv(env: NodeJS.ProcessEnv = process.env): void {

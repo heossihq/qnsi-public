@@ -21,7 +21,7 @@ export type RuntimeEnvironment = "browser" | "node" | "edge";
 
 /** Options for initializing the PQC provider. */
 export interface InitializePqcProviderOptions {
-	/** QNSP API key - required. Get one at https://cloud.qnsi.heossi.com/signup */
+	/** QNSI API key - required. Get one at https://cloud.qnsi.heossi.com/signup */
 	readonly apiKey: string;
 	/** Optional subset of algorithms to enable. Defaults to all noble-supported. */
 	readonly algorithms?: readonly PqcAlgorithm[] | undefined;
@@ -54,7 +54,7 @@ let lastActivation: SdkActivationResponse | null = null;
 /**
  * Initialize the PQC provider for the current runtime.
  *
- * Requires a valid QNSP API key. The SDK activates against the QNSP platform
+ * Requires a valid QNSI API key. The SDK activates against the QNSI platform
  * to validate the key and retrieve tier limits before enabling PQC operations.
  *
  * In browser/edge: always uses noble (pure JS, no native deps).
@@ -71,7 +71,7 @@ export async function initializePqcProvider(
 		return activeProvider;
 	}
 
-	// Activate SDK against QNSP platform - validates API key, returns tier limits
+	// Activate SDK against QNSI platform - validates API key, returns tier limits
 	const activation = await activateSdk({
 		apiKey: options.apiKey,
 		sdkId: "browser-sdk",

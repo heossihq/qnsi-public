@@ -15,6 +15,13 @@ export type QnsiUseCase = {
 	keywords: readonly string[];
 };
 
+export const QNSI_HOMEPAGE_FEATURED_CASE_SLUGS = [
+	"bank-payment-rail-cryptography-inventory",
+	"telecom-5g-network-function-pki",
+	"ai-model-artifact-signing",
+	"grid-supplier-remote-access-trust",
+] as const;
+
 export const QNSI_USE_CASES: readonly QnsiUseCase[] = [
 	{
 		slug: "bank-payment-rail-cryptography-inventory",
@@ -955,7 +962,7 @@ export const QNSI_USE_CASES: readonly QnsiUseCase[] = [
 			"Which operational links and devices can migrate, and which must be isolated until replacement?",
 		pain: "Control networks mix modern IP links, serial gateways, vendor tunnels, engineering access, and devices with decades-long service life.",
 		trigger:
-			"NERC CIP assessment, control-centre refresh, or post-quantum infrastructure programme.",
+			"NERC CIP assessment, control-centre refresh, or quantum-native security infrastructure programme.",
 		qnsiAction:
 			"Record algorithms, certificates, keys, vendors, physical locations, owners, criticality, and observed evidence in QNSI.",
 		deliverable:

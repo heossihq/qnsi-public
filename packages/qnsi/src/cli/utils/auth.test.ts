@@ -25,6 +25,7 @@ describe("auth utilities", () => {
 
 	const mockConfig: CliConfig = {
 		edgeGatewayUrl: null,
+		apiKey: null,
 		cloudPortalUrl: "https://cloud.qnsi.heossi.com",
 		authServiceUrl: "http://localhost:8081",
 		serviceId: "test-service-id",

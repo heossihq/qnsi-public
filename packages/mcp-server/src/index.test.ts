@@ -69,6 +69,10 @@ vi.mock("./api-client.js", () => ({
 		post(path: string, body?: unknown) {
 			return mocks.apiPost(path, body);
 		}
+
+		put(path: string, body?: unknown) {
+			return mocks.apiPost(path, body);
+		}
 	},
 }));
 
@@ -84,14 +88,14 @@ vi.mock("./session.js", () => ({
 	},
 }));
 
-const originalApiKey = process.env["QNSP_API_KEY"];
-const originalPlatformUrl = process.env["QNSP_PLATFORM_URL"];
+const originalApiKey = process.env["QNSI_API_KEY"];
+const originalPlatformUrl = process.env["QNSI_PLATFORM_URL"];
 
 function restoreEnvironment(): void {
-	if (originalApiKey === undefined) delete process.env["QNSP_API_KEY"];
-	else process.env["QNSP_API_KEY"] = originalApiKey;
-	if (originalPlatformUrl === undefined) delete process.env["QNSP_PLATFORM_URL"];
-	else process.env["QNSP_PLATFORM_URL"] = originalPlatformUrl;
+	if (originalApiKey === undefined) delete process.env["QNSI_API_KEY"];
+	else process.env["QNSI_API_KEY"] = originalApiKey;
+	if (originalPlatformUrl === undefined) delete process.env["QNSI_PLATFORM_URL"];
+	else process.env["QNSI_PLATFORM_URL"] = originalPlatformUrl;
 }
 
 describe("MCP server entrypoint", () => {
@@ -99,8 +103,8 @@ describe("MCP server entrypoint", () => {
 		vi.resetModules();
 		vi.restoreAllMocks();
 		vi.doUnmock("node:module");
-		delete process.env["QNSP_API_KEY"];
-		delete process.env["QNSP_PLATFORM_URL"];
+		delete process.env["QNSI_API_KEY"];
+		delete process.env["QNSI_PLATFORM_URL"];
 		mocks.apiConfigs.length = 0;
 		mocks.registrations.length = 0;
 		mocks.serverMetadata.length = 0;
@@ -122,15 +126,15 @@ describe("MCP server entrypoint", () => {
 		const server = createSandboxServer();
 
 		expect(server).toBeDefined();
-		expect(PACKAGE_VERSION).toBe("0.2.0");
-		expect(mocks.serverMetadata).toContainEqual({ name: "qnsp", version: "0.2.0" });
+		expect(PACKAGE_VERSION).toBe("0.4.1");
+		expect(mocks.serverMetadata).toContainEqual({ name: "qnsi", version: "0.4.1" });
 		expect(mocks.apiConfigs).toContainEqual({
 			baseUrl: "https://api.qnsi.heossi.com",
 			apiKey: "sandbox",
 			tenantId: "sandbox",
 		});
-		expect(mocks.registrations).toHaveLength(17);
-		expect(new Set(mocks.registrations.map(({ name }) => name)).size).toBe(17);
+		expect(mocks.registrations).toHaveLength(30);
+		expect(new Set(mocks.registrations.map(({ name }) => name)).size).toBe(30);
 	});
 
 	it("executes all registered tool adapters through parsed public inputs", async () => {
@@ -156,6 +160,19 @@ describe("MCP server entrypoint", () => {
 			qnsp_crypto_readiness: {},
 			qnsp_audit_query: {},
 			qnsp_search_query: { query: "query" },
+			qnsp_search_vector_query: { indexName: "idx", vector: [0.1, 0.2], topK: 5 },
+			qnsp_search_list_indexes: {},
+			qnsp_storage_list_buckets: {},
+			qnsp_storage_list_objects: { bucket: "bucket" },
+			qnsp_storage_put_object: { bucket: "bucket", key: "key", dataB64: "AA==" },
+			qnsp_storage_get_object: { bucket: "bucket", key: "key" },
+			qnsp_access_list_roles: {},
+			qnsp_billing_entitlements: {},
+			qnsp_billing_list_invoices: {},
+			qnsp_conformance_stats: {},
+			qnsi_api_request: { method: "GET", path: "/proxy/kms/v1/keys" },
+			qnsi_list_operations: { service: "kms-service", search: "sign", limit: 5 },
+			qnsi_call_operation: { operationId: "kms-service.getKeys" },
 			qnsp_tenant_info: {},
 			qnsp_billing_status: {},
 			qnsp_platform_health: {},
@@ -182,7 +199,7 @@ describe("MCP server entrypoint", () => {
 
 	it("starts an activated stdio server with the default platform URL", async () => {
 		const { main } = await import("./index.js");
-		process.env["QNSP_API_KEY"] = "secret";
+		process.env["QNSI_API_KEY"] = "secret";
 
 		await main();
 
@@ -196,15 +213,15 @@ describe("MCP server entrypoint", () => {
 				tenantId: "00000000-0000-4000-8000-000000000001",
 			},
 		]);
-		expect(mocks.registrations).toHaveLength(17);
+		expect(mocks.registrations).toHaveLength(30);
 		expect(mocks.transportCount).toBe(1);
 		expect(mocks.connect).toHaveBeenCalledOnce();
 	});
 
 	it("uses an explicitly configured platform URL", async () => {
 		const { main } = await import("./index.js");
-		process.env["QNSP_API_KEY"] = "secret";
-		process.env["QNSP_PLATFORM_URL"] = "https://platform.example";
+		process.env["QNSI_API_KEY"] = "secret";
+		process.env["QNSI_PLATFORM_URL"] = "https://platform.example";
 
 		await main();
 
@@ -215,7 +232,7 @@ describe("MCP server entrypoint", () => {
 	});
 
 	it("auto-starts when credentials are present", async () => {
-		process.env["QNSP_API_KEY"] = "secret";
+		process.env["QNSI_API_KEY"] = "secret";
 
 		await import("./index.js");
 		await vi.waitFor(() => expect(mocks.connect).toHaveBeenCalledOnce());
@@ -228,12 +245,12 @@ describe("MCP server entrypoint", () => {
 		const stderr = vi.spyOn(process.stderr, "write").mockReturnValue(true);
 		const exit = vi.spyOn(process, "exit").mockImplementation((() => undefined) as never);
 		mocks.sessionActivate.mockRejectedValueOnce(failure);
-		process.env["QNSP_API_KEY"] = "secret";
+		process.env["QNSI_API_KEY"] = "secret";
 
 		await import("./index.js");
 		await vi.waitFor(() => expect(exit).toHaveBeenCalledWith(1));
 
-		expect(stderr).toHaveBeenCalledWith(`QNSP MCP Server fatal error: ${message}\n`);
+		expect(stderr).toHaveBeenCalledWith(`QNSI MCP Server fatal error: ${message}\n`);
 		expect(stderr.mock.calls.flat().join("")).not.toContain("secret");
 	});
 

@@ -36,6 +36,8 @@ describe("rust rules", () => {
 			["use ml_dsa::MlDsa65;", "ml-dsa-65"],
 			["use fips204::traits::Signer;", "ml-dsa-65"],
 			["use fips203::ml_kem_768;", "ml-kem-768"],
+			["use aws_lc_rs::kem;", "x25519mlkem768"],
+			["use rustls_post_quantum::DEFAULT_PROVIDER;", "x25519mlkem768"],
 		]);
 	});
 });
@@ -102,6 +104,7 @@ describe("go rules", () => {
 			['import "crypto/des"', "des"],
 			['import "crypto/rc4"', "rc4"],
 			['import "crypto/mlkem"', "ml-kem-768"],
+			['import "crypto/mldsa"', "ml-dsa-65"],
 			['import "github.com/cloudflare/circl/sign/mldsa/mldsa65"', "ml-dsa-65"],
 			['import "github.com/example/kyber"', "ml-kem-768"],
 		]);
@@ -163,6 +166,8 @@ describe("javascript rules", () => {
 			['generateKeyPairSync("ed448");', "ed448"],
 			['generateKeyPairSync("x25519");', "ecdh-x25519"],
 			['generateKeyPairSync("x448");', "ecdh-x448"],
+			['generateKeyPairSync("ml-dsa-65");', "ml-dsa-65"],
+			['crypto.encapsulate("ml-kem-768", publicKey);', "ml-kem-768"],
 			['createHash("md5");', "md5"],
 			['createHash("sha1");', "sha1"],
 			['createCipheriv("aes-256-gcm", key, iv);', "aes-256-gcm"],
@@ -236,11 +241,17 @@ describe("artifact rules", () => {
 			['{"kty": "EC", "crv": "P-256"}', "ecdsa-unknown"],
 			['{"kty": "OKP", "crv": "Ed25519"}', "ed25519"],
 			["ssl_ecdh_curve X25519MLKEM768;", "x25519mlkem768"],
+			["ssl_ecdh_curve SecP256r1MLKEM768;", "secp256r1mlkem768"],
+			["ssl_ecdh_curve SecP384r1MLKEM1024;", "secp384r1mlkem1024"],
 			['rsa = "0.9"', "rsa-unknown"],
 			['p256 = { version = "0.13" }', "ecdsa-p256"],
 			['p384 = "0.13"', "ecdsa-p384"],
 			['ed25519-dalek = "2.0"', "ed25519"],
 			['md5 = "0.7"', "md5"],
+			['ml-kem = "0.2"', "ml-kem-768"],
+			['ml-dsa = "0.3"', "ml-dsa-65"],
+			['aws-lc-rs = "1"', "x25519mlkem768"],
+			['rustls-post-quantum = "0.2"', "x25519mlkem768"],
 		]);
 	});
 

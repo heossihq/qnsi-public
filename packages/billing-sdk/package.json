@@ -6,7 +6,7 @@
 	},
 	"type": "module",
 	"license": "Apache-2.0",
-	"description": "TypeScript SDK client for the QNSP billing-service API. Provides usage meter ingestion and invoice management.",
+	"description": "TypeScript SDK client for the QNSI billing-service API. Provides usage meter ingestion and invoice management.",
 	"exports": {
 		"./package.json": "./package.json",
 		".": {
@@ -22,24 +22,24 @@
 		"typecheck": "tsc --project tsconfig.json --noEmit"
 	},
 	"dependencies": {
-		"@opentelemetry/api": "^1.9.1",
-		"@opentelemetry/exporter-metrics-otlp-http": "^0.214.0",
-		"@opentelemetry/resources": "^2.6.1",
-		"@opentelemetry/sdk-metrics": "^2.6.1",
 		"@heossihq/qnsi-sdk-activation": "workspace:*",
-		"undici": "^8.0.1",
-		"zod": "^4.3.6"
+		"@opentelemetry/api": "^1.9.1",
+		"@opentelemetry/exporter-metrics-otlp-http": "^0.222.0",
+		"@opentelemetry/resources": "^2.11.0",
+		"@opentelemetry/sdk-metrics": "^2.11.0",
+		"undici": "^8.10.2",
+		"zod": "^4.6.5"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2",
-		"tsx": "^4.21.0",
-		"vitest": "4.1.2"
+		"@types/node": "^26.6.2",
+		"tsx": "^4.23.15",
+		"vitest": "5.0.1"
 	},
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=24.18.0"
 	},
 	"keywords": [
-		"qnsp",
+		"qnsi",
 		"pqc",
 		"post-quantum",
 		"post-quantum-cryptography",

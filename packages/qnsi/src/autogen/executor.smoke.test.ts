@@ -1,10 +1,10 @@
 /**
- * Smoke tests for @heossihq/qnsi-autogen-qnsp
+ * Smoke tests for former standalone AutoGen integration package
  *
  * Verifies that the package exports are importable and classes can be instantiated.
  * No API key or network access required - catches build regressions.
  *
- * Run: pnpm --filter @heossihq/qnsi-autogen-qnsp test
+ * Run: pnpm --filter @heossihq/qnsi exec vitest run src/autogen/executor.smoke.test.ts
  */
 
 import { describe, expect, it } from "vitest";

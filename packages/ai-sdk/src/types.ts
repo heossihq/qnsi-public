@@ -51,12 +51,25 @@ export interface WorkloadManifest {
 	readonly [key: string]: unknown;
 }
 
+export interface VerifiedAttestationEnvelope {
+	readonly version: "qnsi.verified-workload-attestation-envelope.v1";
+	readonly status: "verified";
+	readonly proof: string;
+	readonly signature: string;
+	readonly provider: string;
+	readonly algorithm: string;
+	readonly keyId: string;
+	readonly issuedAt: string;
+	readonly challengeNonce: string;
+}
+
 export interface WorkloadSecurityProfile {
 	readonly controlPlaneTokenSha256: string | null;
 	readonly pqcSignatures: ReadonlyArray<{ provider: string; algorithm: string }>;
 	readonly hardwareProvider: string | null;
 	readonly attestationStatus: string | null;
 	readonly attestationProof: string | null;
+	readonly attestationEnvelope?: VerifiedAttestationEnvelope | null;
 }
 
 export interface ModelPackageManifestFile {
@@ -828,6 +841,11 @@ export interface InjectionIncident {
 	readonly attackCategory: InjectionAttackCategory;
 	readonly severity: InjectionSeverity;
 	readonly confidenceScore: number;
+	/** Reported or rule-based score, not independently calibrated confidence. */
+	readonly confidenceBasis?: "unverified_score";
+	readonly evidenceSource?: "legacy_unverified" | "analysis_only" | "caller_reported";
+	readonly reportedBy?: string | null;
+	readonly effectsVerified?: false;
 	readonly matchedPatterns: readonly string[];
 	readonly actionTaken: InjectionActionTaken;
 	readonly promptHash: string;
@@ -858,6 +876,10 @@ export interface ListInjectionIncidentsResponse {
 }
 
 export interface InjectionStats {
+	/** Counts retain reported actions; they do not establish executed effects. */
+	readonly evidenceBasis?: "reported_or_analysis_only";
+	readonly confidenceBasis?: "unverified_score";
+	readonly effectsVerified?: false;
 	readonly periodStart: string;
 	readonly periodEnd: string;
 	readonly totalRequests: number;

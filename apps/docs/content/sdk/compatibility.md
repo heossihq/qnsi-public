@@ -23,7 +23,7 @@ Newer API versions are not shipped in this repo.
 ## Runtime requirements
 
 ### Node.js SDK
-TypeScript SDKs in this repo target Node.js 24.12.0.
+TypeScript SDKs in this repo target Node.js 24.18.0.
 
 ## Deprecation policy
 

@@ -1,10 +1,10 @@
 /**
- * Top-level QNSP SDK entry point.
+ * Top-level QNSI SDK entry point.
  *
  * One client owns one HTTP connection pool and one activation cache;
  * the eleven service sub-clients (`vault`, `kms`, `audit`, `auth`,
  * `tenant`, `access`, `billing`, `cryptoInventory`, `storage`,
- * `search`, `ai`) share both. Mirrors the `qnsp` Python / Go / Rust
+ * `search`, `ai`) share both. Mirrors the Python / Go / Rust
  * SDK shape byte-for-byte.
  */
 
@@ -16,6 +16,23 @@ import { AuditClient } from "./audit.js";
 import { AuthClient } from "./auth.js";
 import { BillingClient } from "./billing.js";
 import { CryptoInventoryClient } from "./crypto-inventory.js";
+import {
+	AccessControlSurfaceClient,
+	AiOrchestratorSurfaceClient,
+	AuditSurfaceClient,
+	AuthSurfaceClient,
+	BillingSurfaceClient,
+	CryptoInventorySurfaceClient,
+	KmsSurfaceClient,
+	ObservabilitySurfaceClient,
+	PlatformApiSurfaceClient,
+	QuotaSurfaceClient,
+	SearchSurfaceClient,
+	SecurityMonitoringSurfaceClient,
+	StorageSurfaceClient,
+	TenantSurfaceClient,
+	VaultSurfaceClient,
+} from "./generated/index.js";
 import { KmsClient } from "./kms.js";
 import { SearchClient } from "./search.js";
 import { StorageClient } from "./storage.js";
@@ -34,6 +51,28 @@ export class QnsiClient {
 	readonly storage: StorageClient;
 	readonly search: SearchClient;
 	readonly ai: AiClient;
+	/**
+	 * Full backend surface: typed clients generated from the service manifests
+	 * (879 customer-facing routes). The edge gateway enforces authentication,
+	 * tenant scoping, and billing entitlements per route.
+	 */
+	readonly surface: {
+		accessControl: AccessControlSurfaceClient;
+		aiOrchestrator: AiOrchestratorSurfaceClient;
+		audit: AuditSurfaceClient;
+		auth: AuthSurfaceClient;
+		billing: BillingSurfaceClient;
+		cryptoInventory: CryptoInventorySurfaceClient;
+		kms: KmsSurfaceClient;
+		observability: ObservabilitySurfaceClient;
+		platformApi: PlatformApiSurfaceClient;
+		quota: QuotaSurfaceClient;
+		search: SearchSurfaceClient;
+		securityMonitoring: SecurityMonitoringSurfaceClient;
+		storage: StorageSurfaceClient;
+		tenant: TenantSurfaceClient;
+		vault: VaultSurfaceClient;
+	};
 
 	private readonly internal: Internal;
 
@@ -50,6 +89,23 @@ export class QnsiClient {
 		this.storage = new StorageClient(this.internal);
 		this.search = new SearchClient(this.internal);
 		this.ai = new AiClient(this.internal);
+		this.surface = {
+			accessControl: new AccessControlSurfaceClient(this.internal),
+			aiOrchestrator: new AiOrchestratorSurfaceClient(this.internal),
+			audit: new AuditSurfaceClient(this.internal),
+			auth: new AuthSurfaceClient(this.internal),
+			billing: new BillingSurfaceClient(this.internal),
+			cryptoInventory: new CryptoInventorySurfaceClient(this.internal),
+			kms: new KmsSurfaceClient(this.internal),
+			observability: new ObservabilitySurfaceClient(this.internal),
+			platformApi: new PlatformApiSurfaceClient(this.internal),
+			quota: new QuotaSurfaceClient(this.internal),
+			search: new SearchSurfaceClient(this.internal),
+			securityMonitoring: new SecurityMonitoringSurfaceClient(this.internal),
+			storage: new StorageSurfaceClient(this.internal),
+			tenant: new TenantSurfaceClient(this.internal),
+			vault: new VaultSurfaceClient(this.internal),
+		};
 	}
 
 	/**

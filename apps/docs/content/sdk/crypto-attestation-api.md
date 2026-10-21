@@ -343,36 +343,33 @@ GET /platform/v1/crypto/policy/presets
 ### TypeScript/Node.js
 
 ```typescript
-import { CryptoInventoryClient } from '@heossihq/qnsi';
+import { QnsiClient } from '@heossihq/qnsi';
 
-const client = new CryptoInventoryClient({
+const client = new QnsiClient({
   apiKey: process.env.QNSI_API_KEY,
   baseUrl: 'https://api.qnsi.heossi.com',
-  pathPrefix: '/proxy/crypto',
 });
 
-// Get crypto policy
-const policy = await client.crypto.getPolicy();
-console.log('Policy mode:', policy.config.mode);
+// List discovered cryptographic assets
+const assets = await client.cryptoInventory.listAssets();
+console.log('Assets:', assets);
 
-// Check algorithm
-const result = await client.crypto.checkAlgorithm('kyber-768', 'kem');
-if (result.allowed) {
-  console.log('Algorithm allowed');
-} else {
-  console.log('Violations:', result.violations);
-}
+// Get the machine-verifiable inventory (CBOM) behind the attestation claim
+const cbom = await client.cryptoInventory.getCbom();
+console.log('CBOM:', cbom);
 
-// Get CBOM
-const cbom = await client.crypto.getCbom();
-console.log('CBOM hash:', cbom.documentHash);
+// PQC readiness posture
+const readiness = await client.cryptoInventory.getPqcReadinessScore();
+console.log('Readiness:', readiness);
 
-// Get compliance status
-const compliance = await client.crypto.getCompliance();
-for (const status of compliance.compliance) {
-  console.log(`${status.framework}: ${status.status}`);
-}
+const recommendations = await client.cryptoInventory.getPqcReadinessRecommendations();
+console.log('Recommendations:', recommendations);
 ```
+
+> Note: `CryptoInventoryClient` is constructed internally by `QnsiClient`
+> (exposed as `client.cryptoInventory`); do not construct it directly. The
+> `getPolicy`/`checkAlgorithm`/`getCompliance` methods from earlier drafts are
+> not part of the SDK - use the `/platform/v1/crypto/*` endpoints directly.
 
 ## Error Responses
 

@@ -40,7 +40,9 @@ def test_activation_caches_until_buffer() -> None:
 
     def handler(_request: httpx.Request) -> httpx.Response:
         calls["count"] += 1
-        return httpx.Response(200, json=_activation_payload(activationToken=f"tok-{calls['count']}"))
+        return httpx.Response(
+            200, json=_activation_payload(activationToken=f"tok-{calls['count']}")
+        )
 
     client = httpx.Client(transport=_transport(handler))
     auth = ApiKeyActivation(api_key="qnsp_pqc_test", http_client=client)
@@ -55,7 +57,8 @@ def test_activation_refreshes_near_expiry(monkeypatch: pytest.MonkeyPatch) -> No
     def handler(_request: httpx.Request) -> httpx.Response:
         calls["count"] += 1
         return httpx.Response(
-            200, json=_activation_payload(expiresInSeconds=30, activationToken=f"tok-{calls['count']}")
+            200,
+            json=_activation_payload(expiresInSeconds=30, activationToken=f"tok-{calls['count']}"),
         )
 
     client = httpx.Client(transport=_transport(handler))

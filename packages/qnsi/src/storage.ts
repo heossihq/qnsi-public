@@ -1,5 +1,5 @@
 /**
- * QNSP Storage - PQC-encrypted object storage with SSE-X. Wraps
+ * QNSI Storage - PQC-encrypted object storage with SSE-X. Wraps
  * `apps/storage-service` bucket/object routes, registered at `/storage/v1/buckets/*`
  * (apps/storage-service/src/routes/bucket-objects.ts) and reached via the edge gateway's
  * `/proxy/storage` prefix (rewritten to `/storage`).

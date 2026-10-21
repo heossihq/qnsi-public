@@ -74,8 +74,8 @@ interface PqcProvider {
 
 ## Implementation
 
-- **Production**: `liboqs` provider via `@heossihq/liboqs-native` 0.15.1 (Open Quantum Safe liboqs 0.15.0, custom-built with `cmake -GNinja -DOQS_USE_OPENSSL=ON -DOQS_BUILD_SHARED_LIBS=OFF`; statically linked, served from ECR `qnsi/liboqs-builder-base:0.15.0` and recompiled on every backend Docker build)
-- **Cross-verification secondary**: `@noble/post-quantum` 0.6.0 (pure-JS) registered alongside liboqs in `kms-service` + `audit-service` for dual-provider attestation on Maximum / Government policy tiers
+- **Production**: `liboqs` provider via `@heossihq/liboqs-native` 0.16.0 (Open Quantum Safe liboqs 0.16.0, custom-built with `cmake -GNinja -DOQS_USE_OPENSSL=ON -DOQS_BUILD_SHARED_LIBS=ON`; served from ECR `qnsi/liboqs-builder-base:0.16.0` and recompiled on backend Docker builds)
+- **Cross-verification secondary**: `@noble/post-quantum` 0.7.1 (pure-JS) registered alongside liboqs in `kms-service` + `audit-service` for dual-provider attestation on Maximum / Government policy tiers
 - **Browser SDK**: `@noble/post-quantum` (pure-JS, no native bindings)
 - **Testing**: `deterministic-pqc` provider for reproducible tests; NIST ACVP test-vector harness at `apps/web/scripts/run-nist-acvp-conformance.ts`
 - Constant-time implementations

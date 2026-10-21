@@ -49,6 +49,17 @@ tasks.test {
     useJUnitPlatform()
 }
 
+// Compile a consumer against the historical three-field constructor/copy contract,
+// then run it against current main classes without the old API fixture on runtime classpath.
+val legacyApi by sourceSets.creating
+val legacyConsumer by sourceSets.creating
+configurations[legacyApi.implementationConfigurationName].extendsFrom(configurations.implementation.get())
+configurations[legacyConsumer.implementationConfigurationName].extendsFrom(configurations.implementation.get())
+legacyConsumer.compileClasspath += legacyApi.output
+dependencies {
+    testImplementation(legacyConsumer.output)
+}
+
 // --- Phase 4: Maven Central (Sonatype) publishing + GPG signing ---
 // Group `com.heossi` (verifiable via heossi.com DNS), artifact `com.heossi:qnsi`.
 // Sonatype credentials + signing keys are wired in Phase 4; this block is inert
@@ -74,7 +85,7 @@ publishing {
                     developer {
                         id.set("heossi")
                         name.set("HEOSSI (PTE.) LTD")
-                        url.set("https://heossi.com")
+                        url.set("https://www.heossi.com")
                     }
                 }
                 scm {

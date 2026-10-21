@@ -28,12 +28,13 @@ QNSI supports immediate key revocation for security incidents.
 ## Revocation API
 
 ```
-POST /kms/v1/keys/{keyId}/revoke
-{
-  "reason": "suspected_compromise",
-  "cascade": true
-}
+DELETE /kms/v1/keys/{keyId}?tenantId={tenantId}
 ```
+
+Root/master keys of regulated tenants require dual-control approval: a
+non-delegated caller receives a `202` with an approval request, and a second
+distinct principal must approve at `POST /kms/v1/keys/{keyId}/approvals/{approvalId}/approve`
+before the revoke executes.
 
 ## Revocation reasons
 

@@ -38,8 +38,8 @@ func (c *Client) GetAsset(ctx context.Context, assetID string) (map[string]any, 
 // GetAssetStats returns aggregate counts for the tenant's CBOM
 // (e.g. by algorithm, by status). Mirrors the data used by the
 // `Crypto Inventory` cloud-portal page.
-func (c *Client) GetAssetStats(ctx context.Context, _tenantID string) (map[string]any, error) {
-	return c.base.Do(ctx, http.MethodGet, "/assets/stats", nil, nil, "")
+func (c *Client) GetAssetStats(ctx context.Context, tenantID string) (map[string]any, error) {
+	return c.base.Do(ctx, http.MethodGet, "/assets/stats", nil, map[string]string{"tenantId": tenantID}, "")
 }
 
 // DiscoverAssetsRequest triggers a discovery run.
@@ -53,9 +53,14 @@ func (c *Client) DiscoverAssets(ctx context.Context, req DiscoverAssetsRequest, 
 	return c.base.Do(ctx, http.MethodPost, "/assets/discover", req, nil, idempotencyKey)
 }
 
+// DiscoverAssetsFromSource selects a mounted backend source; authorization and feature gates still apply.
+func (c *Client) DiscoverAssetsFromSource(ctx context.Context, source, idempotencyKey string) (map[string]any, error) {
+	return c.base.Do(ctx, http.MethodPost, "/assets/discover", map[string]string{"source": source}, nil, idempotencyKey)
+}
+
 // GetReadinessScore returns the tenant's PQC migration readiness score.
-func (c *Client) GetReadinessScore(ctx context.Context, _tenantID string) (map[string]any, error) {
-	return c.base.Do(ctx, http.MethodGet, "/readiness", nil, nil, "")
+func (c *Client) GetReadinessScore(ctx context.Context, tenantID string) (map[string]any, error) {
+	return c.base.Do(ctx, http.MethodGet, "/readiness", nil, map[string]string{"tenantId": tenantID}, "")
 }
 
 // Do exposes the underlying service client for endpoints not yet wrapped.

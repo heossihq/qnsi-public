@@ -15,6 +15,13 @@ import { activate, deactivate } from "./extension";
 import { registerIntelliSense } from "./intellisense";
 import { configureMcpCommand } from "./mcp";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 const sdk = {
 	ensureActivated: vi.fn(),
 	tenantId: vi.fn(),
@@ -23,7 +30,8 @@ const sdk = {
 	vault: {},
 };
 
-vi.mock("@heossihq/qnsi", () => ({
+vi.mock("@heossihq/qnsi", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@heossihq/qnsi")>()),
 	QnsiClient: class {
 		ensureActivated = sdk.ensureActivated;
 		tenantId = sdk.tenantId;
@@ -250,11 +258,21 @@ describe("intellisense", () => {
 	it("hovers PQC algorithms as safe and vulnerable ones with guidance", () => {
 		const { hover, completion } = providers();
 		const pqc = hover.provideHover(docWith("kyber-768"), new Position(0, 1));
-		expect((pqc?.contents as { value: string }).value).toContain("ML-KEM-768");
-		expect((pqc?.contents as { value: string }).value).toContain("quantum-resistant");
+		expect(
+			(required(pqc?.contents, "the PQC hover contents") as { value: string }).value,
+		).toContain("ML-KEM-768");
+		expect(
+			(required(pqc?.contents, "the PQC hover contents") as { value: string }).value,
+		).toContain("quantum-resistant");
 
 		const vulnerable = hover.provideHover(docWith("ed25519"), new Position(0, 1));
-		expect((vulnerable?.contents as { value: string }).value).toContain("quantum-vulnerable");
+		expect(
+			(
+				required(vulnerable?.contents, "the vulnerable-algorithm hover contents") as {
+					value: string;
+				}
+			).value,
+		).toContain("quantum-vulnerable");
 
 		expect(hover.provideHover(docWith("wholesome"), new Position(0, 1))).toBeUndefined();
 		expect(hover.provideHover(docWith(undefined), new Position(0, 1))).toBeUndefined();

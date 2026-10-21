@@ -1,13 +1,13 @@
 /**
- * QNSP Toolkit for LangChain
+ * QNSI Toolkit for LangChain
  *
- * A pre-configured set of QNSP tools for governed AI agents.
+ * A pre-configured set of QNSI tools for governed AI agents.
  * Provides PQC-encrypted secrets, quantum-safe signing, and immutable audit trails
  * as a single composable toolkit.
  *
  * @example
  * ```typescript
- * import { QnsiToolkit } from "@heossihq/qnsi-langchain-qnsp";
+ * import { QnsiToolkit } from "former standalone LangChain integration package";
  * import { ChatOpenAI } from "@langchain/openai";
  * import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
  *
@@ -33,14 +33,14 @@ import { QnsiSignDataTool, QnsiVerifySignatureTool } from "./tools/kms.js";
 import { QnsiReadSecretTool, QnsiRotateSecretTool, QnsiWriteSecretTool } from "./tools/vault.js";
 import { VaultClient } from "./vault-client.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 const SDK_VERSION = "0.3.0";
 
 export interface QnsiToolkitConfig {
 	/**
-	 * QNSP API key. Get one at https://cloud.qnsi.heossi.com/api-keys
+	 * QNSI API key. Get one at https://cloud.qnsi.heossi.com/api-keys
 	 * The API key carries the tenant ID - no separate tenantId needed.
 	 */
 	readonly apiKey: string;
@@ -50,7 +50,7 @@ export interface QnsiToolkitConfig {
 	 */
 	readonly tenantId?: string;
 	/**
-	 * Base URL for the QNSP API.
+	 * Base URL for the QNSI API.
 	 * Defaults to https://api.qnsi.heossi.com
 	 */
 	readonly baseUrl?: string;
@@ -67,7 +67,7 @@ export interface QnsiToolkitConfig {
 }
 
 /**
- * QNSP Toolkit - a composable set of LangChain tools for governed AI agents.
+ * QNSI Toolkit - a composable set of LangChain tools for governed AI agents.
  *
  * Provides:
  * - Vault tools: read, write, and rotate PQC-encrypted secrets
@@ -109,7 +109,7 @@ export class QnsiToolkit {
 	async activate(): Promise<void> {
 		const activation = await activateSdk({
 			apiKey: this.#apiKey,
-			sdkId: "langchain-qnsi",
+			sdkId: "langchain-qnsp",
 			sdkVersion: SDK_VERSION,
 			platformUrl: this.#baseUrl,
 		});
@@ -120,9 +120,9 @@ export class QnsiToolkit {
 			this.#tenantId = activation.tenantId;
 		}
 		// Inject the resolved tenant into the inlined vault client so its
-		// requests carry the x-qnsp-tenant-id header (the former
+		// requests carry the legacy tenant header (the former
 		// @heossihq/qnsi-vault-sdk did this via its own internal activation;
-		// here the single langchain-qnsp activation covers it).
+		// here the single persisted LangChain activation ID covers it).
 		this.#vaultClient.setTenantId(this.#tenantId);
 		this.#activated = true;
 	}
@@ -130,14 +130,14 @@ export class QnsiToolkit {
 	#assertActivated(): void {
 		if (!this.#activated) {
 			throw new Error(
-				"@heossihq/qnsi-langchain-qnsp: call `await toolkit.activate()` once before `getTools()`. " +
-					"This validates your QNSP API key and resolves the tenant ID. " +
+				"@heossihq/qnsi/langchain: call `await toolkit.activate()` once before `getTools()`. " +
+					"This validates your QNSI API key and resolves the tenant ID. " +
 					"Free signup (no credit card): https://cloud.qnsi.heossi.com/auth",
 			);
 		}
 	}
 
-	/** Returns all configured QNSP tools for use with a LangChain agent. */
+	/** Returns all configured QNSI tools for use with a LangChain agent. */
 	getTools(): StructuredTool[] {
 		this.#assertActivated();
 		const tools: StructuredTool[] = [];

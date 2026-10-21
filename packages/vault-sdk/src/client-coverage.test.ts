@@ -162,38 +162,66 @@ describe("secrets", () => {
 });
 
 describe("dynamic secrets", () => {
+	it("requests the mounted engine catalog and retains server availability states", async () => {
+		const response = {
+			engines: [
+				{ engineType: "postgresql", subPhase: 2, implemented: true },
+				{ engineType: "ssh_signed_certs", subPhase: 4, implemented: false },
+			],
+		};
+		expect(await call((c) => c.listDynamicSecretEngines(), response)).toEqual(response);
+		expect(lastUrl()).toContain("/vault/v1/dynamic-secrets/engines");
+		expect(lastInit().method).toBe("GET");
+	});
 	it("config create/list with and without filters", async () => {
 		await call(
 			(c) =>
 				c.createDynamicSecretConfig({
 					tenantId: TENANT,
 					name: "db",
-					secretType: "database" as never,
-					backend: { kind: "postgres" } as never,
+					secretType: "database",
+					engineType: "postgresql",
+					connectionRef: "approved-test-connection",
+					backend: { type: "postgresql", adminPassword: "must-not-be-forwarded" },
 					defaultTtlSeconds: 60,
 					maxTtlSeconds: 600,
-					template: { role: "ro" } as never,
+					roleTemplate: { role: "ro" },
 				}),
 			{ id: ID },
 		);
 		expect(lastUrl()).toContain(`configs?tenantId=${TENANT}`);
+		expect(JSON.parse(String(lastInit().body))).toEqual({
+			name: "db",
+			secretType: "database",
+			engineType: "postgresql",
+			connectionRef: "approved-test-connection",
+			roleTemplate: { role: "ro" },
+			defaultTtlSeconds: 60,
+			maxTtlSeconds: 600,
+		});
 		await call(
 			(c) =>
 				c.createDynamicSecretConfig({
 					name: "db",
-					secretType: "database" as never,
-					backend: {} as never,
+					engineType: "ssh_signed_certs",
+					connectionRef: "approved-test-ssh-connection",
 				}),
 			{ id: ID },
 		);
 		expect(lastUrl()).not.toContain("tenantId=");
 
 		await call(
-			(c) => c.listDynamicSecretConfigs({ tenantId: TENANT, secretType: "database" as never }),
-			{ items: [] },
+			(c) =>
+				c.listDynamicSecretConfigs({
+					tenantId: TENANT,
+					secretType: "database",
+					engineType: "postgresql",
+				}),
+			{ configs: [] },
 		);
 		expect(lastUrl()).toContain("secretType=database");
-		await call((c) => c.listDynamicSecretConfigs(), { items: [] });
+		expect(lastUrl()).toContain("engineType=postgresql");
+		await call((c) => c.listDynamicSecretConfigs(), { configs: [] });
 	});
 
 	it("credentials, leases, renew, revoke, stats", async () => {
@@ -206,20 +234,40 @@ describe("dynamic secrets", () => {
 		expect(lastUrl()).toContain(`configs/${ID}/credentials?tenantId=${TENANT}`);
 		await call((c) => c.requestCredentials(ID), { leaseId: ID });
 
-		await call((c) => c.listLeases(ID, { tenantId: TENANT }), { items: [] });
+		await call((c) => c.listLeases(ID, { tenantId: TENANT, includeAllStatuses: true }), {
+			leases: [],
+		});
 		expect(lastUrl()).toContain(`configs/${ID}/leases?tenantId=${TENANT}`);
-		await call((c) => c.listLeases(ID), { items: [] });
+		expect(lastUrl()).toContain("includeAllStatuses=true");
+		await call((c) => c.listLeases(ID, { includeAllStatuses: false }), { leases: [] });
+		expect(lastUrl()).toContain("includeAllStatuses=false");
+		await call((c) => c.listLeases(ID), { leases: [] });
 
 		await call((c) => c.renewLease(ID, { ttlSeconds: 120 }), { leaseId: ID });
 		expect(lastUrl()).toContain(`leases/${ID}/renew`);
 		await call((c) => c.renewLease(ID), { leaseId: ID });
 
-		await call((c) => c.revokeLease(ID), undefined);
+		await call(
+			async (c) => {
+				expect(await c.revokeLease(ID)).toEqual({ leaseId: ID, status: "revoking" });
+			},
+			{ leaseId: ID, status: "revoking" },
+		);
 		expect(lastUrl()).toContain(`leases/${ID}/revoke`);
 
-		await call((c) => c.getDynamicSecretStats({ tenantId: TENANT }), { total: 0 });
+		const stats = {
+			totalConfigs: 1,
+			enabledConfigs: 1,
+			engineTypes: 1,
+			activeLeases: 2,
+			intentLeases: 3,
+			revokingLeases: 4,
+			revokedLeases: 5,
+			failedLeases: 6,
+		};
+		expect(await call((c) => c.getDynamicSecretStats({ tenantId: TENANT }), stats)).toEqual(stats);
 		expect(lastUrl()).toContain(`stats?tenantId=${TENANT}`);
-		await call((c) => c.getDynamicSecretStats(), { total: 0 });
+		await call((c) => c.getDynamicSecretStats(), stats);
 	});
 });
 

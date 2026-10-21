@@ -1,14 +1,14 @@
 {
 	"name": "@heossihq/qnsi-mcp",
-	"version": "0.2.0",
-	"description": "QNSI MCP server: 17 tenant-scoped tools for PQC keys, HSPK custody, encrypted vault, crypto inventory, audit, search, and platform operations.",
+	"version": "0.4.1",
+	"description": "QNSI MCP server for PQC keys, HSPK custody, encrypted vault, crypto inventory, audit, search, storage, and manifest operation discovery.",
 	"publishConfig": {
 		"access": "public"
 	},
 	"type": "module",
 	"license": "Apache-2.0",
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=24.18.0"
 	},
 	"files": [
 		"dist",
@@ -45,17 +45,17 @@
 	},
 	"dependencies": {
 		"@heossihq/qnsi": "workspace:*",
-		"@modelcontextprotocol/sdk": "^1.29.0",
-		"zod": "^4.3.6"
+		"@modelcontextprotocol/sdk": "^1.32.0",
+		"zod": "^4.6.5"
 	},
 	"devDependencies": {
 		"@heossihq/qnsi-enforcement-contract": "workspace:*",
-		"@types/node": "^25.5.2",
-		"typescript": "^6.0.3",
-		"vitest": "4.1.2"
+		"@types/node": "^26.6.2",
+		"typescript": "^7.0.2",
+		"vitest": "5.0.1"
 	},
 	"keywords": [
-		"qnsp",
+		"qnsi",
 		"mcp",
 		"model-context-protocol",
 		"pqc",
@@ -65,6 +65,11 @@
 		"ml-dsa",
 		"kyber",
 		"dilithium",
+		"hqc",
+		"bike",
+		"frodokem",
+		"mayo",
+		"cross",
 		"sphincs",
 		"falcon",
 		"cryptography",
@@ -88,7 +93,7 @@
 		"url": "https://github.com/heossihq/qnsi-public",
 		"directory": "packages/mcp-server"
 	},
-	"homepage": "https://cloud.qnsi.heossi.com",
+	"homepage": "https://qnsi.heossi.com",
 	"bugs": {
 		"url": "https://github.com/heossihq/qnsi-public/issues"
 	}

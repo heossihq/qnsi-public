@@ -27,8 +27,7 @@ export { TierError };
 
 /**
  * Mapping from internal algorithm names to NIST/standards display names.
- * Covers all 87 runtime-supported PQC algorithms (24 KEMs + 63 signatures).
- * HQC's 3 variants are excluded (disabled in the liboqs build for CVE-2025-48946).
+ * Covers all 90 runtime-supported PQC algorithms (27 KEMs + 63 signatures).
  * Canonical source: @heossihq/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
  */
 export const ALGORITHM_TO_NIST: Record<string, string> = {
@@ -57,7 +56,10 @@ export const ALGORITHM_TO_NIST: Record<string, string> = {
 	// FN-DSA (FIPS 206 draft)
 	"falcon-512": "FN-DSA-512",
 	"falcon-1024": "FN-DSA-1024",
-	// HQC (NIST selected March 2025)
+	// HQC (NIST selected March 2025; liboqs 0.16.0 updated to the 20250822 spec)
+	"hqc-128": "HQC-128",
+	"hqc-192": "HQC-192",
+	"hqc-256": "HQC-256",
 	// BIKE (NIST Round 4)
 	"bike-l1": "BIKE-L1",
 	"bike-l3": "BIKE-L3",
@@ -239,11 +241,17 @@ export type DynamicSecretType = "database" | "api_key" | "cloud_credentials" | "
 export type DynamicSecretBackendType =
 	| "postgresql"
 	| "mysql"
+	| "mariadb"
+	| "mssql"
+	| "oracle"
 	| "mongodb"
 	| "redis"
+	| "cassandra"
 	| "aws_iam"
 	| "gcp_sa"
-	| "azure_sp";
+	| "azure_sp"
+	| "kubernetes_sa"
+	| "ssh_signed_certs";
 
 export interface DynamicSecretBackend {
 	readonly type: DynamicSecretBackendType;
@@ -266,10 +274,16 @@ export interface DynamicSecretTemplate {
 
 export interface CreateDynamicSecretConfigRequest {
 	readonly name: string;
-	readonly secretType: DynamicSecretType;
-	readonly backend: DynamicSecretBackend;
+	readonly engineType: DynamicSecretBackendType;
+	/** Reference to an approved admin connection in Secrets Manager, not credentials. */
+	readonly connectionRef: string;
+	readonly secretType?: DynamicSecretType;
+	readonly roleTemplate?: Record<string, unknown>;
+	/** @deprecated Historical configuration shape; never forwarded as admin credentials. */
+	readonly backend?: DynamicSecretBackend;
 	readonly defaultTtlSeconds?: number;
 	readonly maxTtlSeconds?: number;
+	/** @deprecated Use roleTemplate for new configurations. */
 	readonly template?: DynamicSecretTemplate;
 	readonly tenantId?: string;
 }
@@ -280,6 +294,8 @@ export interface DynamicSecretConfig {
 	readonly name: string;
 	readonly secretType: DynamicSecretType;
 	readonly backendType?: DynamicSecretBackendType;
+	readonly engineType?: DynamicSecretBackendType | null;
+	readonly connectionRef?: string | null;
 	readonly defaultTtlSeconds: number;
 	readonly maxTtlSeconds: number;
 	readonly enabled: boolean;
@@ -298,10 +314,8 @@ export interface RequestCredentialsRequest {
 
 export interface DynamicCredentials {
 	readonly leaseId: string;
-	readonly credentials: {
-		readonly username: string;
-		readonly password: string;
-	};
+	readonly engineType: DynamicSecretBackendType;
+	readonly credentials: Readonly<Record<string, string | number | undefined>>;
 	readonly expiresAt: string;
 	readonly ttlSeconds: number;
 	readonly renewable: boolean;
@@ -309,9 +323,12 @@ export interface DynamicCredentials {
 
 export interface DynamicSecretLease {
 	readonly id: string;
-	readonly username: string;
+	readonly username: string | null;
+	readonly status: "intent" | "active" | "revoking" | "revoked" | "failed";
+	readonly engineType: DynamicSecretBackendType | null;
 	readonly expiresAt: string;
-	readonly metadata?: Record<string, unknown>;
+	readonly metadata: Record<string, unknown> | null;
+	readonly revokedAt: string | null;
 	readonly createdAt: string;
 }
 
@@ -329,13 +346,34 @@ export interface RenewLeaseResponse {
 	readonly ttlSeconds: number;
 }
 
+export interface RevokeLeaseResponse {
+	readonly leaseId: string;
+	/** Queue acknowledgement, not proof that provider credentials are invalidated. */
+	readonly status: "revoking";
+}
+
 export interface DynamicSecretStats {
 	readonly totalConfigs: number;
 	readonly enabledConfigs: number;
-	readonly secretTypes: number;
+	readonly engineTypes: number;
+	/** @deprecated Historical response field; not returned by the current API. */
+	readonly secretTypes?: number;
 	readonly activeLeases: number;
+	readonly intentLeases: number;
+	readonly revokingLeases: number;
 	readonly revokedLeases: number;
-	readonly expiredLeases: number;
+	readonly failedLeases: number;
+	/** @deprecated Native expiry is represented by lifecycle and audit records. */
+	readonly expiredLeases?: number;
+}
+
+export interface DynamicSecretEngineCatalog {
+	readonly engines: readonly {
+		readonly engineType: DynamicSecretBackendType;
+		readonly subPhase: number;
+		/** Registration in this server, not independent provider-account assurance. */
+		readonly implemented: boolean;
+	}[];
 }
 
 // ============================================================================
@@ -1049,6 +1087,14 @@ export class VaultClient {
 	// Dynamic Secrets
 	// ============================================================================
 
+	/** Read the mounted server's registered-engine catalog, not a static SDK promise. */
+	async listDynamicSecretEngines(): Promise<DynamicSecretEngineCatalog> {
+		await this.ensureActivated();
+		return this.request<DynamicSecretEngineCatalog>("GET", "/vault/v1/dynamic-secrets/engines", {
+			operation: "listDynamicSecretEngines",
+		});
+	}
+
 	/**
 	 * Create a dynamic secret configuration for on-demand credential generation.
 	 * Supports database credentials, API keys, cloud credentials, and SSH keys.
@@ -1070,13 +1116,14 @@ export class VaultClient {
 		return this.request<DynamicSecretConfig>("POST", path, {
 			body: {
 				name: config.name,
-				secretType: config.secretType,
-				backend: config.backend,
+				engineType: config.engineType,
+				connectionRef: config.connectionRef,
+				...(config.secretType !== undefined ? { secretType: config.secretType } : {}),
+				...(config.roleTemplate !== undefined ? { roleTemplate: config.roleTemplate } : {}),
 				...(config.defaultTtlSeconds !== undefined
 					? { defaultTtlSeconds: config.defaultTtlSeconds }
 					: {}),
 				...(config.maxTtlSeconds !== undefined ? { maxTtlSeconds: config.maxTtlSeconds } : {}),
-				...(config.template !== undefined ? { template: config.template } : {}),
 			},
 			operation: "createDynamicSecretConfig",
 		});
@@ -1087,6 +1134,7 @@ export class VaultClient {
 	 */
 	async listDynamicSecretConfigs(options?: {
 		readonly secretType?: DynamicSecretType;
+		readonly engineType?: DynamicSecretBackendType;
 		readonly tenantId?: string;
 	}): Promise<ListDynamicSecretConfigsResponse> {
 		await this.ensureActivated();
@@ -1097,6 +1145,9 @@ export class VaultClient {
 		}
 		if (options?.secretType) {
 			params.set("secretType", options.secretType);
+		}
+		if (options?.engineType) {
+			params.set("engineType", options.engineType);
 		}
 		const queryString = params.toString();
 		const path = queryString
@@ -1138,11 +1189,11 @@ export class VaultClient {
 	}
 
 	/**
-	 * List active leases for a dynamic secret configuration.
+	 * List active leases, or include recovery and terminal states when explicitly requested.
 	 */
 	async listLeases(
 		configId: string,
-		options?: { readonly tenantId?: string },
+		options?: { readonly tenantId?: string; readonly includeAllStatuses?: boolean },
 	): Promise<ListLeasesResponse> {
 		validateUUID(configId, "configId");
 		await this.ensureActivated();
@@ -1150,6 +1201,9 @@ export class VaultClient {
 		const params = new URLSearchParams();
 		if (options?.tenantId) {
 			params.set("tenantId", options.tenantId);
+		}
+		if (options?.includeAllStatuses !== undefined) {
+			params.set("includeAllStatuses", String(options.includeAllStatuses));
 		}
 		const queryString = params.toString();
 		const path = queryString
@@ -1181,16 +1235,20 @@ export class VaultClient {
 	}
 
 	/**
-	 * Revoke a credential lease immediately.
-	 * The associated credentials will be invalidated.
+	 * Queue credential revocation. Completion requires observing the lease lifecycle.
+	 * Native-expiry engines cannot invalidate credentials before their enforced expiry.
 	 */
-	async revokeLease(leaseId: string): Promise<void> {
+	async revokeLease(leaseId: string): Promise<RevokeLeaseResponse> {
 		validateUUID(leaseId, "leaseId");
 		await this.ensureActivated();
 
-		return this.request<void>("POST", `/vault/v1/dynamic-secrets/leases/${leaseId}/revoke`, {
-			operation: "revokeLease",
-		});
+		return this.request<RevokeLeaseResponse>(
+			"POST",
+			`/vault/v1/dynamic-secrets/leases/${leaseId}/revoke`,
+			{
+				operation: "revokeLease",
+			},
+		);
 	}
 
 	/**

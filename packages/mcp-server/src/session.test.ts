@@ -54,7 +54,7 @@ describe("SessionManager", () => {
 		expect(activation.activateSdk).toHaveBeenCalledWith({
 			apiKey: "key",
 			sdkId: "mcp-server",
-			sdkVersion: "0.2.0",
+			sdkVersion: "0.4.1",
 			platformUrl: "https://api.qnsi.heossi.com",
 		});
 		expect(session.isActivated).toBe(true);

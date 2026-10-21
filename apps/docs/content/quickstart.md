@@ -38,7 +38,7 @@ export QNSI_TENANT_ID="<your-tenant-uuid>"
 curl -sS \
   -H "Authorization: Bearer $QNSI_API_KEY" \
   -H "x-qnsp-tenant-id: $QNSI_TENANT_ID" \
-  https://api.qnsi.heossi.com/vault/v1/secrets
+  https://api.qnsi.heossi.com/proxy/vault/v1/secrets
 ```
 
 A `200 OK` with an empty `data` array confirms authentication is working.
@@ -143,8 +143,8 @@ dependencies {
 ```
 
 ```kotlin
-import io.heossi.qnsi.QnsiClient
-import io.heossi.qnsi.CreateSecretRequest
+import com.heossi.qnsi.QnsiClient
+import com.heossi.qnsi.CreateSecretRequest
 import okio.ByteString.Companion.encodeUtf8
 
 val qnsi = QnsiClient(System.getenv("QNSI_API_KEY"))

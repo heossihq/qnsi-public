@@ -151,7 +151,7 @@ export function registerKmsCommands(program: Command, config: CliConfig): void {
 				//     fieldErrors: { keyId: ["expected string, received undefined"],
 				//                    keyType: ["expected one of root|master|data|byok"] }
 				//
-				// Identical to the MCP server's qnsp_kms_generate_key. Backend Zod objects are
+				// Identical to the MCP server mounted key-generation tool. Backend Zod objects are
 				// NON-STRICT, so `name`/`purpose` were silently STRIPPED and the two required
 				// fields simply never arrived - which is why the failure never named itself.
 				// They belong in metadata, exactly as the (proven) SDK does.

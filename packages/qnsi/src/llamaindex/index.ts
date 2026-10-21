@@ -1,13 +1,13 @@
 import { bridgeQnsiEnv } from "../internal/env-aliases.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 /**
- * `@heossihq/qnsi/llamaindex` - LlamaIndex adapters for QNSP.
+ * `@heossihq/qnsi/llamaindex` - LlamaIndex adapters for QNSI.
  *
- * PQC-encrypted vector store backed by QNSP search-service (SSE-X). Folded in
- * from the former standalone `@heossihq/qnsi-llamaindex-qnsp` (2026-05-16).
+ * PQC-encrypted vector store backed by QNSI search-service (SSE-X). Folded in
+ * from the former standalone `former standalone LlamaIndex integration package` (2026-05-16).
  *
  * @example
  * ```typescript

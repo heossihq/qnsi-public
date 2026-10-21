@@ -18,10 +18,11 @@ class CryptoInventoryClient(_ServiceClient):
         return self._request("GET", "/assets", query=query or None)
 
     def get_asset(self, asset_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/assets/{asset_id}")
+        return self._request("GET", f"/assets/{self._segment(asset_id)}")
 
     def get_asset_stats(self, tenant_id: str | None = None) -> dict[str, Any]:
-        return self._request("GET", "/assets/stats")
+        query = {"tenantId": tenant_id} if tenant_id is not None else None
+        return self._request("GET", "/assets/stats", query=query)
 
     def discover_assets(
         self,
@@ -29,6 +30,7 @@ class CryptoInventoryClient(_ServiceClient):
         targets: list[str] | None = None,
         modes: list[str] | None = None,
         options: dict[str, Any] | None = None,
+        source: str | None = None,
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         body: dict[str, Any] = {}
@@ -38,9 +40,10 @@ class CryptoInventoryClient(_ServiceClient):
             body["modes"] = modes
         if options is not None:
             body["options"] = options
-        return self._request(
-            "POST", "/assets/discover", json=body, idempotency_key=idempotency_key
-        )
+        if source is not None:
+            body["source"] = source
+        return self._request("POST", "/assets/discover", json=body, idempotency_key=idempotency_key)
 
     def get_readiness_score(self, tenant_id: str | None = None) -> dict[str, Any]:
-        return self._request("GET", "/readiness")
+        query = {"tenantId": tenant_id} if tenant_id is not None else None
+        return self._request("GET", "/readiness", query=query)

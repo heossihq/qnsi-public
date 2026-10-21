@@ -107,6 +107,22 @@ export type PqcAlgorithm =
 	| "snova-60-10-4"
 	| "snova-29-6-5";
 
+/**
+ * Raised when a PQC algorithm is known to the registry but cannot be used by
+ * the loaded provider image (not enabled for the provider, or none of its
+ * native aliases is supported by the linked library). Callers map this to a
+ * capability failure without matching on message text.
+ */
+export class PqcAlgorithmUnavailableError extends Error {
+	readonly algorithm: string;
+
+	constructor(algorithm: string, message: string) {
+		super(message);
+		this.name = "PqcAlgorithmUnavailableError";
+		this.algorithm = algorithm;
+	}
+}
+
 export interface GenerateKeyPairOptions {
 	readonly algorithm: PqcAlgorithm;
 	readonly seed?: Uint8Array;

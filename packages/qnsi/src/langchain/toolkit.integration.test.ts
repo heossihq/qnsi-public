@@ -1,10 +1,10 @@
 /**
  * Integration tests for the @heossihq/qnsi/langchain subpath.
  *
- * These tests hit the real QNSP API via the edge gateway.
+ * These tests hit the real QNSI API via the edge gateway.
  * Requires QNSI_API_KEY - the API key resolves tenant, tier, and policy.
  *
- * Run: QNSI_API_KEY=qnsp_... npx vitest run src/langchain/toolkit.integration.test.ts
+ * Run: QNSI_API_KEY=... pnpm --filter @heossihq/qnsi test:integration:live
  *
  * NOTE: `QnsiToolkit` requires `await toolkit.activate()` (a real
  * billing-service activation handshake) before `getTools()` - the toolkit
@@ -16,9 +16,15 @@
 import { describe, expect, it } from "vitest";
 import { QnsiToolkit } from "./toolkit.js";
 
-const QNSI_API_KEY = process.env["QNSI_API_KEY"];
+const QNSI_API_KEY = process.env["QNSI_API_KEY"]?.trim();
 
-describe.skipIf(!QNSI_API_KEY)("QnsiToolkit integration", () => {
+if (!QNSI_API_KEY) {
+	throw new Error(
+		"QNSI live integration requires QNSI_API_KEY. Set it before running: pnpm --filter @heossihq/qnsi test:integration:live",
+	);
+}
+
+describe("QnsiToolkit integration", () => {
 	it("activates against production and exposes the tool set", async () => {
 		const toolkit = new QnsiToolkit({ apiKey: QNSI_API_KEY! });
 		await toolkit.activate();

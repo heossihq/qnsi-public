@@ -14,8 +14,11 @@ This mirrors `@heossihq/qnsi-sdk-activation`'s `activateSdk()` in the TypeScript
 
 from __future__ import annotations
 
+import math
 import time
 from dataclasses import dataclass
+from importlib.metadata import PackageNotFoundError, version
+from threading import RLock
 from typing import Any
 
 import httpx
@@ -48,10 +51,8 @@ def _package_version() -> str:
     installed (in which case there is no released version to report).
     """
     try:
-        from importlib.metadata import PackageNotFoundError, version
-
         return version("qnsi")
-    except (ImportError, PackageNotFoundError):  # pragma: no cover - source-tree fallback
+    except PackageNotFoundError:
         return "0.0.0+local"
 
 
@@ -73,10 +74,8 @@ class ActivationResult:
 class ApiKeyActivation:
     """Activate a `qnsp_pqc_*` API key against billing-service.
 
-    Concurrency note: this class is NOT thread-safe. Callers that share a
-    single `QnsiClient` across threads should rely on the lock that
-    `_client.QnsiClient` holds internally; direct users of
-    `ApiKeyActivation` should serialize calls themselves.
+    Cache refresh and invalidation are serialized across callers. This does
+    not authorize concurrent mutation of caller-owned HTTP clients.
     """
 
     def __init__(
@@ -98,6 +97,7 @@ class ApiKeyActivation:
         self._http = http_client or httpx.Client(timeout=timeout)
         self._owned_http_client = http_client is None
         self._cached: ActivationResult | None = None
+        self._lock = RLock()
 
     @property
     def base_url(self) -> str:
@@ -110,11 +110,12 @@ class ApiKeyActivation:
 
     def get_activation(self) -> ActivationResult:
         """Return current activation, refreshing if expired or near-expired."""
-        cached = self._cached
-        now = time.time()
-        if cached is not None and cached.expires_at_epoch - EXPIRY_BUFFER_SECONDS > now:
-            return cached
-        return self._refresh()
+        with self._lock:
+            cached = self._cached
+            now = time.time()
+            if cached is not None and cached.expires_at_epoch - EXPIRY_BUFFER_SECONDS > now:
+                return cached
+            return self._refresh()
 
     @property
     def tenant_id(self) -> str:
@@ -130,11 +131,12 @@ class ApiKeyActivation:
 
     def has_feature(self, feature: str) -> bool:
         """Convenience: check a billing-side boolean limit (e.g. 'sseEnabled')."""
-        return bool(self.get_activation().limits.get(feature, False))
+        return self.get_activation().limits.get(feature) is True
 
     def invalidate(self) -> None:
         """Drop the cached activation; next call re-mints."""
-        self._cached = None
+        with self._lock:
+            self._cached = None
 
     def close(self) -> None:
         if self._owned_http_client:
@@ -163,6 +165,7 @@ class ApiKeyActivation:
                     "content-type": "application/json",
                 },
                 timeout=self._timeout,
+                follow_redirects=False,
             )
         except httpx.RequestError as exc:
             raise QnsiNetworkError(
@@ -181,7 +184,7 @@ class ApiKeyActivation:
                 if isinstance(err, str):
                     message = err
             raise QnsiAuthError(message, status_code=response.status_code)
-        if response.status_code >= 400:
+        if response.status_code >= 300:
             raise QnsiApiError(
                 f"activation failed: {response.text}",
                 status_code=response.status_code,
@@ -199,8 +202,24 @@ class ApiKeyActivation:
         tenant_id = body.get("tenantId") or body.get("tenant_id")
         tier = body.get("tier") or body.get("planTier") or body.get("plan_tier")
         limits = body.get("limits") or {}
-        token = body.get("activationToken") or body.get("activation_token") or body.get("accessToken")
-        expires_in = body.get("expiresInSeconds") or body.get("expires_in") or 3600
+        token = (
+            body.get("activationToken") or body.get("activation_token") or body.get("accessToken")
+        )
+        expires_in = body.get("expiresInSeconds", body.get("expires_in", 3600))
+        try:
+            lifetime = float(expires_in)
+        except (TypeError, ValueError) as exc:
+            raise QnsiApiError(
+                "activation response has invalid expiry",
+                status_code=response.status_code,
+                body=body,
+            ) from exc
+        if isinstance(expires_in, bool) or not math.isfinite(lifetime) or lifetime <= 0:
+            raise QnsiApiError(
+                "activation response has invalid expiry",
+                status_code=response.status_code,
+                body=body,
+            )
 
         if not isinstance(tenant_id, str) or not tenant_id:
             raise QnsiApiError(
@@ -214,7 +233,7 @@ class ApiKeyActivation:
             tier=str(tier) if isinstance(tier, str) else "unknown",
             limits=limits if isinstance(limits, dict) else {},
             activation_token=token if isinstance(token, str) else "",
-            expires_at_epoch=time.time() + float(expires_in),
+            expires_at_epoch=time.time() + lifetime,
             raw=body,
         )
         self._cached = result

@@ -1,0 +1,4 @@
+Name: liboqs-go
+Description: QNSI Go binding configuration for the installed liboqs library
+Version: 0.16.0
+Requires: liboqs = 0.16.0

@@ -1,7 +1,7 @@
 ---
 title: Crypto-Shredding
-version: 0.0.1
-last_updated: 2026-04-23
+version: 0.0.2
+last_updated: 2026-08-18
 description: Crypto-shredding renders QNSI data permanently unrecoverable by destroying tenant keys, supporting tenant offboarding, retention expiry, and GDPR erasure.
 copyright: © 2025 HEOSSI. All rights reserved.
 ---
@@ -23,24 +23,19 @@ Crypto-shredding renders data unrecoverable by destroying encryption keys.
 - **Right to be forgotten**: GDPR compliance
 - **Security incident**: Emergency data destruction
 
-## Process
+## Current implementation status
 
-### Tenant-level shredding
-```
-POST /kms/v1/tenants/{tenantId}/crypto-shred
-{
-  "confirmation": "SHRED-{tenantId}",
-  "reason": "tenant_offboarding"
-}
-```
+Tenant data deletion is implemented as an internal, token-gated purge invoked by
+the workspace-deletion worker (`DELETE /kms/v1/internal/tenant/{tenantId}`,
+guarded by the shared `INTERNAL_TENANT_PURGE_TOKEN`). It irreversibly deletes
+all kms-service rows for a tenant in strict foreign-key order and is never
+exposed as a user-facing endpoint.
 
-### Resource-level shredding
-```
-POST /kms/v1/keys/{keyId}/shred
-{
-  "confirmation": "SHRED-{keyId}"
-}
-```
+Dedicated user-facing `crypto-shred` endpoints
+(`POST /kms/v1/tenants/{tenantId}/crypto-shred`,
+`POST /kms/v1/keys/{keyId}/shred`) are **not yet implemented**. Do not build
+clients against them. Until they ship, tenant offboarding must go through the
+workspace-deletion flow.
 
 ## Verification
 

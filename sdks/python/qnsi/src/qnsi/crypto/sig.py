@@ -9,17 +9,18 @@ Example::
     from qnsi.crypto import MlDsa
 
     sig = MlDsa("ML-DSA-65")
-    pk, sk = sig.keygen()
-    signature = sig.sign(b"hello", sk)
-    assert sig.verify(b"hello", signature, pk)
+    pair = sig.keygen()
+    signature = sig.sign(b"hello", pair.secret_key)
+    assert sig.verify(b"hello", signature, pair.public_key)
 """
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 
 from qnsi.crypto._registry import resolve_signature_candidates
-from qnsi.crypto.kem import _import_oqs
+from qnsi.crypto.kem import _import_oqs, _native_sizes
 
 
 @dataclass(frozen=True)
@@ -34,6 +35,7 @@ class _BaseSignature:
     """Shared internals for ML-DSA / SLH-DSA / Falcon wrappers."""
 
     def __init__(self, algorithm: str) -> None:
+        self._sig = None
         candidates = resolve_signature_candidates(algorithm)
         oqs = _import_oqs()
         last_error: Exception | None = None
@@ -53,13 +55,16 @@ class _BaseSignature:
                 f"Tried: {candidates}. Last error: {last_error}"
             )
 
-        details = sig.details if hasattr(sig, "details") else {}
         self._algorithm = algorithm
         self._liboqs_name = chosen
         self._sig = sig
-        self._public_key_bytes = int(details.get("length_public_key", 0))
-        self._secret_key_bytes = int(details.get("length_secret_key", 0))
-        self._signature_max_bytes = int(details.get("length_signature", 0))
+        try:
+            (self._public_key_bytes, self._secret_key_bytes, self._signature_max_bytes) = (
+                _native_sizes(sig, ("length_public_key", "length_secret_key", "length_signature"))
+            )
+        except RuntimeError:
+            self.close()
+            raise
 
     # ── properties ────────────────────────────────────────────────────────
 
@@ -88,6 +93,8 @@ class _BaseSignature:
     # ── operations ────────────────────────────────────────────────────────
 
     def keygen(self) -> SigKeyPair:
+        if self._sig is None:
+            raise RuntimeError("Signature context is closed")
         public_key = bytes(self._sig.generate_keypair())
         secret_key = bytes(self._sig.export_secret_key())
         return SigKeyPair(public_key=public_key, secret_key=secret_key)
@@ -97,6 +104,10 @@ class _BaseSignature:
             raise TypeError("message must be bytes")
         if not isinstance(secret_key, (bytes, bytearray)):
             raise TypeError("secret_key must be bytes")
+        if len(secret_key) != self.secret_key_bytes:
+            raise ValueError("secret_key has an invalid length")
+        if self._sig is None:
+            raise RuntimeError("Signature context is closed")
         oqs = _import_oqs()
         with oqs.Signature(self._liboqs_name, bytes(secret_key)) as bound:
             return bytes(bound.sign(bytes(message)))
@@ -108,17 +119,21 @@ class _BaseSignature:
             raise TypeError("signature must be bytes")
         if not isinstance(public_key, (bytes, bytearray)):
             raise TypeError("public_key must be bytes")
+        if len(public_key) != self.public_key_bytes:
+            raise ValueError("public_key has an invalid length")
+        if not 0 < len(signature) <= self.signature_max_bytes:
+            raise ValueError("signature has an invalid length")
+        if self._sig is None:
+            raise RuntimeError("Signature context is closed")
         return bool(self._sig.verify(bytes(message), bytes(signature), bytes(public_key)))
 
     # ── lifecycle ─────────────────────────────────────────────────────────
 
     def close(self) -> None:
         if self._sig is not None:
-            try:
-                self._sig.free()
-            except Exception:
-                pass
+            context = self._sig
             self._sig = None  # type: ignore[assignment]
+            context.free()
 
     def __enter__(self):
         return self
@@ -127,7 +142,10 @@ class _BaseSignature:
         self.close()
 
     def __del__(self) -> None:  # pragma: no cover
-        self.close()
+        try:
+            self.close()
+        except Exception:
+            warnings.warn("Native signature context cleanup failed", ResourceWarning, stacklevel=2)
 
 
 class MlDsa(_BaseSignature):

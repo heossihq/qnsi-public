@@ -13,12 +13,11 @@ import { activateSdk, type SdkActivationConfig } from "@heossihq/qnsi-sdk-activa
 import type { KmsClientTelemetry, KmsClientTelemetryConfig } from "./observability.js";
 import { createKmsClientTelemetry, isKmsClientTelemetry } from "./observability.js";
 import { SDK_PACKAGE_VERSION } from "./sdk-package-version.js";
-import { validateUUID } from "./validation.js";
+import { validateKeyCustodyResource, validateUUID } from "./validation.js";
 
 /**
  * Mapping from internal algorithm names to NIST/standards display names.
- * Covers all 87 runtime-supported PQC algorithms (24 KEMs + 63 signatures).
- * HQC's 3 variants are excluded (disabled in the liboqs build for CVE-2025-48946).
+ * Covers all 90 runtime-supported PQC algorithms (27 KEMs + 63 signatures).
  * Canonical source: @heossihq/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
  */
 export const ALGORITHM_TO_NIST: Record<string, string> = {
@@ -47,7 +46,10 @@ export const ALGORITHM_TO_NIST: Record<string, string> = {
 	// FN-DSA (FIPS 206 draft)
 	"falcon-512": "FN-DSA-512",
 	"falcon-1024": "FN-DSA-1024",
-	// HQC (NIST selected March 2025)
+	// HQC (NIST selected March 2025; liboqs 0.16.0 updated to the 20250822 spec)
+	"hqc-128": "HQC-128",
+	"hqc-192": "HQC-192",
+	"hqc-256": "HQC-256",
 	// BIKE (NIST Round 4)
 	"bike-l1": "BIKE-L1",
 	"bike-l3": "BIKE-L3",
@@ -143,12 +145,27 @@ export interface KmsPqcMetadata {
 	readonly keyId: string;
 }
 
+/** Returned by the managed-key API. Neither metadata nor sealing is HSM proof. */
+export interface KmsKeyResource {
+	readonly id: string;
+	readonly keyId: string;
+	readonly tenantId: string;
+	readonly exportable: false | null;
+	readonly custodyPolicy: {
+		readonly exportable: false | null;
+		readonly enforcement: "service" | "unverified";
+		readonly hardwareNonExportability: "not_verified";
+		readonly policyVersion: 1 | null;
+	};
+}
+
 export interface KmsServiceClient {
 	wrapKey(input: {
 		tenantId: string;
 		dataKey: string; // Base64-encoded
 		keyId: string;
 		associatedData?: string; // Base64-encoded
+		signal?: AbortSignal;
 	}): Promise<{
 		keyId: string;
 		wrappedKey: string; // Base64-encoded
@@ -162,6 +179,7 @@ export interface KmsServiceClient {
 		keyId: string;
 		associatedData?: string; // Base64-encoded
 		providerHint?: string; // HSM provider that performed the wrap
+		signal?: AbortSignal;
 	}): Promise<{
 		dataKey: string; // Base64-encoded
 	}>;
@@ -178,6 +196,7 @@ export interface KmsClientOptions {
 	readonly telemetry?: KmsClientTelemetry | KmsClientTelemetryConfig;
 	readonly maxRetries?: number;
 	readonly retryDelayMs?: number;
+	readonly requestTimeoutMs?: number;
 }
 
 export class HttpKmsServiceClient implements KmsServiceClient {
@@ -186,6 +205,7 @@ export class HttpKmsServiceClient implements KmsServiceClient {
 	private readonly getAuthHeaderFn: (() => Promise<string | undefined>) | undefined;
 	private readonly maxRetries: number;
 	private readonly retryDelayMs: number;
+	private readonly requestTimeoutMs: number;
 	private readonly telemetry: KmsClientTelemetry | null;
 	private readonly targetService: string;
 	private activationPromise: Promise<void> | null = null;
@@ -285,6 +305,10 @@ export class HttpKmsServiceClient implements KmsServiceClient {
 
 		this.maxRetries = options?.maxRetries ?? 3;
 		this.retryDelayMs = options?.retryDelayMs ?? 1_000;
+		this.requestTimeoutMs = options?.requestTimeoutMs ?? 10_000;
+		if (!Number.isSafeInteger(this.requestTimeoutMs) || this.requestTimeoutMs <= 0) {
+			throw new RangeError("requestTimeoutMs must be a positive safe integer");
+		}
 
 		this.telemetry = options?.telemetry
 			? isKmsClientTelemetry(options.telemetry)
@@ -324,7 +348,9 @@ export class HttpKmsServiceClient implements KmsServiceClient {
 	}
 
 	private async fetchWithRetry(url: string, init: RequestInit, attempt: number): Promise<Response> {
-		const response = await fetch(url, init);
+		const timeoutSignal = AbortSignal.timeout(this.requestTimeoutMs);
+		const signal = init.signal ? AbortSignal.any([init.signal, timeoutSignal]) : timeoutSignal;
+		const response = await fetch(url, { ...init, signal });
 
 		if (response.status === 429) {
 			if (attempt < this.maxRetries) {
@@ -351,11 +377,43 @@ export class HttpKmsServiceClient implements KmsServiceClient {
 		return response;
 	}
 
+	/** Read authoritative custody fields; caller metadata is never substituted. */
+	async getKey(input: {
+		tenantId: string;
+		keyId: string;
+		signal?: AbortSignal;
+	}): Promise<KmsKeyResource> {
+		validateUUID(input.tenantId, "tenantId");
+		await this.ensureActivated();
+		if (this.resolvedTenantId && this.resolvedTenantId !== input.tenantId)
+			throw new Error("KMS tenant authority mismatch");
+		const url = new URL(`/kms/v1/keys/${encodeURIComponent(input.keyId)}`, this.baseUrl);
+		url.searchParams.set("tenantId", input.tenantId);
+		const authHeader = await this.buildAuthHeader();
+		const response = await this.fetchWithRetry(
+			url.toString(),
+			{
+				method: "GET",
+				redirect: "error",
+				cache: "no-store",
+				signal: input.signal ?? null,
+				headers: { ...(authHeader ? { authorization: authHeader } : {}) },
+			},
+			0,
+		);
+		if (!response.ok) throw new Error(`KMS API error: HTTP ${response.status}`);
+		const result = validateKeyCustodyResource(await response.json());
+		if (result.tenantId !== input.tenantId || result.keyId !== input.keyId)
+			throw new Error("KMS key identity mismatch");
+		return result;
+	}
+
 	async wrapKey(input: {
 		tenantId: string;
 		dataKey: string;
 		keyId: string;
 		associatedData?: string;
+		signal?: AbortSignal;
 	}): Promise<{
 		keyId: string;
 		wrappedKey: string;
@@ -392,6 +450,7 @@ export class HttpKmsServiceClient implements KmsServiceClient {
 				{
 					method: "POST",
 					headers,
+					signal: input.signal ?? null,
 					body: JSON.stringify({
 						tenantId: input.tenantId,
 						dataKey: input.dataKey,
@@ -448,6 +507,7 @@ export class HttpKmsServiceClient implements KmsServiceClient {
 		keyId: string;
 		associatedData?: string;
 		providerHint?: string;
+		signal?: AbortSignal;
 	}): Promise<{
 		dataKey: string;
 	}> {
@@ -480,6 +540,7 @@ export class HttpKmsServiceClient implements KmsServiceClient {
 				{
 					method: "POST",
 					headers,
+					signal: input.signal ?? null,
 					body: JSON.stringify({
 						tenantId: input.tenantId,
 						wrappedKey: input.wrappedKey,

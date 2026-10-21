@@ -9,6 +9,13 @@ vi.mock("@heossihq/qnsi-sdk-activation", () => ({
 
 import { CryptoInventoryClient, toNistAlgorithmName } from "./index.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 const TENANT = "11111111-1111-4111-8111-111111111111";
 const ID = "22222222-2222-4222-8222-222222222222";
 
@@ -90,14 +97,13 @@ describe("construction", () => {
 		).toThrow("baseUrl must use HTTPS in production");
 	});
 
-	it.each([
-		"http://crypto.internal/",
-		"http://localhost:1",
-		"http://127.0.0.1:1",
-	])("treats %s as an internal address", (u) => {
-		vi.stubEnv("NODE_ENV", "production");
-		expect(() => new CryptoInventoryClient({ apiKey: "tok", baseUrl: u })).not.toThrow();
-	});
+	it.each(["http://crypto.internal/", "http://localhost:1", "http://127.0.0.1:1"])(
+		"treats %s as an internal address",
+		(u) => {
+			vi.stubEnv("NODE_ENV", "production");
+			expect(() => new CryptoInventoryClient({ apiKey: "tok", baseUrl: u })).not.toThrow();
+		},
+	);
 
 	it("rejects an unparseable http base url", () => {
 		vi.stubEnv("NODE_ENV", "production");
@@ -233,7 +239,14 @@ describe("telemetry", () => {
 			throw new Error("down");
 		});
 		await expect(client({ telemetry: { record } }).getAssetStats(TENANT)).rejects.toThrow();
-		expect((record.mock.calls[0]?.[0] as Record<string, unknown>)["httpStatus"]).toBeUndefined();
+		expect(
+			(
+				required(record.mock.calls[0]?.[0], "the first telemetry record payload") as Record<
+					string,
+					unknown
+				>
+			)["httpStatus"],
+		).toBeUndefined();
 	});
 
 	it("builds telemetry from a config and stays silent without one", async () => {

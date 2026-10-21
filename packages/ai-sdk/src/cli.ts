@@ -166,13 +166,22 @@ program
 	.description("Retrieve the status of a workload")
 	.argument("<workloadId>", "Workload identifier")
 	.option("--attestation-proof-file <file>", "Write attestation proof output to file")
+	.option("--attestation-envelope-file <file>", "Write complete attestation envelope JSON to file")
 	.action(async (workloadId, options, command) => {
 		const client = createClient(command.optsWithGlobals());
 		try {
+			if (
+				options.attestationProofFile &&
+				options.attestationEnvelopeFile &&
+				options.attestationProofFile === options.attestationEnvelopeFile
+			) {
+				throw new Error("Attestation proof and envelope output paths must be different");
+			}
 			const result = await client.getWorkload(workloadId);
-			printJson(result);
+			printJson(redactSecurityEvidence(result));
 			printSecurityEnvelope(result.security, result.id);
 			await maybeWriteAttestationProof(result.security, options.attestationProofFile);
+			await maybeWriteAttestationEnvelope(result.security, options.attestationEnvelopeFile);
 		} catch (error) {
 			handleCliError(error);
 		}
@@ -194,7 +203,7 @@ program
 				cursor: options.cursor,
 				limit: options.limit,
 			});
-			printJson(result);
+			printJson({ ...result, items: result.items.map(redactSecurityEvidence) });
 			for (const item of result.items) {
 				printSecurityEnvelope(item.security, item.id);
 			}
@@ -249,7 +258,7 @@ program
 		}
 	});
 
-program.parseAsync(process.argv).catch((error) => {
+await program.parseAsync(process.argv).catch((error) => {
 	handleCliError(error);
 });
 
@@ -271,6 +280,24 @@ function printJson(value: unknown) {
 	process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
 }
 
+function redactSecurityEvidence<T extends { readonly security?: WorkloadSecurityProfile | null }>(
+	value: T,
+): unknown {
+	const security = value.security;
+	if (!security) {
+		return value;
+	}
+	return {
+		...value,
+		security: {
+			controlPlaneTokenSha256: security.controlPlaneTokenSha256,
+			pqcSignatures: security.pqcSignatures,
+			hardwareProvider: security.hardwareProvider,
+			attestationStatus: security.attestationStatus,
+		},
+	};
+}
+
 function printSecurityEnvelope(
 	security: WorkloadSecurityProfile | null | undefined,
 	context?: string,
@@ -283,18 +310,26 @@ function printSecurityEnvelope(
 	const digest = security.controlPlaneTokenSha256 ?? "none";
 	const hardwareProvider = security.hardwareProvider ?? "unknown";
 	const attestationStatus = security.attestationStatus ?? "unknown";
+	const completeEvidenceEnvelope = Boolean(security.attestationEnvelope);
 	process.stdout.write(
 		`\n${header}:\n` +
 			`  Control Plane Digest : ${digest}\n` +
 			`  Hardware Provider    : ${hardwareProvider}\n` +
-			`  Attestation Status   : ${attestationStatus}\n`,
+			`  Attestation Status   : ${attestationStatus}\n` +
+			`  Evidence Envelope    : ${completeEvidenceEnvelope ? "complete" : "not available"}\n`,
 	);
-	if (security.attestationProof) {
+	if (security.attestationEnvelope) {
+		process.stdout.write(
+			`  Evidence Provider    : ${security.attestationEnvelope.provider}\n` +
+				`  Evidence Algorithm   : ${security.attestationEnvelope.algorithm}\n` +
+				`  Evidence Key ID      : ${security.attestationEnvelope.keyId}\n`,
+		);
+	} else if (security.attestationProof) {
 		const preview =
 			security.attestationProof.length > 80
-				? `${security.attestationProof.slice(0, 77)}…`
+				? `${security.attestationProof.slice(0, 77)}...`
 				: security.attestationProof;
-		process.stdout.write(`  Attestation Proof    : ${preview}\n`);
+		process.stdout.write(`  Legacy Proof         : ${preview}\n`);
 	}
 	if (security.pqcSignatures.length > 0) {
 		process.stdout.write("  PQC Signatures       :\n");
@@ -308,14 +343,18 @@ function printSecurityEnvelope(
 
 async function streamInference(client: AiOrchestratorClient, workloadId: string): Promise<void> {
 	for await (const event of client.streamInferenceEvents(workloadId)) {
-		process.stdout.write(`${JSON.stringify(event)}\n`);
-		if (event.type === "workload.status") {
-			const payload = event.payload as {
-				security?: WorkloadSecurityProfile | null;
-			};
-			if (payload.security) {
-				printSecurityEnvelope(payload.security, workloadId);
-			}
+		if (event.type !== "workload.status") {
+			process.stdout.write(`${JSON.stringify(event)}\n`);
+			continue;
+		}
+		const payload = event.payload as {
+			security?: WorkloadSecurityProfile | null;
+		};
+		process.stdout.write(
+			`${JSON.stringify({ ...event, payload: redactSecurityEvidence(payload) })}\n`,
+		);
+		if (payload.security) {
+			printSecurityEnvelope(payload.security, workloadId);
 		}
 	}
 }
@@ -327,14 +366,36 @@ async function maybeWriteAttestationProof(
 	if (!outputPath) {
 		return;
 	}
-	if (!security?.attestationProof) {
+	const proof = security?.attestationProof ?? security?.attestationEnvelope?.proof;
+	if (!proof) {
 		process.stderr.write(
 			"Attestation proof not available for this workload; nothing written to disk.\n",
 		);
 		return;
 	}
-	await writeFile(outputPath, security.attestationProof, "utf-8");
+	await writeFile(outputPath, proof, "utf-8");
 	process.stdout.write(`Attestation proof written to ${outputPath}\n`);
+}
+
+async function maybeWriteAttestationEnvelope(
+	security: WorkloadSecurityProfile | null | undefined,
+	outputPath?: string,
+): Promise<void> {
+	if (!outputPath) {
+		return;
+	}
+	if (!security?.attestationEnvelope) {
+		process.stderr.write(
+			"Complete attestation envelope not available for this workload; nothing written to disk.\n",
+		);
+		return;
+	}
+	await writeFile(
+		outputPath,
+		`${JSON.stringify(security.attestationEnvelope, null, 2)}\n`,
+		"utf-8",
+	);
+	process.stdout.write(`Complete attestation envelope written to ${outputPath}\n`);
 }
 
 function handleCliError(error: unknown) {

@@ -1,18 +1,18 @@
 /**
- * QNSP Vector Store for LlamaIndex - `@heossihq/qnsi/llamaindex` subpath.
+ * QNSI Vector Store for LlamaIndex - `@heossihq/qnsi/llamaindex` subpath.
  *
- * PQC-encrypted semantic search backed by QNSP search-service (SSE-X).
+ * PQC-encrypted semantic search backed by QNSI search-service (SSE-X).
  * LlamaIndex `VectorStore`-compatible without importing `llamaindex`.
  *
- * Folded in from the former standalone `@heossihq/qnsi-llamaindex-qnsp`
+ * Folded in from the former standalone `former standalone LlamaIndex integration package`
  * (2026-05-16). The search-service HTTP (`indexDocument` POST
  * `/search/v1/documents/index`, `search` GET `/search/v1/documents`, 429
- * retry w/ backoff + `x-qnsp-tenant-id` header) is inlined here faithfully
+ * retry with backoff plus the legacy tenant header) is inlined here faithfully
  * from the former `@heossihq/qnsi-search-sdk`, and SSE-X auto-token derivation
  * uses the inlined `./sse.js` - so this subpath has no `@heossihq/qnsi-*`
  * workspace dependency (same pattern as `../_activation`). A single
- * activation (sdkId `llamaindex-qnsp`) resolves the tenant; that tenant id is
- * sent both in the request and the `x-qnsp-tenant-id` header.
+ * activation through the persisted LlamaIndex SDK ID resolves the tenant; that tenant id is
+ * sent both in the request and the legacy tenant header.
  */
 
 import { z } from "zod";
@@ -21,11 +21,11 @@ import { activateSdk } from "../_activation/index.js";
 import { bridgeQnsiEnv } from "../internal/env-aliases.js";
 import { deriveDocumentSseTokens, deriveQuerySseTokens } from "./sse.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 const SDK_VERSION = "0.3.0";
-const SDK_ID = "llamaindex-qnsi";
+const SDK_ID = "llamaindex-qnsp";
 const DEFAULT_BASE_URL = "https://api.qnsi.heossi.com";
 
 async function resolveActivationTenantId(apiKey: string, baseUrl: string): Promise<string> {
@@ -114,7 +114,7 @@ export interface VectorStoreQueryResult {
 
 export interface QnsiVectorStoreConfig {
 	/**
-	 * QNSP API key. Get one at https://cloud.qnsi.heossi.com/api-keys
+	 * QNSI API key. Get one at https://cloud.qnsi.heossi.com/api-keys
 	 * The API key carries the tenant ID internally - no separate tenantId needed.
 	 */
 	readonly apiKey: string;
@@ -123,9 +123,9 @@ export interface QnsiVectorStoreConfig {
 	 * from the API key via SDK activation when omitted.
 	 */
 	readonly tenantId?: string;
-	/** Source service label used when indexing documents. Defaults to "llamaindex-qnsp". */
+	/** Source service label used when indexing documents. Defaults to the persisted integration ID. */
 	readonly sourceService?: string;
-	/** Base URL for the QNSP API. Defaults to https://api.qnsi.heossi.com */
+	/** Base URL for the QNSI API. Defaults to https://api.qnsi.heossi.com */
 	readonly baseUrl?: string;
 	/** Request timeout in milliseconds. Defaults to 15000. */
 	readonly timeoutMs?: number;
@@ -352,7 +352,7 @@ class SearchTransport {
 // ─── QnsiVectorStore ──────────────────────────────────────────────────────────
 
 /**
- * LlamaIndex-compatible vector store backed by QNSP encrypted search (SSE-X).
+ * LlamaIndex-compatible vector store backed by QNSI encrypted search (SSE-X).
  *
  * @example
  * ```typescript
@@ -402,14 +402,14 @@ export class QnsiVectorStore {
 		await this.#activationPromise;
 		if (!this.#resolvedTenantId) {
 			throw new Error(
-				"QNSP LlamaIndex: tenantId could not be resolved. Ensure your API key is valid.",
+				"QNSI LlamaIndex: tenantId could not be resolved. Ensure your API key is valid.",
 			);
 		}
 		return this.#resolvedTenantId;
 	}
 
 	/**
-	 * Add nodes to the QNSP encrypted search index. Returns indexed node IDs.
+	 * Add nodes to the QNSI encrypted search index. Returns indexed node IDs.
 	 */
 	async add(nodes: TextNode[]): Promise<string[]> {
 		if (nodes.length === 0) {
@@ -437,7 +437,7 @@ export class QnsiVectorStore {
 	}
 
 	/**
-	 * Query the QNSP encrypted search index. Uses SSE-X token derivation when
+	 * Query the QNSI encrypted search index. Uses SSE-X token derivation when
 	 * an SSE key is configured.
 	 */
 	async query(query: VectorStoreQuery): Promise<VectorStoreQueryResult> {
@@ -479,7 +479,7 @@ export class QnsiVectorStore {
 	/**
 	 * Remove a node from the search index by document ID.
 	 *
-	 * QNSP search-service does not expose a delete-document endpoint; this
+	 * QNSI search-service does not expose a delete-document endpoint; this
 	 * re-indexes the document with empty content and a "__deleted__" tag so it
 	 * no longer matches queries (tombstone).
 	 */

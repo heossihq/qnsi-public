@@ -92,7 +92,7 @@ qnsi.has_feature("sseEnabled")
 
 ## What's covered today
 
-- `qnsi.crypto` - ML-KEM, ML-DSA, SLH-DSA, Falcon (full liboqs 0.12.0 surface) - see [`src/qnsi/crypto/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi/src/qnsi/crypto)
+- `qnsi.crypto` - ML-KEM, HQC, ML-DSA, SLH-DSA, Falcon/FN-DSA, BIKE, FrodoKEM, Classic McEliece, MAYO, CROSS (liboqs 0.16 identifiers with liboqs-python 0.12.0 binding) - see [`src/qnsi/crypto/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi/src/qnsi/crypto)
 - `qnsi.vault` - [`src/qnsi/vault.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/vault.py)
 - `qnsi.kms` - [`src/qnsi/kms.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/kms.py)
 - `qnsi.audit` - [`src/qnsi/audit.py`](https://github.com/heossihq/qnsi-public/blob/main/sdks/python/qnsi/src/qnsi/audit.py)

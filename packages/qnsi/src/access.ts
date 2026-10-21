@@ -1,5 +1,5 @@
 /**
- * QNSP Access-Control - RBAC: roles, permissions, role assignments.
+ * QNSI Access-Control - RBAC: roles, permissions, role assignments.
  * Wraps `apps/access-control-service` (`/access/v1`).
  */
 

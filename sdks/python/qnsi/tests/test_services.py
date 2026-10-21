@@ -15,7 +15,14 @@ def _activation_payload() -> dict[str, Any]:
     return {
         "tenantId": "tenant-abc",
         "tier": "free",
-        "limits": {"sseEnabled": False, "aiInferenceEnabled": True, "apiCalls": 50_000, "storageGB": 10, "enclavesEnabled": False, "aiTrainingEnabled": False},
+        "limits": {
+            "sseEnabled": False,
+            "aiInferenceEnabled": True,
+            "apiCalls": 50_000,
+            "storageGB": 10,
+            "enclavesEnabled": False,
+            "aiTrainingEnabled": False,
+        },
         "activationToken": "tok-1",
         "expiresInSeconds": 3600,
     }
@@ -94,6 +101,37 @@ def test_vault_delete_returns_none() -> None:
 # ── kms ───────────────────────────────────────────────────────────────────
 
 
+def test_kms_custody_flags_are_not_caller_metadata() -> None:
+    import json
+
+    def create(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        assert body["exportable"] is False
+        assert body["custodyEnforcement"] == "service"
+        assert body["metadata"]["exportable"] is True
+        return httpx.Response(
+            201,
+            json={
+                "keyId": "owned-key",
+                "exportable": False,
+                "custodyPolicy": {
+                    "enforcement": "service",
+                    "hardwareNonExportability": "not_verified",
+                },
+            },
+        )
+
+    with _client_with({**_activate_route(), "POST /proxy/kms/v1/keys": create}) as q:
+        key = q.kms.create_key(
+            algorithm="ml-dsa-65",
+            exportable=False,
+            custody_enforcement="service",
+            metadata={"exportable": True},
+        )
+        assert key["exportable"] is False
+        assert key["custodyPolicy"]["hardwareNonExportability"] == "not_verified"
+
+
 def test_kms_create_key_and_sign_verify() -> None:
     signature_bytes = b"\x01\x02\x03\x04"
     signature_b64 = base64.b64encode(signature_bytes).decode()
@@ -151,9 +189,7 @@ def test_audit_log_event_and_list() -> None:
         },
     }
     with _client_with(routes) as q:
-        result = q.audit.log_event(
-            event_type="model.inference", payload={"modelId": "gpt-4o"}
-        )
+        result = q.audit.log_event(event_type="model.inference", payload={"modelId": "gpt-4o"})
         assert result["events"][0]["id"] == "evt-1"
         assert seen["posted"]["events"][0]["eventType"] == "model.inference"
 

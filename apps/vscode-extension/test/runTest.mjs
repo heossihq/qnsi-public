@@ -1,4 +1,5 @@
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { downloadAndUnzipVSCode, runTests } from "@vscode/test-electron";
@@ -21,6 +22,10 @@ delete process.env.ELECTRON_RUN_AS_NODE;
 const here = fileURLToPath(new URL(".", import.meta.url));
 const extensionDevelopmentPath = `${here}..`;
 const extensionTestsPath = `${here}../dist/test/suite/index.cjs`;
+// Keep Electron Unix sockets below the OS pathname limit even in long worktrees.
+const runtimeRoot = mkdtempSync(
+	resolve(process.platform === "win32" ? tmpdir() : "/tmp", "qnsi-vscode-"),
+);
 
 try {
 	let vscodeExecutablePath = await downloadAndUnzipVSCode();
@@ -34,10 +39,30 @@ try {
 	await runTests({
 		extensionDevelopmentPath,
 		extensionTestsPath,
+		extensionTestsEnv: {
+			...process.env,
+			VSCODE_DISABLE_TELEMETRY: "1",
+			VSCODE_SKIP_RELEASE_NOTES: "1",
+			VSCODE_SKIP_WELCOME: "1",
+		},
+		launchArgs: [
+			"--disable-gpu",
+			"--disable-updates",
+			"--disable-workspace-trust",
+			"--no-sandbox",
+			"--skip-release-notes",
+			"--skip-welcome",
+			"--user-data-dir",
+			resolve(runtimeRoot, "user-data"),
+			"--extensions-dir",
+			resolve(runtimeRoot, "extensions"),
+		],
 		vscodeExecutablePath,
 	});
 	console.log("RUNTIME TESTS: PASS");
 } catch (err) {
 	console.error("RUNTIME TESTS: FAIL", err);
-	process.exit(1);
+	process.exitCode = 1;
+} finally {
+	rmSync(runtimeRoot, { recursive: true, force: true });
 }

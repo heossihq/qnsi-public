@@ -73,8 +73,7 @@ def verify_qnsi_webhook_signature(
 
     if not signature_header.startswith("sha256="):
         raise QnsiWebhookError(
-            "signature header must start with 'sha256=' (got "
-            f"{signature_header[:10]!r}…)"
+            f"signature header must start with 'sha256=' (got {signature_header[:10]!r}…)"
         )
     provided = signature_header[len("sha256=") :].strip().lower()
 

@@ -1,1080 +1,1080 @@
 {
-	"schemaVersion": 2,
-	"generatedAt": "2026-06-02T11:31:45.851Z",
-	"nobleVersion": "0.6.1",
-	"liboqsVersion": "0.15.0",
-	"vectorSource": {
-		"repo": "github.com/paulmillr/acvp-vectors",
-		"ref": "main",
-		"canonicalSource": "https://github.com/usnistgov/ACVP-Server/tree/master/gen-val/json-files (mirror)"
-	},
-	"environment": {
-		"node": "v24.15.0",
-		"platform": "darwin",
-		"arch": "arm64",
-		"fastMode": false,
-		"onlyAlgorithm": null
-	},
-	"results": [
-		{
-			"algorithm": "ML-KEM",
-			"operation": "keyGen",
-			"vectorDirectory": "ML-KEM-keyGen-FIPS203",
-			"groups": [
-				{
-					"tgId": 1,
-					"parameterSet": "ML-KEM-512",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 2,
-					"parameterSet": "ML-KEM-768",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 3,
-					"parameterSet": "ML-KEM-1024",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				}
-			],
-			"totalTests": 75,
-			"passed": 75,
-			"failed": 0,
-			"skipped": 0,
-			"durationMs": 31
-		},
-		{
-			"algorithm": "ML-KEM",
-			"operation": "encapDecap",
-			"vectorDirectory": "ML-KEM-encapDecap-FIPS203",
-			"groups": [
-				{
-					"tgId": 1,
-					"parameterSet": "ML-KEM-512",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 2,
-					"parameterSet": "ML-KEM-768",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 3,
-					"parameterSet": "ML-KEM-1024",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 4,
-					"parameterSet": "ML-KEM-512",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 5,
-					"parameterSet": "ML-KEM-768",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 6,
-					"parameterSet": "ML-KEM-1024",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 7,
-					"parameterSet": "ML-KEM-512",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 8,
-					"parameterSet": "ML-KEM-512",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 9,
-					"parameterSet": "ML-KEM-768",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 10,
-					"parameterSet": "ML-KEM-768",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 11,
-					"parameterSet": "ML-KEM-1024",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 12,
-					"parameterSet": "ML-KEM-1024",
-					"testType": "VAL",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				}
-			],
-			"totalTests": 165,
-			"passed": 165,
-			"failed": 0,
-			"skipped": 0,
-			"durationMs": 55
-		},
-		{
-			"algorithm": "ML-DSA",
-			"operation": "keyGen",
-			"vectorDirectory": "ML-DSA-keyGen-FIPS204",
-			"groups": [
-				{
-					"tgId": 1,
-					"parameterSet": "ML-DSA-44",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 2,
-					"parameterSet": "ML-DSA-65",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 3,
-					"parameterSet": "ML-DSA-87",
-					"testType": "AFT",
-					"totalTests": 25,
-					"passed": 25,
-					"failed": 0,
-					"skipped": 0
-				}
-			],
-			"totalTests": 75,
-			"passed": 75,
-			"failed": 0,
-			"skipped": 0,
-			"durationMs": 142
-		},
-		{
-			"algorithm": "SLH-DSA",
-			"operation": "keyGen",
-			"vectorDirectory": "SLH-DSA-keyGen-FIPS205",
-			"groups": [
-				{
-					"tgId": 1,
-					"parameterSet": "SLH-DSA-SHA2-128s",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 2,
-					"parameterSet": "SLH-DSA-SHAKE-128s",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 3,
-					"parameterSet": "SLH-DSA-SHA2-128f",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 4,
-					"parameterSet": "SLH-DSA-SHAKE-128f",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 5,
-					"parameterSet": "SLH-DSA-SHA2-192s",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 6,
-					"parameterSet": "SLH-DSA-SHAKE-192s",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 7,
-					"parameterSet": "SLH-DSA-SHA2-192f",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 8,
-					"parameterSet": "SLH-DSA-SHAKE-192f",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 9,
-					"parameterSet": "SLH-DSA-SHA2-256s",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 10,
-					"parameterSet": "SLH-DSA-SHAKE-256s",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 11,
-					"parameterSet": "SLH-DSA-SHA2-256f",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				},
-				{
-					"tgId": 12,
-					"parameterSet": "SLH-DSA-SHAKE-256f",
-					"testType": "AFT",
-					"totalTests": 10,
-					"passed": 10,
-					"failed": 0,
-					"skipped": 0
-				}
-			],
-			"totalTests": 120,
-			"passed": 120,
-			"failed": 0,
-			"skipped": 0,
-			"durationMs": 31634
-		}
-	],
-	"summary": {
-		"totalOperations": 4,
-		"totalTests": 435,
-		"passed": 435,
-		"failed": 0,
-		"skipped": 0,
-		"passRate": 100
-	},
-	"providers": {
-		"noble": {
-			"provider": "noble",
-			"version": "0.6.1",
-			"implementationType": "pure-js",
-			"results": [
-				{
-					"algorithm": "ML-KEM",
-					"operation": "keyGen",
-					"vectorDirectory": "ML-KEM-keyGen-FIPS203",
-					"groups": [
-						{
-							"tgId": 1,
-							"parameterSet": "ML-KEM-512",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 2,
-							"parameterSet": "ML-KEM-768",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 3,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						}
-					],
-					"totalTests": 75,
-					"passed": 75,
-					"failed": 0,
-					"skipped": 0,
-					"durationMs": 31
-				},
-				{
-					"algorithm": "ML-KEM",
-					"operation": "encapDecap",
-					"vectorDirectory": "ML-KEM-encapDecap-FIPS203",
-					"groups": [
-						{
-							"tgId": 1,
-							"parameterSet": "ML-KEM-512",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 2,
-							"parameterSet": "ML-KEM-768",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 3,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 4,
-							"parameterSet": "ML-KEM-512",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 5,
-							"parameterSet": "ML-KEM-768",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 6,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 7,
-							"parameterSet": "ML-KEM-512",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 8,
-							"parameterSet": "ML-KEM-512",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 9,
-							"parameterSet": "ML-KEM-768",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 10,
-							"parameterSet": "ML-KEM-768",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 11,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 12,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						}
-					],
-					"totalTests": 165,
-					"passed": 165,
-					"failed": 0,
-					"skipped": 0,
-					"durationMs": 55
-				},
-				{
-					"algorithm": "ML-DSA",
-					"operation": "keyGen",
-					"vectorDirectory": "ML-DSA-keyGen-FIPS204",
-					"groups": [
-						{
-							"tgId": 1,
-							"parameterSet": "ML-DSA-44",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 2,
-							"parameterSet": "ML-DSA-65",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 3,
-							"parameterSet": "ML-DSA-87",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						}
-					],
-					"totalTests": 75,
-					"passed": 75,
-					"failed": 0,
-					"skipped": 0,
-					"durationMs": 142
-				},
-				{
-					"algorithm": "SLH-DSA",
-					"operation": "keyGen",
-					"vectorDirectory": "SLH-DSA-keyGen-FIPS205",
-					"groups": [
-						{
-							"tgId": 1,
-							"parameterSet": "SLH-DSA-SHA2-128s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 2,
-							"parameterSet": "SLH-DSA-SHAKE-128s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 3,
-							"parameterSet": "SLH-DSA-SHA2-128f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 4,
-							"parameterSet": "SLH-DSA-SHAKE-128f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 5,
-							"parameterSet": "SLH-DSA-SHA2-192s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 6,
-							"parameterSet": "SLH-DSA-SHAKE-192s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 7,
-							"parameterSet": "SLH-DSA-SHA2-192f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 8,
-							"parameterSet": "SLH-DSA-SHAKE-192f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 9,
-							"parameterSet": "SLH-DSA-SHA2-256s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 10,
-							"parameterSet": "SLH-DSA-SHAKE-256s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 11,
-							"parameterSet": "SLH-DSA-SHA2-256f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 12,
-							"parameterSet": "SLH-DSA-SHAKE-256f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						}
-					],
-					"totalTests": 120,
-					"passed": 120,
-					"failed": 0,
-					"skipped": 0,
-					"durationMs": 31634
-				}
-			],
-			"summary": {
-				"totalOperations": 4,
-				"totalTests": 435,
-				"passed": 435,
-				"failed": 0,
-				"skipped": 0,
-				"passRate": 100
-			}
-		},
-		"liboqs": {
-			"provider": "liboqs",
-			"version": "0.15.0",
-			"implementationType": "native-c",
-			"results": [
-				{
-					"algorithm": "ML-KEM",
-					"operation": "keyGen",
-					"vectorDirectory": "ML-KEM-keyGen-FIPS203",
-					"groups": [
-						{
-							"tgId": 1,
-							"parameterSet": "ML-KEM-512",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 2,
-							"parameterSet": "ML-KEM-768",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 3,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						}
-					],
-					"totalTests": 75,
-					"passed": 75,
-					"failed": 0,
-					"skipped": 0,
-					"durationMs": 12
-				},
-				{
-					"algorithm": "ML-KEM",
-					"operation": "encapDecap",
-					"vectorDirectory": "ML-KEM-encapDecap-FIPS203",
-					"groups": [
-						{
-							"tgId": 1,
-							"parameterSet": "ML-KEM-512",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 2,
-							"parameterSet": "ML-KEM-768",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 3,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 25,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 4,
-							"parameterSet": "ML-KEM-512",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 5,
-							"parameterSet": "ML-KEM-768",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 6,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 7,
-							"parameterSet": "ML-KEM-512",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 8,
-							"parameterSet": "ML-KEM-512",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 9,
-							"parameterSet": "ML-KEM-768",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 10,
-							"parameterSet": "ML-KEM-768",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 11,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						},
-						{
-							"tgId": 12,
-							"parameterSet": "ML-KEM-1024",
-							"testType": "VAL",
-							"totalTests": 10,
-							"passed": 10,
-							"failed": 0,
-							"skipped": 0
-						}
-					],
-					"totalTests": 165,
-					"passed": 165,
-					"failed": 0,
-					"skipped": 0,
-					"durationMs": 11
-				},
-				{
-					"algorithm": "ML-DSA",
-					"operation": "keyGen",
-					"vectorDirectory": "ML-DSA-keyGen-FIPS204",
-					"groups": [
-						{
-							"tgId": 1,
-							"parameterSet": "ML-DSA-44",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 25,
-							"firstFailure": {
-								"tcId": 1,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 2,
-							"parameterSet": "ML-DSA-65",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 25,
-							"firstFailure": {
-								"tcId": 26,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 3,
-							"parameterSet": "ML-DSA-87",
-							"testType": "AFT",
-							"totalTests": 25,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 25,
-							"firstFailure": {
-								"tcId": 51,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						}
-					],
-					"totalTests": 75,
-					"passed": 0,
-					"failed": 0,
-					"skipped": 75,
-					"durationMs": 0
-				},
-				{
-					"algorithm": "SLH-DSA",
-					"operation": "keyGen",
-					"vectorDirectory": "SLH-DSA-keyGen-FIPS205",
-					"groups": [
-						{
-							"tgId": 1,
-							"parameterSet": "SLH-DSA-SHA2-128s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 1,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 2,
-							"parameterSet": "SLH-DSA-SHAKE-128s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 11,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 3,
-							"parameterSet": "SLH-DSA-SHA2-128f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 21,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 4,
-							"parameterSet": "SLH-DSA-SHAKE-128f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 31,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 5,
-							"parameterSet": "SLH-DSA-SHA2-192s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 41,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 6,
-							"parameterSet": "SLH-DSA-SHAKE-192s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 51,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 7,
-							"parameterSet": "SLH-DSA-SHA2-192f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 61,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 8,
-							"parameterSet": "SLH-DSA-SHAKE-192f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 71,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 9,
-							"parameterSet": "SLH-DSA-SHA2-256s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 81,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 10,
-							"parameterSet": "SLH-DSA-SHAKE-256s",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 91,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 11,
-							"parameterSet": "SLH-DSA-SHA2-256f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 101,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						},
-						{
-							"tgId": 12,
-							"parameterSet": "SLH-DSA-SHAKE-256f",
-							"testType": "AFT",
-							"totalTests": 10,
-							"passed": 0,
-							"failed": 0,
-							"skipped": 10,
-							"firstFailure": {
-								"tcId": 111,
-								"reason": "liboqs 0.15.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
-							}
-						}
-					],
-					"totalTests": 120,
-					"passed": 0,
-					"failed": 0,
-					"skipped": 120,
-					"durationMs": 0
-				}
-			],
-			"summary": {
-				"totalOperations": 4,
-				"totalTests": 435,
-				"passed": 240,
-				"failed": 0,
-				"skipped": 195,
-				"passRate": 55.17
-			},
-			"scopeNotes": [
-				"@heossihq/liboqs-native 0.15.1 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
-				"ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.15.0 upstream does NOT expose OQS_SIG_keypair_derand - the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
-				"The liboqs C library's own ACVP test record is maintained upstream by the Open Quantum Safe project at github.com/open-quantum-safe/liboqs."
-			]
-		}
-	},
-	"digest": "102decef2e45560bc37ac75c09e2c80f9d5f468819757901b84bf925b7327e9a"
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-20T22:29:09.010Z",
+  "nobleVersion": "0.7.1",
+  "liboqsVersion": "0.16.0",
+  "vectorSource": {
+    "repo": "paulmillr/acvp-vectors",
+    "ref": "56669e07d50cd6b0c19d81a63be2e987dd5beeee",
+    "canonicalSource": "https://github.com/usnistgov/ACVP-Server/tree/v1.1.0.43/gen-val/json-files (mirror)"
+  },
+  "environment": {
+    "node": "v24.22.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "fastMode": false,
+    "onlyAlgorithm": null
+  },
+  "results": [
+    {
+      "algorithm": "ML-KEM",
+      "operation": "keyGen",
+      "vectorDirectory": "ML-KEM-keyGen-FIPS203",
+      "groups": [
+        {
+          "tgId": 1,
+          "parameterSet": "ML-KEM-512",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "ML-KEM-768",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "ML-KEM-1024",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        }
+      ],
+      "totalTests": 75,
+      "passed": 75,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 31
+    },
+    {
+      "algorithm": "ML-KEM",
+      "operation": "encapDecap",
+      "vectorDirectory": "ML-KEM-encapDecap-FIPS203",
+      "groups": [
+        {
+          "tgId": 1,
+          "parameterSet": "ML-KEM-512",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "ML-KEM-768",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "ML-KEM-1024",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 4,
+          "parameterSet": "ML-KEM-512",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 5,
+          "parameterSet": "ML-KEM-768",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 6,
+          "parameterSet": "ML-KEM-1024",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 7,
+          "parameterSet": "ML-KEM-512",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 8,
+          "parameterSet": "ML-KEM-512",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 9,
+          "parameterSet": "ML-KEM-768",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 10,
+          "parameterSet": "ML-KEM-768",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 11,
+          "parameterSet": "ML-KEM-1024",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 12,
+          "parameterSet": "ML-KEM-1024",
+          "testType": "VAL",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        }
+      ],
+      "totalTests": 165,
+      "passed": 165,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 56
+    },
+    {
+      "algorithm": "ML-DSA",
+      "operation": "keyGen",
+      "vectorDirectory": "ML-DSA-keyGen-FIPS204",
+      "groups": [
+        {
+          "tgId": 1,
+          "parameterSet": "ML-DSA-44",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "ML-DSA-65",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "ML-DSA-87",
+          "testType": "AFT",
+          "totalTests": 25,
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0
+        }
+      ],
+      "totalTests": 75,
+      "passed": 75,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 132
+    },
+    {
+      "algorithm": "SLH-DSA",
+      "operation": "keyGen",
+      "vectorDirectory": "SLH-DSA-keyGen-FIPS205",
+      "groups": [
+        {
+          "tgId": 1,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 4,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 5,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 6,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 7,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 8,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 9,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 10,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 11,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "tgId": 12,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "testType": "AFT",
+          "totalTests": 10,
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0
+        }
+      ],
+      "totalTests": 120,
+      "passed": 120,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 23950
+    }
+  ],
+  "summary": {
+    "totalOperations": 4,
+    "totalTests": 435,
+    "passed": 435,
+    "failed": 0,
+    "skipped": 0,
+    "passRate": 100
+  },
+  "providers": {
+    "noble": {
+      "provider": "noble",
+      "version": "0.7.1",
+      "implementationType": "pure-js",
+      "results": [
+        {
+          "algorithm": "ML-KEM",
+          "operation": "keyGen",
+          "vectorDirectory": "ML-KEM-keyGen-FIPS203",
+          "groups": [
+            {
+              "tgId": 1,
+              "parameterSet": "ML-KEM-512",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 2,
+              "parameterSet": "ML-KEM-768",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 3,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            }
+          ],
+          "totalTests": 75,
+          "passed": 75,
+          "failed": 0,
+          "skipped": 0,
+          "durationMs": 31
+        },
+        {
+          "algorithm": "ML-KEM",
+          "operation": "encapDecap",
+          "vectorDirectory": "ML-KEM-encapDecap-FIPS203",
+          "groups": [
+            {
+              "tgId": 1,
+              "parameterSet": "ML-KEM-512",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 2,
+              "parameterSet": "ML-KEM-768",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 3,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 4,
+              "parameterSet": "ML-KEM-512",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 5,
+              "parameterSet": "ML-KEM-768",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 6,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 7,
+              "parameterSet": "ML-KEM-512",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 8,
+              "parameterSet": "ML-KEM-512",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 9,
+              "parameterSet": "ML-KEM-768",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 10,
+              "parameterSet": "ML-KEM-768",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 11,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 12,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            }
+          ],
+          "totalTests": 165,
+          "passed": 165,
+          "failed": 0,
+          "skipped": 0,
+          "durationMs": 56
+        },
+        {
+          "algorithm": "ML-DSA",
+          "operation": "keyGen",
+          "vectorDirectory": "ML-DSA-keyGen-FIPS204",
+          "groups": [
+            {
+              "tgId": 1,
+              "parameterSet": "ML-DSA-44",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 2,
+              "parameterSet": "ML-DSA-65",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 3,
+              "parameterSet": "ML-DSA-87",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            }
+          ],
+          "totalTests": 75,
+          "passed": 75,
+          "failed": 0,
+          "skipped": 0,
+          "durationMs": 132
+        },
+        {
+          "algorithm": "SLH-DSA",
+          "operation": "keyGen",
+          "vectorDirectory": "SLH-DSA-keyGen-FIPS205",
+          "groups": [
+            {
+              "tgId": 1,
+              "parameterSet": "SLH-DSA-SHA2-128s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 2,
+              "parameterSet": "SLH-DSA-SHAKE-128s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 3,
+              "parameterSet": "SLH-DSA-SHA2-128f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 4,
+              "parameterSet": "SLH-DSA-SHAKE-128f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 5,
+              "parameterSet": "SLH-DSA-SHA2-192s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 6,
+              "parameterSet": "SLH-DSA-SHAKE-192s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 7,
+              "parameterSet": "SLH-DSA-SHA2-192f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 8,
+              "parameterSet": "SLH-DSA-SHAKE-192f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 9,
+              "parameterSet": "SLH-DSA-SHA2-256s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 10,
+              "parameterSet": "SLH-DSA-SHAKE-256s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 11,
+              "parameterSet": "SLH-DSA-SHA2-256f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 12,
+              "parameterSet": "SLH-DSA-SHAKE-256f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            }
+          ],
+          "totalTests": 120,
+          "passed": 120,
+          "failed": 0,
+          "skipped": 0,
+          "durationMs": 23950
+        }
+      ],
+      "summary": {
+        "totalOperations": 4,
+        "totalTests": 435,
+        "passed": 435,
+        "failed": 0,
+        "skipped": 0,
+        "passRate": 100
+      }
+    },
+    "liboqs": {
+      "provider": "liboqs",
+      "version": "0.16.0",
+      "implementationType": "native-c",
+      "results": [
+        {
+          "algorithm": "ML-KEM",
+          "operation": "keyGen",
+          "vectorDirectory": "ML-KEM-keyGen-FIPS203",
+          "groups": [
+            {
+              "tgId": 1,
+              "parameterSet": "ML-KEM-512",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 2,
+              "parameterSet": "ML-KEM-768",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 3,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            }
+          ],
+          "totalTests": 75,
+          "passed": 75,
+          "failed": 0,
+          "skipped": 0,
+          "durationMs": 9
+        },
+        {
+          "algorithm": "ML-KEM",
+          "operation": "encapDecap",
+          "vectorDirectory": "ML-KEM-encapDecap-FIPS203",
+          "groups": [
+            {
+              "tgId": 1,
+              "parameterSet": "ML-KEM-512",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 2,
+              "parameterSet": "ML-KEM-768",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 3,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 25,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 4,
+              "parameterSet": "ML-KEM-512",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 5,
+              "parameterSet": "ML-KEM-768",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 6,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 7,
+              "parameterSet": "ML-KEM-512",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 8,
+              "parameterSet": "ML-KEM-512",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 9,
+              "parameterSet": "ML-KEM-768",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 10,
+              "parameterSet": "ML-KEM-768",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 11,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            {
+              "tgId": 12,
+              "parameterSet": "ML-KEM-1024",
+              "testType": "VAL",
+              "totalTests": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            }
+          ],
+          "totalTests": 165,
+          "passed": 165,
+          "failed": 0,
+          "skipped": 0,
+          "durationMs": 14
+        },
+        {
+          "algorithm": "ML-DSA",
+          "operation": "keyGen",
+          "vectorDirectory": "ML-DSA-keyGen-FIPS204",
+          "groups": [
+            {
+              "tgId": 1,
+              "parameterSet": "ML-DSA-44",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 25,
+              "firstFailure": {
+                "tcId": 1,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 2,
+              "parameterSet": "ML-DSA-65",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 25,
+              "firstFailure": {
+                "tcId": 26,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 3,
+              "parameterSet": "ML-DSA-87",
+              "testType": "AFT",
+              "totalTests": 25,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 25,
+              "firstFailure": {
+                "tcId": 51,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            }
+          ],
+          "totalTests": 75,
+          "passed": 0,
+          "failed": 0,
+          "skipped": 75,
+          "durationMs": 0
+        },
+        {
+          "algorithm": "SLH-DSA",
+          "operation": "keyGen",
+          "vectorDirectory": "SLH-DSA-keyGen-FIPS205",
+          "groups": [
+            {
+              "tgId": 1,
+              "parameterSet": "SLH-DSA-SHA2-128s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 1,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 2,
+              "parameterSet": "SLH-DSA-SHAKE-128s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 11,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 3,
+              "parameterSet": "SLH-DSA-SHA2-128f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 21,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 4,
+              "parameterSet": "SLH-DSA-SHAKE-128f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 31,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 5,
+              "parameterSet": "SLH-DSA-SHA2-192s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 41,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 6,
+              "parameterSet": "SLH-DSA-SHAKE-192s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 51,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 7,
+              "parameterSet": "SLH-DSA-SHA2-192f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 61,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 8,
+              "parameterSet": "SLH-DSA-SHAKE-192f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 71,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 9,
+              "parameterSet": "SLH-DSA-SHA2-256s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 81,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 10,
+              "parameterSet": "SLH-DSA-SHAKE-256s",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 91,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 11,
+              "parameterSet": "SLH-DSA-SHA2-256f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 101,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            },
+            {
+              "tgId": 12,
+              "parameterSet": "SLH-DSA-SHAKE-256f",
+              "testType": "AFT",
+              "totalTests": 10,
+              "passed": 0,
+              "failed": 0,
+              "skipped": 10,
+              "firstFailure": {
+                "tcId": 111,
+                "reason": "liboqs 0.16.0 does not expose OQS_SIG_keypair_derand. ML-DSA and SLH-DSA keypair generation in liboqs uses internal randombytes(); there is no seed-controlled keypair API in the upstream C library yet. Upstream PR tracked separately at github.com/open-quantum-safe/liboqs."
+              }
+            }
+          ],
+          "totalTests": 120,
+          "passed": 0,
+          "failed": 0,
+          "skipped": 120,
+          "durationMs": 0
+        }
+      ],
+      "summary": {
+        "totalOperations": 4,
+        "totalTests": 435,
+        "passed": 240,
+        "failed": 0,
+        "skipped": 195,
+        "passRate": 55.17
+      },
+      "scopeNotes": [
+        "@heossihq/liboqs-native 0.16.0 binds OQS_KEM_keypair_derand and OQS_KEM_encaps_derand for ML-KEM ACVP coverage: keyGen (75/75) and encapsulation AFT (75/75) now run deterministically against the production engine, matching the noble figure for ML-KEM.",
+        "ACVP signature keyGen tests (ML-DSA, SLH-DSA) remain deferred because liboqs 0.16.0 upstream does NOT expose OQS_SIG_keypair_derand - the pqcrystals_ml_dsa and slh_dsa_c reference implementations only ship crypto_sign_keypair(pk, sk) using internal randombytes(). Closing this gap requires an upstream PR against github.com/open-quantum-safe/liboqs to add the seed-controlled keypair API.",
+        "The liboqs C library's own ACVP test record is maintained upstream by the Open Quantum Safe project at github.com/open-quantum-safe/liboqs."
+      ]
+    }
+  },
+  "digest": "97205f3c598d6241787cb093d63c4212364838a547774a69981c13fc0a1ac89a"
 }

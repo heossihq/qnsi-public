@@ -10,10 +10,10 @@ Examples::
 
     # ML-KEM-768 (NIST security category 3 - recommended default)
     kem = MlKem("ML-KEM-768")
-    pk, sk = kem.keygen()
-    ciphertext, shared = kem.encapsulate(pk)
-    recovered = kem.decapsulate(ciphertext, sk)
-    assert recovered == shared
+    pair = kem.keygen()
+    encapsulation = kem.encapsulate(pair.public_key)
+    recovered = kem.decapsulate(encapsulation.ciphertext, pair.secret_key)
+    assert recovered == encapsulation.shared_secret
 
     # Sizes match FIPS 203 Table 3
     assert kem.public_key_bytes == 1184
@@ -23,13 +23,11 @@ Examples::
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final
+from typing import Final
 
 from qnsi.crypto._registry import resolve_kem_candidates
-
-if TYPE_CHECKING:  # pragma: no cover
-    pass
 
 
 @dataclass(frozen=True)
@@ -49,14 +47,14 @@ class KemEncapsulation:
 
 
 _LIBOQS_INSTALL_HINT: Final = (
-    "Install the QNSP local-crypto extra:\n"
+    "Install the QNSI local-crypto extra:\n"
     "  pip install 'qnsi[crypto]'\n\n"
-    "This pulls in liboqs-python==0.12.0 which expects the liboqs C library "
+    "This pulls in liboqs-python==0.16.0.1 which expects the liboqs C library "
     "to be available on your system. Easiest paths:\n"
     "  - macOS:    brew install liboqs\n"
     "  - Debian:   apt install liboqs-dev\n"
     "  - From src: https://github.com/open-quantum-safe/liboqs (cmake build)\n"
-    "  - QNSP monorepo dev: tooling/liboqs-src/build/ already provides this."
+    "Install a shared library; static liboqs archives cannot be loaded by Python."
 )
 
 
@@ -69,6 +67,16 @@ def _import_oqs():
             "binding) but it is not installed.\n\n" + _LIBOQS_INSTALL_HINT
         ) from exc
     return oqs
+
+
+def _native_sizes(context, names: tuple[str, ...]) -> tuple[int, ...]:
+    details = getattr(context, "details", None)
+    if not isinstance(details, dict):
+        raise RuntimeError("Native crypto size metadata is unavailable")
+    sizes = tuple(details.get(name) for name in names)
+    if any(isinstance(size, bool) or not isinstance(size, int) or size <= 0 for size in sizes):
+        raise RuntimeError("Native crypto size metadata is invalid")
+    return sizes
 
 
 class MlKem:
@@ -96,6 +104,7 @@ class MlKem:
     """
 
     def __init__(self, algorithm: str) -> None:
+        self._kem = None
         candidates = resolve_kem_candidates(algorithm)
         oqs = _import_oqs()
         # Probe each candidate name until one is supported by the linked
@@ -120,14 +129,27 @@ class MlKem:
 
         # Pull sizes from liboqs (`details`) so they always match the
         # underlying spec - no inline literals that drift from FIPS 203.
-        details = kem.details if hasattr(kem, "details") else {}
         self._algorithm = algorithm
         self._liboqs_name = chosen
         self._kem = kem
-        self._public_key_bytes = int(details.get("length_public_key", 0))
-        self._secret_key_bytes = int(details.get("length_secret_key", 0))
-        self._ciphertext_bytes = int(details.get("length_ciphertext", 0))
-        self._shared_secret_bytes = int(details.get("length_shared_secret", 0))
+        try:
+            (
+                self._public_key_bytes,
+                self._secret_key_bytes,
+                self._ciphertext_bytes,
+                self._shared_secret_bytes,
+            ) = _native_sizes(
+                kem,
+                (
+                    "length_public_key",
+                    "length_secret_key",
+                    "length_ciphertext",
+                    "length_shared_secret",
+                ),
+            )
+        except RuntimeError:
+            self.close()
+            raise
 
     # ── properties ────────────────────────────────────────────────────────
 
@@ -161,6 +183,8 @@ class MlKem:
 
     def keygen(self) -> KemKeyPair:
         """Generate a fresh ``(public_key, secret_key)`` pair."""
+        if self._kem is None:
+            raise RuntimeError("KEM context is closed")
         public_key = bytes(self._kem.generate_keypair())
         # liboqs-python stores the secret key inside the KEM object after
         # generate_keypair(); export it explicitly so callers control its
@@ -172,6 +196,10 @@ class MlKem:
         """Encapsulate a fresh shared secret to a recipient public key."""
         if not isinstance(public_key, (bytes, bytearray)):
             raise TypeError("public_key must be bytes")
+        if len(public_key) != self.public_key_bytes:
+            raise ValueError("public_key has an invalid length")
+        if self._kem is None:
+            raise RuntimeError("KEM context is closed")
         ciphertext, shared_secret = self._kem.encap_secret(bytes(public_key))
         return KemEncapsulation(
             ciphertext=bytes(ciphertext),
@@ -191,6 +219,12 @@ class MlKem:
             raise TypeError("ciphertext must be bytes")
         if not isinstance(secret_key, (bytes, bytearray)):
             raise TypeError("secret_key must be bytes")
+        if len(ciphertext) != self.ciphertext_bytes:
+            raise ValueError("ciphertext has an invalid length")
+        if len(secret_key) != self.secret_key_bytes:
+            raise ValueError("secret_key has an invalid length")
+        if self._kem is None:
+            raise RuntimeError("KEM context is closed")
         oqs = _import_oqs()
         with oqs.KeyEncapsulation(self._liboqs_name, bytes(secret_key)) as bound:
             return bytes(bound.decap_secret(bytes(ciphertext)))
@@ -200,11 +234,9 @@ class MlKem:
     def close(self) -> None:
         """Release the underlying liboqs context. Idempotent."""
         if self._kem is not None:
-            try:
-                self._kem.free()
-            except Exception:
-                pass
+            context = self._kem
             self._kem = None  # type: ignore[assignment]
+            context.free()
 
     def __enter__(self) -> MlKem:
         return self
@@ -213,4 +245,7 @@ class MlKem:
         self.close()
 
     def __del__(self) -> None:  # pragma: no cover
-        self.close()
+        try:
+            self.close()
+        except Exception:
+            warnings.warn("Native KEM context cleanup failed", ResourceWarning, stacklevel=2)

@@ -35,7 +35,10 @@
 //! algorithm-name surface matches the rest of the QNSI ecosystem. Add
 //! the dependency with `cargo add qnsi --features crypto`. Building
 //! requires `liboqs` source available at link time (the `oqs-sys` crate
-//! can build it from source given a C toolchain + `cmake`).
+//! can build it from source given a C toolchain + `cmake`). As of
+//! 2026-09-01, upstream `oqs` 0.11 is still backed by
+//! `oqs-sys` 0.11.0+liboqs-0.13.0, so Rust intentionally lags the Node
+//! and Go 0.16.0 bindings until liboqs-rust cuts a matching release.
 
 mod activation;
 mod errors;
@@ -51,6 +54,7 @@ pub mod crypto_inventory;
 pub mod kms;
 pub mod search;
 pub mod storage;
+pub mod surface;
 pub mod tenant;
 pub mod vault;
 
@@ -110,21 +114,25 @@ impl Client {
         if opts.api_key.trim().is_empty() {
             return Err(Error::Auth(AuthError {
                 code: None,
-                message: "api_key is required (sign up at https://cloud.qnsi.heossi.com/auth)".into(),
+                message: "api_key is required (sign up at https://cloud.qnsi.heossi.com/auth)"
+                    .into(),
             }));
         }
         let http = reqwest::Client::builder()
+            .redirect(reqwest::redirect::Policy::none())
             .timeout(std::time::Duration::from_secs(opts.timeout_seconds))
             // A User-Agent is REQUIRED: the edge WAF (AWSManagedRulesCommonRuleSet
             // NoUserAgent_HEADER) blocks UA-less requests with 403. reqwest sets none
             // by default, so without this every SDK call is blocked at the edge.
             .user_agent(concat!("qnsi-rust/", env!("CARGO_PKG_VERSION")))
             .build()
-            .map_err(|e| Error::Network(NetworkError {
-                op: "build".into(),
-                url: opts.base_url.clone(),
-                cause: e.to_string(),
-            }))?;
+            .map_err(|e| {
+                Error::Network(NetworkError {
+                    op: "build".into(),
+                    url: opts.base_url.clone(),
+                    cause: e.to_string(),
+                })
+            })?;
         let activation = Arc::new(Activation::new(opts.api_key, opts.base_url, http.clone()));
         let auth = auth::Client::new(activation.clone(), http.clone());
         Ok(Self {

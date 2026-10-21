@@ -35,7 +35,7 @@ class SearchClient(_ServiceClient):
         return self._request("GET", "/indexes")
 
     def delete_index(self, index_name: str) -> None:
-        self._request("DELETE", f"/indexes/{index_name}")
+        self._request("DELETE", f"/indexes/{self._segment(index_name)}")
 
     def upsert_vectors(
         self,
@@ -46,7 +46,7 @@ class SearchClient(_ServiceClient):
     ) -> dict[str, Any]:
         return self._request(
             "POST",
-            f"/indexes/{index_name}/vectors",
+            f"/indexes/{self._segment(index_name)}/vectors",
             json={"vectors": vectors},
             idempotency_key=idempotency_key,
         )
@@ -62,4 +62,4 @@ class SearchClient(_ServiceClient):
         body: dict[str, Any] = {"vector": vector, "topK": top_k}
         if filter is not None:
             body["filter"] = filter
-        return self._request("POST", f"/indexes/{index_name}/query", json=body)
+        return self._request("POST", f"/indexes/{self._segment(index_name)}/query", json=body)

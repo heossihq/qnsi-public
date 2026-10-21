@@ -31,7 +31,7 @@ One activation handshake on first use, shared across all 11 sub-clients. One ver
 pnpm add @heossihq/qnsi
 ```
 
-Requires Node.js ≥ 22.0.0. ESM-first; CommonJS consumers can `await import("@heossihq/qnsi")`.
+Requires Node.js ≥ 24.18.0. ESM-first; CommonJS consumers can `await import("@heossihq/qnsi")`.
 
 Five [runnable public scenarios](./examples/README.md) cover KMS sign/verify, vault lifecycle, read-only inventory and CBOM, audit ingestion, and storage round-trip behavior. Run them with a non-production tenant and review each persistent-effect boundary before execution.
 
@@ -67,6 +67,21 @@ await qnsi.billing.getEntitlements();
 ```
 
 ## Modules
+
+### Manifest operation surface (unreleased source)
+
+`QNSI_OPERATIONS` describes 880 manifest declarations across 15 customer-facing
+services (876 distinct service/verb/edge-path contracts, including compatibility
+aliases). Generated surface clients preserve their existing methods and add
+optional `RequestOptions` for pagination queries and idempotency keys. Generated
+path parameters are encoded as single URL segments; empty and dot segments fail
+before sending credentials. The KMS export-policy denial endpoint is included.
+
+This catalog is not a live availability claim or a complete typed request/response
+schema. Backend validation, tenant authorization and entitlements remain
+authoritative. Human-session and browser ceremony endpoints may need their
+specific authentication flow rather than an API key. Package publication and
+production acceptance of these source changes are **NOT VERIFIED**.
 
 Each sub-namespace wraps one QNSI backend service:
 

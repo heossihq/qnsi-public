@@ -16,7 +16,10 @@ export const PQC_KEM_ALGORITHMS = [
 	"kyber-512",
 	"kyber-768",
 	"kyber-1024",
-	// HQC omitted - disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+	// HQC (NIST-selected backup KEM; liboqs 0.16.0 updates to the 20250822 spec)
+	"hqc-128",
+	"hqc-192",
+	"hqc-256",
 	// BIKE (NIST Round 4 candidate)
 	"bike-l1",
 	"bike-l3",

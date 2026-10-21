@@ -9,6 +9,13 @@ vi.mock("@heossihq/qnsi-sdk-activation", () => ({
 
 import { AccessControlClient, DEFAULT_BASE_URL, toNistAlgorithmName } from "./index.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 const TENANT = "11111111-1111-4111-8111-111111111111";
 const POLICY = "22222222-2222-4222-8222-222222222222";
 const GRANT = "33333333-3333-4333-8333-333333333333";
@@ -100,17 +107,15 @@ describe("construction", () => {
 		expect(() => new AccessControlClient({ apiKey: "tok", baseUrl: u })).not.toThrow();
 	});
 
-	it.each([
-		"http://11.0.0.5",
-		"http://172.15.0.5",
-		"http://172.32.0.5",
-		"http://192.169.1.5",
-	])("rejects %s as not internal", (u) => {
-		vi.stubEnv("NODE_ENV", "production");
-		expect(() => new AccessControlClient({ apiKey: "tok", baseUrl: u })).toThrow(
-			"baseUrl must use HTTPS in production",
-		);
-	});
+	it.each(["http://11.0.0.5", "http://172.15.0.5", "http://172.32.0.5", "http://192.169.1.5"])(
+		"rejects %s as not internal",
+		(u) => {
+			vi.stubEnv("NODE_ENV", "production");
+			expect(() => new AccessControlClient({ apiKey: "tok", baseUrl: u })).toThrow(
+				"baseUrl must use HTTPS in production",
+			);
+		},
+	);
 
 	it("rejects an unparseable http base url", () => {
 		vi.stubEnv("NODE_ENV", "production");
@@ -300,7 +305,14 @@ describe("telemetry", () => {
 		});
 
 		await expect(client({ telemetry: { record } }).getSimulationHistory()).rejects.toBeTruthy();
-		expect((record.mock.calls[0]?.[0] as Record<string, unknown>)["error"]).toBeUndefined();
+		expect(
+			(
+				required(record.mock.calls[0]?.[0], "the first telemetry record payload") as Record<
+					string,
+					unknown
+				>
+			)["error"],
+		).toBeUndefined();
 	});
 
 	it("builds telemetry from a config object and stays silent without one", async () => {

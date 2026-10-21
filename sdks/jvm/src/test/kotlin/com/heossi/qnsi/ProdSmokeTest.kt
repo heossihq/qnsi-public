@@ -2,18 +2,18 @@ package com.heossi.qnsi
 
 import java.util.Base64
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.junit.jupiter.api.Assumptions.assumeTrue
 
 /**
  * REAL end-to-end smoke against PRODUCTION through the actual JVM SDK (provable-evidence
  * mandate - prove the wire contract with a real call, not a mock). Gated on QNSP_CANARY_KEY
  * (the persistent synthetic-canary free-tenant key in Secrets Manager
- * qnsp/prod/synthetic-canary-key); skips cleanly when unset so normal `./gradlew test`
- * (MockWebServer suites) never hits the network.
+ * qnsp/prod/synthetic-canary-key). Missing credentials fail closed, without a
+ * skipped verifier or a network call. Local fixtures do not establish production acceptance.
  *
  *   QNSP_CANARY_KEY=… ./gradlew test --tests 'com.heossi.qnsi.ProdSmokeTest'
  *
@@ -25,10 +25,14 @@ class ProdSmokeTest {
     private val canaryKey: String? = System.getenv("QNSP_CANARY_KEY")
     private val baseUrl: String = System.getenv("QNSP_E2E_API") ?: "https://api.qnsi.heossi.com"
 
+    private fun requiredCanaryKey(): String {
+        assertTrue(!canaryKey.isNullOrBlank(), "Approved QNSP_CANARY_KEY is required for the production verifier")
+        return canaryKey!!
+    }
+
     @Test
     fun `JVM SDK activates and reaches storage plus kms via proxy against prod`() {
-        assumeTrue(canaryKey != null && canaryKey!!.isNotBlank(), "QNSP_CANARY_KEY not set - skipping prod smoke")
-        val client = QnsiClient(apiKey = canaryKey!!, baseUrl = baseUrl)
+        val client = QnsiClient(apiKey = requiredCanaryKey(), baseUrl = baseUrl)
 
         // Activation (POST /billing/v1/sdk/activate) - resolves the tenant from the key.
         client.ensureActivated()
@@ -51,11 +55,10 @@ class ProdSmokeTest {
         val email = System.getenv("QNSP_CANARY_EMAIL")
         val password = System.getenv("QNSP_CANARY_PASSWORD")
         val tenant = System.getenv("QNSP_CANARY_TENANT")
-        assumeTrue(
-            canaryKey != null && email != null && password != null && tenant != null,
-            "canary login creds not set - skipping auth prod smoke",
-        )
-        val client = QnsiClient(apiKey = canaryKey!!, baseUrl = baseUrl)
+        val key = requiredCanaryKey()
+        assertTrue(!email.isNullOrBlank() && !password.isNullOrBlank() && !tenant.isNullOrBlank(),
+            "Approved canary login credentials and tenant are required for the production verifier")
+        val client = QnsiClient(apiKey = key, baseUrl = baseUrl)
 
         // login -> POST /edge/auth/login (creds in body, no auth header). Caches the session.
         val loginBody = client.auth.login(LoginRequest(email = email!!, password = password!!, tenantId = tenant!!))
@@ -78,9 +81,14 @@ class ProdSmokeTest {
      */
     @Test
     fun `kms sign-verify and vault create-rotate against prod (field-name contract)`() {
-        assumeTrue(canaryKey != null && canaryKey!!.isNotBlank(), "QNSP_CANARY_KEY not set - skipping prod smoke")
-        val client = QnsiClient(apiKey = canaryKey!!, baseUrl = baseUrl)
+        val approvedApiKey = requiredCanaryKey()
+        val approvedTenant = System.getenv("QNSP_CANARY_TENANT")
+        assertTrue(!approvedTenant.isNullOrBlank(), "Approved QNSP_CANARY_TENANT is required before production mutations")
+        assertEquals("kms:create-sign-verify-delete,vault:create-rotate-delete", System.getenv("QNSP_CANARY_MUTATION_SCOPE"),
+            "Explicit canary mutation scope is required before creating production keys or secrets")
+        val client = QnsiClient(apiKey = approvedApiKey, baseUrl = baseUrl)
         client.ensureActivated()
+        assertEquals(approvedTenant, client.tenantId(), "Activated tenant must match the approved canary tenant")
 
         fun jstr(o: JsonObject, vararg keys: String): String? =
             keys.firstNotNullOfOrNull { o[it]?.jsonPrimitive?.content }

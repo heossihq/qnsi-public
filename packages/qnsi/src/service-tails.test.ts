@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { AuditClient } from "./audit.js";
 import { QnsiApiError, QnsiWebhookError } from "./errors.js";
 import { KmsClient } from "./kms.js";
-import { StorageClient } from "./storage.js";
+import { STORAGE_RECIPIENT_ENVELOPE_V2_SCHEME, StorageClient } from "./storage.js";
 import { VaultClient } from "./vault.js";
 import { parseQnsiWebhook } from "./webhooks.js";
 
@@ -21,6 +21,19 @@ function spy(responses: unknown[] = [{}]) {
 }
 
 const B64_DATA = Buffer.from("payload-bytes").toString("base64");
+
+/** The opaque object hspkSeal returns and hspkSign takes back. */
+const SEALED_KEY = {
+	scheme: "hspk-hsm-cek-aes256gcm-v1",
+	algorithm: "ml-dsa-65",
+	hsmKeyId: "hsm-key",
+	wrappedCek: "AA==",
+	iv: "AA==",
+	ciphertext: "AA==",
+	authTag: "AA==",
+	publicKey: "AA==",
+	sealedAt: "2026-07-19T00:00:00.000Z",
+};
 
 describe("kms response guards", () => {
 	it("decodes present signatures and wrapped/unwrapped material", async () => {
@@ -45,7 +58,12 @@ describe("kms response guards", () => {
 			"payload-bytes",
 		);
 		expect(
-			Buffer.from(await kms.hspkSign("conn-1", "k1", B64_DATA, new Uint8Array([1]))).toString(),
+			Buffer.from(
+				await kms.hspkSign(
+					{ connectionId: "conn-1", keyId: "k1", sealedKey: SEALED_KEY },
+					new Uint8Array([1]),
+				),
+			).toString(),
 		).toBe("payload-bytes");
 	});
 
@@ -61,9 +79,12 @@ describe("kms response guards", () => {
 		await expect(kms.unwrap("k1", new Uint8Array([1]))).rejects.toThrow(
 			"kms.unwrap: response missing dataKey/plaintextB64",
 		);
-		await expect(kms.hspkSign("conn-1", "k1", B64_DATA, new Uint8Array([1]))).rejects.toThrow(
-			"kms.hspkSign: response missing signature",
-		);
+		await expect(
+			kms.hspkSign(
+				{ connectionId: "conn-1", keyId: "k1", sealedKey: SEALED_KEY },
+				new Uint8Array([1]),
+			),
+		).rejects.toThrow("kms.hspkSign: response missing signature");
 	});
 });
 
@@ -85,7 +106,9 @@ describe("storage putObject optional fields", () => {
 		await storage.putObject("bucket-1", "key-1", { data: new Uint8Array([1, 2]) });
 		await storage.putObject("bucket-1", "key-2", {
 			data: new Uint8Array([3]),
-			sseAlgorithm: "custom-scheme",
+			// The only scheme PutObjectInput accepts; passing it explicitly exercises the
+			// caller-supplied branch rather than the default.
+			sseAlgorithm: STORAGE_RECIPIENT_ENVELOPE_V2_SCHEME,
 			contentType: "application/pdf",
 			metadata: { source: "test" },
 		});
@@ -94,7 +117,7 @@ describe("storage putObject optional fields", () => {
 		expect(bodies[0]?.["contentType"]).toBeUndefined();
 		expect(bodies[0]?.["metadata"]).toBeUndefined();
 		expect(bodies[1]).toMatchObject({
-			sseAlgorithm: "custom-scheme",
+			sseAlgorithm: STORAGE_RECIPIENT_ENVELOPE_V2_SCHEME,
 			contentType: "application/pdf",
 			metadata: { source: "test" },
 		});

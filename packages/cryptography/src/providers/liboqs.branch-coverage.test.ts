@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import type { PqcAlgorithm } from "../provider.js";
+import { PqcAlgorithmUnavailableError } from "../provider.js";
 import {
 	createLiboqsProviderFactory,
 	defaultLoadModule,
@@ -90,6 +91,89 @@ describe("liboqs provider - Branch Coverage", () => {
 			);
 			expect(() => resolveSignatureAlias(rejectingModule as never, "dilithium-2")).toThrow(
 				"None of the aliases",
+			);
+		});
+
+		it("types image-capability failures as PqcAlgorithmUnavailableError", () => {
+			const rejectingModule = {
+				KEM: class {
+					constructor() {
+						throw new Error("unsupported KEM");
+					}
+				},
+				Sig: class {
+					constructor() {
+						throw new Error("unsupported signature");
+					}
+				},
+			};
+			const captured = (fn: () => unknown): unknown => {
+				try {
+					fn();
+				} catch (error) {
+					return error;
+				}
+				throw new Error("expected the call to throw");
+			};
+
+			const kemError = captured(() => resolveKemAlias(rejectingModule as never, "kyber-512"));
+			expect(kemError).toBeInstanceOf(PqcAlgorithmUnavailableError);
+			expect((kemError as PqcAlgorithmUnavailableError).algorithm).toBe("kyber-512");
+			expect((kemError as PqcAlgorithmUnavailableError).name).toBe("PqcAlgorithmUnavailableError");
+			expect((kemError as Error).message).toBe(
+				"None of the aliases (ML-KEM-512, Kyber512) are supported for KEM 'kyber-512'",
+			);
+
+			const sigError = captured(() =>
+				resolveSignatureAlias(rejectingModule as never, "dilithium-5"),
+			);
+			expect(sigError).toBeInstanceOf(PqcAlgorithmUnavailableError);
+			expect((sigError as PqcAlgorithmUnavailableError).algorithm).toBe("dilithium-5");
+			expect((sigError as Error).message).toMatch(
+				/^None of the aliases \(.+\) are supported for signature algorithm 'dilithium-5'$/,
+			);
+
+			const kemRegistryDefect = captured(() =>
+				resolveKemAlias(rejectingModule as never, "dilithium-2" as never),
+			);
+			expect(kemRegistryDefect).toBeInstanceOf(Error);
+			expect(kemRegistryDefect).not.toBeInstanceOf(PqcAlgorithmUnavailableError);
+			expect((kemRegistryDefect as Error).message).toBe(
+				"No liboqs aliases defined for KEM algorithm 'dilithium-2'",
+			);
+
+			const sigRegistryDefect = captured(() =>
+				resolveSignatureAlias(rejectingModule as never, "kyber-512" as never),
+			);
+			expect(sigRegistryDefect).toBeInstanceOf(Error);
+			expect(sigRegistryDefect).not.toBeInstanceOf(PqcAlgorithmUnavailableError);
+			expect((sigRegistryDefect as Error).message).toBe(
+				"No liboqs aliases defined for signature algorithm 'kyber-512'",
+			);
+		});
+
+		it("types algorithms not enabled for the provider as PqcAlgorithmUnavailableError", async () => {
+			const stubModule = {
+				KEM: class {
+					free() {}
+				},
+				Sig: class {
+					free() {}
+				},
+			};
+			const factory = createLiboqsProviderFactory({
+				loadModule: vi.fn(async () => stubModule as never),
+			});
+			const provider = await factory.create({ algorithms: ["kyber-512"] });
+
+			const error = await provider
+				.generateKeyPair({ algorithm: "dilithium-5" })
+				.then(() => undefined)
+				.catch((caught: unknown) => caught);
+			expect(error).toBeInstanceOf(PqcAlgorithmUnavailableError);
+			expect((error as PqcAlgorithmUnavailableError).algorithm).toBe("dilithium-5");
+			expect((error as Error).message).toBe(
+				"Algorithm 'dilithium-5' is not enabled for this liboqs provider",
 			);
 		});
 

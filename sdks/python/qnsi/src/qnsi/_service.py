@@ -10,6 +10,7 @@ retry.
 from __future__ import annotations
 
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
@@ -35,6 +36,15 @@ class _ServiceClient:
 
     # ── helpers ───────────────────────────────────────────────────────────
 
+    @staticmethod
+    def _segment(value: str | int) -> str:
+        if isinstance(value, bool) or not isinstance(value, (str, int)):
+            raise TypeError("Path parameter must be a string or integer")
+        text = str(value)
+        if not text or text in {".", ".."}:
+            raise ValueError("Empty or dot-segment path parameter")
+        return quote(text, safe="")
+
     def _url(self, path: str, *, query: dict[str, Any] | None = None) -> str:
         base = self._activation.base_url
         # All backend service traffic goes through the edge gateway's /proxy/<svc>
@@ -43,15 +53,13 @@ class _ServiceClient:
         full = f"{base}/proxy{self.PATH_PREFIX}{path}"
         if not query:
             return full
-        encoded: list[str] = []
-        for key, value in query.items():
-            if value is None:
-                continue
-            encoded.append(f"{key}={httpx.QueryParams({key: str(value)})[key]}")
+        encoded = str(
+            httpx.QueryParams({key: value for key, value in query.items() if value is not None})
+        )
         if not encoded:
             return full
         sep = "&" if "?" in full else "?"
-        return f"{full}{sep}{'&'.join(encoded)}"
+        return f"{full}{sep}{encoded}"
 
     def _request(
         self,
@@ -95,7 +103,12 @@ class _ServiceClient:
         headers = self._build_headers(idempotency_key=idempotency_key)
         try:
             response = self._http.request(
-                method, url, json=json, headers=headers, timeout=self._timeout
+                method,
+                url,
+                json=json,
+                headers=headers,
+                timeout=self._timeout,
+                follow_redirects=False,
             )
         except httpx.RequestError as exc:
             raise QnsiNetworkError(
@@ -106,11 +119,21 @@ class _ServiceClient:
             self._activation.invalidate()
             self._activation.get_activation()
             headers = self._build_headers(idempotency_key=idempotency_key)
-            response = self._http.request(
-                method, url, json=json, headers=headers, timeout=self._timeout
-            )
+            try:
+                response = self._http.request(
+                    method,
+                    url,
+                    json=json,
+                    headers=headers,
+                    timeout=self._timeout,
+                    follow_redirects=False,
+                )
+            except httpx.RequestError as exc:
+                raise QnsiNetworkError(
+                    f"Failed to reach QNSI {method} {url} on retry: {exc}", cause=exc
+                ) from exc
 
-        if response.status_code >= 400:
+        if response.status_code >= 300:
             body = _safe_json(response)
             code = None
             message = response.text or f"HTTP {response.status_code}"
@@ -130,7 +153,14 @@ class _ServiceClient:
 
         if response.status_code == 204 or not response.content:
             return {}
-        body = _safe_json(response)
+        try:
+            body = response.json()
+        except (ValueError, TypeError) as exc:
+            raise QnsiApiError(
+                "Response is not valid JSON",
+                status_code=response.status_code,
+                code="INVALID_RESPONSE_JSON",
+            ) from exc
         if not isinstance(body, dict):
             # 200 with non-object JSON (e.g. an array) - wrap so callers can
             # destructure consistently.

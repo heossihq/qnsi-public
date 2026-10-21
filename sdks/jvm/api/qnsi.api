@@ -212,13 +212,22 @@ public final class com/heossi/qnsi/CreateKeyRequest {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Boolean;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Boolean;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun component4 ()Ljava/lang/Boolean;
+	public final fun component5 ()Ljava/lang/String;
 	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)Lcom/heossi/qnsi/CreateKeyRequest;
-	public static synthetic fun copy$default (Lcom/heossi/qnsi/CreateKeyRequest;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lcom/heossi/qnsi/CreateKeyRequest;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Boolean;Ljava/lang/String;)Lcom/heossi/qnsi/CreateKeyRequest;
+	public static final fun copy$default (Lcom/heossi/qnsi/CreateKeyRequest;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lcom/heossi/qnsi/CreateKeyRequest;
+	public static synthetic fun copy$default (Lcom/heossi/qnsi/CreateKeyRequest;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Boolean;Ljava/lang/String;ILjava/lang/Object;)Lcom/heossi/qnsi/CreateKeyRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAlgorithm ()Ljava/lang/String;
+	public final fun getCustodyEnforcement ()Ljava/lang/String;
+	public final fun getExportable ()Ljava/lang/Boolean;
 	public final fun getMetadata ()Lkotlinx/serialization/json/JsonObject;
 	public final fun getPurpose ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -237,6 +246,7 @@ public synthetic class com/heossi/qnsi/CreateKeyRequest$$serializer : kotlinx/se
 }
 
 public final class com/heossi/qnsi/CreateKeyRequest$Companion {
+	public final fun copy$default (Lcom/heossi/qnsi/CreateKeyRequest;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;ILjava/lang/Object;)Lcom/heossi/qnsi/CreateKeyRequest;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -353,6 +363,9 @@ public final class com/heossi/qnsi/CryptoInventoryClient {
 	public final fun discoverAssets (Lcom/heossi/qnsi/DiscoverAssetsRequest;)Lkotlinx/serialization/json/JsonObject;
 	public final fun discoverAssets (Lcom/heossi/qnsi/DiscoverAssetsRequest;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
 	public static synthetic fun discoverAssets$default (Lcom/heossi/qnsi/CryptoInventoryClient;Lcom/heossi/qnsi/DiscoverAssetsRequest;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
+	public final fun discoverAssetsFromSource (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public final fun discoverAssetsFromSource (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public static synthetic fun discoverAssetsFromSource$default (Lcom/heossi/qnsi/CryptoInventoryClient;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
 	public final fun getAsset (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
 	public final fun getAssetStats (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
 	public final fun getReadinessScore (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
@@ -393,6 +406,53 @@ public synthetic class com/heossi/qnsi/DiscoverAssetsRequest$$serializer : kotli
 }
 
 public final class com/heossi/qnsi/DiscoverAssetsRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/heossi/qnsi/DynamicSecretConfigRequest {
+	public static final field Companion Lcom/heossi/qnsi/DynamicSecretConfigRequest$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Integer;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Integer;Ljava/lang/Integer;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lkotlinx/serialization/json/JsonObject;
+	public final fun component6 ()Ljava/lang/Integer;
+	public final fun component7 ()Ljava/lang/Integer;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;)Lcom/heossi/qnsi/DynamicSecretConfigRequest;
+	public static synthetic fun copy$default (Lcom/heossi/qnsi/DynamicSecretConfigRequest;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;ILjava/lang/Object;)Lcom/heossi/qnsi/DynamicSecretConfigRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConnectionRef ()Ljava/lang/String;
+	public final fun getDefaultTtlSeconds ()Ljava/lang/Integer;
+	public final fun getEngineType ()Ljava/lang/String;
+	public final fun getMaxTtlSeconds ()Ljava/lang/Integer;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getRoleTemplate ()Lkotlinx/serialization/json/JsonObject;
+	public final fun getSecretType ()Ljava/lang/String;
+	public final fun getTenantId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/heossi/qnsi/DynamicSecretConfigRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/heossi/qnsi/DynamicSecretConfigRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/heossi/qnsi/DynamicSecretConfigRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/heossi/qnsi/DynamicSecretConfigRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/heossi/qnsi/DynamicSecretConfigRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -605,6 +665,7 @@ public final class com/heossi/qnsi/QnsiClient {
 	public final fun getKms ()Lcom/heossi/qnsi/KmsClient;
 	public final fun getSearch ()Lcom/heossi/qnsi/SearchClient;
 	public final fun getStorage ()Lcom/heossi/qnsi/StorageClient;
+	public final fun getSurface ()Lcom/heossi/qnsi/SurfaceClient;
 	public final fun getTenant ()Lcom/heossi/qnsi/TenantClient;
 	public final fun getVault ()Lcom/heossi/qnsi/VaultClient;
 	public final fun limits ()Lcom/heossi/qnsi/internal/ActivationLimits;
@@ -619,6 +680,45 @@ public class com/heossi/qnsi/QnsiException : java/lang/RuntimeException {
 }
 
 public final class com/heossi/qnsi/QnsiNetworkException : com/heossi/qnsi/QnsiException {
+}
+
+public final class com/heossi/qnsi/QnsiOperation {
+	public static final field Companion Lcom/heossi/qnsi/QnsiOperation$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)Lcom/heossi/qnsi/QnsiOperation;
+	public static synthetic fun copy$default (Lcom/heossi/qnsi/QnsiOperation;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lcom/heossi/qnsi/QnsiOperation;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getManifestPath ()Ljava/lang/String;
+	public final fun getMethod ()Ljava/lang/String;
+	public final fun getPath ()Ljava/lang/String;
+	public final fun getPathParameters ()Ljava/util/List;
+	public final fun getService ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class com/heossi/qnsi/QnsiOperation$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/heossi/qnsi/QnsiOperation$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/heossi/qnsi/QnsiOperation;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/heossi/qnsi/QnsiOperation;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/heossi/qnsi/QnsiOperation$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/heossi/qnsi/QnsiWebhookEvent {
@@ -841,6 +941,20 @@ public final class com/heossi/qnsi/SubmitWorkloadRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/heossi/qnsi/SurfaceClient {
+	public static final field Companion Lcom/heossi/qnsi/SurfaceClient$Companion;
+	public final fun callOperation (Ljava/lang/String;)Lkotlinx/serialization/json/JsonElement;
+	public final fun callOperation (Ljava/lang/String;Ljava/util/Map;)Lkotlinx/serialization/json/JsonElement;
+	public final fun callOperation (Ljava/lang/String;Ljava/util/Map;Lkotlinx/serialization/json/JsonElement;)Lkotlinx/serialization/json/JsonElement;
+	public final fun callOperation (Ljava/lang/String;Ljava/util/Map;Lkotlinx/serialization/json/JsonElement;Lcom/heossi/qnsi/internal/RequestOptions;)Lkotlinx/serialization/json/JsonElement;
+	public static synthetic fun callOperation$default (Lcom/heossi/qnsi/SurfaceClient;Ljava/lang/String;Ljava/util/Map;Lkotlinx/serialization/json/JsonElement;Lcom/heossi/qnsi/internal/RequestOptions;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonElement;
+	public static final fun operations ()Ljava/util/List;
+}
+
+public final class com/heossi/qnsi/SurfaceClient$Companion {
+	public final fun operations ()Ljava/util/List;
+}
+
 public final class com/heossi/qnsi/TenantClient {
 	public final fun createTenant (Lcom/heossi/qnsi/CreateTenantRequest;)Lkotlinx/serialization/json/JsonObject;
 	public final fun createTenant (Lcom/heossi/qnsi/CreateTenantRequest;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
@@ -861,13 +975,34 @@ public final class com/heossi/qnsi/TenantClient {
 }
 
 public final class com/heossi/qnsi/VaultClient {
+	public final fun createDynamicSecretConfig (Lcom/heossi/qnsi/DynamicSecretConfigRequest;)Lkotlinx/serialization/json/JsonObject;
+	public final fun createDynamicSecretConfig (Lcom/heossi/qnsi/DynamicSecretConfigRequest;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public static synthetic fun createDynamicSecretConfig$default (Lcom/heossi/qnsi/VaultClient;Lcom/heossi/qnsi/DynamicSecretConfigRequest;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
 	public final fun createSecret (Lcom/heossi/qnsi/CreateSecretRequest;)Lkotlinx/serialization/json/JsonObject;
 	public final fun createSecret (Lcom/heossi/qnsi/CreateSecretRequest;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
 	public static synthetic fun createSecret$default (Lcom/heossi/qnsi/VaultClient;Lcom/heossi/qnsi/CreateSecretRequest;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
 	public final fun deleteSecret (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public final fun getDynamicSecretStats ()Lkotlinx/serialization/json/JsonObject;
 	public final fun getSecret (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
 	public final fun getSecretVersion (Ljava/lang/String;I)Lkotlinx/serialization/json/JsonObject;
+	public final fun listDynamicSecretConfigs ()Lkotlinx/serialization/json/JsonObject;
+	public final fun listDynamicSecretConfigs (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public final fun listDynamicSecretConfigs (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public static synthetic fun listDynamicSecretConfigs$default (Lcom/heossi/qnsi/VaultClient;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
+	public final fun listDynamicSecretEngines ()Lkotlinx/serialization/json/JsonObject;
+	public final fun listLeases (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public final fun listLeases (Ljava/lang/String;Ljava/lang/Boolean;)Lkotlinx/serialization/json/JsonObject;
+	public static synthetic fun listLeases$default (Lcom/heossi/qnsi/VaultClient;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
 	public final fun listSecretVersions (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public final fun renewLease (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public final fun renewLease (Ljava/lang/String;Ljava/lang/Integer;)Lkotlinx/serialization/json/JsonObject;
+	public static synthetic fun renewLease$default (Lcom/heossi/qnsi/VaultClient;Ljava/lang/String;Ljava/lang/Integer;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
+	public final fun requestCredentials (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public final fun requestCredentials (Ljava/lang/String;Ljava/lang/Integer;)Lkotlinx/serialization/json/JsonObject;
+	public final fun requestCredentials (Ljava/lang/String;Ljava/lang/Integer;Lkotlinx/serialization/json/JsonObject;)Lkotlinx/serialization/json/JsonObject;
+	public final fun requestCredentials (Ljava/lang/String;Ljava/lang/Integer;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
+	public static synthetic fun requestCredentials$default (Lcom/heossi/qnsi/VaultClient;Ljava/lang/String;Ljava/lang/Integer;Lkotlinx/serialization/json/JsonObject;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
+	public final fun revokeLease (Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
 	public final fun rotateSecret (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
 	public final fun rotateSecret (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;
 	public final fun rotateSecret (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lkotlinx/serialization/json/JsonObject;

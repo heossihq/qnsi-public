@@ -8,4 +8,4 @@
  * the same release-bump contract as `SDK_VERSION` in `../_internal.ts`:
  * **bump this in lockstep with `packages/qnsi/package.json` `version`.**
  */
-export const SDK_PACKAGE_VERSION = "0.3.0";
+export const SDK_PACKAGE_VERSION = "0.7.0";

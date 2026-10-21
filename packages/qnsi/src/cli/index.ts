@@ -22,7 +22,7 @@ const program = new Command();
 
 program
 	.name("qnsi")
-	.description("QNSP CLI - Command-line interface for the QNSP platform")
+	.description("QNSI CLI - Command-line interface for the QNSI platform")
 	.version(cliPackage.version)
 	.option("--edge-gateway-url <url>", "Edge Gateway URL (production entrypoint)")
 	.option("--cloud-portal-url <url>", "Cloud Portal URL (for upgrade/add-on links)")

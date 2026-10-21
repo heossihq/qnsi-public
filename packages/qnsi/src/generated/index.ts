@@ -1,0 +1,16 @@
+export { AccessControlSurfaceClient } from "./access-control-service-client.js";
+export { AiOrchestratorSurfaceClient } from "./ai-orchestrator-client.js";
+export { AuditSurfaceClient } from "./audit-service-client.js";
+export { AuthSurfaceClient } from "./auth-service-client.js";
+export { BillingSurfaceClient } from "./billing-service-client.js";
+export { CryptoInventorySurfaceClient } from "./crypto-inventory-service-client.js";
+export { KmsSurfaceClient } from "./kms-service-client.js";
+export { ObservabilitySurfaceClient } from "./observability-service-client.js";
+export { QNSI_OPERATIONS, type QnsiOperation } from "./operations.js";
+export { PlatformApiSurfaceClient } from "./platform-api-client.js";
+export { QuotaSurfaceClient } from "./quota-service-client.js";
+export { SearchSurfaceClient } from "./search-service-client.js";
+export { SecurityMonitoringSurfaceClient } from "./security-monitoring-service-client.js";
+export { StorageSurfaceClient } from "./storage-service-client.js";
+export { TenantSurfaceClient } from "./tenant-service-client.js";
+export { VaultSurfaceClient } from "./vault-service-client.js";

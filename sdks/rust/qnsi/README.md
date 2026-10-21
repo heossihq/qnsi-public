@@ -4,9 +4,25 @@
 [![docs.rs](https://docs.rs/qnsi/badge.svg)](https://docs.rs/qnsi)
 [![License](https://img.shields.io/crates/l/qnsi.svg)](./LICENSE)
 
-Typed async Rust client for QNSI - post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, server-side KMS, immutable audit trails. Same wire contracts as the official `@heossihq/qnsi` TypeScript SDK, the `qnsi` Python SDK, and the `github.com/heossihq/qnsi-public/sdks/go/qnsi` Go SDK - pick whichever language fits your stack and the byte-for-byte outputs round-trip.
+Async Rust client for QNSI with service convenience APIs, optional local PQC
+primitives through liboqs, and webhook verification. Language SDKs are independently
+versioned; complete wire-schema parity and production acceptance require separate
+evidence.
 
 > **Free tier available.** Free-forever account at <https://cloud.qnsi.heossi.com/auth> - 60-second signup, no credit card. Includes 10 GB PQC storage, 50 000 API calls/month, 20 KMS keys, 25 vault secrets.
+
+## Manifest operation access (unreleased source)
+
+`qnsi::surface::operations()` returns the bundled catalog of 880 manifest
+declarations across 15 services. `client.call_operation(operation_id,
+&path_parameters, body, query, idempotency_key).await` uses the shared activation,
+tenant binding and retry transport. Path parameters are encoded; missing and
+dot-segment parameters fail before HTTP. Existing service methods are preserved.
+
+Catalog presence is not typed payload-schema parity or live availability.
+Backend schemas, permissions and endpoint-specific authentication still apply.
+Publication, full-source coverage and production acceptance of these additions
+are **NOT VERIFIED**.
 
 ## Install
 
@@ -22,9 +38,19 @@ With local PQC primitives (`qnsi::crypto` - wraps the [`oqs`](https://crates.io/
 cargo add qnsi --features crypto
 ```
 
-The `crypto` feature pulls in [`oqs`](https://crates.io/crates/oqs) which delegates to [`oqs-sys`](https://crates.io/crates/oqs-sys); `oqs-sys` builds [`liboqs`](https://github.com/open-quantum-safe/liboqs) from source via `cmake`. You'll need a C toolchain and `cmake` available at build time. macOS / Linux build out of the box; on Windows you'll want the MSVC toolchain plus a `cmake` install.
+The `crypto` feature pulls in [`oqs`](https://crates.io/crates/oqs) which delegates to [`oqs-sys`](https://crates.io/crates/oqs-sys); the latest upstream Rust binding release available on 2026-09-01 is `oqs` 0.11.0 / `oqs-sys` 0.11.0+liboqs-0.13.0, so the Rust SDK intentionally lags the Node and Go 0.16.0 runtime bindings until liboqs-rust publishes a 0.16-aligned release. You'll need a C toolchain and `cmake` available at build time. macOS / Linux build out of the box; on Windows you'll want the MSVC toolchain plus a `cmake` install.
 
-Tested on Rust 1.75+. The crate is `tokio`-based on the async side.
+The source enables the upstream KEM/signature feature families and vendored
+native build explicitly, without enabling the optional OpenSSL dependency.
+Availability still depends on upstream platform support; names alone do not
+prove byte-level standards conformance or cross-language interoperability.
+The local ML-KEM/ML-DSA round-trip and tamper tests are recorded in
+`docs/quality/client-operation-surface-2026-10-04.md`; distribution and platform
+acceptance remain NOT VERIFIED.
+
+The manifest declares Rust 1.75 as its minimum version. The current local checks
+use the installed nightly toolchain; minimum-version and distribution-matrix
+acceptance remain NOT VERIFIED. The async client uses `tokio`.
 
 ## Quick start
 
@@ -53,6 +79,8 @@ async fn main() -> Result<(), qnsi::Error> {
         algorithm: "ml-dsa-65".into(),
         key_type: Some("data".into()), // root | master | data | byok
         metadata: None,
+        exportable: Some(false),
+        custody_enforcement: Some("service".into()),
     }, None).await?;
     let key_id = key["keyId"].as_str().unwrap();
     let signature = c.kms().sign(key_id, b"hello", None).await?;
@@ -92,7 +120,9 @@ For full lifecycle control (generate once, sign or decapsulate many times), call
 
 ## Verifying inbound webhooks
 
-QNSI signs every webhook with HMAC-SHA-256. Verify the **raw body** before parsing JSON:
+This SDK's compatibility verifier accepts HMAC-SHA-256 webhooks. It does not
+implement PQC webhook-signature verification, nor prove which scheme a live
+endpoint uses. Verify the **raw body** before parsing JSON:
 
 ```rust
 use axum::{extract::Request, http::StatusCode, response::IntoResponse};
@@ -160,9 +190,9 @@ If the activation token is rotated server-side, the SDK invalidates its cache an
 
 ## What's covered today
 
-Customer-facing modules (every QNSI service callable through the edge gateway today):
+Convenience modules expose the following subsets of service contracts:
 
-- `qnsi::vault` - `create_secret`, `get_secret`, `get_secret_version`, `rotate_secret`, `delete_secret`, `list_secret_versions` - wraps `apps/vault-service`
+- `qnsi::vault` - secret creation, retrieval, version history, rotation, soft deletion, dynamic engine/configuration catalogs, credential issuance, lease listing/renewal/revocation and measured dynamic-secret statistics - wraps `apps/vault-service`
 - `qnsi::kms` - `create_key`, `list_keys`, `get_key`, `rotate_key`, `delete_key`, `sign`, `verify`, `wrap`, `unwrap_` - wraps `apps/kms-service`
 - `qnsi::audit` - `log_event`, `ingest_events` (batch), `list_events` - wraps `apps/audit-service`
 - `qnsi::auth` - `login`, `refresh_token`, `revoke`, `mfa_challenge`/`mfa_verify`, `evaluate_risk`, `list_risk_policies` - wraps `apps/auth-service`
@@ -176,11 +206,49 @@ Customer-facing modules (every QNSI service callable through the edge gateway to
 
 Local primitives + integration:
 
-- `qnsi::crypto` (feature-gated on `crypto`) - ML-KEM (512/768/1024), ML-DSA (44/65/87), SLH-DSA (12 variants), Falcon (512/1024), plus BIKE, FrodoKEM, Classic-McEliece, MAYO, CROSS - every FIPS 203/204/205 finalist exposed by `oqs` 0.11
+- `qnsi::crypto` (feature-gated on `crypto`) - algorithm resolvers for ML-KEM, ML-DSA, historical SPHINCS+ names, Falcon, BIKE, FrodoKEM, Classic-McEliece, MAYO and CROSS. Resolver names and historical aliases do not establish FIPS conformance or execution of every algorithm.
 - `qnsi::parse_webhook` / `qnsi::verify_webhook_signature` - HMAC-SHA-256 signature verification + typed `qnsi::WebhookEvent`
 - `qnsi::Client::new` - API-key activation against `/billing/v1/sdk/activate` with caching and 401 retry
 
-## What's coming
+### Dynamic Vault and tenant contract (unreleased source)
+
+Dynamic configuration creation requires `engine_type` and an approved
+`connection_ref`. Optional TTL policy, role templates and credential metadata are
+serialized with the backend's camelCase names. Credential responses retain
+engine-specific fields. `list_leases` can request all recovery statuses;
+`revoke_lease` retains the `revoking` queue acknowledgement rather than claiming
+provider revocation has completed. Secret IDs, config IDs and lease IDs are encoded
+as single URL path segments; empty/dot identifiers and version zero fail before
+HTTP. Existing secret methods remain available, including soft deletion.
+
+Crypto-inventory statistics/readiness methods now forward explicit nonempty
+tenant arguments. The historical empty-string default selects the activated
+tenant. Backend authorization is still required; no tenant delegation is approved
+by this change.
+
+The local all-features suite passes 27 tests, with none ignored. Branch-enabled
+LLVM coverage includes all 18 production Rust source files: 58.42% lines
+(951/1628), 72.45% branches (71/98), 40.38% functions (126/312), and 52.09% regions
+(1231/2363). The complete exact-100% gate FAILS. Vault itself measures 100% lines,
+branches, functions and LLVM regions; that subset does not close the SDK-wide
+gate. LLVM regions are not reported as a separate statement measurement. HTTP
+fixtures and local native crypto tests are not production assurance. Publication,
+distribution acceptance and live provider behavior remain NOT VERIFIED.
+
+Reproduce the complete local gate from the monorepo root:
+
+```bash
+node scripts/verify/rust-sdk-tests.mjs
+```
+
+The `test:sdk-rust` package command invokes the same gate. It uses nightly branch
+instrumentation, compares the report against every `src/**/*.rs` file, rejects
+ignored/filtered tests and requires exact coverage counts, including branches.
+Missing source, missing branch data, rounded percentages and malformed reports
+fail closed. Four gate self-tests exercise those rejection paths. This does not
+close the unmeasured statement metric or independent production acceptance.
+
+## Remaining client work
 
 - Async streaming for `Storage::get_object` on large objects
 - Pre-built `qnsi::test_support` helper that mocks the QNSI API for tests

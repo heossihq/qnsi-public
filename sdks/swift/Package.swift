@@ -16,7 +16,8 @@ let package = Package(
     targets: [
         .target(
             name: "QNSI",
-            path: "Sources/QNSI"
+            path: "Sources/QNSI",
+            resources: [.process("Resources")]
         ),
         .testTarget(
             name: "QNSITests",

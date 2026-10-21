@@ -9,6 +9,7 @@ import type { Internal, RequestOptions } from "./_internal.js";
 const PATH_PREFIX = "/proxy/crypto/v1";
 
 export interface DiscoverAssetsRequest {
+	readonly source?: string;
 	readonly targets?: readonly string[];
 	readonly modes?: readonly string[];
 	readonly options?: Record<string, unknown>;
@@ -25,9 +26,11 @@ export class CryptoInventoryClient {
 		return this.internal.request("GET", `${PATH_PREFIX}/assets/${assetId}`);
 	}
 
-	/** @param _tenantId deprecated and ignored - the tenant is derived from the API key. */
-	getAssetStats(_tenantId?: string) {
-		return this.internal.request("GET", `${PATH_PREFIX}/assets/stats`);
+	/** Backend authorization remains authoritative for an explicit tenant. */
+	getAssetStats(tenantId?: string) {
+		return this.internal.request("GET", `${PATH_PREFIX}/assets/stats`, undefined, {
+			query: { tenantId },
+		});
 	}
 
 	discoverAssets(req: DiscoverAssetsRequest, opts?: Pick<RequestOptions, "idempotencyKey">) {
@@ -37,10 +40,11 @@ export class CryptoInventoryClient {
 	/**
 	 * Basic readiness summary (`/readiness`). For the scored PQC-migration
 	 * attestation prefer {@link getPqcReadinessScore}.
-	 * @param _tenantId deprecated and ignored - the tenant is derived from the API key.
 	 */
-	getReadinessScore(_tenantId?: string) {
-		return this.internal.request("GET", `${PATH_PREFIX}/readiness`);
+	getReadinessScore(tenantId?: string) {
+		return this.internal.request("GET", `${PATH_PREFIX}/readiness`, undefined, {
+			query: { tenantId },
+		});
 	}
 
 	/**

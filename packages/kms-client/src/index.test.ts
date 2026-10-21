@@ -105,6 +105,9 @@ describe("HttpKmsServiceClient", () => {
 		});
 
 		const callArgs = vi.mocked(fetch).mock.calls[1];
+		if (!callArgs) {
+			throw new Error("expected a second recorded fetch call");
+		}
 		const body = JSON.parse(callArgs[1]?.body as string);
 		expect(body.associatedData).toBe("associated-data-base64");
 	});

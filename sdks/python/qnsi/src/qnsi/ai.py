@@ -18,9 +18,11 @@ class AIClient(_ServiceClient):
     def register_model(
         self,
         *,
-        name: str,
-        version: str,
-        provider: str,
+        name: str | None = None,
+        version: str | None = None,
+        provider: str | None = None,
+        model_type: str | None = None,
+        request: dict[str, Any] | None = None,
         capabilities: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
@@ -30,13 +32,17 @@ class AIClient(_ServiceClient):
             body["capabilities"] = capabilities
         if metadata is not None:
             body["metadata"] = metadata
-        return self._request("POST", "/models", json=body, idempotency_key=idempotency_key)
+        body.update(request or {})
+        if model_type is not None:
+            body["modelType"] = model_type
+        _require_fields(body, ("name", "version", "provider", "modelType"))
+        return self._request("POST", "/registry/models", json=body, idempotency_key=idempotency_key)
 
     def list_models(self, **query: Any) -> dict[str, Any]:
-        return self._request("GET", "/models", query=query or None)
+        return self._request("GET", "/registry/models", query=query or None)
 
     def get_model(self, model_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/models/{model_id}")
+        return self._request("GET", f"/registry/models/{self._segment(model_id)}")
 
     def update_model(
         self,
@@ -47,7 +53,7 @@ class AIClient(_ServiceClient):
     ) -> dict[str, Any]:
         return self._request(
             "PATCH",
-            f"/models/{model_id}",
+            f"/registry/models/{self._segment(model_id)}",
             json=body,
             idempotency_key=idempotency_key,
         )
@@ -60,7 +66,7 @@ class AIClient(_ServiceClient):
     ) -> dict[str, Any]:
         return self._request(
             "POST",
-            f"/models/{model_id}/activate",
+            f"/registry/models/{self._segment(model_id)}/activate",
             idempotency_key=idempotency_key,
         )
 
@@ -71,7 +77,7 @@ class AIClient(_ServiceClient):
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         return self._request(
-            "POST", "/models/deploy", json=body, idempotency_key=idempotency_key
+            "POST", "/registry/deployments", json=body, idempotency_key=idempotency_key
         )
 
     # ── Workloads ───────────────────────────────────────────────────
@@ -79,8 +85,9 @@ class AIClient(_ServiceClient):
     def submit_workload(
         self,
         *,
-        model_id: str,
-        type: str,  # noqa: A002 - matches API field name
+        model_id: str | None = None,
+        type: str | None = None,
+        request: dict[str, Any] | None = None,
         input_refs: list[str] | None = None,
         output_bucket: str | None = None,
         enclave_type: str | None = None,
@@ -96,12 +103,25 @@ class AIClient(_ServiceClient):
             body["enclaveType"] = enclave_type
         if metadata is not None:
             body["metadata"] = metadata
-        return self._request(
-            "POST", "/workloads", json=body, idempotency_key=idempotency_key
+        body.update(request or {})
+        _require_fields(
+            body,
+            (
+                "name",
+                "priority",
+                "schedulingPolicy",
+                "containerImage",
+                "command",
+                "env",
+                "resources",
+                "artifacts",
+                "manifest",
+            ),
         )
+        return self._request("POST", "/workloads", json=body, idempotency_key=idempotency_key)
 
     def get_workload(self, workload_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/workloads/{workload_id}")
+        return self._request("GET", f"/workloads/{self._segment(workload_id)}")
 
     def list_workloads(self, **query: Any) -> dict[str, Any]:
         return self._request("GET", "/workloads", query=query or None)
@@ -114,7 +134,7 @@ class AIClient(_ServiceClient):
     ) -> dict[str, Any]:
         return self._request(
             "POST",
-            f"/workloads/{workload_id}/cancel",
+            f"/workloads/{self._segment(workload_id)}/cancel",
             idempotency_key=idempotency_key,
         )
 
@@ -123,30 +143,34 @@ class AIClient(_ServiceClient):
     def invoke_inference(
         self,
         *,
-        model_id: str,
-        input: dict[str, Any],  # noqa: A002 - matches API field name
+        model_id: str | None = None,
+        model_deployment_id: str | None = None,
+        input: dict[str, Any],
         stream: bool = False,
         metadata: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         body: dict[str, Any] = {"modelId": model_id, "input": input}
+        if not model_deployment_id:
+            raise ValueError("model_deployment_id is required; a model ID is not a deployment ID")
+        body["modelDeploymentId"] = model_deployment_id
         if stream:
             body["stream"] = True
         if metadata is not None:
             body["metadata"] = metadata
-        return self._request(
-            "POST", "/inference", json=body, idempotency_key=idempotency_key
-        )
+        return self._request("POST", "/inference", json=body, idempotency_key=idempotency_key)
 
     # ── Artifacts ────────────────────────────────────────────────────
 
     def register_artifact(
         self,
         *,
-        name: str,
-        hash: str,  # noqa: A002 - matches API field name
-        storage_id: str,
-        type: str | None = None,  # noqa: A002 - matches API field name
+        name: str | None = None,
+        hash: str | None = None,
+        storage_id: str | None = None,
+        document_id: str | None = None,
+        version: int | None = None,
+        type: str | None = None,
         metadata: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
@@ -155,6 +179,13 @@ class AIClient(_ServiceClient):
             body["type"] = type
         if metadata is not None:
             body["metadata"] = metadata
-        return self._request(
-            "POST", "/artifacts", json=body, idempotency_key=idempotency_key
-        )
+        body.update({"documentId": document_id, "version": version})
+        _require_fields(body, ("documentId", "version"))
+        return self._request("POST", "/artifacts", json=body, idempotency_key=idempotency_key)
+
+
+def _require_fields(body: dict[str, Any], names: tuple[str, ...]) -> None:
+    """Do not invent absent model identity, workload signatures or storage versions."""
+    missing = [name for name in names if body.get(name) is None]
+    if missing:
+        raise ValueError(f"Required backend request fields are missing: {', '.join(missing)}")

@@ -15,16 +15,21 @@ public struct KmsClient: Sendable {
         algorithm: String,
         purpose: String,
         metadata: [String: JSONValue]? = nil,
-        idempotencyKey: String? = nil
+        idempotencyKey: String? = nil,
+        exportable: Bool? = nil,
+        custodyEnforcement: String? = nil
     ) async throws -> JSONValue {
         var meta = metadata ?? [:]
         meta["purpose"] = .string(purpose)
-        let body: JSONValue = .object([
+        var fields: [String: JSONValue] = [
             "keyId": .string(UUID().uuidString.lowercased()),
             "keyType": .string("data"),
             "algorithm": .string(algorithm),
             "metadata": .object(meta),
-        ])
+        ]
+        if let exportable { fields["exportable"] = .bool(exportable) }
+        if let custodyEnforcement { fields["custodyEnforcement"] = .string(custodyEnforcement) }
+        let body: JSONValue = .object(fields)
         return try await transport.requestJson(
             "POST", "\(prefix)/keys", body: body,
             options: RequestOptions(idempotencyKey: idempotencyKey)

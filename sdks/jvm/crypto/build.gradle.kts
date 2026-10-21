@@ -33,7 +33,7 @@ dependencies {
     // JVM and on Android API 21+ (no dependence on the OS Keystore floor).
     // The lightweight API is used instead of JCA so raw NIST wire encodings are
     // first-class (interoperable with CryptoKit, liboqs, @noble/post-quantum).
-    api("org.bouncycastle:bcprov-jdk18on:1.80")
+    api("org.bouncycastle:bcprov-jdk18on:1.85.2")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
@@ -64,7 +64,7 @@ publishing {
                     developer {
                         id.set("heossi")
                         name.set("HEOSSI (PTE.) LTD")
-                        url.set("https://heossi.com")
+                        url.set("https://www.heossi.com")
                     }
                 }
                 scm {

@@ -7,12 +7,26 @@ runs on both. Mirrors the wire contract of the `@heossihq/qnsi` (npm), `qnsi`
 (PyPI), and Go/Rust SDKs.
 
 > **`com.heossi:qnsi:0.3.0`.** The ten service sub-clients route via `/proxy/<svc>/v1`
-> and the auth client targets the real auth routes - all verified end-to-end against
-> production (`ProdSmokeTest`). Service sub-clients: vault, kms, audit, tenant, access,
+> and the auth client targets the auth routes. Source-local tests do not establish
+> production acceptance. Service sub-clients: vault, kms, audit, tenant, access,
 > billing, cryptoInventory, storage, search, ai. The `auth` client covers password login,
 > session refresh/revoke, MFA, and risk-based auth; WebAuthn passkeys and SAML/OIDC
 > federation are intentionally not exposed (no per-call backend surface).
 > (Supersedes the retired `io.cuilabs:qnsp` line published under the former CUI Labs brand.)
+
+## Manifest operation access (unreleased source)
+
+`SurfaceClient.operations()` returns the bundled catalog of 880 manifest
+declarations across 15 services. `qnsi.surface.callOperation(operationId,
+pathParameters, body, options)` uses shared activation, tenant binding and retry.
+It returns `JsonElement`, preserving object, array and scalar JSON responses;
+malformed JSON fails instead of becoming an empty object. Options carry query
+and idempotency data. Invalid path parameters fail before HTTP.
+
+Existing service methods are preserved. Catalog presence is not live
+availability, payload-schema parity or an authentication grant. Publication,
+full-source coverage, Android acceptance and production acceptance of these
+additions are **NOT VERIFIED**.
 
 ## Install
 
@@ -78,20 +92,20 @@ Webhook verification is available now:
 val event = QnsiWebhooks.parse(rawBody, signatureHeader, webhookSecret, timestampHeader)
 ```
 
-## Activation gate (Phase 0 - blocks publish)
+## Activation gate
 
 The SDK calls `POST /billing/v1/sdk/activate` with
-`{ sdkId: "qnsi-jvm", runtime: "jvm", sdkVersion }`. Those two values are
-**not yet in the billing enum**. Before this SDK can authenticate, add `qnsi-jvm`
-and the `jvm` runtime to all three mirrors **in one commit** and deploy
-billing-service first:
+`{ sdkId: "qnsi-jvm", runtime: "jvm", sdkVersion }`. These values exist in the
+repository activation enums. Live enrollment and authentication still require
+independent acceptance against the deployed billing-service; source enum
+membership alone does not establish that a published client can authenticate:
 
 - `packages/sdk-activation/src/types.ts`
 - `packages/qnsi/src/_activation/types.ts`
 - `apps/billing-service/src/routes/sdk-activation-schemas.ts`
 
-Then verify the live endpoint returns `401 INVALID_API_KEY` (not a Zod schema
-rejection) for a bad key. See `.claude/rules/sdk-publish-checklist.md`.
+Verify the live activation contract with authorized credentials before release.
+Do not infer tenant approval from a catalog or caller-supplied metadata.
 
 ## Build & test
 
@@ -101,8 +115,19 @@ cd sdks/jvm
 ```
 
 (Requires network on first run to resolve OkHttp / kotlinx.serialization / JUnit.)
-Verified green on 2026-05-31 with Gradle 9.5.1 / Kotlin 2.0.21 / JDK 21:
-**9 tests, 0 failures** (`InternalTest` ×4, `WebhooksTest` ×5).
+The latest local execution runs 28 tests: 25 pass and three production verifiers
+fail closed without approved canary credentials. No tests are skipped. Compilation
+passes with the pinned Gradle/Kotlin toolchain; no complete production-source
+coverage report exists for this SDK, so its exact-100% gate is not satisfied.
+Local HTTP contracts do not establish live provider or customer acceptance.
+
+Vault exposes engine catalog, config creation/listing, credential issuance,
+lease listing/renewal/revocation and dynamic statistics. Revocation acknowledgement
+is a queued `revoking` state, not evidence that the provider credential was revoked.
+Existing secret methods remain available. Crypto-inventory statistics/readiness
+preserve explicit tenant arguments; the new source selector forwards the actual
+backend discovery selector. Legacy discovery targets/modes/options are retained
+but are not consumed by the backend discovery handler.
 
 ## License
 

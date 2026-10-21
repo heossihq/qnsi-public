@@ -2,6 +2,14 @@
 
 All notable changes to `qnsp` (Python SDK) will be documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.3] - 2026-08-18
+
+**Metadata only. No code changes.**
+
+### Changed
+
+- `Homepage` now points at the canonical product site `https://qnsi.heossi.com` instead of the console. The console keeps its own `Console` link. npm and Maven Central already declared the canonical site; PyPI and crates.io disagreed with them, which split the entity signal search engines use to bind "QNSI" to one domain.
+
 ## [0.3.0] - 2026-04-30
 
 **Full-parity release.** The Python SDK now exposes the same 11 customer-facing service modules as the Go and Rust SDKs and the TypeScript family.

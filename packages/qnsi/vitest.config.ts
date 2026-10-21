@@ -6,6 +6,11 @@ export default mergeConfig(
 		test: {
 			environment: "node",
 			include: ["src/**/*.test.ts"],
+			exclude: [
+				"src/autogen/executor.integration.test.ts",
+				"src/langchain/toolkit.integration.test.ts",
+				"src/llamaindex/vector-store.integration.test.ts",
+			],
 			coverage: {
 				provider: "v8",
 				reporter: ["text", "lcov"],

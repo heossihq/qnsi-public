@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { apiRequestCommand, browseOperationsCommand } from "./api-console";
 import { refreshSignedInContext, signIn, signOut } from "./auth";
 import { CbomController } from "./cbom/scan";
 import { CbomTreeProvider } from "./cbom/tree";
@@ -83,6 +84,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		),
 		vscode.commands.registerCommand("qnsi.conformance.refresh", () => statusBar.refresh()),
 		vscode.commands.registerCommand("qnsi.configureMcp", () => configureMcpCommand()),
+		vscode.commands.registerCommand("qnsi.apiRequest", () => apiRequestCommand(context)),
+		vscode.commands.registerCommand("qnsi.browseOperations", () =>
+			browseOperationsCommand(context),
+		),
 		vscode.workspace.onDidSaveTextDocument((doc) => {
 			if (getScanOnSave()) {
 				cbom.scanDocument(doc);

@@ -24,8 +24,7 @@ import { validateUUID } from "./validation.js";
 
 /**
  * Mapping from internal algorithm names to NIST/standards display names.
- * Covers all 87 runtime-supported PQC algorithms (24 KEMs + 63 signatures).
- * HQC's 3 variants are excluded (disabled in the liboqs build for CVE-2025-48946).
+ * Covers all 90 runtime-supported PQC algorithms (27 KEMs + 63 signatures).
  * Canonical source: @heossihq/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
  */
 export const ALGORITHM_TO_NIST: Record<string, string> = {
@@ -54,7 +53,10 @@ export const ALGORITHM_TO_NIST: Record<string, string> = {
 	// FN-DSA (FIPS 206 draft)
 	"falcon-512": "FN-DSA-512",
 	"falcon-1024": "FN-DSA-1024",
-	// HQC (NIST selected March 2025)
+	// HQC (NIST selected March 2025; liboqs 0.16.0 updated to the 20250822 spec)
+	"hqc-128": "HQC-128",
+	"hqc-192": "HQC-192",
+	"hqc-256": "HQC-256",
 	// BIKE (NIST Round 4)
 	"bike-l1": "BIKE-L1",
 	"bike-l3": "BIKE-L3",

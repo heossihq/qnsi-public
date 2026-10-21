@@ -2,6 +2,133 @@ import XCTest
 @testable import QNSI
 
 final class TransportTests: XCTestCase {
+    func testDynamicVaultConfigurationContracts() async throws {
+        let client = try mockedClient()
+        MockURLProtocol.enqueue(status: 200, body: activationBody)
+        MockURLProtocol.enqueue(status: 200, body: "{\"engines\":[]}")
+        _ = try await client.vault.listDynamicSecretEngines()
+        for full in [false, true] {
+            MockURLProtocol.enqueue(status: 201, body: "{\"id\":\"owned-config\"}")
+            _ = try await client.vault.createDynamicSecretConfig(name: "owned", engineType: "postgresql", connectionRef: "approved-test-reference",
+                secretType: full ? "database" : nil, roleTemplate: full ? [:] : nil,
+                defaultTtlSeconds: full ? 60 : nil, maxTtlSeconds: full ? 120 : nil,
+                tenantId: full ? "explicit-tenant" : nil, idempotencyKey: "owned-config-idempotency")
+            let request = try XCTUnwrap(MockURLProtocol.takeRecorded().last)
+            let body = try XCTUnwrap(JSONValue.parse(request.body))
+            XCTAssertEqual(body["engineType"]?.stringValue, "postgresql")
+            XCTAssertEqual(body["connectionRef"]?.stringValue, "approved-test-reference")
+            XCTAssertEqual(body["tenantId"]?.stringValue, full ? "explicit-tenant" : "11111111-2222-3333-4444-555555555555")
+            XCTAssertEqual(body["defaultTtlSeconds"] != nil, full)
+            XCTAssertEqual(body["roleTemplate"] != nil, full)
+            XCTAssertEqual(request.headers.first(where: { $0.key.lowercased() == "idempotency-key" })?.value, "owned-config-idempotency")
+        }
+        for full in [false, true] {
+            MockURLProtocol.enqueue(status: 200, body: "{\"configs\":[]}")
+            _ = try await client.vault.listDynamicSecretConfigs(engineType: full ? "postgresql" : nil, secretType: full ? "database" : nil)
+            let request = try XCTUnwrap(MockURLProtocol.takeRecorded().last)
+            let components = try XCTUnwrap(URLComponents(string: request.url))
+            XCTAssertEqual(components.queryItems?.first(where: { $0.name == "engineType" })?.value, full ? "postgresql" : nil)
+        }
+        MockURLProtocol.enqueue(status: 503, body: "{\"error\":\"DYNAMIC_SECRET_STATS_UNAVAILABLE\"}")
+        do { _ = try await client.vault.getDynamicSecretStats(); XCTFail("Unavailable statistics returned success") }
+        catch { guard case QnsiError.api(_, let status, _, _) = error else { return XCTFail("Unexpected error") }; XCTAssertEqual(status, 503) }
+    }
+
+    func testDynamicVaultCredentialsRecoveryAndQueuedRevocation() async throws {
+        let client = try mockedClient()
+        MockURLProtocol.enqueue(status: 200, body: activationBody)
+        for full in [false, true] {
+            MockURLProtocol.enqueue(status: 201, body: "{\"credentials\":{\"sessionToken\":\"owned-test-session\"},\"leaseId\":\"owned-lease\"}")
+            let result = try await client.vault.requestCredentials(configId: "config/encoded", ttlSeconds: full ? 60 : nil, metadata: full ? ["scope": .string("owned")] : nil)
+            XCTAssertEqual(result["credentials"]?["sessionToken"]?.stringValue, "owned-test-session")
+            let request = try XCTUnwrap(MockURLProtocol.takeRecorded().last)
+            XCTAssertTrue(request.url.contains("/dynamic-secrets/configs/config%2Fencoded/credentials"))
+            let body = try XCTUnwrap(JSONValue.parse(request.body))
+            XCTAssertEqual(body["ttlSeconds"] != nil, full)
+            XCTAssertEqual(body["metadata"] != nil, full)
+        }
+        for include in [nil, false, true] as [Bool?] {
+            MockURLProtocol.enqueue(status: 200, body: "{\"leases\":[{\"status\":\"revoking\",\"metadata\":null}]}")
+            _ = try await client.vault.listLeases(configId: "config/encoded", includeAllStatuses: include)
+            let request = try XCTUnwrap(MockURLProtocol.takeRecorded().last)
+            let components = try XCTUnwrap(URLComponents(string: request.url))
+            XCTAssertEqual(components.queryItems?.first(where: { $0.name == "includeAllStatuses" })?.value, include.map { String($0) })
+        }
+        for ttl in [nil, 120] as [Int?] {
+            MockURLProtocol.enqueue(status: 200, body: "{\"leaseId\":\"owned-lease\",\"ttlSeconds\":120}")
+            _ = try await client.vault.renewLease(leaseId: "lease/encoded", ttlSeconds: ttl)
+            let request = try XCTUnwrap(MockURLProtocol.takeRecorded().last)
+            XCTAssertTrue(request.url.contains("/dynamic-secrets/leases/lease%2Fencoded/renew"))
+            XCTAssertEqual(JSONValue.parse(request.body)?["ttlSeconds"] != nil, ttl != nil)
+        }
+        MockURLProtocol.enqueue(status: 202, body: "{\"leaseId\":\"owned-lease\",\"status\":\"revoking\"}")
+        let queued = try await client.vault.revokeLease(leaseId: "lease/encoded")
+        XCTAssertEqual(queued["status"]?.stringValue, "revoking")
+    }
+
+    func testInvalidVaultResourcesFailBeforeActivation() async throws {
+        let client = try mockedClient()
+        for id in ["", ".", ".."] {
+            let operations: [() async throws -> JSONValue] = [
+                { try await client.vault.getSecret(secretId: id) },
+                { try await client.vault.getSecretVersion(secretId: id, version: 1) },
+                { try await client.vault.rotateSecret(secretId: id, payloadB64: "Zg==") },
+                { try await client.vault.deleteSecret(secretId: id) },
+                { try await client.vault.listSecretVersions(secretId: id) },
+                { try await client.vault.requestCredentials(configId: id) },
+                { try await client.vault.listLeases(configId: id) },
+                { try await client.vault.renewLease(leaseId: id) },
+                { try await client.vault.revokeLease(leaseId: id) },
+            ]
+            for operation in operations {
+                do { _ = try await operation(); XCTFail("Invalid resource accepted") }
+                catch { guard case QnsiError.api(_, let status, _, _) = error else { return XCTFail("Unexpected error") }; XCTAssertEqual(status, 400) }
+            }
+        }
+        do { _ = try await client.vault.getSecretVersion(secretId: "owned-secret", version: 0); XCTFail("Zero version accepted") }
+        catch { guard case QnsiError.api(_, let status, _, _) = error else { return XCTFail("Unexpected error") }; XCTAssertEqual(status, 400) }
+        XCTAssertEqual(MockURLProtocol.takeRecorded().count, 0)
+    }
+    func testInventorySourceAndExplicitTenantReachTransport() async throws {
+        let client = try mockedClient()
+        MockURLProtocol.enqueue(status: 200, body: activationBody)
+        MockURLProtocol.enqueue(status: 200, body: "{\"runs\":[]}")
+        _ = try await client.cryptoInventory.discoverAssetsFromSource(source: "code_repo", idempotencyKey: "owned-discovery")
+        for tenant in ["explicit-tenant", ""] {
+            MockURLProtocol.enqueue(status: 200, body: "{\"stats\":{}}")
+            _ = try await client.cryptoInventory.getAssetStats(tenantId: tenant)
+            MockURLProtocol.enqueue(status: 200, body: "{\"readiness\":{}}")
+            _ = try await client.cryptoInventory.getReadinessScore(tenantId: tenant)
+        }
+        MockURLProtocol.enqueue(status: 200, body: "{\"stats\":{}}")
+        _ = try await client.cryptoInventory.getAssetStats()
+        MockURLProtocol.enqueue(status: 200, body: "{\"readiness\":{}}")
+        _ = try await client.cryptoInventory.getReadinessScore()
+        let requests = MockURLProtocol.takeRecorded()
+        XCTAssertEqual(requests.count, 8)
+        XCTAssertEqual(requests[1].method, "POST")
+        XCTAssertEqual(JSONValue.parse(requests[1].body)?["source"]?.stringValue, "code_repo")
+        XCTAssertEqual(requests[1].headers.first(where: { $0.key.lowercased() == "idempotency-key" })?.value, "owned-discovery")
+        for (index, tenant) in [(2, "explicit-tenant"), (3, "explicit-tenant"), (4, ""), (5, "")] {
+            let components = try XCTUnwrap(URLComponents(string: requests[index].url))
+            XCTAssertEqual(components.queryItems?.first(where: { $0.name == "tenantId" })?.value, tenant)
+        }
+        XCTAssertTrue(requests[6].url.contains("tenantId=11111111-2222-3333-4444-555555555555"))
+        XCTAssertTrue(requests[7].url.contains("tenantId=11111111-2222-3333-4444-555555555555"))
+    }
+	func testKmsCustodyFlagsAreSeparateFromMetadata() async throws {
+		let client = try mockedClient()
+		MockURLProtocol.enqueue(status: 200, body: activationBody)
+		MockURLProtocol.enqueue(status: 201, body: "{\"keyId\":\"owned-key\",\"exportable\":false}")
+		let result = try await client.kms.createKey(algorithm: "ml-dsa-65", purpose: "signing", metadata: ["exportable": .bool(true)], exportable: false, custodyEnforcement: "service")
+		XCTAssertEqual(result["exportable"]?.boolValue, false)
+		let recorded = MockURLProtocol.takeRecorded()
+		XCTAssertEqual(recorded.count, 2)
+		let body = JSONValue.parse(recorded[1].body)
+		XCTAssertEqual(body?["exportable"]?.boolValue, false)
+		XCTAssertEqual(body?["custodyEnforcement"]?.stringValue, "service")
+		XCTAssertEqual(body?["metadata"]?["exportable"]?.boolValue, true)
+	}
     override func setUp() {
         super.setUp()
         MockURLProtocol.reset()

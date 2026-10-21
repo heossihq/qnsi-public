@@ -53,7 +53,7 @@ export const artifactRules: readonly CryptoDetectionRule[] = [
 	{
 		id: "artifact-config-hybrid-tls-group",
 		languages: ALL,
-		pattern: /\b(X25519MLKEM768|X25519Kyber768Draft00|SecP256r1MLKEM768)\b/,
+		pattern: /\b(X25519MLKEM768|SecP256r1MLKEM768|SecP384r1MLKEM1024|X25519Kyber768Draft00)\b/,
 		algorithm: (match) => (match[1] ?? "").toLowerCase(),
 		category: "protocol",
 		classification: "hybrid",
@@ -73,6 +73,30 @@ export const artifactRules: readonly CryptoDetectionRule[] = [
 		},
 		category: "artifact",
 		classification: "classical",
+		confidence: "medium",
+		library: "Cargo.toml",
+	},
+	{
+		id: "artifact-cargo-pqc-dep",
+		languages: ["config"],
+		pattern: /^\s*(ml-kem|ml-dsa|fips203|fips204|fips205|oqs|pqcrypto)\s*=\s*["{]/,
+		algorithm: (match) => {
+			const crate = match[1] ?? "";
+			if (crate === "ml-dsa" || crate === "fips204") return "ml-dsa-65";
+			return "ml-kem-768";
+		},
+		category: "artifact",
+		classification: "pqc",
+		confidence: "medium",
+		library: "Cargo.toml",
+	},
+	{
+		id: "artifact-cargo-hybrid-tls-pqc-dep",
+		languages: ["config"],
+		pattern: /^\s*(aws-lc-rs|rustls-post-quantum)\s*=\s*["{]/,
+		algorithm: "x25519mlkem768",
+		category: "artifact",
+		classification: "hybrid",
 		confidence: "medium",
 		library: "Cargo.toml",
 	},

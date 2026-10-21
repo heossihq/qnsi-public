@@ -19,27 +19,95 @@ pub struct Client {
 
 impl Client {
     pub fn new(activation: Arc<Activation>, http: reqwest::Client) -> Self {
-        Self { sc: ServiceClient::new(activation, http, PATH_PREFIX) }
+        Self {
+            sc: ServiceClient::new(activation, http, PATH_PREFIX),
+        }
     }
 
     pub async fn list_assets(&self, query: &[(&str, String)]) -> Result<Value, Error> {
-        self.sc.request::<()>(Method::GET, "/assets", None, Some(query), None).await
+        self.sc
+            .request::<()>(Method::GET, "/assets", None, Some(query), None)
+            .await
     }
 
     pub async fn get_asset(&self, asset_id: &str) -> Result<Value, Error> {
-        self.sc.request::<()>(Method::GET, &format!("/assets/{}", asset_id), None, None, None).await
+        self.sc
+            .request::<()>(
+                Method::GET,
+                &format!("/assets/{}", asset_id),
+                None,
+                None,
+                None,
+            )
+            .await
     }
 
-    pub async fn get_asset_stats(&self, _tenant_id: &str) -> Result<Value, Error> {
-        self.sc.request::<()>(Method::GET, "/assets/stats", None, None, None).await
+    pub async fn get_asset_stats(&self, tenant_id: &str) -> Result<Value, Error> {
+        let query = [("tenantId", tenant_id.to_string())];
+        self.sc
+            .request::<()>(
+                Method::GET,
+                "/assets/stats",
+                None,
+                if tenant_id.is_empty() {
+                    None
+                } else {
+                    Some(&query)
+                },
+                None,
+            )
+            .await
     }
 
-    pub async fn discover_assets(&self, req: DiscoverAssetsRequest, idempotency_key: Option<&str>) -> Result<Value, Error> {
-        self.sc.request(Method::POST, "/assets/discover", Some(&req), None, idempotency_key).await
+    pub async fn discover_assets(
+        &self,
+        req: DiscoverAssetsRequest,
+        idempotency_key: Option<&str>,
+    ) -> Result<Value, Error> {
+        self.sc
+            .request(
+                Method::POST,
+                "/assets/discover",
+                Some(&req),
+                None,
+                idempotency_key,
+            )
+            .await
     }
 
-    pub async fn get_readiness_score(&self, _tenant_id: &str) -> Result<Value, Error> {
-        self.sc.request::<()>(Method::GET, "/readiness", None, None, None).await
+    pub async fn get_readiness_score(&self, tenant_id: &str) -> Result<Value, Error> {
+        let query = [("tenantId", tenant_id.to_string())];
+        self.sc
+            .request::<()>(
+                Method::GET,
+                "/readiness",
+                None,
+                if tenant_id.is_empty() {
+                    None
+                } else {
+                    Some(&query)
+                },
+                None,
+            )
+            .await
+    }
+
+    /// Uses the backend source selector; discovery permission and feature checks remain authoritative.
+    pub async fn discover_assets_from_source(
+        &self,
+        source: &str,
+        idempotency_key: Option<&str>,
+    ) -> Result<Value, Error> {
+        let body = serde_json::json!({ "source": source });
+        self.sc
+            .request(
+                Method::POST,
+                "/assets/discover",
+                Some(&body),
+                None,
+                idempotency_key,
+            )
+            .await
     }
 }
 

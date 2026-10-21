@@ -1,6 +1,6 @@
 ---
 title: Supported Languages
-version: 0.3.0
+version: 0.6.0
 last_updated: 2026-07-20
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 ---
@@ -48,7 +48,7 @@ await qnsi.audit.logEvent({ eventType: "model.inference", payload: { modelId: "g
 
 - TypeScript native, strict mode
 - ESM (CommonJS consumers can `await import("@heossihq/qnsi")`)
-- Node.js ≥ 22.0.0
+- Node.js ≥ 24.18.0
 - One activation handshake on first call, shared across all 11 sub-clients
 - One `npm install` line, one version, one CHANGELOG, one telemetry surface
 
@@ -152,7 +152,7 @@ All SDKs cover the same set of customer-facing services. Module names differ sli
 | Access (`/access/v1`) | `@heossihq/qnsi-access-control-sdk` | `qnsi.access` | `qnsi/access` | `qnsi::access` | `qnsi.access` |
 | Billing (`/billing/v1`) | `@heossihq/qnsi-billing-sdk` | `qnsi.billing` | `qnsi/billing` | `qnsi::billing` | `qnsi.billing` |
 | Crypto Inventory (`/crypto/v1`) | `@heossihq/qnsi-crypto-inventory-sdk` | `qnsi.crypto_inventory` | `qnsi/cryptoinventory` | `qnsi::crypto_inventory` | `qnsi.cryptoInventory` |
-| Storage (`/storage/storage/v1`) | `@heossihq/qnsi-storage-sdk` | `qnsi.storage` | `qnsi/storage` | `qnsi::storage` | `qnsi.storage` |
+| Storage (`/storage/v1`) | `@heossihq/qnsi-storage-sdk` | `qnsi.storage` | `qnsi/storage` | `qnsi::storage` | `qnsi.storage` |
 | Search (`/search/v1`) | `@heossihq/qnsi-search-sdk` | `qnsi.search` | `qnsi/search` | `qnsi::search` | `qnsi.search` |
 | AI Orchestrator (`/ai/v1`) | `@heossihq/qnsi-ai-sdk` | `qnsi.ai` | `qnsi/ai` | `qnsi::ai` | `qnsi.ai` |
 | Local PQC primitives | `@heossihq/qnsi-cryptography` (via `@heossihq/liboqs-native`) | `qnsi.crypto` (via `liboqs-python`) | `qnsi/crypto` (via `liboqs-go`) | `qnsi::crypto` (via `oqs` 0.11) | Bouncy Castle / OS-native |

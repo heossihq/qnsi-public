@@ -1,4 +1,4 @@
-import { XWing } from "@noble/post-quantum/hybrid.js";
+import { ml_kem768_x25519 } from "@noble/post-quantum/hybrid.js";
 import { ml_kem768 } from "@noble/post-quantum/ml-kem.js";
 import { describe, expect, it } from "vitest";
 import {
@@ -10,12 +10,13 @@ import {
 } from "./xwing.js";
 
 /**
- * X-Wing (SP 800-227 composite KEM) correctness + spec-compliance proof.
+ * X-Wing draft-11 compatibility implementation and interoperability tests.
  *
  * QNSI's from-spec implementation is CROSS-VERIFIED against a second independent
- * implementation (@noble/post-quantum's XWing). Bidirectional interop -
+ * implementation (@noble/post-quantum's ml_kem768_x25519 X-Wing preset). Bidirectional interop -
  * my-encaps→noble-decaps and noble-encaps→my-decaps producing identical shared
- * secrets - proves the combiner, byte layout, and label match the draft exactly.
+ * secrets - provides bounded evidence that the combiner, byte layout, and label
+ * interoperate with that library's implementation of the same active draft.
  * (If my combiner were wrong, my own roundtrip would still pass but the
  * cross-checks would fail.) The ML-KEM primitive is injected; here it is noble's
  * ml_kem768.
@@ -27,7 +28,7 @@ const mlkem: MlKem768Kem = {
 };
 const eq = (a: Uint8Array, b: Uint8Array) => Buffer.compare(Buffer.from(a), Buffer.from(b)) === 0;
 
-describe("X-Wing composite KEM (ML-KEM-768 + X25519, SP 800-227)", () => {
+describe("X-Wing draft compatibility KEM (ML-KEM-768 + X25519)", () => {
 	it("has the spec sizes and round-trips", () => {
 		const kp = xwingKeygen(mlkem);
 		expect(kp.publicKey.length).toBe(XWING_SIZES.encapsulationKey); // 1216
@@ -42,9 +43,9 @@ describe("X-Wing composite KEM (ML-KEM-768 + X25519, SP 800-227)", () => {
 		// noble owns the keypair; QNSI encapsulates against noble's public key;
 		// noble decapsulates QNSI's ciphertext. Match ⇒ QNSI's encaps + combiner
 		// are spec-exact (an independent impl agrees).
-		const kp = XWing.keygen();
+		const kp = ml_kem768_x25519.keygen();
 		const enc = xwingEncapsulate(mlkem, kp.publicKey);
-		const ssNoble = XWing.decapsulate(enc.cipherText, kp.secretKey);
+		const ssNoble = ml_kem768_x25519.decapsulate(enc.cipherText, kp.secretKey);
 		expect(eq(enc.sharedSecret, ssNoble)).toBe(true);
 	});
 
@@ -53,7 +54,7 @@ describe("X-Wing composite KEM (ML-KEM-768 + X25519, SP 800-227)", () => {
 		// QNSI decapsulates noble's ciphertext. Match ⇒ QNSI's decaps + combiner
 		// are spec-exact.
 		const kp = xwingKeygen(mlkem);
-		const enc = XWing.encapsulate(kp.publicKey);
+		const enc = ml_kem768_x25519.encapsulate(kp.publicKey);
 		const ssQnsi = xwingDecapsulate(mlkem, enc.cipherText, kp.secretKey);
 		expect(eq(enc.sharedSecret, ssQnsi)).toBe(true);
 	});

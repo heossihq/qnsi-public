@@ -1,5 +1,5 @@
 /**
- * QNSP Audit Tool for LangChain
+ * QNSI Audit Tool for LangChain
  *
  * Provides governed agents with immutable, PQC-signed audit trail logging.
  * Every agent action logged here is tamper-evident and cryptographically chained.
@@ -9,7 +9,7 @@ import { StructuredTool, type ToolParams } from "@langchain/core/tools";
 import { z } from "zod";
 
 export interface QnsiAuditToolConfig {
-	/** Base URL for the QNSP API (e.g. https://api.qnsi.heossi.com) */
+	/** Base URL for the QNSI API (e.g. https://api.qnsi.heossi.com) */
 	readonly baseUrl: string;
 	/** API key or Bearer token for authentication */
 	readonly apiKey: string;
@@ -46,13 +46,13 @@ const logAgentActionSchema = z.object({
 });
 
 /**
- * LangChain tool that writes an immutable, PQC-signed audit event to QNSP.
+ * LangChain tool that writes an immutable, PQC-signed audit event to QNSI.
  * Use this to create a tamper-evident record of every significant agent action.
  */
 export class QnsiLogAgentActionTool extends StructuredTool {
 	override readonly name = "qnsp_log_agent_action";
 	override readonly description =
-		"Write an immutable, PQC-signed audit event to QNSP. Creates a tamper-evident record of agent actions, decisions, tool calls, and outputs. Use this for compliance, governance, and traceability of agent behavior.";
+		"Write an immutable, PQC-signed audit event to QNSI. Creates a tamper-evident record of agent actions, decisions, tool calls, and outputs. Use this for compliance, governance, and traceability of agent behavior.";
 	override readonly schema = logAgentActionSchema;
 
 	readonly #config: Required<QnsiAuditToolConfig>;

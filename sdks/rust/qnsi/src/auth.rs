@@ -10,10 +10,10 @@
 //!    [`Client::login`] first - this client caches the resulting session and
 //!    uses it automatically.
 //!
-//! WebAuthn passkeys and SAML/OIDC federation are intentionally NOT exposed:
-//! the backend has no passkey routes, and federation is a SCIM/SAML-ACS
-//! provisioning API (not a per-call SDK surface). They were removed rather than
-//! ship dead endpoints (the prior `/proxy/auth/v1/*` paths did not exist).
+//! This convenience client does not yet provide dedicated WebAuthn or
+//! federated-auth methods. The operation catalog includes those backend
+//! routes, but catalog presence is not session-authenticated workflow
+//! acceptance. Do not infer that the backend lacks these capabilities.
 
 use reqwest::{Method, StatusCode};
 use serde::{Deserialize, Serialize};

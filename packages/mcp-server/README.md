@@ -19,7 +19,9 @@ by the platform.
 
 Your agent can now:
 
-- Generate and rotate NIST-standardised PQC keys (ML-KEM, ML-DSA, SLH-DSA, Falcon).
+- Generate and rotate PQC keys across the current QNSI catalog: NIST FIPS
+  ML-KEM, ML-DSA, SLH-DSA, plus HQC diversity KEMs, BIKE, FrodoKEM, Classic
+  McEliece, MAYO, CROSS, and Falcon/FN-DSA where enabled by tenant policy.
 - Seal ML-DSA-44/65/87 private keys under a qualified customer HSM and sign through HSPK custody flows; ML-DSA executes in QNSI software outside the module.
 - Store secrets in a quantum-safe vault with per-tenant envelope encryption.
 - Run configured cryptographic discovery connectors and inspect their discovery runs.
@@ -37,7 +39,7 @@ against your QNSI plan.
 Install the pinned package globally with pnpm:
 
 ```bash
-pnpm add --global @heossihq/qnsi-mcp@0.2.0
+pnpm add --global @heossihq/qnsi-mcp@0.4.1
 ```
 
 Configure the installed `qnsi-mcp` binary. Keep real API keys out of committed
@@ -53,7 +55,7 @@ Add to `~/.kiro/settings/mcp.json`:
     "qnsi": {
       "command": "qnsi-mcp",
       "args": [],
-      "env": { "QNSP_API_KEY": "YOUR_API_KEY" },
+      "env": { "QNSI_API_KEY": "YOUR_API_KEY" },
       "disabled": false,
       "autoApprove": []
     }
@@ -77,7 +79,7 @@ Add to `.vscode/mcp.json` or the corresponding user-level MCP configuration:
       "type": "stdio",
       "command": "qnsi-mcp",
       "args": [],
-      "env": { "QNSP_API_KEY": "YOUR_API_KEY" }
+      "env": { "QNSI_API_KEY": "YOUR_API_KEY" }
     }
   }
 }
@@ -89,13 +91,29 @@ Restart or reconnect the MCP server after changing configuration.
 
 ## Tools exposed
 
-Version 0.2.0 exposes 17 tools. Tools retain the `qnsp_` namespace prefix for
-compatibility, so existing MCP configurations continue to work and names do not
-collide with tools from other MCP servers an agent may have enabled.
+### Unreleased source additions
+
+The repository source registers 30 tools. `qnsi_list_operations` discovers the
+880 manifest declarations with service/search filters and bounded pagination.
+`qnsi_call_operation` executes a selected declaration with validated, encoded
+path parameters, a JSON body, query options and an idempotency key. The existing
+`qnsi_api_request` also accepts query options, idempotency keys and DELETE bodies.
+All 27 compatibility tools are preserved. No tool grants permissions: backend
+authentication, tenant policy and entitlements remain authoritative.
+
+Catalog presence is not live reachability, payload-schema parity or a supported
+authentication-mode claim. These additions are **NOT VERIFIED** in published
+package binaries or production; the install instructions below retain the
+existing 0.4.1 release contract.
+
+Version 0.4.1 exposes 28 tools: 27 compatibility-prefixed `qnsp_*` tools plus
+the `qnsi_api_request` full-surface passthrough. The historical namespace is
+retained so existing MCP configurations continue to work and names do not collide
+with tools from other MCP servers an agent may have enabled.
 
 | Tool | Description | Tier |
 |---|---|---|
-| `qnsp_kms_generate_key` | Generate a PQC keypair (ML-KEM, ML-DSA, SLH-DSA, Falcon). | Dev+ |
+| `qnsp_kms_generate_key` | Generate a PQC keypair from the tenant-enabled QNSI catalog (ML-KEM, HQC, BIKE, FrodoKEM, Classic McEliece, ML-DSA, SLH-DSA, MAYO, CROSS, Falcon/FN-DSA). | Dev+ |
 | `qnsp_kms_list_keys` | List keys in the current tenant. | Dev+ |
 | `qnsp_kms_get_key` | Retrieve a key's public metadata. | Dev+ |
 | `qnsp_kms_rotate_key` | Rotate a key; previous version retained for verification. | Dev+ |
@@ -112,6 +130,17 @@ collide with tools from other MCP servers an agent may have enabled.
 | `qnsp_tenant_info` | Show current tenant configuration. | Dev+ |
 | `qnsp_billing_status` | Show tier, limits, and upgrade URL. | Any |
 | `qnsp_platform_health` | Platform liveness and regional posture. | Any |
+| `qnsp_storage_list_buckets` | List encrypted storage buckets in the tenant. | Pro+ |
+| `qnsp_storage_list_objects` | List objects in an encrypted bucket. | Pro+ |
+| `qnsp_storage_put_object` | Store an object (base64) under PQC envelope encryption. | Pro+ |
+| `qnsp_storage_get_object` | Fetch an object (decrypted, base64) from a bucket. | Pro+ |
+| `qnsp_search_list_indexes` | List encrypted search indexes. | Business+ |
+| `qnsp_search_vector_query` | Vector similarity query against an encrypted index. | Business+ |
+| `qnsp_access_list_roles` | List access-control roles in the tenant. | Business+ |
+| `qnsp_billing_entitlements` | Resolved entitlements (tier, limits, enabled features). | Any |
+| `qnsp_billing_list_invoices` | List the tenant's invoices. | Any |
+| `qnsp_conformance_stats` | L0-L3 conformance posture against pinned NIST ACVP vectors. | Dev+ |
+| `qnsi_api_request` | Full-surface passthrough to any customer-facing edge route (/proxy/...); edge enforces entitlements per route. | Any |
 
 If your tier does not include a feature, the tool returns a clear upgrade
 message with a deep link to <https://cloud.qnsi.heossi.com/billing>.
@@ -122,8 +151,8 @@ message with a deep link to <https://cloud.qnsi.heossi.com/billing>.
 
 | Env var | Required | Default | Purpose |
 |---|---|---|---|
-| `QNSP_API_KEY` | yes | - | Tenant-scoped API key. Create one at <https://cloud.qnsi.heossi.com/api-keys>. |
-| `QNSP_PLATFORM_URL` | no | `https://api.qnsi.heossi.com` | Point at a staging or self-hosted edge gateway. |
+| `QNSI_API_KEY` | yes | - | Tenant-scoped API key. Create one at <https://cloud.qnsi.heossi.com/api-keys>. |
+| `QNSI_PLATFORM_URL` | no | `https://api.qnsi.heossi.com` | Point at a staging or self-hosted edge gateway. |
 
 ---
 

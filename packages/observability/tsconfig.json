@@ -4,10 +4,10 @@
 		"ignoreDeprecations": "6.0",
 		"rootDir": "src",
 		"paths": {
-			"@heossihq/qnsi-shared-kernel": ["packages/shared-kernel/dist/index.d.ts"],
-			"@heossihq/qnsi-shared-kernel/errors": ["packages/shared-kernel/dist/errors/index.d.ts"],
+			"@heossihq/qnsi-shared-kernel": ["../shared-kernel/dist/index.d.ts"],
+			"@heossihq/qnsi-shared-kernel/errors": ["../shared-kernel/dist/errors/index.d.ts"],
 			"@heossihq/qnsi-shared-kernel/errors/http-client": [
-				"packages/shared-kernel/dist/errors/http-client.d.ts"
+				"../shared-kernel/dist/errors/http-client.d.ts"
 			]
 		},
 		"composite": true,

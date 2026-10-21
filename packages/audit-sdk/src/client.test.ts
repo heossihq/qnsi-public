@@ -103,17 +103,15 @@ describe("construction", () => {
 		expect(() => new AuditClient({ apiKey: "tok", baseUrl: url })).not.toThrow();
 	});
 
-	it.each([
-		"http://11.0.0.5",
-		"http://172.15.0.5",
-		"http://172.32.0.5",
-		"http://192.169.1.5",
-	])("rejects %s as not internal", (url) => {
-		vi.stubEnv("NODE_ENV", "production");
-		expect(() => new AuditClient({ apiKey: "tok", baseUrl: url })).toThrow(
-			"baseUrl must use HTTPS in production",
-		);
-	});
+	it.each(["http://11.0.0.5", "http://172.15.0.5", "http://172.32.0.5", "http://192.169.1.5"])(
+		"rejects %s as not internal",
+		(url) => {
+			vi.stubEnv("NODE_ENV", "production");
+			expect(() => new AuditClient({ apiKey: "tok", baseUrl: url })).toThrow(
+				"baseUrl must use HTTPS in production",
+			);
+		},
+	);
 
 	it("rejects an unparseable http base url", () => {
 		vi.stubEnv("NODE_ENV", "production");

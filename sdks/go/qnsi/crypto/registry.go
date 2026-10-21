@@ -1,4 +1,4 @@
-// Package crypto provides local PQC primitives via liboqs-go 0.12.0.
+// Package crypto provides local PQC primitives via liboqs-go 0.16.0.
 //
 // The algorithm names exposed here are the canonical QNSP names that
 // match @heossihq/qnsp-cryptography (TypeScript) and qnsp.crypto (Python). Internally
@@ -25,7 +25,9 @@ var kemCandidates = map[string][]string{
 	"Kyber768":  {"Kyber768"},
 	"Kyber1024": {"Kyber1024"},
 
-	// HQC omitted - disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+	"HQC-128": {"HQC-1", "HQC-128"},
+	"HQC-192": {"HQC-3", "HQC-192"},
+	"HQC-256": {"HQC-5", "HQC-256"},
 
 	"BIKE-L1": {"BIKE-L1"},
 	"BIKE-L3": {"BIKE-L3"},
@@ -66,24 +68,24 @@ var sigCandidates = map[string][]string{
 	"Dilithium3": {"Dilithium3"},
 	"Dilithium5": {"Dilithium5"},
 
-	"Falcon-512":     {"Falcon-512"},
-	"Falcon-1024":    {"Falcon-1024"},
+	"Falcon-512":         {"Falcon-512"},
+	"Falcon-1024":        {"Falcon-1024"},
 	"Falcon-padded-512":  {"Falcon-padded-512"},
 	"Falcon-padded-1024": {"Falcon-padded-1024"},
 
-	"SLH-DSA-SHA2-128f": {"SLH-DSA-SHA2-128f-simple", "SPHINCS+-SHA2-128f-simple"},
-	"SLH-DSA-SHA2-128s": {"SLH-DSA-SHA2-128s-simple", "SPHINCS+-SHA2-128s-simple"},
-	"SLH-DSA-SHA2-192f": {"SLH-DSA-SHA2-192f-simple", "SPHINCS+-SHA2-192f-simple"},
-	"SLH-DSA-SHA2-192s": {"SLH-DSA-SHA2-192s-simple", "SPHINCS+-SHA2-192s-simple"},
-	"SLH-DSA-SHA2-256f": {"SLH-DSA-SHA2-256f-simple", "SPHINCS+-SHA2-256f-simple"},
-	"SLH-DSA-SHA2-256s": {"SLH-DSA-SHA2-256s-simple", "SPHINCS+-SHA2-256s-simple"},
+	"SLH-DSA-SHA2-128f": {"SLH_DSA_PURE_SHA2_128F", "SPHINCS+-SHA2-128f-simple"},
+	"SLH-DSA-SHA2-128s": {"SLH_DSA_PURE_SHA2_128S", "SPHINCS+-SHA2-128s-simple"},
+	"SLH-DSA-SHA2-192f": {"SLH_DSA_PURE_SHA2_192F", "SPHINCS+-SHA2-192f-simple"},
+	"SLH-DSA-SHA2-192s": {"SLH_DSA_PURE_SHA2_192S", "SPHINCS+-SHA2-192s-simple"},
+	"SLH-DSA-SHA2-256f": {"SLH_DSA_PURE_SHA2_256F", "SPHINCS+-SHA2-256f-simple"},
+	"SLH-DSA-SHA2-256s": {"SLH_DSA_PURE_SHA2_256S", "SPHINCS+-SHA2-256s-simple"},
 
-	"SLH-DSA-SHAKE-128f": {"SLH-DSA-SHAKE-128f-simple", "SPHINCS+-SHAKE-128f-simple"},
-	"SLH-DSA-SHAKE-128s": {"SLH-DSA-SHAKE-128s-simple", "SPHINCS+-SHAKE-128s-simple"},
-	"SLH-DSA-SHAKE-192f": {"SLH-DSA-SHAKE-192f-simple", "SPHINCS+-SHAKE-192f-simple"},
-	"SLH-DSA-SHAKE-192s": {"SLH-DSA-SHAKE-192s-simple", "SPHINCS+-SHAKE-192s-simple"},
-	"SLH-DSA-SHAKE-256f": {"SLH-DSA-SHAKE-256f-simple", "SPHINCS+-SHAKE-256f-simple"},
-	"SLH-DSA-SHAKE-256s": {"SLH-DSA-SHAKE-256s-simple", "SPHINCS+-SHAKE-256s-simple"},
+	"SLH-DSA-SHAKE-128f": {"SLH_DSA_PURE_SHAKE_128F", "SPHINCS+-SHAKE-128f-simple"},
+	"SLH-DSA-SHAKE-128s": {"SLH_DSA_PURE_SHAKE_128S", "SPHINCS+-SHAKE-128s-simple"},
+	"SLH-DSA-SHAKE-192f": {"SLH_DSA_PURE_SHAKE_192F", "SPHINCS+-SHAKE-192f-simple"},
+	"SLH-DSA-SHAKE-192s": {"SLH_DSA_PURE_SHAKE_192S", "SPHINCS+-SHAKE-192s-simple"},
+	"SLH-DSA-SHAKE-256f": {"SLH_DSA_PURE_SHAKE_256F", "SPHINCS+-SHAKE-256f-simple"},
+	"SLH-DSA-SHAKE-256s": {"SLH_DSA_PURE_SHAKE_256S", "SPHINCS+-SHAKE-256s-simple"},
 
 	"MAYO-1": {"MAYO-1"},
 	"MAYO-2": {"MAYO-2"},

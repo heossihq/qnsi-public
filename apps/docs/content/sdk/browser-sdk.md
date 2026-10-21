@@ -193,7 +193,7 @@ The noble provider uses `@noble/post-quantum` which is a pure JavaScript impleme
 
 ```ts
 import { initializePqcProvider, encryptBeforeUpload, generateEncryptionKeyPair } from "@heossihq/qnsi/browser";
-import { StorageClient } from "@heossihq/qnsi";
+import { QnsiClient } from "@heossihq/qnsi";
 
 await initializePqcProvider({ apiKey: "YOUR_API_KEY" });
 
@@ -209,12 +209,10 @@ const envelope = await encryptBeforeUpload(
 );
 
 // Upload encrypted envelope to QNSI storage
-const storage = new StorageClient({ baseUrl, apiKey, tenantId });
-const upload = await storage.initiateUpload({
-  name: file.name,
-  mimeType: file.type,
-  sizeBytes: envelope.ciphertext.length,
-  classification: "confidential",
+const client = new QnsiClient({ apiKey: "YOUR_API_KEY" });
+const upload = await client.storage.putObject("my-bucket", file.name, {
+  data: new Uint8Array(envelope.ciphertext),
+  contentType: file.type,
 });
 ```
 

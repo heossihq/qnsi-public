@@ -2,19 +2,19 @@ package com.heossi.qnsi.crypto
 
 import java.security.SecureRandom
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair
-import org.bouncycastle.pqc.crypto.mldsa.MLDSAKeyGenerationParameters
-import org.bouncycastle.pqc.crypto.mldsa.MLDSAKeyPairGenerator
-import org.bouncycastle.pqc.crypto.mldsa.MLDSAParameters
-import org.bouncycastle.pqc.crypto.mldsa.MLDSAPrivateKeyParameters
-import org.bouncycastle.pqc.crypto.mldsa.MLDSAPublicKeyParameters
-import org.bouncycastle.pqc.crypto.mldsa.MLDSASigner
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMExtractor
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMGenerator
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMKeyGenerationParameters
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMKeyPairGenerator
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMParameters
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMPrivateKeyParameters
-import org.bouncycastle.pqc.crypto.mlkem.MLKEMPublicKeyParameters
+import org.bouncycastle.crypto.generators.MLDSAKeyPairGenerator
+import org.bouncycastle.crypto.generators.MLKEMKeyPairGenerator
+import org.bouncycastle.crypto.kems.MLKEMExtractor
+import org.bouncycastle.crypto.kems.MLKEMGenerator
+import org.bouncycastle.crypto.params.MLDSAKeyGenerationParameters
+import org.bouncycastle.crypto.params.MLDSAParameters
+import org.bouncycastle.crypto.params.MLDSAPrivateKeyParameters
+import org.bouncycastle.crypto.params.MLDSAPublicKeyParameters
+import org.bouncycastle.crypto.params.MLKEMKeyGenerationParameters
+import org.bouncycastle.crypto.params.MLKEMParameters
+import org.bouncycastle.crypto.params.MLKEMPrivateKeyParameters
+import org.bouncycastle.crypto.params.MLKEMPublicKeyParameters
+import org.bouncycastle.crypto.signers.MLDSASigner
 
 /**
  * On-device post-quantum cryptography for JVM and Android, backed by Bouncy

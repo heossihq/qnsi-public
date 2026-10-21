@@ -1,18 +1,17 @@
 /**
- * X-Wing - the NIST SP 800-227 worked-example hybrid (composite) KEM:
- * ML-KEM-768 + X25519 with a SHA3-256 combiner (draft-connolly-cfrg-xwing-kem).
+ * X-Wing compatibility-mode hybrid KEM:
+ * ML-KEM-768 + X25519 with a SHA3-256 combiner, implemented from
+ * draft-connolly-cfrg-xwing-kem-11 (an active individual Internet-Draft).
  *
  * This is QNSI's OWN from-spec implementation (injected ML-KEM + Node X25519 +
  * SHA3-256), independent of any single library. It is cross-verified against a
  * second independent implementation (@noble/post-quantum) in xwing.test.ts -
- * two independent implementations agreeing IS the spec-compliance proof, and
- * cross-verification is QNSI's crypto strategy (crypto-provider-strategy.md).
+ * two independent implementations agreeing is bounded interoperability evidence.
+ * It is not production evidence, NIST approval, or final-standard conformance.
  *
- * Why hybrid (2026-2030): SP 800-227 permits a hybrid ONLY as an approved
- * composite; X-Wing is the finalization's worked example. It gives
- * defense-in-depth during the PQC transition - an attacker must break BOTH
- * ML-KEM-768 AND X25519. The classical X25519 half is only ever inside this
- * approved composite, never the sole KEM (nist-approved-pqc-only.md §3).
+ * Why hybrid: this is an explicitly selected compatibility mode for transition
+ * scenarios, never the native PQC path or an automatic fallback. X-Wing is not a
+ * NIST SP 800-227 construction. The classical X25519 half is never the sole KEM.
  *
  * Key/ciphertext sizes (verified against the draft):
  *   encapsulation key : 1216 B  (1184 ML-KEM-768 pk + 32 X25519 pk)

@@ -1,10 +1,24 @@
 # QNSI Swift SDK - `qnsi-swift`
 
 Official Swift SDK for the Quantum-Native Security Infrastructure (QNSI) on
-iOS and macOS. Mirrors the `@heossihq/qnsp` (npm), `qnsp` (PyPI), Go/Rust, and
+iOS and macOS. Integrates with `@heossihq/qnsi` (npm), `qnsi` (PyPI), Go/Rust, and
 `com.heossi:qnsi` (JVM) SDKs: one client, eleven service sub-clients (vault,
 kms, audit, auth, tenant, access, billing, cryptoInventory, storage, search,
-ai), the same activation handshake, and the same verified wire contract.
+ai) and the shared activation handshake. Cross-language and production acceptance
+require independent evidence.
+
+## Manifest operation access (unreleased source)
+
+`SurfaceClient.operations()` returns the bundled catalog of 880 manifest
+declarations across 15 services. `qnsi.surface.callOperation(operationId:,
+pathParameters:, body:, options:)` uses the shared transport and returns
+`JSONValue`, preserving object, array and scalar JSON responses. Options carry
+query and idempotency data. Invalid path parameters fail before HTTP.
+
+Existing service and on-device PQC APIs are preserved. Catalog presence is not
+live availability, typed payload-schema parity or permission to invoke a route.
+Publication, full-source coverage, device matrix and production acceptance of
+these additions are **NOT VERIFIED**.
 
 ## What makes it different from the other QNSI SDKs
 
@@ -36,7 +50,7 @@ Add the package to your `Package.swift` or Xcode project and depend on the
 ```swift
 import QNSI
 
-let qnsi = try QnsiClient(apiKey: ProcessInfo.processInfo.environment["QNSP_API_KEY"] ?? "")
+let qnsi = try QnsiClient(apiKey: ProcessInfo.processInfo.environment["QNSI_API_KEY"] ?? "")
 try await qnsi.ensureActivated()   // surfaces an invalid key eagerly
 print("tenant=\(try await qnsi.tenantId()) tier=\(try await qnsi.tier())")
 
@@ -74,16 +88,34 @@ must be deployed with them BEFORE this SDK is published.
 
 ```sh
 swift build
-swift test                                  # mocked suites + real CryptoKit PQC tests
+swift test                                  # full suite, requires approved production canary credentials
+swift test --filter 'TransportSecurityTests|LocalRedirectTests|TransportTests|SurfaceTests|WebhooksTests|DevicePqcTests' # local regression diagnostic only
 QNSP_CANARY_KEY=... swift test --filter ProdSmokeTests   # REAL prod e2e
 node ../../scripts/verify/mobile-pqc-interop.mjs         # cross-impl interop proof
 ```
 
-`swift test` runs 25 tests: URLProtocol-mocked transport tests (activation,
-tenant injection, 401 retry, verified wire field names), webhook tests, and
-REAL CryptoKit ML-KEM/ML-DSA round trips with FIPS 203/204 size assertions and
-tamper rejection. The two `ProdSmokeTests` network tests skip unless
-`QNSP_CANARY_KEY` is set.
+The latest full local run executes 39 tests: 37 pass and two production network
+verifiers fail closed without approved canary credentials. No tests are skipped.
+Full-source LLVM measurement covers 18 production Swift files: 767/1271 lines,
+125/216 functions and 362/597 regions. Branch and separate statement coverage
+are not measured, so the complete exact-100% gate remains unsatisfied.
+The local checks on macOS ARM64 with Swift 6.4 include
+actual loopback HTTP redirects at activation/service/retry/session boundaries,
+URLProtocol transport fixtures, webhook checks and actual CryptoKit ML-KEM/ML-DSA
+round trips with size and tamper assertions. This is not the full suite,
+production acceptance, a supported-platform matrix or 100% source coverage.
+The two production network tests fail when `QNSP_CANARY_KEY` is absent; they
+never report a skipped production verifier. Production mutations require an
+approved tenant/scope before execution. On an OS below the device-PQC floor,
+device tests assert fail-closed errors, not successful native cryptography.
+
+Vault exposes engine catalog, config creation/listing, credential issuance,
+lease listing/renewal/revocation and dynamic statistics. A queued revocation
+acknowledgement is not proof of provider revocation. Existing secret methods remain
+available. Explicit tenant overloads for inventory statistics/readiness forward
+the caller's identifier without granting delegation. The new discovery-source
+method forwards the backend selector; legacy targets/modes/options remain in
+the SDK but are not consumed by that backend handler.
 
 ## License
 

@@ -29,7 +29,10 @@ final class DevicePqcTests: XCTestCase {
     }
 
     func testKemImplicitRejectionOnTamperedCiphertext() throws {
-        guard QnsiDevicePqc.isAvailable else { return }
+        guard QnsiDevicePqc.isAvailable else {
+            XCTAssertThrowsError(try QnsiDevicePqc.decapsulate(.mlKem768, privateSeed: Data(), ciphertext: Data()))
+            return
+        }
         let pair = try QnsiDevicePqc.generateKemKeyPair(.mlKem768)
         let encap = try QnsiDevicePqc.encapsulate(.mlKem768, publicKey: pair.publicKey)
         var tampered = encap.ciphertext
@@ -83,7 +86,10 @@ final class DevicePqcTests: XCTestCase {
     }
 
     func testSeedReconstructionIsDeterministic() throws {
-        guard QnsiDevicePqc.isAvailable else { return }
+        guard QnsiDevicePqc.isAvailable else {
+            XCTAssertThrowsError(try QnsiDevicePqc.sign(.mlDsa65, privateSeed: Data(), message: Data()))
+            return
+        }
         let pair = try QnsiDevicePqc.generateSigningKeyPair(.mlDsa65)
         let message = Data("determinism check".utf8)
         // A signature made from the reconstructed key must verify under the

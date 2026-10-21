@@ -19,7 +19,11 @@ public struct CryptoInventoryClient: Sendable {
         try await transport.requestJson("GET", "\(prefix)/assets/stats")
     }
 
-    /// Kick off a discovery run over the given targets/modes.
+    public func getAssetStats(tenantId: String) async throws -> JSONValue {
+        try await transport.requestJson("GET", "\(prefix)/assets/stats", options: RequestOptions(query: ["tenantId": tenantId]))
+    }
+
+    /// Select a backend discovery source. Legacy targets/modes/options are not consumed by this route.
     public func discoverAssets(
         targets: [String]? = nil,
         modes: [String]? = nil,
@@ -36,8 +40,20 @@ public struct CryptoInventoryClient: Sendable {
         )
     }
 
+    /// Select a mounted backend discovery source; permissions and feature gates still apply.
+    public func discoverAssetsFromSource(source: String, idempotencyKey: String? = nil) async throws -> JSONValue {
+        try await transport.requestJson(
+            "POST", "\(prefix)/assets/discover", body: .object(["source": .string(source)]),
+            options: RequestOptions(idempotencyKey: idempotencyKey)
+        )
+    }
+
     /// PQC readiness score for the activated tenant (tenantId is injected into the query).
     public func getReadinessScore() async throws -> JSONValue {
         try await transport.requestJson("GET", "\(prefix)/readiness")
+    }
+
+    public func getReadinessScore(tenantId: String) async throws -> JSONValue {
+        try await transport.requestJson("GET", "\(prefix)/readiness", options: RequestOptions(query: ["tenantId": tenantId]))
     }
 }

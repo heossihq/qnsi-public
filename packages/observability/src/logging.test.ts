@@ -3,6 +3,13 @@ import { describe, expect, it } from "vitest";
 
 import { createIntegrityLogger } from "./logging.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 type Call = { level: string; obj: Record<string, unknown>; msg: string | undefined };
 
 function recordingLogger(calls: Call[]): FastifyBaseLogger {
@@ -78,6 +85,10 @@ describe("createIntegrityLogger", () => {
 		child.warn({ y: 1 }, "from child");
 
 		expect(calls[0]?.level).toBe("warn");
-		expect((calls[0]?.obj["provenance"] as Record<string, unknown>)["sourceService"]).toBe("svc");
+		expect(
+			(
+				required(calls[0]?.obj["provenance"], "the first log provenance") as Record<string, unknown>
+			)["sourceService"],
+		).toBe("svc");
 	});
 });

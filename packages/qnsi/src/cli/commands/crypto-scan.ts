@@ -5,7 +5,7 @@
  * scan mode) and prints findings as a table, JSON, or a CycloneDX 1.5 CBOM.
  * With --upload, submits a findings-only report (never source code) to
  * POST /proxy/crypto/v1/code-scan-reports using the same HMAC agent protocol
- * as the qnsp host agent. Design: docs/design/code-crypto-scanner.md.
+ * as the legacy host agent. Design: docs/design/code-crypto-scanner.md.
  */
 
 import { createHash, createHmac, randomBytes } from "node:crypto";
@@ -27,7 +27,7 @@ const MAX_UPLOAD_FINDINGS = 10_000;
 
 /**
  * Derive the HMAC key from the agent bootstrap secret: SHA-256 over the
- * DECODED bytes of the hex secret. Matches agent-auth.ts / qnsp-agent.
+ * DECODED bytes of the hex secret. Matches agent-auth.ts / legacy host agent.
  */
 function deriveHmacKey(secret: string): Buffer {
 	return createHash("sha256").update(Buffer.from(secret, "hex")).digest();

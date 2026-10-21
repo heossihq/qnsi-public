@@ -1,5 +1,5 @@
 /**
- * QNSP KMS - server-side PQC keys with sign, verify, wrap, and unwrap.
+ * QNSI KMS - server-side PQC keys with sign, verify, wrap, and unwrap.
  * Wraps `apps/kms-service` (`/kms/v1`).
  */
 
@@ -11,6 +11,19 @@ const PATH_PREFIX = "/proxy/kms/v1";
 /** First-class cryptographic intents - the tenant's crypto policy selects the
  * algorithm; application code states only WHAT the key is for. */
 export type KeyCreationIntent = "signing" | "key-encapsulation" | "data-encryption";
+
+export interface KmsKeyResource extends Record<string, unknown> {
+	readonly id: string;
+	readonly keyId: string;
+	readonly tenantId: string;
+	readonly exportable: false | null;
+	readonly custodyPolicy: {
+		readonly exportable: false | null;
+		readonly enforcement: "service" | "unverified";
+		readonly hardwareNonExportability: "not_verified";
+		readonly policyVersion: 1 | null;
+	};
+}
 
 export interface CreateKeyRequest {
 	/** Caller key identifier (1-255 chars). Auto-generated (uuid) if omitted. */
@@ -28,6 +41,9 @@ export interface CreateKeyRequest {
 	/** Optional hint (e.g. "signing"/"encryption"/"kem"); folded into metadata. */
 	readonly purpose?: string;
 	readonly metadata?: Record<string, unknown>;
+	/** Service-enforced managed-material policy, not metadata or HSM proof. */
+	readonly exportable?: boolean;
+	readonly custodyEnforcement?: "service" | "hardware";
 }
 
 interface SignResponse {
@@ -112,7 +128,9 @@ export class KmsClient {
 		};
 		if (req.intent) body["intent"] = req.intent;
 		if (req.algorithm) body["algorithm"] = req.algorithm;
-		return this.internal.request("POST", `${PATH_PREFIX}/keys`, body, opts);
+		if (req.exportable !== undefined) body["exportable"] = req.exportable;
+		if (req.custodyEnforcement !== undefined) body["custodyEnforcement"] = req.custodyEnforcement;
+		return this.internal.request<KmsKeyResource>("POST", `${PATH_PREFIX}/keys`, body, opts);
 	}
 
 	/**
@@ -137,7 +155,20 @@ export class KmsClient {
 	}
 
 	getKey(keyId: string) {
-		return this.internal.request("GET", `${PATH_PREFIX}/keys/${keyId}`);
+		return this.internal.request<KmsKeyResource>("GET", `${PATH_PREFIX}/keys/${keyId}`);
+	}
+
+	/** Requests the server's enforced export decision; no material is returned. */
+	async requestKeyExport(keyId: string): Promise<never> {
+		await this.internal.request(
+			"POST",
+			`${PATH_PREFIX}/keys/${encodeURIComponent(keyId)}/export`,
+			{},
+		);
+		throw new QnsiApiError(
+			"KMS export unexpectedly succeeded; managed material export forbidden",
+			200,
+		);
 	}
 
 	rotateKey(keyId: string, reason?: string, opts?: Pick<RequestOptions, "idempotencyKey">) {

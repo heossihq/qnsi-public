@@ -64,6 +64,7 @@ public class QnsiClient @JvmOverloads constructor(
 
     /** AI workload orchestration, inference, model registry (ai-orchestrator). */
     public val ai: AiClient
+    public val surface: SurfaceClient
 
     init {
         if (apiKey.isBlank()) {
@@ -82,6 +83,7 @@ public class QnsiClient @JvmOverloads constructor(
         storage = StorageClient(t)
         search = SearchClient(t)
         ai = AiClient(t)
+        surface = SurfaceClient(t)
     }
 
     /** Force the activation handshake now; surfaces an invalid API key eagerly. */

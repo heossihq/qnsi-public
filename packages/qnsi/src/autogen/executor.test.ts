@@ -2,7 +2,7 @@
  * QnsiExecutor unit tests.
  *
  * The executor was folded in from the former standalone
- * `@heossihq/qnsi-autogen-qnsp`; its workload submit/get HTTP is now inlined,
+ * `former standalone AutoGen integration package`; its workload submit/get HTTP is now inlined,
  * so these tests mock `globalThis.fetch` (the real seam) rather than the
  * former `@heossihq/qnsi-ai-sdk` client. Same behaviors asserted.
  */
@@ -57,8 +57,22 @@ const BASE_CONFIG: QnsiExecutorConfig = {
 	pollTimeoutMs: 5_000,
 };
 
-function makeExecutor(overrides?: Partial<QnsiExecutorConfig>): QnsiExecutor {
-	return new QnsiExecutor({ ...BASE_CONFIG, ...overrides });
+/**
+ * Overrides may set a key to `undefined` to clear the BASE_CONFIG default. The
+ * config's optional fields are declared without `| undefined`, so a cleared key is
+ * removed rather than assigned undefined, which is what omitting it means.
+ */
+function makeExecutor(
+	overrides?: {
+		[K in keyof QnsiExecutorConfig]?: QnsiExecutorConfig[K] | undefined;
+	},
+): QnsiExecutor {
+	const merged: Record<string, unknown> = { ...BASE_CONFIG };
+	for (const [key, value] of Object.entries(overrides ?? {})) {
+		if (value === undefined) delete merged[key];
+		else merged[key] = value;
+	}
+	return new QnsiExecutor(merged as unknown as QnsiExecutorConfig);
 }
 
 function makeWorkloadDetail(status: string, overrides?: Record<string, unknown>) {
@@ -178,7 +192,7 @@ describe("QnsiExecutor", () => {
 				}),
 			);
 			await makeExecutor().execute({ code: "echo hello", language: "bash" });
-			expect(expectSubmitBody().command).toEqual(["bash", "-c", "echo hello"]);
+			expect(expectSubmitBody()["command"]).toEqual(["bash", "-c", "echo hello"]);
 		});
 
 		it("uses correct command for javascript language", async () => {
@@ -188,7 +202,7 @@ describe("QnsiExecutor", () => {
 				}),
 			);
 			await makeExecutor().execute({ code: "console.log('hi')", language: "javascript" });
-			expect(expectSubmitBody().command).toEqual(["node", "-e", "console.log('hi')"]);
+			expect(expectSubmitBody()["command"]).toEqual(["node", "-e", "console.log('hi')"]);
 		});
 
 		it("passes env vars to the workload", async () => {
@@ -201,7 +215,7 @@ describe("QnsiExecutor", () => {
 				code: "print(os.environ['MY_VAR'])",
 				env: { MY_VAR: "secret-value" },
 			});
-			expect(expectSubmitBody().env).toEqual({ MY_VAR: "secret-value" });
+			expect(expectSubmitBody()["env"]).toEqual({ MY_VAR: "secret-value" });
 		});
 
 		it("uses on-demand scheduling when gpu > 0", async () => {
@@ -212,8 +226,8 @@ describe("QnsiExecutor", () => {
 			);
 			await makeExecutor({ gpu: 1 }).execute({ code: "import torch" });
 			const body = expectSubmitBody();
-			expect(body.schedulingPolicy).toBe("on-demand");
-			expect((body.resources as Record<string, unknown>).gpu).toBe(1);
+			expect(body["schedulingPolicy"]).toBe("on-demand");
+			expect((body["resources"] as Record<string, unknown>)["gpu"]).toBe(1);
 		});
 
 		it("uses spot scheduling when gpu is 0", async () => {
@@ -223,7 +237,7 @@ describe("QnsiExecutor", () => {
 				}),
 			);
 			await makeExecutor().execute({ code: "print('cpu only')" });
-			expect(expectSubmitBody().schedulingPolicy).toBe("spot");
+			expect(expectSubmitBody()["schedulingPolicy"]).toBe("spot");
 		});
 
 		it("throws on unsupported language", async () => {

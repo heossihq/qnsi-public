@@ -7,11 +7,9 @@
 // require the session JWT (Bearer) plus the x-qnsp-tenant-id header. Call Login first; this client
 // caches the resulting session and uses it automatically.
 //
-// WebAuthn passkeys (#33) and SAML/OIDC federation (#35) are intentionally NOT exposed. The real
-// backend surfaces are /auth/webauthn/* (a browser authenticator ceremony - navigator.credentials,
-// not driveable from a server-side api-key SDK) and /auth/federation/scim|saml/acs (a SCIM/SAML-ACS
-// provisioning + callback API, not a per-call SDK surface). They were removed rather than ship dead
-// endpoints (the old /passkeys/* and /federate/* paths did not exist on the backend).
+// WebAuthn and federation workflows use the canonical /proxy/auth edge routes.
+// The caller supplies actual authenticator responses and IdP redirects/codes;
+// the SDK does not synthesize a credential ceremony or identity grant.
 package auth
 
 import (
@@ -55,7 +53,11 @@ type LoginRequest struct {
 func (c *Client) GetSession() *Session {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	return c.sess
+	if c.sess == nil {
+		return nil
+	}
+	copy := *c.sess
+	return &copy
 }
 
 // tokenString extracts a token that may be a bare string or an object {"token": "…"}.

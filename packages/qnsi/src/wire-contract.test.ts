@@ -29,6 +29,13 @@ import { describe, expect, it } from "vitest";
 import { KmsClient } from "./kms.js";
 import { VaultClient } from "./vault.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 const TENANT = "155f43f3-bb3f-43be-b62c-0c0c97b5b5b0";
 
 /** Captures what Internal.request() would have sent. */
@@ -64,18 +71,52 @@ describe("kms.rotateKey: it sent NO BODY, and had never rotated a key", () => {
 		const { internal, calls } = spy();
 		await new KmsClient(internal).rotateKey("key-1");
 
-		expect((calls[0]?.body as Record<string, unknown>)["tenantId"]).toBe(TENANT);
+		expect(
+			(required(calls[0]?.body, "the first recorded request body") as Record<string, unknown>)[
+				"tenantId"
+			],
+		).toBe(TENANT);
 	});
 
 	it("an optional reason is passed through", async () => {
 		const { internal, calls } = spy();
 		await new KmsClient(internal).rotateKey("key-1", "scheduled rotation");
 
-		expect((calls[0]?.body as Record<string, unknown>)["reason"]).toBe("scheduled rotation");
+		expect(
+			(required(calls[0]?.body, "the first recorded request body") as Record<string, unknown>)[
+				"reason"
+			],
+		).toBe("scheduled rotation");
 	});
 });
 
 describe("the fields that broke the other SDKs must be right here", () => {
+	it("requests tenant-bound export enforcement and rejects any unexpected successful response", async () => {
+		const { internal, calls } = spy();
+		await expect(new KmsClient(internal).requestKeyExport("key/1?")).rejects.toThrow(
+			"KMS export unexpectedly succeeded",
+		);
+		expect(calls[0]).toEqual({
+			method: "POST",
+			path: "/proxy/kms/v1/keys/key%2F1%3F/export",
+			body: { tenantId: TENANT },
+		});
+	});
+	it("sends custody requirements top-level, independently of caller metadata", async () => {
+		const { internal, calls } = spy();
+		await new KmsClient(internal).createKey({
+			intent: "signing",
+			exportable: false,
+			custodyEnforcement: "service",
+			metadata: { exportable: true },
+		});
+		expect(calls[0]?.body).toMatchObject({
+			exportable: false,
+			custodyEnforcement: "service",
+			metadata: { exportable: true },
+			tenantId: TENANT,
+		});
+	});
 	it("kms.createKey sends the REQUIRED keyId and keyType", async () => {
 		const { internal, calls } = spy();
 		await new KmsClient(internal).createKey({ algorithm: "dilithium-3", purpose: "signing" });
@@ -109,10 +150,16 @@ describe("the fields that broke the other SDKs must be right here", () => {
 		// The rotateKey lesson: an undefined body with content-type json is a
 		// Fastify 400 - tenantId must have an object to be injected into.
 		expect(call?.body).not.toBeUndefined();
-		expect((call?.body as Record<string, unknown>)["tenantId"]).toBe(TENANT);
+		expect(
+			(required(call?.body, "the recorded request body") as Record<string, unknown>)["tenantId"],
+		).toBe(TENANT);
 
 		await new KmsClient(internal).upgradeKey("key-1", "pqc migration");
-		expect((calls[1]?.body as Record<string, unknown>)["reason"]).toBe("pqc migration");
+		expect(
+			(required(calls[1]?.body, "the second recorded request body") as Record<string, unknown>)[
+				"reason"
+			],
+		).toBe("pqc migration");
 	});
 
 	it("vault.createSecret sends `payload`, never `payloadBase64`", async () => {
@@ -288,6 +335,7 @@ describe("QNSI service clients emit only canonically mounted manifest routes", (
 				"evaluateRisk",
 				"federateOIDC",
 				"federateSAML",
+				"getFederationAuditActivity",
 				"listPasskeys",
 				"listRiskPolicies",
 				"login",
@@ -306,6 +354,7 @@ describe("QNSI service clients emit only canonically mounted manifest routes", (
 				"getInvoice",
 				"ingestMeter",
 				"ingestMeters",
+				"listCustomerCredits",
 				"listInvoices",
 			].sort(),
 		);
@@ -331,6 +380,7 @@ describe("QNSI service clients emit only canonically mounted manifest routes", (
 				"hspkSeal",
 				"hspkSign",
 				"listKeys",
+				"requestKeyExport",
 				"rotateKey",
 				"sign",
 				"unwrap",
@@ -359,6 +409,14 @@ describe("QNSI service clients emit only canonically mounted manifest routes", (
 		);
 		expect(publicMethods(vault)).toEqual(
 			[
+				"createDynamicSecretConfig",
+				"getDynamicSecretStats",
+				"listDynamicSecretConfigs",
+				"listDynamicSecretEngines",
+				"listLeases",
+				"renewLease",
+				"requestCredentials",
+				"revokeLease",
 				"createSecret",
 				"deleteSecret",
 				"getSecret",
@@ -442,6 +500,7 @@ describe("QNSI service clients emit only canonically mounted manifest routes", (
 		await auth.federateOIDC({ providerId: "provider-id" });
 		await auth.evaluateRisk({ tenantId: TENANT });
 		await auth.listRiskPolicies(TENANT);
+		await auth.getFederationAuditActivity();
 
 		const meter = {
 			source: "storage-service",
@@ -459,11 +518,12 @@ describe("QNSI service clients emit only canonically mounted manifest routes", (
 		await billing.listInvoices();
 		await billing.getInvoice("invoice-id");
 		await billing.getCreditBalance(TENANT);
+		await billing.listCustomerCredits();
 
 		await cryptoInventory.listAssets();
 		await cryptoInventory.getAsset("asset-id");
 		await cryptoInventory.getAssetStats();
-		await cryptoInventory.discoverAssets({ targets: ["target"] });
+		await cryptoInventory.discoverAssets({ source: "code_repo" });
 		await cryptoInventory.getReadinessScore();
 		await cryptoInventory.getPqcReadinessScore();
 		await cryptoInventory.getPqcReadinessRecommendations();
@@ -528,6 +588,18 @@ describe("QNSI service clients emit only canonically mounted manifest routes", (
 		await vault.rotateSecret("secret-id", "AA==");
 		await vault.deleteSecret("secret-id");
 		await vault.listSecretVersions("secret-id");
+		await vault.listDynamicSecretEngines();
+		await vault.createDynamicSecretConfig({
+			name: "owned",
+			engineType: "postgresql",
+			connectionRef: "approved-test-reference",
+		});
+		await vault.listDynamicSecretConfigs({ engineType: "postgresql" });
+		await vault.requestCredentials("config-id");
+		await vault.listLeases("config-id", true);
+		await vault.renewLease("lease-id");
+		await vault.revokeLease("lease-id");
+		await vault.getDynamicSecretStats();
 
 		const callFor = (method: string, path: string) =>
 			calls.find((call) => call.method === method && call.path === path);
@@ -575,7 +647,7 @@ describe("QNSI service clients emit only canonically mounted manifest routes", (
 			security,
 		});
 
-		expect(calls).toHaveLength(93);
+		expect(calls).toHaveLength(103);
 		const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
 		const manifests = new Map<string, { routes: Array<{ method: string; path: string }> }>();
 		for (const call of calls) {

@@ -29,7 +29,7 @@ Use agents when the assets are not fully reachable through provider APIs or when
 
 ## Prerequisites
 
-- Node.js 20 or later
+- Node.js 24.18.0 or later
 - An active QNSI tenant
 - `host-agent-ingestion` feature enabled for your tenant (contact your account team if not enabled)
 - `tenant_admin` role to register agents
@@ -78,7 +78,7 @@ Response:
 
 ### 2. Install the agent
 
-The host agent is a tenant-enabled deployment artifact, not a general public npm install. Your QNSI onboarding package provides the signed artifact and deployment instructions for your operating environment. Requires Node.js 20+.
+The host agent is a tenant-enabled deployment artifact, not a general public npm install. Your QNSI onboarding package provides the signed artifact and deployment instructions for your operating environment. Requires Node.js 24.18.0+.
 
 ### 3. Configure the agent
 

@@ -1,12 +1,12 @@
 /**
- * QNSP AutoGen Executor - `@heossihq/qnsi/autogen` subpath.
+ * QNSI AutoGen Executor - `@heossihq/qnsi/autogen` subpath.
  *
- * Submits code-execution workloads to QNSP AI orchestrator enclaves and waits
+ * Submits code-execution workloads to QNSI AI orchestrator enclaves and waits
  * for completion, returning structured output with the enclave attestation
  * proof. Provides a function-executor interface compatible with AutoGen's code
  * execution pattern - without importing from `autogen` directly.
  *
- * Folded in from the former standalone `@heossihq/qnsi-autogen-qnsp` package
+ * Folded in from the former standalone `former standalone AutoGen integration package` package
  * (2026-05-16). The workload submit/get HTTP is inlined here (faithful to the
  * former `@heossihq/qnsi-ai-sdk` `AiOrchestratorClient`: Bearer auth,
  * `idempotency-key` header, `env` defaulted, bounded retry) so this subpath
@@ -21,11 +21,11 @@ import { z } from "zod";
 import { activateSdk } from "../_activation/index.js";
 import { bridgeQnsiEnv } from "../internal/env-aliases.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 const SDK_VERSION = "0.3.0";
-const SDK_ID = "autogen-qnsi";
+const SDK_ID = "autogen-qnsp";
 
 // Activation handshake - keeps telemetry and tier limits consistent. Returns
 // the tenantId so callers can attach it to workload submissions.
@@ -129,7 +129,7 @@ export interface WorkloadDetail extends WorkloadSummary {
 
 export interface QnsiExecutorConfig {
 	/**
-	 * QNSP API key. Get one at https://cloud.qnsi.heossi.com/api-keys
+	 * QNSI API key. Get one at https://cloud.qnsi.heossi.com/api-keys
 	 * The API key carries the tenant ID - no separate tenantId needed.
 	 */
 	readonly apiKey: string;
@@ -140,13 +140,13 @@ export interface QnsiExecutorConfig {
 	 */
 	readonly tenantId?: string;
 	/**
-	 * Base URL for the QNSP API.
+	 * Base URL for the QNSI API.
 	 * Defaults to https://api.qnsi.heossi.com
 	 */
 	readonly baseUrl?: string;
 	/**
 	 * Container image to use for code execution workloads.
-	 * Defaults to "qnsp/enclave-python-runtime:latest"
+	 * Defaults to the persisted legacy enclave runtime image coordinate.
 	 */
 	readonly containerImage?: string;
 	/**
@@ -246,7 +246,7 @@ const LANGUAGE_COMMANDS: Record<string, readonly string[]> = {
 // ─── QnsiExecutor ─────────────────────────────────────────────────────────────
 
 /**
- * AutoGen-compatible code executor backed by QNSP AI orchestrator enclaves.
+ * AutoGen-compatible code executor backed by QNSI AI orchestrator enclaves.
  *
  * @example
  * ```typescript
@@ -303,7 +303,7 @@ export class QnsiExecutor {
 		await this.#activationPromise;
 		if (!this.#resolvedTenantId) {
 			throw new Error(
-				"QNSP AutoGen: tenantId could not be resolved. Ensure your API key is valid.",
+				"QNSI AutoGen: tenantId could not be resolved. Ensure your API key is valid.",
 			);
 		}
 		return this.#resolvedTenantId;
@@ -375,7 +375,7 @@ export class QnsiExecutor {
 	}
 
 	/**
-	 * Execute code inside a QNSP enclave and wait for the result.
+	 * Execute code inside a QNSI enclave and wait for the result.
 	 */
 	async execute(request: ExecuteCodeRequest): Promise<ExecuteCodeResult> {
 		const language = request.language ?? "python";

@@ -55,13 +55,38 @@ const session = await auth.completePasskeyAuthentication({ tenantId: "your-tenan
 
 ## Documentation
 
+### Tenant OIDC federation
+
+OIDC callbacks require the exact opaque `state` returned by authorization start.
+The client rejects missing or malformed state before network requests. Native
+Auth persists one-time state and PKCE verifier bindings, validates the external
+IdP signature, issuer, audience and nonce, and binds UserInfo to the verified
+subject. The external trust leg is explicitly `oidc-classical-compatibility`;
+this is not end-to-end native PQC transport evidence. Federation refresh
+responses retain `{ token, metadata }`, including numeric Unix-second `issuedAt`
+and `expiresAt`, with the native subject object. Production acceptance remains
+NOT VERIFIED. Other-language SDK parity remains a separate acceptance requirement.
+
+### Federated audit CSV reports
+
+`createFederatedAuditReport({ reportType: "security", startDate, endDate,
+format: "csv" })` preserves the JSON report contract and includes the generated
+CSV in `report.export.content`, with `mediaType: "text/csv"`. The same artifact
+is retained by `getFederatedAuditReport`. Check `detailsIncluded` and
+`detailsTruncated` before treating details as complete: report details remain
+bounded to 1000 records. CSV cells are quoted and protected against spreadsheet
+formula interpretation. This is a data export, not compliance certification or
+verified native audit retention. Production acceptance remains NOT VERIFIED.
+
+## Documentation links
+
 - [SDK Reference](https://docs.qnsi.heossi.com/sdk/auth-sdk)
 - [API Documentation](https://docs.qnsi.heossi.com/api)
 - [Getting Started](https://docs.qnsi.heossi.com/quickstart)
 
 ## Requirements
 
-- Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
+- Node.js >= 24.18.0 (`engines` in `package.json`; QNSI monorepo baseline)
 - A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License

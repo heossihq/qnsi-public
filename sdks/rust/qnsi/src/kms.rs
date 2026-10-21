@@ -237,4 +237,9 @@ pub struct CreateKeyRequest {
     pub key_type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<serde_json::Map<String, Value>>,
+    /// Service-enforced policy. This is not hardware non-extractability evidence.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub exportable: Option<bool>,
+    #[serde(rename = "custodyEnforcement", skip_serializing_if = "Option::is_none")]
+    pub custody_enforcement: Option<String>,
 }

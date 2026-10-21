@@ -1,18 +1,20 @@
 {
 	"name": "qnsi",
-	"displayName": "QNSI - Quantum-Native Security",
-	"description": "Post-quantum security in your editor: scan your workspace for quantum-vulnerable cryptography (CBOM), manage PQC keys & secrets, get inline algorithm guidance, and expose QNSI tools to AI agents via MCP.",
-	"version": "0.1.1",
+	"displayName": "QNSI - Quantum-Native Security Infrastructure",
+	"description": "Official VS Code companion for HEOSSI's QNSI platform: CBOM discovery of quantum-vulnerable cryptography, KMS keys across the 14-family PQC catalog (FIPS 203/204/205, HQC, BIKE, FrodoKEM, Classic McEliece, MAYO, CROSS, Falcon/FN-DSA) with BYOHSM custody, Vault secrets, inline NIST algorithm guidance, conformance posture, and MCP access to QNSI services.",
+	"version": "0.3.0",
 	"publisher": "Heossi",
 	"license": "Apache-2.0",
 	"private": true,
 	"icon": "media/icon.png",
 	"engines": {
-		"vscode": "^1.96.0"
+		"vscode": "^1.96.0",
+		"node": ">=24.18.0"
 	},
 	"categories": [
-		"Linters",
-		"Other"
+		"AI",
+		"Other",
+		"Linters"
 	],
 	"keywords": [
 		"post-quantum",
@@ -21,6 +23,12 @@
 		"cbom",
 		"ml-kem",
 		"ml-dsa",
+		"hqc",
+		"bike",
+		"frodokem",
+		"mayo",
+		"cross",
+		"falcon",
 		"security",
 		"mcp",
 		"quantum-safe"
@@ -197,6 +205,16 @@
 				"title": "Configure MCP Server for Agent Mode",
 				"category": "QNSI",
 				"icon": "$(server-process)"
+			},
+			{
+				"command": "qnsi.apiRequest",
+				"title": "QNSI: API Request (full platform surface)",
+				"category": "QNSI"
+			},
+			{
+				"command": "qnsi.browseOperations",
+				"title": "Browse Manifest Operations",
+				"category": "QNSI"
 			}
 		],
 		"menus": {
@@ -267,10 +285,36 @@
 		"@heossihq/qnsi-crypto-inventory-sdk": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2",
-		"@types/vscode": "^1.96.0",
-		"@vscode/test-electron": "^2.5.2",
-		"esbuild": "^0.28.1",
-		"typescript": "^6.0.3"
-	}
+		"@types/node": "^26.6.2",
+		"@types/vscode": "^1.138.0",
+		"@vscode/test-electron": "^3.1.0",
+		"esbuild": "^0.28.2",
+		"typescript": "^7.0.2"
+	},
+	"tags": [
+		"cbom",
+		"cryptography",
+		"mcp",
+		"ml-kem",
+		"ml-dsa",
+		"slh-dsa",
+		"hqc",
+		"bike",
+		"frodokem",
+		"mayo",
+		"cross",
+		"falcon",
+		"post-quantum",
+		"pqc",
+		"quantum-safe",
+		"security",
+		"kms",
+		"vault",
+		"hsm",
+		"audit",
+		"zero-trust",
+		"fips",
+		"encryption",
+		"compliance"
+	]
 }

@@ -61,10 +61,17 @@ describe("scanFileContent - true positives", () => {
 	});
 
 	it("detects PEM artifact headers and hybrid TLS groups in config", () => {
-		const source = [`-----BEGIN RSA PRIVATE KEY-----`, `ssl_groups: X25519MLKEM768`].join("\n");
+		const source = [
+			`-----BEGIN RSA PRIVATE KEY-----`,
+			`ssl_groups: X25519MLKEM768`,
+			`ssl_groups: SecP384r1MLKEM1024`,
+		].join("\n");
 		const findings = scanFileContent("deploy/tls.yaml", source, "config");
-		expect(algorithms(findings)).toEqual(["rsa-unknown", "x25519mlkem768"]);
+		expect(algorithms(findings)).toEqual(["rsa-unknown", "secp384r1mlkem1024", "x25519mlkem768"]);
 		expect(findings.find((f) => f.algorithm === "x25519mlkem768")?.classification).toBe("hybrid");
+		expect(findings.find((f) => f.algorithm === "secp384r1mlkem1024")?.classification).toBe(
+			"hybrid",
+		);
 	});
 
 	it("classifies PQC usage as pqc so readiness reflects adoption", () => {

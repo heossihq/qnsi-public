@@ -1,5 +1,12 @@
 # @heossihq/liboqs-native
 
+## 0.16.0
+
+### Minor Changes
+
+- Upgrade the native binding lineage to liboqs 0.16.0 and support its canonical
+  SLH-DSA algorithm identifiers.
+
 ## 0.0.1
 
 ### Patch Changes

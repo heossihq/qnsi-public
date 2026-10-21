@@ -1,12 +1,18 @@
 ---
 title: Algorithm Agility
 version: 0.0.1
-last_updated: 2026-04-23
+last_updated: 2026-09-15
 copyright: © 2025 HEOSSI. All rights reserved.
 ---
 # Algorithm Agility
 
 QNSI is designed for algorithm agility to adapt to cryptographic advances.
+
+Algorithm agility is a capability, not a permanent 100% state. QNSI reports a
+measured PQC-readiness score from the current tenant inventory. A score of 100
+requires every inventoried asset to be classified as pure PQC and no open
+policy violations. Hybrid assets receive transitional credit, unassessed assets
+remain in the denominator, and an empty inventory scores zero.
 
 ## Why algorithm agility
 
@@ -49,6 +55,11 @@ Keys store algorithm information:
 3. Re-encrypt/re-sign with new keys
 4. Deprecate old algorithm
 5. Remove old algorithm support
+
+Policy evaluation covers the complete tenant inventory. Rotation requests
+require a verified internal-service identity, a configured rotation token, or a
+valid request signature. External systems remain customer-controlled until
+their connectors provide an authenticated, verifiable rotation path.
 
 ## Supported algorithms
 

@@ -38,7 +38,7 @@ def test_activation_reports_the_installed_version() -> None:
 
     It said "0.3.0" while the package was 0.4.1.
     """
-    assert SDK_VERSION == version("qnsi")
+    assert version("qnsi") == SDK_VERSION
 
 
 def test_all_three_agree() -> None:

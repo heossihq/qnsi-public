@@ -1,13 +1,13 @@
 /**
- * Minimal QNSP Vault client - `@heossihq/qnsi/langchain` subpath.
+ * Minimal QNSI Vault client - `@heossihq/qnsi/langchain` subpath.
  *
  * Faithful inline of the `getSecret` / `createSecret` / `rotateSecret` slice of
  * the former `@heossihq/qnsi-vault-sdk` `VaultClient` (2026-05-16
- * consolidation): Bearer auth, `x-qnsp-tenant-id` header, 429 retry with
+ * consolidation): Bearer auth, the legacy tenant header, and 429 retry with
  * exponential backoff + `Retry-After`, per-request timeout, `Vault API
  * error: <status> <statusText>` on failure. Endpoints and request/response
  * shapes are byte-for-byte preserved. Activation is owned by `QnsiToolkit`
- * (single `langchain-qnsp` handshake); the resolved tenant id is injected via
+ * (single persisted LangChain activation handshake); the resolved tenant id is injected via
  * {@link VaultClient.setTenantId} - so this subpath has no `@heossihq/qnsi-*`
  * workspace dependency (same pattern as `../_activation`).
  */
@@ -16,7 +16,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 function validateUUID(value: string, field: string): void {
 	if (!UUID_RE.test(value)) {
-		throw new Error(`QNSP Vault: ${field} must be a valid UUID, received "${value}"`);
+		throw new Error(`QNSI Vault: ${field} must be a valid UUID, received "${value}"`);
 	}
 }
 
@@ -102,7 +102,7 @@ export class VaultClient {
 	constructor(config: VaultClientConfig) {
 		if (!config.apiKey || config.apiKey.trim().length === 0) {
 			throw new Error(
-				"QNSP Vault: apiKey is required. Get a free key at https://cloud.qnsi.heossi.com/auth",
+				"QNSI Vault: apiKey is required. Get a free key at https://cloud.qnsi.heossi.com/auth",
 			);
 		}
 		this.#baseUrl = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
@@ -112,7 +112,7 @@ export class VaultClient {
 		this.#retryDelayMs = config.retryDelayMs ?? 1_000;
 	}
 
-	/** Inject the activation-resolved tenant id (sent as `x-qnsp-tenant-id`). */
+	/** Inject the activation-resolved tenant id through the legacy tenant header. */
 	setTenantId(tenantId: string): void {
 		this.#tenantId = tenantId;
 	}
@@ -184,7 +184,7 @@ export class VaultClient {
 		}
 		const effectiveTenantId = request.tenantId ?? this.#tenantId;
 		if (!effectiveTenantId) {
-			throw new Error("QNSP Vault: tenantId could not be resolved. Ensure your API key is valid.");
+			throw new Error("QNSI Vault: tenantId could not be resolved. Ensure your API key is valid.");
 		}
 		return this.#request<Secret>("POST", "/vault/v1/secrets", {
 			body: {

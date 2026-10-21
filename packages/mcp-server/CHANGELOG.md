@@ -1,5 +1,14 @@
 # @heossihq/qnsi-mcp
 
+## 0.4.1
+
+### Patch Changes
+
+- Publish the implemented `qnsi_api_request` tool alongside the 27 preserved
+  compatibility tools.
+- Replace the stale 17-tool registry description with capability-based copy and
+  point the package homepage at the QNSI product site.
+
 ## 0.1.6
 
 ### Patch Changes
@@ -22,7 +31,7 @@
 ### Patch Changes
 
 - Initial tracked CHANGELOG entry. Earlier 0.1.0 and 0.1.1 releases shipped
-  the Model Context Protocol server exposing QNSP platform capabilities
+  the Model Context Protocol server exposing QNSI platform capabilities
   (identity, KMS, vault, storage, search, audit, crypto-inventory, access
   control, billing, tenant) as MCP tools consumable by ChatGPT, Claude
   Desktop, Cursor, Windsurf, and any MCP-compatible client.

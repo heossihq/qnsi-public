@@ -13,6 +13,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StorageClient, toNistAlgorithmName } from "./index.js";
 import type { StorageClientTelemetryEvent } from "./observability.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 const TENANT = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 const DOC = "44444444-4444-4444-a444-444444444444";
 const UPLOAD = "11111111-1111-4111-a111-111111111111";
@@ -290,7 +297,14 @@ describe("download surfaces", () => {
 		expect(result.range).toBeUndefined();
 		expect(result.checksumSha3).toBe("");
 		const downloadCall = fetchCalls().find(([u]) => u.includes("/content"));
-		expect((downloadCall?.[1]?.headers as Record<string, string>)["Range"]).toBe("bytes=0-9");
+		expect(
+			(
+				required(downloadCall?.[1]?.headers, "the download request headers") as Record<
+					string,
+					string
+				>
+			)["Range"],
+		).toBe("bytes=0-9");
 	});
 
 	it("maps download failures, timeouts, and non-Error throws", async () => {
@@ -387,13 +401,25 @@ describe("full method surface", () => {
 
 		// Tenant-scoped headers are attached where the route requires them.
 		const policiesCall = fetchCalls().find(([u]) => u.endsWith(`/documents/${DOC}/policies`));
-		expect((policiesCall?.[1]?.headers as Record<string, string>)["x-tenant-id"]).toBe(TENANT);
+		expect(
+			(
+				required(policiesCall?.[1]?.headers, "the policies request headers") as Record<
+					string,
+					string
+				>
+			)["x-tenant-id"],
+		).toBe(TENANT);
 		// The activation-resolved tenant id overrides the configured one on
 		// x-qnsp-tenant-id routes (auto-injection happens after header spread).
 		const classifyCall = fetchCalls().find(([u]) => u.endsWith("/classification/objects"));
-		expect((classifyCall?.[1]?.headers as Record<string, string>)["x-qnsp-tenant-id"]).toBe(
-			ACTIVATION.tenantId,
-		);
+		expect(
+			(
+				required(classifyCall?.[1]?.headers, "the classification request headers") as Record<
+					string,
+					string
+				>
+			)["x-qnsp-tenant-id"],
+		).toBe(ACTIVATION.tenantId);
 	});
 
 	it("rejects malformed UUIDs before any network call", async () => {

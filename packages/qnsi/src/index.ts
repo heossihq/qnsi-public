@@ -33,6 +33,7 @@
  * Sign up for a free QNSI account at https://cloud.qnsi.heossi.com/auth.
  */
 
+export type { RequestOptions } from "./_internal.js";
 export {
 	AccessClient,
 	type AssignRoleRequest,
@@ -57,7 +58,7 @@ export {
 	type IngestMeterRequest,
 	type ListInvoicesQuery,
 } from "./billing.js";
-// QnsiClient is the canonical name (product is QNSI). QnspClient is kept as a
+// QnsiClient is canonical; the deprecated client alias remains as a
 // @deprecated back-compat alias for consumers on the pre-rebrand name.
 export {
 	QnsiClient,
@@ -85,12 +86,15 @@ export {
 	/** @deprecated Use `QnsiWebhookError`. */
 	QnsiWebhookError as QnspWebhookError,
 } from "./errors.js";
+export * from "./generated/index.js";
+export { QNSI_OPERATIONS, type QnsiOperation } from "./generated/operations.js";
 export {
 	type CreateKeyRequest,
 	type HspkSealRequest,
 	type HspkSealResponse,
 	type HspkSignRequest,
 	KmsClient,
+	type KmsKeyResource,
 	type SealedPqcKey,
 } from "./kms.js";
 export {
@@ -108,7 +112,12 @@ export {
 	type UpdateTenantRequest,
 } from "./tenant.js";
 // Service classes - exported so callers can construct mocks for testing.
-export { type CreateSecretRequest, VaultClient } from "./vault.js";
+export {
+	type CreateSecretRequest,
+	type DynamicCredentialsRequest,
+	type DynamicSecretConfigRequest,
+	VaultClient,
+} from "./vault.js";
 export {
 	MAX_WEBHOOK_SKEW_MS,
 	parseQnsiWebhook,

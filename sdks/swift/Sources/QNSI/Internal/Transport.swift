@@ -46,19 +46,36 @@ public struct ActivationState: Sendable, Equatable {
     let expiresInSeconds: Double
     let fetchedAt: Date
 
-    init(json: JSONValue, fetchedAt: Date) {
-        tenantId = json["tenantId"]?.stringValue ?? ""
+    init(json: JSONValue, fetchedAt: Date, statusCode: Int = 200) throws {
+        guard let tenant = json["tenantId"]?.stringValue,
+              !tenant.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              let lifetime = json["expiresInSeconds"]?.numberValue,
+              lifetime.isFinite, lifetime > 0,
+              (fetchedAt.timeIntervalSince1970 + lifetime).isFinite else {
+            throw QnsiError.api(message: "invalid activation tenant or lifetime", statusCode: statusCode, code: nil, body: nil)
+        }
+        tenantId = tenant
         tier = json["tier"]?.stringValue ?? ""
         limits = ActivationLimits(json: json["limits"])
-        expiresInSeconds = json["expiresInSeconds"]?.numberValue ?? 3600
+        expiresInSeconds = lifetime
         self.fetchedAt = fetchedAt
     }
 
     /// Expiry honours the server's `expiresInSeconds`, refreshing 60s early
-    /// (same policy as the JVM SDK; the TS SDK's 5-minute fallback bug is not ported).
+    /// without inventing a lifetime when the backend omits it.
     func isExpired(now: Date) -> Bool {
         let expiresAt = fetchedAt.addingTimeInterval(expiresInSeconds)
         return expiresAt.timeIntervalSince(now) <= 60
+    }
+}
+
+/// Redirects never carry credentials or caller payloads to another endpoint.
+final class RejectRedirects: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    func urlSession(_ session: URLSession, task: URLSessionTask,
+                    willPerformHTTPRedirection response: HTTPURLResponse,
+                    newRequest request: URLRequest,
+                    completionHandler: @escaping (URLRequest?) -> Void) {
+        completionHandler(nil)
     }
 }
 
@@ -85,12 +102,15 @@ actor Transport {
     private var cached: ActivationState?
     private var inflightActivation: Task<ActivationState, Error>?
 
-    init(apiKey: String, baseUrl: String, timeout: TimeInterval, configuration: URLSessionConfiguration = .ephemeral) {
+    init(apiKey: String, baseUrl: String, timeout: TimeInterval, configuration: URLSessionConfiguration = .ephemeral) throws {
         self.apiKey = apiKey
         self.baseUrl = baseUrl.hasSuffix("/") ? String(baseUrl.dropLast()) : baseUrl
-        configuration.timeoutIntervalForRequest = timeout
-        configuration.timeoutIntervalForResource = timeout
-        self.session = URLSession(configuration: configuration)
+        guard let ownedConfiguration = configuration.copy() as? URLSessionConfiguration else {
+            throw QnsiError.network(method: "build", url: baseUrl, underlying: "cannot copy session configuration")
+        }
+        ownedConfiguration.timeoutIntervalForRequest = timeout
+        ownedConfiguration.timeoutIntervalForResource = timeout
+        self.session = URLSession(configuration: ownedConfiguration, delegate: RejectRedirects(), delegateQueue: nil)
     }
 
     // MARK: Activation
@@ -139,7 +159,7 @@ actor Transport {
                     statusCode: response.statusCode, code: nil, body: text(data)
                 )
             }
-            return ActivationState(json: body, fetchedAt: Date())
+            return try ActivationState(json: body, fetchedAt: Date(), statusCode: response.statusCode)
         case 401:
             throw QnsiError.auth(
                 message: body?["error"]?.stringValue ?? "invalid API key",
@@ -160,7 +180,8 @@ actor Transport {
     // MARK: Authenticated requests (API key + tenant injection)
 
     /// Execute an authenticated request against the edge gateway and parse the JSON
-    /// object response (empty object for 204 / empty / non-object bodies).
+    /// response, preserving objects, arrays and scalars. Empty bodies return an
+    /// empty object; malformed nonempty JSON throws rather than reporting success.
     ///
     /// Backend write schemas (kms/vault/...) REQUIRE `tenantId` (uuid) in the body and
     /// GET endpoints read it from the query string; the activated tenant is injected
@@ -171,9 +192,10 @@ actor Transport {
         body: JSONValue? = nil,
         options: RequestOptions = RequestOptions()
     ) async throws -> JSONValue {
-        let data = try await execute(method, path, body: body, options: options)
-        guard !data.isEmpty, let parsed = JSONValue.parse(data), parsed.objectValue != nil else {
-            return .object([:])
+        let (data, response) = try await executeResponse(method, path, body: body, options: options)
+        if data.isEmpty { return .object([:]) }
+        guard let parsed = JSONValue.parse(data) else {
+            throw QnsiError.api(message: "response not valid JSON", statusCode: response.statusCode, code: nil, body: text(data))
         }
         return parsed
     }
@@ -184,6 +206,16 @@ actor Transport {
         body: JSONValue?,
         options: RequestOptions
     ) async throws -> Data {
+        let (data, _) = try await executeResponse(method, path, body: body, options: options)
+        return data
+    }
+
+    func executeResponse(
+        _ method: String,
+        _ path: String,
+        body: JSONValue?,
+        options: RequestOptions
+    ) async throws -> (Data, HTTPURLResponse) {
         let act = try await ensureActivated()
         var (data, response) = try await sendActivated(method, path, body: body, options: options, activation: act)
         if response.statusCode == 401 {
@@ -194,8 +226,7 @@ actor Transport {
         guard (200...299).contains(response.statusCode) else {
             throw Transport.parseApiError(status: response.statusCode, data: data)
         }
-        if response.statusCode == 204 { return Data() }
-        return data
+        return (response.statusCode == 204 ? Data() : data, response)
     }
 
     private func sendActivated(
@@ -252,8 +283,9 @@ actor Transport {
         guard (200...299).contains(response.statusCode) else {
             throw Transport.parseApiError(status: response.statusCode, data: data)
         }
-        guard !data.isEmpty, let parsed = JSONValue.parse(data), parsed.objectValue != nil else {
-            return .object([:])
+        if data.isEmpty || response.statusCode == 204 { return .object([:]) }
+        guard let parsed = JSONValue.parse(data) else {
+            throw QnsiError.api(message: "response not valid JSON", statusCode: response.statusCode, code: nil, body: text(data))
         }
         return parsed
     }

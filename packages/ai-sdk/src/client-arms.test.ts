@@ -8,6 +8,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AiOrchestratorClient, AiOrchestratorError, TierError } from "./client.js";
 import type { AiClientTelemetryEvent } from "./observability.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 const TENANT = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 const ID = "11111111-1111-4111-a111-111111111111";
 const BASE = "https://ai.qnsp.example";
@@ -129,8 +136,12 @@ describe("tier enforcement", () => {
 			} as never),
 		).resolves.toMatchObject({ workloadId: ID });
 		const submit = fetchMock.mock.calls.find(([u]) => String(u).endsWith("/ai/v1/workloads"));
-		expect((submit?.[1] as RequestInit).headers).toBeDefined();
-		const body = JSON.parse(String((submit?.[1] as RequestInit).body)) as Record<string, unknown>;
+		expect(
+			(required(submit?.[1], "the workload submit request init") as RequestInit).headers,
+		).toBeDefined();
+		const body = JSON.parse(
+			String((required(submit?.[1], "the workload submit request init") as RequestInit).body),
+		) as Record<string, unknown>;
 		expect(body["env"]).toEqual({});
 		expect(body["idempotencyKey"]).toBeUndefined();
 	});
@@ -155,7 +166,9 @@ describe("deployModel", () => {
 			},
 		} as never);
 		const submit = fetchMock.mock.calls.find(([u]) => String(u).endsWith("/ai/v1/workloads"));
-		const body = JSON.parse(String((submit?.[1] as RequestInit).body)) as {
+		const body = JSON.parse(
+			String((required(submit?.[1], "the workload submit request init") as RequestInit).body),
+		) as {
 			name: string;
 			manifest: { algorithm: string; pqcSignature: string };
 			labels: Record<string, string>;

@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-QNSP is primarily delivered as a hosted service (QNSP Cloud). Security fixes are applied continuously to the hosted production environment.
+QNSI is primarily delivered as a hosted service (QNSI Cloud). Security fixes are applied continuously to the hosted production environment.
 
 For private/VPC/sovereign deployments, support status is defined by your contract and deployment configuration.
 

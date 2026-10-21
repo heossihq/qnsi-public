@@ -11,12 +11,12 @@ import { activateSdk, type SdkActivationResponse } from "./_activation/index.js"
 import { QnsiApiError, QnsiAuthError, QnsiNetworkError } from "./errors.js";
 
 // QNSI full-rename A1b (2026-07-05): activation now identifies as "qnsi".
-// billing-service dual-accepts qnsp/qnsi (live-verified 2026-07-04), so older
-// published versions sending "qnsp" keep activating forever.
+// The activation service continues to accept the legacy SDK identifier so older
+// published versions remain compatible.
 export const SDK_ID = "qnsi";
 // Bump in lockstep with packages/qnsi/package.json `version` (activation
 // telemetry label). Same release contract as browser/sdk-package-version.ts.
-export const SDK_VERSION = "0.6.0";
+export const SDK_VERSION = "0.7.0";
 
 const DEFAULT_BASE_URL = "https://api.qnsi.heossi.com";
 const DEFAULT_TIMEOUT_MS = 15_000;
@@ -26,7 +26,7 @@ const EXPIRY_BUFFER_MS = 60_000; // refresh 60 s before expiry
 export interface QnsiClientOptions {
 	/** API key issued from <https://cloud.qnsi.heossi.com/api-keys>. Required. */
 	readonly apiKey: string;
-	/** Override the QNSP edge-gateway URL. Defaults to https://api.qnsi.heossi.com. */
+	/** Override the QNSI edge-gateway URL. Defaults to https://api.qnsi.heossi.com. */
 	readonly baseUrl?: string;
 	/** Per-request timeout in milliseconds. Defaults to 15 000. */
 	readonly timeoutMs?: number;
@@ -111,7 +111,7 @@ export class Internal {
 	}
 
 	/**
-	 * Authenticated request against the QNSP edge gateway. JSON in, JSON
+	 * Authenticated request against the QNSI edge gateway. JSON in, JSON
 	 * out. A 401 invalidates the activation cache and retries once.
 	 *
 	 * @param method  HTTP method (GET / POST / PUT / PATCH / DELETE)

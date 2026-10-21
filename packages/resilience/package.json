@@ -1,14 +1,17 @@
 {
 	"name": "@heossihq/qnsi-resilience",
 	"version": "0.1.2",
+	"engines": {
+		"node": ">=24.18.0"
+	},
 	"license": "Apache-2.0",
 	"publishConfig": {
 		"access": "public"
 	},
 	"type": "module",
-	"description": "Production-grade resilience patterns for TypeScript: circuit breakers, exponential backoff retries, and timeout controls. Used by the QNSP post-quantum security platform.",
+	"description": "Production-grade resilience patterns for TypeScript: circuit breakers, exponential backoff retries, and timeout controls. Used by the QNSI quantum-native security infrastructure.",
 	"keywords": [
-		"qnsp",
+		"qnsi",
 		"resilience",
 		"circuit-breaker",
 		"retry",
@@ -46,8 +49,8 @@
 		"typecheck": "tsc --project tsconfig.json --noEmit"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2",
-		"vitest": "4.1.2"
+		"@types/node": "^26.6.2",
+		"vitest": "5.0.1"
 	},
 	"private": true
 }

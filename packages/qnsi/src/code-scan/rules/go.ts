@@ -76,7 +76,7 @@ export const goRules: readonly CryptoDetectionRule[] = [
 		id: "go-pqc-imports",
 		languages: LANGS,
 		pattern:
-			/"(?:crypto\/mlkem|github\.com\/[^"]*(?:mlkem|ml-kem|mldsa|ml-dsa|kyber|dilithium)[^"]*)"/,
+			/"(?:crypto\/ml(?:kem|dsa)|github\.com\/[^"]*(?:mlkem|ml-kem|mldsa|ml-dsa|kyber|dilithium)[^"]*)"/,
 		algorithm: (match) => {
 			const path = match[0].toLowerCase();
 			if (path.includes("dsa") || path.includes("dilithium")) return "ml-dsa-65";

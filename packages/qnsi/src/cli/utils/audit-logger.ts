@@ -1,7 +1,7 @@
 import { bridgeQnsiEnv } from "../../internal/env-aliases.js";
 import type { CliConfig } from "../config.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 export interface AuditLogEntry {

@@ -6,6 +6,13 @@ import { activateSdk } from "@heossihq/qnsi-sdk-activation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AiOrchestratorClient } from "./client.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 vi.mock("@heossihq/qnsi-sdk-activation", () => ({
 	activateSdk: vi.fn(),
 }));
@@ -38,7 +45,9 @@ describe("requests without a resolved tenant id", () => {
 			fetchImpl: fetchMock as unknown as typeof fetch,
 		});
 		await client.listWorkloads();
-		const headers = (fetchMock.mock.calls[0]?.[1] as RequestInit).headers as Headers;
+		const headers = (
+			required(fetchMock.mock.calls[0]?.[1], "the first request init") as RequestInit
+		).headers as Headers;
 		expect(headers.get("x-qnsp-tenant-id")).toBeNull();
 	});
 });

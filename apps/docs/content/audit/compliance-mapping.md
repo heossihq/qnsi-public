@@ -7,7 +7,7 @@ copyright: © 2025-2026 HEOSSI. All rights reserved.
 ---
 # Compliance Evidence Mapping
 
-HEOSSI (PTE.) LTD. owns and administers the company compliance programme and is
+HEOSSI (PTE.) LTD owns and administers the company compliance programme and is
 the prospective certificate holder. QNSI is a HEOSSI product that may be
 included within the documented scope; it is not a separate certificate holder.
 QNSI exposes readiness evidence for the three HEOSSI compliance frameworks:

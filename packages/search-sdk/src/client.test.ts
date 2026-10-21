@@ -26,7 +26,7 @@ const MOCK_ACTIVATION_RESPONSE = {
 };
 
 const baseDocument: IndexDocumentRequest = {
-	tenantId: "tenant-1",
+	tenantId: "a1b2c3d4-e5f6-4789-8abc-def012345678",
 	documentId: "doc-1",
 	version: "v1",
 	sourceService: "storage-service",
@@ -115,7 +115,7 @@ describe("SearchClient", () => {
 		});
 
 		await client.search({
-			tenantId: "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+			tenantId: "a1b2c3d4-e5f6-4789-8abc-def012345678",
 			query: "quantum",
 			sseTokens: ["token-1", "token-2"],
 		});
@@ -155,7 +155,7 @@ describe("SearchClient", () => {
 		});
 
 		await client.search({
-			tenantId: "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+			tenantId: "a1b2c3d4-e5f6-4789-8abc-def012345678",
 			sseTokens: ["token-only"],
 		});
 
@@ -181,7 +181,7 @@ describe("SearchClient", () => {
 		expect(token.length).toBeGreaterThan(10);
 
 		const derived = client.deriveDocumentSseTokens({
-			tenantId: "tenant-1",
+			tenantId: "a1b2c3d4-e5f6-4789-8abc-def012345678",
 			documentId: "doc-99",
 			sourceService: "storage-service",
 			tags: ["pqc"],

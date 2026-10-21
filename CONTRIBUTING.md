@@ -1,4 +1,4 @@
-# Contributing to QNSP
+# Contributing to QNSI
 
 ## Coverage Governance
 

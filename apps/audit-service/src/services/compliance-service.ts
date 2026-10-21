@@ -21,6 +21,19 @@ export type FrameworkId =
 	| "pdpa"
 	| "mas-trm";
 
+/** Supported assessment mappings, not certificates or verified compliance. */
+export const COMPLIANCE_FRAMEWORK_IDS: readonly FrameworkId[] = [
+	"iso27001",
+	"iso42001",
+	"iso19790",
+	"soc2",
+	"hipaa",
+	"gdpr",
+	"pci-dss",
+	"pdpa",
+	"mas-trm",
+];
+
 export interface ComplianceControl {
 	readonly id: string;
 	readonly name: string;
@@ -624,7 +637,7 @@ export class ComplianceService {
 		tenantComplianceTags: readonly string[],
 		evidenceContext?: EvidenceRequestContext,
 	): Promise<ComplianceFrameworkDetail[]> {
-		const frameworkIds: readonly FrameworkId[] = ["iso27001", "iso42001", "iso19790"];
+		const frameworkIds = COMPLIANCE_FRAMEWORK_IDS;
 
 		if (tenantComplianceTags.length === 0) {
 			const results = await Promise.all(
@@ -636,6 +649,15 @@ export class ComplianceService {
 		}
 
 		const tagToFramework: Record<string, FrameworkId> = {
+			soc2: "soc2",
+			"soc-2": "soc2",
+			hipaa: "hipaa",
+			gdpr: "gdpr",
+			"pci-dss": "pci-dss",
+			pcidss: "pci-dss",
+			pdpa: "pdpa",
+			"mas-trm": "mas-trm",
+			mastrm: "mas-trm",
 			iso27001: "iso27001",
 			"iso-27001": "iso27001",
 			iso42001: "iso42001",
@@ -647,7 +669,9 @@ export class ComplianceService {
 		const matchedIds = new Set<FrameworkId>();
 		for (const tag of tenantComplianceTags) {
 			const normalized = tag.toLowerCase().trim();
-			const fwId = tagToFramework[normalized];
+			const fwId = Object.hasOwn(tagToFramework, normalized)
+				? tagToFramework[normalized]
+				: undefined;
 			if (fwId) matchedIds.add(fwId);
 		}
 

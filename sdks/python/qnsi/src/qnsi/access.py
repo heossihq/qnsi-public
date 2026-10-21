@@ -27,13 +27,13 @@ class AccessClient(_ServiceClient):
         return self._request("POST", "/roles", json=body, idempotency_key=idempotency_key)
 
     def get_role(self, role_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/roles/{role_id}")
+        return self._request("GET", f"/roles/{self._segment(role_id)}")
 
     def list_roles(self, **query: Any) -> dict[str, Any]:
         return self._request("GET", "/roles", query=query or None)
 
     def delete_role(self, role_id: str) -> None:
-        self._request("DELETE", f"/roles/{role_id}")
+        self._request("DELETE", f"/roles/{self._segment(role_id)}")
 
     def assign_role(
         self,
@@ -51,7 +51,7 @@ class AccessClient(_ServiceClient):
         )
 
     def revoke_role_assignment(self, assignment_id: str) -> None:
-        self._request("DELETE", f"/role-assignments/{assignment_id}")
+        self._request("DELETE", f"/role-assignments/{self._segment(assignment_id)}")
 
     def check_permission(
         self,

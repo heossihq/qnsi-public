@@ -23,7 +23,7 @@ export function registerTenantCommands(program: Command, config: CliConfig): voi
 				}
 				if (tenantId !== effectiveConfig.tenantId) {
 					printError(
-						"Cross-tenant access is not allowed from qnsp CLI. " +
+						"Cross-tenant access is not allowed from qnsi CLI. " +
 							"The requested tenantId must match QNSI_TENANT_ID.",
 					);
 					process.exit(EXIT_CODES.INVALID_ARGUMENTS);
@@ -77,7 +77,7 @@ export function registerTenantCommands(program: Command, config: CliConfig): voi
 		.option("--cursor <cursor>", "Pagination cursor")
 		.action(async () => {
 			printError(
-				"tenant list is unavailable in qnsp CLI to prevent cross-tenant enumeration. " +
+				"tenant list is unavailable in qnsi CLI to prevent cross-tenant enumeration. " +
 					"Use the Cloud Portal for tenant administration.",
 			);
 			process.exit(EXIT_CODES.INVALID_ARGUMENTS);
@@ -91,7 +91,7 @@ export function registerTenantCommands(program: Command, config: CliConfig): voi
 		.option("--tier <tier>", "Pricing tier", "free")
 		.action(async (_options) => {
 			printError(
-				"tenant create is not available in qnsp CLI. " +
+				"tenant create is not available in qnsi CLI. " +
 					"Use the Cloud Portal signup flow (or the platform APIs) for tenant provisioning.",
 			);
 			process.exit(EXIT_CODES.INVALID_ARGUMENTS);

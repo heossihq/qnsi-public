@@ -114,10 +114,10 @@ All errors flow through the `qnsi::Error` enum. See [`sdks/rust/qnsi/src/errors.
 ## JVM / Android
 
 ```kotlin
-import io.heossi.qnsi.QnsiApiException
-import io.heossi.qnsi.QnsiAuthException
-import io.heossi.qnsi.QnsiNetworkException
-import io.heossi.qnsi.QnsiWebhookException
+import com.heossi.qnsi.QnsiApiException
+import com.heossi.qnsi.QnsiAuthException
+import com.heossi.qnsi.QnsiNetworkException
+import com.heossi.qnsi.QnsiWebhookException
 
 try {
     val secret = qnsi.vault.getSecret("missing")

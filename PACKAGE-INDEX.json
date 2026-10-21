@@ -7,7 +7,7 @@
       "registryUrl": "https://www.npmjs.com/package/@heossihq/qnsi",
       "role": "primary-sdk-and-cli",
       "source": "packages/qnsi",
-      "version": "0.6.0"
+      "version": "0.7.0"
     },
     {
       "ecosystem": "PyPI",
@@ -16,7 +16,7 @@
       "registryUrl": "https://pypi.org/project/qnsi/",
       "role": "primary-sdk",
       "source": "sdks/python/qnsi",
-      "version": "0.4.2"
+      "version": "0.4.3"
     },
     {
       "ecosystem": "crates.io",
@@ -25,7 +25,7 @@
       "registryUrl": "https://crates.io/crates/qnsi",
       "role": "primary-sdk",
       "source": "sdks/rust/qnsi",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     {
       "ecosystem": "Maven Central",
@@ -70,7 +70,7 @@
       "registryUrl": "https://www.npmjs.com/package/@heossihq/qnsi-mcp",
       "role": "integration-server",
       "source": "packages/mcp-server",
-      "version": "0.2.0"
+      "version": "0.4.1"
     },
     {
       "ecosystem": "npm",

@@ -1,6 +1,6 @@
 # QNSI
 
-**Post-quantum security infrastructure for keys, secrets, storage, cryptographic discovery, governed migration, audit evidence, and AI workloads.**
+**Quantum-native security infrastructure for keys, secrets, storage, cryptographic discovery, governed migration, audit evidence, and AI workloads.**
 
 [![npm](https://img.shields.io/npm/v/@heossihq/qnsi?label=%40heossihq%2Fqnsi)](https://www.npmjs.com/package/@heossihq/qnsi)
 [![PyPI](https://img.shields.io/pypi/v/qnsi)](https://pypi.org/project/qnsi/)
@@ -248,7 +248,7 @@ See the [developer documentation](https://docs.qnsi.heossi.com/getting-started) 
 - [`packages/qnsi/`](packages/qnsi/) - unified TypeScript SDK, browser PQC subpath, integrations, and CLI
 - [`packages/mcp-server/`](packages/mcp-server/) - MCP server for QNSI tools
 - [`packages/cryptography/`](packages/cryptography/) - shared PQC abstractions
-- [`apps/qnsp-agent/`](apps/qnsp-agent/) - public host discovery agent with offline evidence support
+- [`@heossihq/qnsi-agent`](https://www.npmjs.com/package/@heossihq/qnsi-agent) - host discovery agent (prebuilt package; source is private)
 - [`apps/vscode-extension/`](apps/vscode-extension/) - Apache-2.0 workspace scanning and QNSI editor integration
 - [`sdks/`](sdks/) - Python, Go, Rust, JVM / Android, and Swift SDK source (device PQC modules included)
 - [`apps/docs/content/`](apps/docs/content/) - public product and API documentation
@@ -285,7 +285,7 @@ For security reports, follow [SECURITY.md](SECURITY.md). For contributions and i
 
 ## Export provenance
 
-Private source revision: `defa5406f82b3fb4d5628cd17d97870ee29effcf`
+Private source revision: `e7ef4a7f1a00a8ed451ba93a5ca7dd3382ca097c`
 
 The machine-readable export inventory and generation timestamp are recorded in [`MANIFEST.json`](MANIFEST.json).
 Verify the exported tree with `sha256sum -c SHA256SUMS` from the repository root.

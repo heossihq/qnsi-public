@@ -30,8 +30,7 @@ export interface PqcSignatureMetadata {
 
 /**
  * Mapping from internal algorithm names to NIST/standards display names.
- * Covers all 87 runtime-supported PQC algorithms (24 KEMs + 63 signatures).
- * HQC's 3 variants are excluded (disabled in the liboqs build for CVE-2025-48946).
+ * Covers all 90 runtime-supported PQC algorithms (27 KEMs + 63 signatures).
  * Canonical source: @heossihq/qnsi-cryptography pqc-standards.ts ALGORITHM_NIST_NAMES
  */
 export const ALGORITHM_TO_NIST: Record<string, string> = {
@@ -60,7 +59,10 @@ export const ALGORITHM_TO_NIST: Record<string, string> = {
 	// FN-DSA (FIPS 206 draft)
 	"falcon-512": "FN-DSA-512",
 	"falcon-1024": "FN-DSA-1024",
-	// HQC (NIST selected March 2025)
+	// HQC (NIST selected March 2025; liboqs 0.16.0 updated to the 20250822 spec)
+	"hqc-128": "HQC-128",
+	"hqc-192": "HQC-192",
+	"hqc-256": "HQC-256",
 	// BIKE (NIST Round 4)
 	"bike-l1": "BIKE-L1",
 	"bike-l3": "BIKE-L3",
@@ -344,44 +346,41 @@ export interface SAMLAssertionRequest {
 	readonly attributes?: Record<string, unknown>;
 }
 
-export interface SAMLAssertionResponse {
-	readonly accessToken: string;
-	readonly refreshToken: {
-		readonly token: string;
-		readonly metadata: {
-			readonly tokenId: string;
-			readonly subjectId: string;
+export interface FederationRefreshToken {
+	readonly token: string;
+	readonly metadata: {
+		readonly tokenId: string;
+		readonly subject: {
+			readonly id: string;
 			readonly tenantId: string;
 			readonly roles: readonly string[];
-			readonly audience: string;
-			readonly expiresAt: string;
-			readonly createdAt: string;
+			readonly identityId?: string;
+			readonly userId?: string;
+			readonly email?: string;
 		};
-	} | null;
+		readonly audience: string;
+		readonly expiresAt: number;
+		readonly issuedAt: number;
+	};
+}
+
+export interface SAMLAssertionResponse {
+	readonly accessToken: string;
+	readonly refreshToken: FederationRefreshToken | null;
 	readonly userId: string;
 }
 
 export interface OIDCCallbackRequest {
 	readonly providerId: string;
 	readonly code: string;
-	readonly state?: string;
+	readonly state: string;
 }
 
 export interface OIDCCallbackResponse {
 	readonly accessToken: string;
-	readonly refreshToken: {
-		readonly token: string;
-		readonly metadata: {
-			readonly tokenId: string;
-			readonly subjectId: string;
-			readonly tenantId: string;
-			readonly roles: readonly string[];
-			readonly audience: string;
-			readonly expiresAt: string;
-			readonly createdAt: string;
-		};
-	} | null;
+	readonly refreshToken: FederationRefreshToken | null;
 	readonly userId: string;
+	readonly externalLeg: "oidc-classical-compatibility";
 }
 
 interface RequestOptions {
@@ -854,12 +853,14 @@ export class AuthClient {
 	 * Exchanges the authorization code for tokens and returns a token pair.
 	 */
 	async federateOIDC(request: OIDCCallbackRequest): Promise<OIDCCallbackResponse> {
+		if (typeof request.state !== "string" || !/^[A-Za-z0-9_-]{16,256}$/.test(request.state))
+			throw new Error("OIDC request state is required and must match the authorization start");
 		await this.ensureActivated();
 		return this.request<OIDCCallbackResponse>("POST", "/auth/federation/oidc/callback", {
 			body: {
 				providerId: request.providerId,
 				code: request.code,
-				...(request.state !== undefined ? { state: request.state } : {}),
+				state: request.state,
 			},
 			operation: "federateOIDC",
 		});
@@ -1715,6 +1716,14 @@ export interface FederatedAuditReport {
 	};
 	readonly summary: FederatedAuditReportSummary;
 	readonly events?: readonly unknown[];
+	/** Requested CSV artifact, returned within the backwards-compatible JSON envelope. */
+	readonly export?: {
+		readonly format: "csv";
+		readonly mediaType: "text/csv";
+		readonly content: string;
+		readonly detailsIncluded: boolean;
+		readonly detailsTruncated: boolean;
+	};
 }
 
 /**

@@ -64,7 +64,7 @@ export interface SolutionVertical {
 	readonly cryptoPolicyTier: "default" | "strict" | "maximum" | "government";
 	readonly threatModel: readonly SolutionThreatModel[];
 	readonly compliance: readonly SolutionComplianceTag[];
-	readonly qnspPatterns: readonly SolutionCapabilityLink[];
+	readonly qnsiPatterns: readonly SolutionCapabilityLink[];
 	readonly developerPatterns: readonly SolutionDeveloperPatternLink[];
 	readonly outcomes: readonly string[];
 	readonly keywords: readonly string[];
@@ -131,7 +131,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"Common Criteria CC6 (Logical Access) and CC7 (System Operations) - RBAC, tenant isolation, real-time control evaluation.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "PQC Key Management (KMS)",
 				path: "/platform/key-management",
@@ -244,7 +244,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"Designed for Impact Level 5-class sensitive-unclassified workloads via air-gapped + customer-managed HSM topology (IL5 authorization not held).",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "Air-Gapped Deployment",
 				path: "/platform/deployment-resilience",
@@ -346,7 +346,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"Electronic records and signatures for clinical trials - ML-DSA-65 signatures on every record meet the authenticity and non-repudiation requirements.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "Quantum-Safe Vault",
 				path: "/platform/secrets-management",
@@ -449,7 +449,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"Section 5.10 (Cryptography) for criminal-justice information - supported via maximum crypto-policy tier and BYOH HSM.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "Private VPC Deployment",
 				path: "/platform/deployment-resilience",
@@ -547,7 +547,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"Govern → Map → Measure → Manage; QNSI gives the cryptographic substrate for each.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "GPU Enclave Orchestration",
 				path: "/platform/ai-security",
@@ -643,7 +643,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"Applies to Singapore CII operators - see MAS Notices on TRM for critical infrastructure.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "PQC-TLS at the OT/IT Boundary",
 				path: "/platform/deployment-resilience",
@@ -744,7 +744,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"Service organizations holding insurance/asset records - Common Criteria CC6 + CC7.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "Long-Retention Audit Trails",
 				path: "/platform/audit-evidence",
@@ -844,7 +844,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 				relevance: "Section 3 encryption requirements met via QNSI vault.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "Per-Tenant Crypto Policy",
 				path: "/platform/key-management",
@@ -941,7 +941,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"EdTech vendors increasingly require SOC 2 to sell into school districts and universities.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "Quantum-Safe Vault",
 				path: "/platform/secrets-management",
@@ -1026,7 +1026,7 @@ export const SOLUTIONS_CATALOG: readonly SolutionVertical[] = [
 					"Applies to manufacturer-held employee and customer PII data even outside the EU.",
 			},
 		],
-		qnspPatterns: [
+		qnsiPatterns: [
 			{
 				capability: "Quantum-Safe Vault",
 				path: "/platform/secrets-management",

@@ -6,7 +6,7 @@ copyright: © 2025-2026 HEOSSI (PTE.) LTD All rights reserved.
 ---
 # Compliance
 
-HEOSSI (PTE.) LTD. owns and administers the company compliance programme and is
+HEOSSI (PTE.) LTD owns and administers the company compliance programme and is
 the prospective certificate holder. QNSI is a HEOSSI product and may be included
 within the documented organisational or technical scope; it is not a separate
 certificate holder.

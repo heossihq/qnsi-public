@@ -2,6 +2,7 @@ import { performance } from "node:perf_hooks";
 
 import { activateSdk, type SdkActivationConfig } from "@heossihq/qnsi-sdk-activation";
 import { type RequestInit as UndiciRequestInit, fetch as undiciFetch } from "undici";
+import { z } from "zod";
 
 import type { SearchClientTelemetry, SearchClientTelemetryConfig } from "./observability.js";
 import { createSearchClientTelemetry, isSearchClientTelemetry } from "./observability.js";
@@ -12,6 +13,7 @@ import type {
 	CreateIsolationPolicyRequest,
 	CreateMaintenanceWindowRequest,
 	CreateSynonymGroupRequest,
+	CurrentIndexHealth,
 	ExpandTermRequest,
 	ExpandTermResponse,
 	ExportSynonymsRequest,
@@ -52,6 +54,322 @@ import { validateUUID } from "./validation.js";
 /** Default QNSP cloud API base URL. Get a free API key at https://cloud.qnsi.heossi.com/signup */
 export const DEFAULT_BASE_URL = "https://api.qnsi.heossi.com";
 
+const synonymTypeSchema = z.enum(["equivalent", "one_way", "hyponym", "hypernym"]);
+const synonymTermSchema = z
+	.string()
+	.trim()
+	.min(1)
+	.max(256)
+	.transform((term) => term.toLowerCase());
+const synonymTermsSchema = z
+	.array(synonymTermSchema)
+	.min(2)
+	.max(100)
+	.transform((terms) => [...new Set(terms)])
+	.refine((terms) => terms.length >= 2, "Synonym groups require at least two distinct terms");
+const backendSynonymGroupInputSchema = z
+	.object({
+		name: z.string().trim().min(1).max(255),
+		description: z.string().max(1000).nullable().optional(),
+		synonymType: synonymTypeSchema.default("equivalent"),
+		language: z.string().trim().min(2).max(32).default("en"),
+		terms: synonymTermsSchema,
+		primaryTerm: synonymTermSchema.nullable().optional(),
+		enabled: z.boolean().default(true),
+		weight: z.number().min(0).max(10).default(1),
+		indexIds: z.array(z.string().uuid()).max(100).default([]),
+		metadata: z.record(z.string(), z.unknown()).default({}),
+	})
+	.strict()
+	.superRefine((group, context) => {
+		if (group.synonymType !== "one_way") return;
+		if (!group.primaryTerm) {
+			context.addIssue({
+				code: "custom",
+				path: ["primaryTerm"],
+				message: "Primary term is required for one_way synonym type",
+			});
+			return;
+		}
+		if (!group.terms.includes(group.primaryTerm)) {
+			context.addIssue({
+				code: "custom",
+				path: ["primaryTerm"],
+				message: "Primary term must be included in terms",
+			});
+		}
+	});
+const backendSynonymResourceSchema = z.object({
+	id: z.string().uuid(),
+	tenantId: z.string().uuid(),
+	name: z.string(),
+	description: z.string().nullable().optional(),
+	terms: z.array(z.string()),
+	enabled: z.boolean(),
+	language: z.string(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+});
+const backendSynonymListSchema = z.object({
+	groups: z.array(backendSynonymResourceSchema),
+	pagination: z.object({
+		limit: z.number().int().positive(),
+		offset: z.number().int().nonnegative(),
+		total: z.number().int().nonnegative(),
+	}),
+});
+const backendSynonymExpansionSchema = z.object({
+	inputTerm: z.string(),
+	expansions: z.array(
+		z.object({
+			term: z.string(),
+			groupId: z.string().uuid(),
+		}),
+	),
+});
+const backendSynonymImportResponseSchema = z.object({
+	imported: z.number().int().nonnegative(),
+	failed: z.number().int().nonnegative(),
+});
+const backendSynonymExportResponseSchema = z.object({
+	count: z.number().int().nonnegative(),
+	groups: z.array(backendSynonymGroupInputSchema),
+});
+const synonymImportDataSchema = z.array(backendSynonymGroupInputSchema).min(1).max(1000);
+
+const reportedAssessmentSchema = z.enum(["healthy", "degraded", "unhealthy"]);
+const healthAlertSeveritySchema = z.enum(["critical", "high", "medium", "low", "info"]);
+const healthAlertStatusSchema = z.enum(["active", "acknowledged", "resolved"]);
+const indexAlertTypeSchema = z.enum([
+	"high_fragmentation",
+	"slow_query",
+	"index_lag",
+	"size_threshold",
+	"error_rate",
+	"replication_lag",
+	"memory_pressure",
+	"disk_usage",
+	"custom",
+]);
+const exactIntegerSchema = z.string().regex(/^(0|[1-9]\d*)$/);
+const nullableMetricSchema = z.number().finite().nonnegative().nullable();
+const backendIndexHealthSnapshotSchema = z
+	.object({
+		id: z.string().uuid(),
+		tenantId: z.string().min(1),
+		indexId: z.string().uuid(),
+		indexName: z.string().min(1),
+		healthStatus: z.literal("unknown"),
+		actualHealthStatus: z.literal("unknown"),
+		reportedAssessment: reportedAssessmentSchema,
+		verificationStatus: z.literal("unverified"),
+		measurementSource: z.literal("client_reported"),
+		totalDocuments: z.number().int().nonnegative().safe().nullable(),
+		totalDocumentsExact: exactIntegerSchema,
+		totalSizeBytes: z.number().int().nonnegative().safe().nullable(),
+		totalSizeBytesExact: exactIntegerSchema,
+		indexSizeBytes: z.number().int().nonnegative().safe().nullable(),
+		indexSizeBytesExact: exactIntegerSchema,
+		fragmentationPercent: z.number().finite().min(0).max(100),
+		avgDocumentSizeBytes: nullableMetricSchema,
+		lastIndexedAt: z.string().datetime().nullable(),
+		lastOptimizedAt: z.string().datetime().nullable(),
+		searchLatencyP50Ms: nullableMetricSchema,
+		searchLatencyP95Ms: nullableMetricSchema,
+		searchLatencyP99Ms: nullableMetricSchema,
+		indexLatencyP50Ms: nullableMetricSchema,
+		indexLatencyP95Ms: nullableMetricSchema,
+		errorRate: nullableMetricSchema,
+		metadata: z.record(z.string(), z.unknown()),
+		collectedAt: z.string().datetime(),
+	})
+	.superRefine((snapshot, context) => {
+		for (const [numericField, exactField] of [
+			["totalDocuments", "totalDocumentsExact"],
+			["totalSizeBytes", "totalSizeBytesExact"],
+			["indexSizeBytes", "indexSizeBytesExact"],
+		] as const) {
+			const exact = BigInt(snapshot[exactField]);
+			const numeric = snapshot[numericField];
+			const isSafelyRepresentable = exact <= BigInt(Number.MAX_SAFE_INTEGER);
+			if (
+				(isSafelyRepresentable && numeric !== Number(exact)) ||
+				(!isSafelyRepresentable && numeric !== null)
+			) {
+				context.addIssue({
+					code: "custom",
+					path: [numericField],
+					message: `${numericField} must be the safe projection of ${exactField}`,
+				});
+			}
+		}
+	});
+const backendHealthAlertSchema = z.object({
+	id: z.string().uuid(),
+	tenantId: z.string().min(1),
+	indexId: z.string().uuid().nullable(),
+	indexName: z.string().min(1),
+	alertType: indexAlertTypeSchema,
+	severity: healthAlertSeveritySchema,
+	status: healthAlertStatusSchema,
+	message: z.string().min(1),
+	thresholdValue: z.number().finite().nullable(),
+	currentValue: z.number().finite().nullable(),
+	metadata: z.record(z.string(), z.unknown()),
+	reportingSource: z.literal("client_reported"),
+	verificationStatus: z.literal("unverified"),
+	triggeredAt: z.string().datetime(),
+	acknowledgedAt: z.string().datetime().nullable(),
+	acknowledgedBy: z.string().nullable(),
+	acknowledgedNotes: z.string().nullable(),
+	resolvedAt: z.string().datetime().nullable(),
+	resolvedBy: z.string().nullable(),
+	resolutionNotes: z.string().nullable(),
+});
+const backendCurrentIndexHealthSchema = z.object({
+	tenantId: z.string().min(1),
+	overallStatus: z.literal("unknown"),
+	actualHealthStatus: z.literal("unknown"),
+	verificationStatus: z.literal("unverified"),
+	summary: z.object({
+		totalIndices: z.number().int().nonnegative(),
+		actualHealthStatus: z.literal("unknown"),
+		reportedAssessmentCounts: z.object({
+			healthy: z.number().int().nonnegative(),
+			degraded: z.number().int().nonnegative(),
+			unhealthy: z.number().int().nonnegative(),
+		}),
+		activeReportedAlerts: z.number().int().nonnegative(),
+	}),
+	indices: z.array(backendIndexHealthSnapshotSchema),
+	alerts: z.array(backendHealthAlertSchema),
+});
+const backendHealthAlertListSchema = z
+	.object({
+		alerts: z.array(backendHealthAlertSchema),
+		count: z.number().int().nonnegative(),
+		nextCursor: z.string().min(1).max(512).nullable(),
+	})
+	.superRefine((result, context) => {
+		if (result.count !== result.alerts.length) {
+			context.addIssue({
+				code: "custom",
+				path: ["count"],
+				message: "count must equal the number of returned alerts",
+			});
+		}
+	});
+const backendMaintenanceWindowSchema = z.object({
+	id: z.string().uuid(),
+	tenantId: z.string().min(1),
+	indexId: z.string().uuid().nullable(),
+	indexName: z.string().min(1).nullable(),
+	maintenanceType: z.enum([
+		"optimize",
+		"reindex",
+		"vacuum",
+		"compact",
+		"analyze",
+		"backup",
+		"restore",
+	]),
+	scheduledAt: z.string().datetime(),
+	estimatedDurationMinutes: z.number().int().positive().nullable(),
+	scheduleStatus: z.enum([
+		"scheduled",
+		"overdue",
+		"cancelled",
+		"recorded_in_progress",
+		"recorded_completed",
+	]),
+	executionStatus: z.enum(["unavailable", "unverified_record"]),
+	executionStatusReason: z.string().min(1),
+	recordedStartedAt: z.string().datetime().nullable(),
+	recordedCompletedAt: z.string().datetime().nullable(),
+	metadata: z.record(z.string(), z.unknown()),
+	createdBy: z.string().min(1).nullable(),
+	cancelledAt: z.string().datetime().nullable(),
+	cancelledBy: z.string().nullable(),
+	createdAt: z.string().datetime(),
+	observedAt: z.string().datetime(),
+});
+
+export class UnsupportedSynonymFormatError extends Error {
+	readonly format: "csv" | "solr";
+
+	constructor(format: "csv" | "solr") {
+		super(
+			`Synonym ${format} format is not supported because no authoritative parser contract is available`,
+		);
+		this.name = "UnsupportedSynonymFormatError";
+		this.format = format;
+	}
+}
+
+export class InvalidSynonymImportError extends Error {
+	constructor(message: string, options?: ErrorOptions) {
+		super(message, options);
+		this.name = "InvalidSynonymImportError";
+	}
+}
+
+export class SearchTenantMismatchError extends Error {
+	constructor() {
+		super("Requested tenantId does not match the tenant authorized by SDK activation");
+		this.name = "SearchTenantMismatchError";
+	}
+}
+
+export class InvalidSynonymCursorError extends Error {
+	constructor() {
+		super("Synonym cursor must be a nonnegative decimal safe integer");
+		this.name = "InvalidSynonymCursorError";
+	}
+}
+
+function mapBackendSynonymGroup(input: z.infer<typeof backendSynonymResourceSchema>): SynonymGroup {
+	return {
+		id: input.id,
+		tenantId: input.tenantId,
+		name: input.name,
+		...(input.description !== null && input.description !== undefined
+			? { description: input.description }
+			: {}),
+		synonyms: input.terms,
+		isExpanded: input.enabled,
+		language: input.language,
+		createdAt: input.createdAt,
+		updatedAt: input.updatedAt,
+	};
+}
+
+function parseSynonymCursor(cursor: string | undefined): number {
+	if (cursor === undefined) return 0;
+	if (!/^(0|[1-9]\d*)$/.test(cursor)) throw new InvalidSynonymCursorError();
+	const offset = Number(cursor);
+	if (!Number.isSafeInteger(offset)) throw new InvalidSynonymCursorError();
+	return offset;
+}
+
+function parseSynonymImportData(data: string): z.infer<typeof synonymImportDataSchema> {
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(data) as unknown;
+	} catch (error) {
+		throw new InvalidSynonymImportError("Synonym import data must be valid JSON", {
+			cause: error,
+		});
+	}
+	const result = synonymImportDataSchema.safeParse(parsed);
+	if (!result.success) {
+		throw new InvalidSynonymImportError(
+			`Synonym import data does not match the mounted service contract: ${z.prettifyError(result.error)}`,
+			{ cause: result.error },
+		);
+	}
+	return result.data;
+}
+
 export interface SearchClientOptions {
 	readonly baseUrl?: string;
 	readonly apiKey: string;
@@ -84,6 +402,22 @@ export class SearchClient {
 			});
 		}
 		return this.activationPromise;
+	}
+
+	private async ensureTenantAuthorized(tenantId: string): Promise<void> {
+		validateUUID(tenantId, "tenantId");
+		await this.ensureActivated();
+		if (this.resolvedTenantId !== tenantId) {
+			throw new SearchTenantMismatchError();
+		}
+	}
+
+	private async ensureOptionalTenantAuthorized(tenantId?: string): Promise<void> {
+		if (tenantId === undefined) {
+			await this.ensureActivated();
+			return;
+		}
+		await this.ensureTenantAuthorized(tenantId);
 	}
 
 	constructor(options: SearchClientOptions) {
@@ -195,7 +529,7 @@ export class SearchClient {
 	}
 
 	async indexDocument(input: IndexDocumentRequest): Promise<void> {
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(input.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/documents/index";
@@ -252,8 +586,7 @@ export class SearchClient {
 		if (!params.query && (!params.sseTokens || params.sseTokens.length === 0)) {
 			throw new Error("search query requires either plaintext query or SSE tokens");
 		}
-		validateUUID(params.tenantId, "tenantId");
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(params.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/documents";
@@ -360,7 +693,7 @@ export class SearchClient {
 	 * This reduces network overhead by sending multiple documents in parallel.
 	 */
 	async batchIndexDocuments(documents: readonly IndexDocumentRequest[]): Promise<void> {
-		await this.ensureActivated();
+		await Promise.all(documents.map((document) => this.ensureTenantAuthorized(document.tenantId)));
 		await Promise.all(documents.map((doc) => this.indexDocument(doc)));
 	}
 
@@ -371,7 +704,7 @@ export class SearchClient {
 	async searchWithAutoSse(
 		params: Omit<SearchQueryRequest, "sseTokens"> & { query: string },
 	): Promise<SearchQueryResponse> {
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(params.tenantId);
 		const sseTokens = this.sseKey ? this.deriveQuerySseTokens(params.query) : undefined;
 		const request: SearchQueryRequest = {
 			...params,
@@ -384,7 +717,7 @@ export class SearchClient {
 	 * Index document with automatic SSE token derivation if key is configured.
 	 */
 	async indexDocumentWithAutoSse(document: Omit<IndexDocumentRequest, "sseTokens">): Promise<void> {
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(document.tenantId);
 		const sseTokens = this.sseKey
 			? deriveDocumentSseTokens(
 					{
@@ -416,8 +749,7 @@ export class SearchClient {
 	 * Record a search query for analytics tracking.
 	 */
 	async recordQuery(input: RecordQueryRequest): Promise<void> {
-		validateUUID(input.tenantId, "tenantId");
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(input.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/analytics/queries";
@@ -474,7 +806,7 @@ export class SearchClient {
 	 * Get query metrics for analytics.
 	 */
 	async getQueryMetrics(params?: QueryMetricsRequest): Promise<QueryMetrics> {
-		await this.ensureActivated();
+		await this.ensureOptionalTenantAuthorized(params?.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/analytics/metrics";
@@ -487,7 +819,6 @@ export class SearchClient {
 		try {
 			const query = new URLSearchParams();
 			if (params?.tenantId) {
-				validateUUID(params.tenantId, "tenantId");
 				query.set("tenantId", params.tenantId);
 			}
 			if (params?.since) query.set("since", params.since);
@@ -542,7 +873,7 @@ export class SearchClient {
 	 * Get search quality metrics.
 	 */
 	async getSearchQuality(params?: SearchQualityRequest): Promise<SearchQuality> {
-		await this.ensureActivated();
+		await this.ensureOptionalTenantAuthorized(params?.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/analytics/quality";
@@ -555,7 +886,6 @@ export class SearchClient {
 		try {
 			const query = new URLSearchParams();
 			if (params?.tenantId) {
-				validateUUID(params.tenantId, "tenantId");
 				query.set("tenantId", params.tenantId);
 			}
 			if (params?.since) query.set("since", params.since);
@@ -609,7 +939,7 @@ export class SearchClient {
 	 * Get top queries for analytics.
 	 */
 	async getTopQueries(params?: TopQueriesRequest): Promise<TopQueriesResponse> {
-		await this.ensureActivated();
+		await this.ensureOptionalTenantAuthorized(params?.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/analytics/top-queries";
@@ -622,7 +952,6 @@ export class SearchClient {
 		try {
 			const query = new URLSearchParams();
 			if (params?.tenantId) {
-				validateUUID(params.tenantId, "tenantId");
 				query.set("tenantId", params.tenantId);
 			}
 			if (params?.since) query.set("since", params.since);
@@ -678,11 +1007,10 @@ export class SearchClient {
 	 * Create a synonym group for query expansion.
 	 */
 	async createSynonymGroup(input: CreateSynonymGroupRequest): Promise<SynonymGroup> {
-		validateUUID(input.tenantId, "tenantId");
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(input.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = "/search/v1/synonyms/groups";
+		const route = "/search/v1/synonyms";
 		const method = "POST";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -690,15 +1018,23 @@ export class SearchClient {
 		let errorMessage: string | undefined;
 
 		try {
+			const query = new URLSearchParams({ tenantId: input.tenantId });
+			const body = {
+				name: input.name,
+				...(input.description !== undefined ? { description: input.description } : {}),
+				terms: input.synonyms,
+				...(input.isExpanded !== undefined ? { enabled: input.isExpanded } : {}),
+				...(input.language !== undefined ? { language: input.language } : {}),
+			};
 			const response = await this.fetchWithRetry(
-				`${this.baseUrl}${route}`,
+				`${this.baseUrl}${route}?${query.toString()}`,
 				{
 					method,
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${this.apiKey}`,
 					},
-					body: JSON.stringify(input),
+					body: JSON.stringify(body),
 					signal: controller.signal,
 				},
 				0,
@@ -709,7 +1045,7 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as SynonymGroup;
+			return mapBackendSynonymGroup(backendSynonymResourceSchema.parse(await response.json()));
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -737,11 +1073,11 @@ export class SearchClient {
 	 * List synonym groups for a tenant.
 	 */
 	async listSynonymGroups(params: ListSynonymGroupsRequest): Promise<ListSynonymGroupsResponse> {
-		validateUUID(params.tenantId, "tenantId");
-		await this.ensureActivated();
+		const offset = parseSynonymCursor(params.cursor);
+		await this.ensureTenantAuthorized(params.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = "/search/v1/synonyms/groups";
+		const route = "/search/v1/synonyms";
 		const method = "GET";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -753,7 +1089,7 @@ export class SearchClient {
 			query.set("tenantId", params.tenantId);
 			if (params.language) query.set("language", params.language);
 			if (params.limit) query.set("limit", String(params.limit));
-			if (params.cursor) query.set("cursor", params.cursor);
+			query.set("offset", String(offset));
 
 			const response = await this.fetchWithRetry(
 				`${this.baseUrl}${route}?${query.toString()}`,
@@ -770,7 +1106,12 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as ListSynonymGroupsResponse;
+			const result = backendSynonymListSchema.parse(await response.json());
+			const nextOffset = result.pagination.offset + result.pagination.limit;
+			return {
+				items: result.groups.map(mapBackendSynonymGroup),
+				nextCursor: nextOffset < result.pagination.total ? String(nextOffset) : null,
+			};
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -805,7 +1146,7 @@ export class SearchClient {
 		await this.ensureActivated();
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = `/search/v1/synonyms/groups/${groupId}`;
+		const route = `/search/v1/synonyms/${groupId}`;
 		const method = "PATCH";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -813,6 +1154,13 @@ export class SearchClient {
 		let errorMessage: string | undefined;
 
 		try {
+			const body = {
+				...(input.name !== undefined ? { name: input.name } : {}),
+				...(input.description !== undefined ? { description: input.description } : {}),
+				...(input.synonyms !== undefined ? { terms: input.synonyms } : {}),
+				...(input.isExpanded !== undefined ? { enabled: input.isExpanded } : {}),
+				...(input.language !== undefined ? { language: input.language } : {}),
+			};
 			const response = await this.fetchWithRetry(
 				`${this.baseUrl}${route}`,
 				{
@@ -821,7 +1169,7 @@ export class SearchClient {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${this.apiKey}`,
 					},
-					body: JSON.stringify(input),
+					body: JSON.stringify(body),
 					signal: controller.signal,
 				},
 				0,
@@ -832,7 +1180,7 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as SynonymGroup;
+			return mapBackendSynonymGroup(backendSynonymResourceSchema.parse(await response.json()));
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -845,7 +1193,7 @@ export class SearchClient {
 				this.telemetry.record({
 					operation: "updateSynonymGroup",
 					method,
-					route: "/search/v1/synonyms/groups/:groupId",
+					route: "/search/v1/synonyms/:groupId",
 					target: this.targetService,
 					status,
 					durationMs: performance.now() - start,
@@ -864,7 +1212,7 @@ export class SearchClient {
 		await this.ensureActivated();
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = `/search/v1/synonyms/groups/${groupId}`;
+		const route = `/search/v1/synonyms/${groupId}`;
 		const method = "DELETE";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -899,7 +1247,7 @@ export class SearchClient {
 				this.telemetry.record({
 					operation: "deleteSynonymGroup",
 					method,
-					route: "/search/v1/synonyms/groups/:groupId",
+					route: "/search/v1/synonyms/:groupId",
 					target: this.targetService,
 					status,
 					durationMs: performance.now() - start,
@@ -914,28 +1262,31 @@ export class SearchClient {
 	 * Expand a term using configured synonyms.
 	 */
 	async expandTerm(params: ExpandTermRequest): Promise<ExpandTermResponse> {
-		validateUUID(params.tenantId, "tenantId");
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(params.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/synonyms/expand";
-		const method = "GET";
+		const method = "POST";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
 		let httpStatus: number | undefined;
 		let errorMessage: string | undefined;
 
 		try {
-			const query = new URLSearchParams();
-			query.set("tenantId", params.tenantId);
-			query.set("term", params.term);
-			if (params.language) query.set("language", params.language);
-
+			const query = new URLSearchParams({ tenantId: params.tenantId });
+			const body = {
+				term: params.term,
+				...(params.language !== undefined ? { language: params.language } : {}),
+			};
 			const response = await this.fetchWithRetry(
 				`${this.baseUrl}${route}?${query.toString()}`,
 				{
 					method,
-					headers: { Authorization: `Bearer ${this.apiKey}` },
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.apiKey}`,
+					},
+					body: JSON.stringify(body),
 					signal: controller.signal,
 				},
 				0,
@@ -946,7 +1297,12 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as ExpandTermResponse;
+			const result = backendSynonymExpansionSchema.parse(await response.json());
+			return {
+				originalTerm: result.inputTerm,
+				expandedTerms: result.expansions.map((expansion) => expansion.term),
+				matchedGroups: [...new Set(result.expansions.map((expansion) => expansion.groupId))],
+			};
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -974,8 +1330,9 @@ export class SearchClient {
 	 * Import synonyms from various formats.
 	 */
 	async importSynonyms(input: ImportSynonymsRequest): Promise<ImportSynonymsResponse> {
-		validateUUID(input.tenantId, "tenantId");
-		await this.ensureActivated();
+		if (input.format !== "json") throw new UnsupportedSynonymFormatError(input.format);
+		const groups = parseSynonymImportData(input.data);
+		await this.ensureTenantAuthorized(input.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/synonyms/import";
@@ -986,15 +1343,21 @@ export class SearchClient {
 		let errorMessage: string | undefined;
 
 		try {
+			const query = new URLSearchParams({ tenantId: input.tenantId });
+			const body = {
+				groups,
+				...(input.replaceExisting !== undefined ? { replaceExisting: input.replaceExisting } : {}),
+				...(input.language !== undefined ? { language: input.language } : {}),
+			};
 			const response = await this.fetchWithRetry(
-				`${this.baseUrl}${route}`,
+				`${this.baseUrl}${route}?${query.toString()}`,
 				{
 					method,
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${this.apiKey}`,
 					},
-					body: JSON.stringify(input),
+					body: JSON.stringify(body),
 					signal: controller.signal,
 				},
 				0,
@@ -1005,7 +1368,8 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as ImportSynonymsResponse;
+			const result = backendSynonymImportResponseSchema.parse(await response.json());
+			return { imported: result.imported, skipped: result.failed, errors: [] };
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -1033,8 +1397,8 @@ export class SearchClient {
 	 * Export synonyms to various formats.
 	 */
 	async exportSynonyms(params: ExportSynonymsRequest): Promise<ExportSynonymsResponse> {
-		validateUUID(params.tenantId, "tenantId");
-		await this.ensureActivated();
+		if (params.format !== "json") throw new UnsupportedSynonymFormatError(params.format);
+		await this.ensureTenantAuthorized(params.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/synonyms/export";
@@ -1045,9 +1409,7 @@ export class SearchClient {
 		let errorMessage: string | undefined;
 
 		try {
-			const query = new URLSearchParams();
-			query.set("tenantId", params.tenantId);
-			query.set("format", params.format);
+			const query = new URLSearchParams({ tenantId: params.tenantId });
 			if (params.language) query.set("language", params.language);
 
 			const response = await this.fetchWithRetry(
@@ -1065,7 +1427,8 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as ExportSynonymsResponse;
+			const result = backendSynonymExportResponseSchema.parse(await response.json());
+			return { data: JSON.stringify(result.groups), count: result.count, format: "json" };
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -1093,11 +1456,12 @@ export class SearchClient {
 	 * Record an index health snapshot for monitoring.
 	 */
 	async recordHealthSnapshot(input: RecordHealthSnapshotRequest): Promise<IndexHealthSnapshot> {
-		validateUUID(input.tenantId, "tenantId");
-		await this.ensureActivated();
+		validateUUID(input.indexId, "indexId");
+		await this.ensureTenantAuthorized(input.tenantId);
+		const { tenantId: _tenantId, ...observation } = input;
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = "/search/v1/health/snapshots";
+		const route = "/search/v2/health/snapshots";
 		const method = "POST";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -1106,14 +1470,15 @@ export class SearchClient {
 
 		try {
 			const response = await this.fetchWithRetry(
-				`${this.baseUrl}${route}`,
+				`${this.baseUrl}${route}?tenantId=${encodeURIComponent(input.tenantId)}`,
 				{
 					method,
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${this.apiKey}`,
+						"x-qnsp-tenant-id": input.tenantId,
 					},
-					body: JSON.stringify(input),
+					body: JSON.stringify(observation),
 					signal: controller.signal,
 				},
 				0,
@@ -1124,7 +1489,7 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as IndexHealthSnapshot;
+			return backendIndexHealthSnapshotSchema.parse(await response.json());
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -1151,12 +1516,11 @@ export class SearchClient {
 	/**
 	 * Get current index health for a tenant.
 	 */
-	async getIndexHealth(params: GetIndexHealthRequest): Promise<IndexHealthSnapshot> {
-		validateUUID(params.tenantId, "tenantId");
-		await this.ensureActivated();
+	async getIndexHealth(params: GetIndexHealthRequest): Promise<CurrentIndexHealth> {
+		await this.ensureTenantAuthorized(params.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = "/search/v1/health";
+		const route = "/search/v2/health/current";
 		const method = "GET";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -1171,7 +1535,10 @@ export class SearchClient {
 				`${this.baseUrl}${route}?${query.toString()}`,
 				{
 					method,
-					headers: { Authorization: `Bearer ${this.apiKey}` },
+					headers: {
+						Authorization: `Bearer ${this.apiKey}`,
+						"x-qnsp-tenant-id": params.tenantId,
+					},
 					signal: controller.signal,
 				},
 				0,
@@ -1182,7 +1549,7 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as IndexHealthSnapshot;
+			return backendCurrentIndexHealthSchema.parse(await response.json());
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -1210,10 +1577,12 @@ export class SearchClient {
 	 * List health alerts for monitoring.
 	 */
 	async listHealthAlerts(params?: ListHealthAlertsRequest): Promise<ListHealthAlertsResponse> {
-		await this.ensureActivated();
+		await this.ensureOptionalTenantAuthorized(params?.tenantId);
+		const tenantId = params?.tenantId ?? this.resolvedTenantId;
+		if (!tenantId) throw new Error("SDK activation did not return a tenantId");
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = "/search/v1/health/alerts";
+		const route = "/search/v2/health/alerts";
 		const method = "GET";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -1222,25 +1591,20 @@ export class SearchClient {
 
 		try {
 			const query = new URLSearchParams();
-			if (params?.tenantId) {
-				validateUUID(params.tenantId, "tenantId");
-				query.set("tenantId", params.tenantId);
-			}
+			query.set("tenantId", tenantId);
 			if (params?.status) query.set("status", params.status);
 			if (params?.severity) query.set("severity", params.severity);
 			if (params?.limit) query.set("limit", String(params.limit));
 			if (params?.cursor) query.set("cursor", params.cursor);
 
-			const queryString = query.toString();
-			const url = queryString
-				? `${this.baseUrl}${route}?${queryString}`
-				: `${this.baseUrl}${route}`;
-
 			const response = await this.fetchWithRetry(
-				url,
+				`${this.baseUrl}${route}?${query.toString()}`,
 				{
 					method,
-					headers: { Authorization: `Bearer ${this.apiKey}` },
+					headers: {
+						Authorization: `Bearer ${this.apiKey}`,
+						"x-qnsp-tenant-id": tenantId,
+					},
 					signal: controller.signal,
 				},
 				0,
@@ -1251,7 +1615,11 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as ListHealthAlertsResponse;
+			const result = backendHealthAlertListSchema.parse(await response.json());
+			return {
+				items: result.alerts,
+				nextCursor: result.nextCursor,
+			};
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -1280,10 +1648,10 @@ export class SearchClient {
 	 */
 	async acknowledgeAlert(input: AcknowledgeAlertRequest): Promise<HealthAlert> {
 		validateUUID(input.alertId, "alertId");
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(input.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = `/search/v1/health/alerts/${input.alertId}/acknowledge`;
+		const route = `/search/v2/health/alerts/${input.alertId}/acknowledge`;
 		const method = "POST";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -1292,17 +1660,15 @@ export class SearchClient {
 
 		try {
 			const response = await this.fetchWithRetry(
-				`${this.baseUrl}${route}`,
+				`${this.baseUrl}${route}?tenantId=${encodeURIComponent(input.tenantId)}`,
 				{
 					method,
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${this.apiKey}`,
+						"x-qnsp-tenant-id": input.tenantId,
 					},
-					body: JSON.stringify({
-						acknowledgedBy: input.acknowledgedBy,
-						...(input.note !== undefined ? { note: input.note } : {}),
-					}),
+					body: JSON.stringify(input.notes === undefined ? {} : { notes: input.notes }),
 					signal: controller.signal,
 				},
 				0,
@@ -1313,7 +1679,7 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as HealthAlert;
+			return backendHealthAlertSchema.parse(await response.json());
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -1326,7 +1692,7 @@ export class SearchClient {
 				this.telemetry.record({
 					operation: "acknowledgeAlert",
 					method,
-					route: "/search/v1/health/alerts/:alertId/acknowledge",
+					route: "/search/v2/health/alerts/:alertId/acknowledge",
 					target: this.targetService,
 					status,
 					durationMs: performance.now() - start,
@@ -1341,11 +1707,12 @@ export class SearchClient {
 	 * Create a maintenance window for planned operations.
 	 */
 	async createMaintenanceWindow(input: CreateMaintenanceWindowRequest): Promise<MaintenanceWindow> {
-		validateUUID(input.tenantId, "tenantId");
-		await this.ensureActivated();
+		validateUUID(input.indexId, "indexId");
+		await this.ensureTenantAuthorized(input.tenantId);
+		const { tenantId: _tenantId, ...schedule } = input;
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-		const route = "/search/v1/health/maintenance";
+		const route = "/search/v2/health/maintenance";
 		const method = "POST";
 		const start = performance.now();
 		let status: "ok" | "error" = "ok";
@@ -1354,14 +1721,15 @@ export class SearchClient {
 
 		try {
 			const response = await this.fetchWithRetry(
-				`${this.baseUrl}${route}`,
+				`${this.baseUrl}${route}?tenantId=${encodeURIComponent(input.tenantId)}`,
 				{
 					method,
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${this.apiKey}`,
+						"x-qnsp-tenant-id": input.tenantId,
 					},
-					body: JSON.stringify(input),
+					body: JSON.stringify(schedule),
 					signal: controller.signal,
 				},
 				0,
@@ -1372,7 +1740,7 @@ export class SearchClient {
 				errorMessage = `HTTP ${response.status}`;
 				throw new Error(`Search API error: ${response.status} ${response.statusText}`);
 			}
-			return (await response.json()) as MaintenanceWindow;
+			return backendMaintenanceWindowSchema.parse(await response.json());
 		} catch (error) {
 			status = "error";
 			if (!errorMessage && error instanceof Error) {
@@ -1400,8 +1768,7 @@ export class SearchClient {
 	 * Create an isolation policy for tenant data protection.
 	 */
 	async createIsolationPolicy(input: CreateIsolationPolicyRequest): Promise<IsolationPolicy> {
-		validateUUID(input.tenantId, "tenantId");
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(input.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/isolation/policies";
@@ -1461,7 +1828,7 @@ export class SearchClient {
 	async listIsolationPolicies(
 		params?: ListIsolationPoliciesRequest,
 	): Promise<ListIsolationPoliciesResponse> {
-		await this.ensureActivated();
+		await this.ensureOptionalTenantAuthorized(params?.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/isolation/policies";
@@ -1474,7 +1841,6 @@ export class SearchClient {
 		try {
 			const query = new URLSearchParams();
 			if (params?.tenantId) {
-				validateUUID(params.tenantId, "tenantId");
 				query.set("tenantId", params.tenantId);
 			}
 			if (params?.status) query.set("status", params.status);
@@ -1529,9 +1895,8 @@ export class SearchClient {
 	 * Report an isolation violation.
 	 */
 	async reportViolation(input: ReportViolationRequest): Promise<IsolationViolation> {
-		validateUUID(input.tenantId, "tenantId");
 		validateUUID(input.policyId, "policyId");
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(input.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/isolation/violations";
@@ -1591,8 +1956,7 @@ export class SearchClient {
 	async runIsolationVerification(
 		input: RunIsolationVerificationRequest,
 	): Promise<IsolationVerificationResult> {
-		validateUUID(input.tenantId, "tenantId");
-		await this.ensureActivated();
+		await this.ensureTenantAuthorized(input.tenantId);
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 		const route = "/search/v1/isolation/verify";

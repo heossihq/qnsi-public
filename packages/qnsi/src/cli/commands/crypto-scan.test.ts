@@ -45,8 +45,8 @@ describe("qnsi crypto scan", () => {
 		await runScan(mockConfig, [dir, "--format", "json"]);
 
 		const jsonCall = logSpy.mock.calls
-			.map((c) => String(c[0]))
-			.find((s) => s.trimStart().startsWith("{"));
+			.map((call: unknown[]) => String(call[0]))
+			.find((line: string) => line.trimStart().startsWith("{"));
 		expect(jsonCall).toBeDefined();
 		const payload = JSON.parse(jsonCall as string) as {
 			findings: Array<{ algorithm: string; lineHash: string }>;

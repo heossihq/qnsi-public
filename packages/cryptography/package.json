@@ -6,9 +6,9 @@
 		"access": "public"
 	},
 	"type": "module",
-	"description": "Post-quantum cryptography (PQC) primitives for Node.js: ML-KEM, ML-DSA, SLH-DSA, FN-DSA, HQC - all 89 NIST PQC algorithms via liboqs. Free tier at cloud.qnsi.heossi.com.",
+	"description": "Post-quantum cryptography (PQC) primitives for Node.js: ML-KEM, ML-DSA, SLH-DSA, HQC, FN-DSA and more - 90 runtime-supported PQC algorithms via liboqs. Free tier at cloud.qnsi.heossi.com.",
 	"keywords": [
-		"qnsp",
+		"qnsi",
 		"pqc",
 		"post-quantum",
 		"post-quantum-cryptography",
@@ -39,7 +39,7 @@
 		"url": "https://github.com/heossihq/qnsi-public/issues"
 	},
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=24.18.0"
 	},
 	"exports": {
 		"./package.json": "./package.json",
@@ -58,9 +58,9 @@
 	},
 	"dependencies": {
 		"@heossihq/qnsi-sdk-activation": "workspace:*",
-		"@noble/hashes": "^2.0.1",
-		"@noble/post-quantum": "^0.6.1",
-		"zod": "^4.3.6"
+		"@noble/hashes": "^2.4.0",
+		"@noble/post-quantum": "^0.7.1",
+		"zod": "^4.6.5"
 	},
 	"optionalDependencies": {
 		"@heossihq/liboqs-native": "workspace:*"
@@ -76,8 +76,8 @@
 		"rotate-pqc-cert": "node dist/tls/rotate-pqc-cert.js"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2",
-		"vitest": "4.1.2"
+		"@types/node": "^26.6.2",
+		"vitest": "5.0.1"
 	},
 	"private": true
 }

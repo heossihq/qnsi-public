@@ -3,6 +3,7 @@ package crypto
 import (
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/open-quantum-safe/liboqs-go/oqs"
 )
@@ -15,7 +16,9 @@ type SigKeyPair struct {
 
 // Sig is a wrapper around liboqs-go's *oqs.Signature that exposes the
 // canonical QNSP API surface (Keygen / Sign / Verify).
+// Methods serialize native access with Close. Do not copy a Sig value.
 type Sig struct {
+	mu          sync.Mutex
 	algName     string
 	internalAlg string
 	sig         oqs.Signature
@@ -50,8 +53,13 @@ func (s *Sig) LibOQSName() string { return s.internalAlg }
 
 // Keygen produces a public/secret key pair.
 func (s *Sig) Keygen() (SigKeyPair, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if !s.initialized {
 		return SigKeyPair{}, errors.New("qnsp/crypto: Sig not initialized")
+	}
+	if previous := s.sig.ExportSecretKey(); len(previous) > 0 {
+		oqs.MemCleanse(previous)
 	}
 	pk, err := s.sig.GenerateKeyPair()
 	if err != nil {
@@ -64,8 +72,13 @@ func (s *Sig) Keygen() (SigKeyPair, error) {
 // Sign signs `message` using the supplied secret key. The signature is
 // returned as raw bytes.
 func (s *Sig) Sign(message, secretKey []byte) ([]byte, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if !s.initialized {
+		return nil, errors.New("qnsp/crypto: Sig not initialized")
+	}
 	var fresh oqs.Signature
-	if err := fresh.Init(s.internalAlg, secretKey); err != nil {
+	if err := fresh.Init(s.internalAlg, append([]byte(nil), secretKey...)); err != nil {
 		return nil, fmt.Errorf("qnsp/crypto: rebind sig for sign: %w", err)
 	}
 	defer fresh.Clean()
@@ -78,6 +91,8 @@ func (s *Sig) Sign(message, secretKey []byte) ([]byte, error) {
 
 // Verify checks a signature.
 func (s *Sig) Verify(message, signature, publicKey []byte) (bool, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if !s.initialized {
 		return false, errors.New("qnsp/crypto: Sig not initialized")
 	}
@@ -90,6 +105,8 @@ func (s *Sig) Verify(message, signature, publicKey []byte) (bool, error) {
 
 // Close releases the underlying liboqs resources.
 func (s *Sig) Close() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.initialized {
 		s.sig.Clean()
 		s.initialized = false

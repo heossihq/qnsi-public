@@ -7,7 +7,7 @@
 	"type": "module",
 	"license": "Apache-2.0",
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=24.18.0"
 	},
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -25,20 +25,20 @@
 		"typecheck": "tsc --project tsconfig.json --noEmit"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2",
-		"typescript": "^6.0.3",
-		"vitest": "4.1.2"
+		"@types/node": "^26.6.2",
+		"typescript": "^7.0.2",
+		"vitest": "5.0.1"
 	},
 	"dependencies": {
 		"@heossihq/qnsi-sdk-activation": "workspace:*",
 		"@opentelemetry/api": "^1.9.1",
-		"@opentelemetry/exporter-metrics-otlp-http": "^0.214.0",
-		"@opentelemetry/resources": "^2.6.1",
-		"@opentelemetry/sdk-metrics": "^2.6.1",
-		"zod": "^4.3.6"
+		"@opentelemetry/exporter-metrics-otlp-http": "^0.222.0",
+		"@opentelemetry/resources": "^2.11.0",
+		"@opentelemetry/sdk-metrics": "^2.11.0",
+		"zod": "^4.6.5"
 	},
 	"keywords": [
-		"qnsp",
+		"qnsi",
 		"kms",
 		"key-management",
 		"pqc",

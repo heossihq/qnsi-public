@@ -15,11 +15,11 @@ import (
 // /edge/auth/login (was /auth/v1/login → 404) and the session-authenticated /auth/risk/policies
 // (was /auth/v1/risk/policies → 404).
 //
-// Gated on the persistent synthetic-canary creds (the QNSP_CANARY_KEY / _EMAIL / _PASSWORD / _TENANT env vars
-// + the login email/password/tenant); skips cleanly when unset so a normal `go test ./...` never
-// hits the network:
+// Requires persistent synthetic-canary credentials. Missing values fail closed instead of
+// reporting a skipped production verifier:
 //
-//	QNSP_CANARY_KEY=… QNSP_CANARY_EMAIL=… QNSP_CANARY_PASSWORD=… QNSP_CANARY_TENANT=… \
+//	QNSP_CANARY_KEY=<redacted> QNSP_CANARY_EMAIL=<redacted> \
+//	  QNSP_CANARY_PASSWORD=<redacted> QNSP_CANARY_TENANT=<redacted> \
 //	  go test ./auth/ -run TestProdSmokeAuthLoginAndSession -v
 func TestProdSmokeAuthLoginAndSession(t *testing.T) {
 	key := os.Getenv("QNSP_CANARY_KEY")
@@ -27,7 +27,7 @@ func TestProdSmokeAuthLoginAndSession(t *testing.T) {
 	password := os.Getenv("QNSP_CANARY_PASSWORD")
 	tenant := os.Getenv("QNSP_CANARY_TENANT")
 	if key == "" || email == "" || password == "" || tenant == "" {
-		t.Skip("canary creds not set (QNSP_CANARY_KEY/EMAIL/PASSWORD/TENANT) - skipping prod smoke")
+		t.Fatal("QNSP_CANARY_KEY, QNSP_CANARY_EMAIL, QNSP_CANARY_PASSWORD, and QNSP_CANARY_TENANT are required")
 	}
 
 	baseURL := os.Getenv("QNSP_E2E_API")

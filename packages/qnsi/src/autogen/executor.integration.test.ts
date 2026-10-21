@@ -1,21 +1,27 @@
 /**
- * Integration tests for @heossihq/qnsi-autogen-qnsp
+ * Live integration tests for the @heossihq/qnsi/autogen subpath.
  *
- * These tests hit the real QNSP AI orchestrator API via edge gateway.
+ * These tests hit the real QNSI AI orchestrator API via edge gateway.
  * Requires QNSI_API_KEY env var - the API key resolves tenant, tier, and policy automatically.
  *
  * Note: Workload submission requires enterprise tier with enclave access.
  * On lower tiers, the test verifies that the executor correctly surfaces the tier error.
  *
- * Run: QNSI_API_KEY=qnsp_... pnpm --filter @heossihq/qnsi-autogen-qnsp test:integration
+ * Run: QNSI_API_KEY=... pnpm --filter @heossihq/qnsi test:integration:live
  */
 
 import { describe, expect, it } from "vitest";
 import { QnsiExecutor } from "./executor.js";
 
-const QNSI_API_KEY = process.env["QNSI_API_KEY"];
+const QNSI_API_KEY = process.env["QNSI_API_KEY"]?.trim();
 
-describe.skipIf(!QNSI_API_KEY)("QnsiExecutor integration", () => {
+if (!QNSI_API_KEY) {
+	throw new Error(
+		"QNSI live integration requires QNSI_API_KEY. Set it before running: pnpm --filter @heossihq/qnsi test:integration:live",
+	);
+}
+
+describe("QnsiExecutor integration", () => {
 	it("instantiates with only an API key", () => {
 		const executor = new QnsiExecutor({ apiKey: QNSI_API_KEY! });
 		expect(executor).toBeDefined();

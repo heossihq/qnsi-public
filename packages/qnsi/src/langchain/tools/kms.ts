@@ -1,5 +1,5 @@
 /**
- * QNSP KMS Tools for LangChain
+ * QNSI KMS Tools for LangChain
  *
  * Provides governed agents with quantum-safe signing and key operations.
  * Uses ML-DSA (FIPS 204), SLH-DSA (FIPS 205), and FN-DSA for signatures.
@@ -9,7 +9,7 @@ import { StructuredTool, type ToolParams } from "@langchain/core/tools";
 import { z } from "zod";
 
 export interface QnsiKmsToolConfig {
-	/** Base URL for the QNSP API (e.g. https://api.qnsi.heossi.com) */
+	/** Base URL for the QNSI API (e.g. https://api.qnsi.heossi.com) */
 	readonly baseUrl: string;
 	/** API key or Bearer token for authentication */
 	readonly apiKey: string;

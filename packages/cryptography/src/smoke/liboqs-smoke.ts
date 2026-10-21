@@ -28,7 +28,8 @@ const EXTENDED_ALGORITHMS: readonly PqcAlgorithm[] = [
 	// SLH-DSA SHA2 variants
 	"sphincs-sha2-128f-simple",
 	"sphincs-sha2-256f-simple",
-	// HQC omitted - disabled in the liboqs build (OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+	// HQC (NIST-selected backup KEM; liboqs 0.16.0 updates to the 20250822 spec)
+	"hqc-128",
 	// BIKE
 	"bike-l1",
 	// Classic McEliece
@@ -56,6 +57,7 @@ const KEM_ALGORITHMS = new Set<PqcAlgorithm>([
 	"kyber-512",
 	"kyber-768",
 	"kyber-1024",
+	"hqc-128",
 	"bike-l1",
 	"mceliece-348864",
 	"frodokem-640-aes",

@@ -358,7 +358,12 @@ Get a specific federation audit report.
 
 #### GET /auth/federation/audit/cross-tenant
 
-Get cross-tenant federation activity.
+Get cross-tenant federation activity. Requires a verified human `ops_admin` token;
+customer roles, personal access tokens and delegated service identities are denied.
+Customer portals use `GET /auth/federation/audit/activity`, which binds the SQL
+query to the authenticated workspace, including when a different tenant ID is
+supplied by the caller. Both endpoints accept integer `hours` from 1 through 168
+(default 24).
 
 **Authentication:** Bearer token required  
 **Required Controls:** `entitlements`, `audit`
@@ -4549,11 +4554,13 @@ Expand term with synonyms.
 }
 ```
 
-### Index Health
+### Index Telemetry Reports
 
-#### GET /search/v1/health/current
+The `/search/v2/health` contract stores client-reported observations, alerts, and maintenance schedule records. It does not independently measure operational health or execute maintenance. Actual health is `unknown`; uptime and maintenance execution are unavailable. All `/search/v1/health` paths return `410 API_VERSION_RETIRED` with `/search/v2/health` as the replacement.
 
-Get current index health status.
+#### GET /search/v2/health/current
+
+Get the latest unverified client-reported assessment for each index.
 
 **Authentication:** Bearer token required  
 **Required Controls:** `entitlements`, `audit`
@@ -4561,25 +4568,28 @@ Get current index health status.
 **Response (200):**
 ```json
 {
-  "overallHealth": "green | yellow | red",
-  "indices": [
-    {
-      "indexName": "string",
-      "status": "string",
-      "documentCount": "number",
-      "sizeBytes": "number",
-      "shards": {
-        "total": "number",
-        "successful": "number"
-      }
-    }
-  ]
+  "tenantId": "string",
+  "overallStatus": "unknown",
+  "actualHealthStatus": "unknown",
+  "verificationStatus": "unverified",
+  "summary": {
+    "totalIndices": 1,
+    "actualHealthStatus": "unknown",
+    "reportedAssessmentCounts": {
+      "healthy": 1,
+      "degraded": 0,
+      "unhealthy": 0
+    },
+    "activeReportedAlerts": 0
+  },
+  "indices": [],
+  "alerts": []
 }
 ```
 
-#### POST /search/v1/health/maintenance
+#### POST /search/v2/health/maintenance
 
-Schedule maintenance window.
+Create a future maintenance schedule record. This endpoint does not execute maintenance. The authenticated actor is recorded by the service and cannot be supplied by the caller.
 
 **Authentication:** Bearer token required  
 **Required Controls:** `entitlements`, `audit`
@@ -4587,21 +4597,40 @@ Schedule maintenance window.
 **Request Body:**
 ```json
 {
-  "indexNames": ["string"],
-  "maintenanceType": "optimize | reindex | backup",
-  "scheduledAt": "string (ISO 8601)",
-  "duration": "string (ISO 8601 duration)"
+  "indexId": "UUID",
+  "indexName": "string",
+  "maintenanceType": "optimize | reindex | vacuum | compact | analyze | backup | restore",
+  "scheduledAt": "string (ISO 8601 timestamp with offset)",
+  "estimatedDurationMinutes": 30,
+  "metadata": {}
 }
 ```
 
 **Response (201):**
 ```json
 {
-  "windowId": "string",
-  "status": "scheduled",
-  "scheduledAt": "string"
+  "id": "UUID",
+  "tenantId": "string",
+  "indexId": "UUID",
+  "indexName": "string",
+  "maintenanceType": "optimize",
+  "scheduledAt": "string (ISO 8601)",
+  "estimatedDurationMinutes": 30,
+  "scheduleStatus": "scheduled",
+  "executionStatus": "unavailable",
+  "executionStatusReason": "No maintenance executor is configured",
+  "recordedStartedAt": null,
+  "recordedCompletedAt": null,
+  "metadata": {},
+  "createdBy": "authenticated actor identifier",
+  "cancelledAt": null,
+  "cancelledBy": null,
+  "createdAt": "string (ISO 8601)",
+  "observedAt": "string (ISO 8601)"
 }
 ```
+
+Legacy rows that already contain lifecycle timestamps are returned as `recorded_in_progress` or `recorded_completed` with `executionStatus` set to `unverified_record`; those timestamps are historical records, not independent proof that maintenance ran.
 
 ### Tenant Isolation
 

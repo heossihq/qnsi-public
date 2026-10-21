@@ -22,8 +22,8 @@
  * the Python SDK's (sdks/python/qnsi/tests/test_wire_contract.py), and for the same reason:
  * a wrong field name never produces a helpful error, only a missing required field.
  */
-import { describe, expect, it } from "vitest";
-import type { ApiClient } from "./api-client.js";
+import { describe, expect, it, vi } from "vitest";
+import { ApiClient } from "./api-client.js";
 import type { TierGate } from "./session.js";
 import * as tools from "./tools.js";
 
@@ -41,6 +41,18 @@ function spy() {
 			calls.push({ method: "GET", path });
 			return { data: {} };
 		},
+		put: async (path: string, body?: unknown) => {
+			calls.push({ method: "PUT", path, body });
+			return { data: { method: "PUT" } };
+		},
+		patch: async (path: string, body?: unknown) => {
+			calls.push({ method: "PATCH", path, body });
+			return { data: { method: "PATCH" } };
+		},
+		del: async (path: string) => {
+			calls.push({ method: "DELETE", path });
+			return { data: { method: "DELETE" } };
+		},
 	} as unknown as ApiClient;
 
 	const gate = {
@@ -54,6 +66,35 @@ function spy() {
 }
 
 describe("MCP wire contract: kms.generateKey", () => {
+	it("carries full-surface query and idempotency options onto the HTTP wire", async () => {
+		const { ctx } = spy();
+		const fetchMock = vi
+			.spyOn(globalThis, "fetch")
+			.mockImplementation(async () => new Response("{}"));
+		try {
+			const api = new ApiClient({
+				baseUrl: "https://api.test",
+				apiKey: "test-key",
+				tenantId: TENANT,
+			});
+			await tools.apiRequest(
+				{ ...ctx, api },
+				tools.apiRequestSchema.parse({
+					method: "POST",
+					path: "/proxy/kms/v1/keys/test/sign",
+					body: { tenantId: TENANT, data: "aGVsbG8=" },
+					query: { version: 2 },
+					idempotencyKey: "sign-1",
+				}),
+			);
+			const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+			expect(new URL(url).searchParams.get("version")).toBe("2");
+			expect((init.headers as Record<string, string>)["idempotency-key"]).toBe("sign-1");
+			expect(JSON.parse(init.body as string)).toEqual({ tenantId: TENANT, data: "aGVsbG8=" });
+		} finally {
+			fetchMock.mockRestore();
+		}
+	});
 	it("sends the REQUIRED keyId - its absence returned 400 on every call", async () => {
 		const { ctx, calls } = spy();
 		await tools.kmsGenerateKey(ctx, { algorithm: "dilithium-3" });
@@ -172,6 +213,97 @@ describe("MCP wire contract: cryptoScan", () => {
 });
 
 describe("MCP tools emit only canonically mounted routes", () => {
+	it("preserves optional storage, search, and billing request fields", async () => {
+		const { ctx, calls } = spy();
+
+		await tools.storageListObjects(ctx, { bucket: "audit records", limit: 25 });
+		await tools.storageListObjects(ctx, { bucket: "audit records" });
+		await tools.storagePutObject(ctx, {
+			bucket: "evidence",
+			key: "report one",
+			dataB64: "cHJvb2Y=",
+			contentType: "application/pdf",
+		});
+		await tools.storagePutObject(ctx, {
+			bucket: "evidence",
+			key: "raw",
+			dataB64: "cHJvb2Y=",
+		});
+		await tools.searchVectorQuery(ctx, {
+			indexName: "customer evidence",
+			vector: [0.25, 0.75],
+			topK: 2,
+			filter: { classification: "public" },
+		});
+		await tools.searchVectorQuery(ctx, {
+			indexName: "customer evidence",
+			vector: [0.25, 0.75],
+			topK: 2,
+		});
+		await tools.billingListInvoices(ctx, { limit: 5 });
+		await tools.billingListInvoices(ctx, {});
+
+		expect(calls).toEqual([
+			{
+				method: "GET",
+				path: "/proxy/storage/v1/buckets/audit%20records/objects?limit=25",
+			},
+			{ method: "GET", path: "/proxy/storage/v1/buckets/audit%20records/objects" },
+			{
+				method: "PUT",
+				path: "/proxy/storage/v1/buckets/evidence/objects/report%20one",
+				body: { dataB64: "cHJvb2Y=", contentType: "application/pdf" },
+			},
+			{
+				method: "PUT",
+				path: "/proxy/storage/v1/buckets/evidence/objects/raw",
+				body: { dataB64: "cHJvb2Y=" },
+			},
+			{
+				method: "POST",
+				path: "/proxy/search/v1/indexes/customer%20evidence/query",
+				body: {
+					vector: [0.25, 0.75],
+					topK: 2,
+					filter: { classification: "public" },
+				},
+			},
+			{
+				method: "POST",
+				path: "/proxy/search/v1/indexes/customer%20evidence/query",
+				body: { vector: [0.25, 0.75], topK: 2 },
+			},
+			{
+				method: "GET",
+				path: `/proxy/billing/v1/invoices?limit=5&tenantId=${TENANT}`,
+			},
+			{ method: "GET", path: `/proxy/billing/v1/invoices?tenantId=${TENANT}` },
+		]);
+	});
+
+	it.each(["GET", "POST", "PUT", "PATCH", "DELETE"] as const)(
+		"dispatches full-surface %s requests through the matching API client method",
+		async (method) => {
+			const { ctx, calls } = spy();
+			const result = await tools.apiRequest(ctx, {
+				method,
+				path: "/proxy/kms/v1/keys",
+				body: { requestedBy: "coverage-contract" },
+			});
+
+			expect(calls).toEqual([
+				{
+					method,
+					path: "/proxy/kms/v1/keys",
+					...(method === "GET" || method === "DELETE"
+						? {}
+						: { body: { requestedBy: "coverage-contract" } }),
+				},
+			]);
+			expect(result.isError).toBeUndefined();
+		},
+	);
+
 	it("forwards optional audit filters", async () => {
 		const { ctx, calls } = spy();
 

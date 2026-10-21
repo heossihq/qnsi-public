@@ -89,6 +89,8 @@ async fn kms_create_sign_verify() {
             "keyType": "data",
             "algorithm": "ml-dsa-65",
             "tenantId": "tenant-test",
+            "exportable": false,
+            "custodyEnforcement": "service",
         })))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({"keyId": "key-1"})))
         .mount(&srv)
@@ -115,7 +117,7 @@ async fn kms_create_sign_verify() {
     let key = c
         .kms()
         .create_key(
-            kms::CreateKeyRequest { algorithm: "ml-dsa-65".into(), ..Default::default() },
+            kms::CreateKeyRequest { algorithm: "ml-dsa-65".into(), exportable: Some(false), custody_enforcement: Some("service".into()), ..Default::default() },
             None,
         )
         .await

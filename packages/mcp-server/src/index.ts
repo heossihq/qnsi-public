@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
 /**
- * QNSP MCP Server
+ * QNSI MCP Server
  *
  * Post-quantum cryptography tools for AI assistants.
- * Connects to the QNSP platform via edge gateway, authenticates with an API key,
+ * Connects to the QNSI platform via edge gateway, authenticates with an API key,
  * and exposes tier-gated tools for KMS, Vault, Crypto Inventory, Audit, Search,
  * and platform management.
  *
  * Usage (stdio):
- *   QNSP_API_KEY=your-key qnsi-mcp
+ *   Set the compatibility API-key variable, then run qnsi-mcp
  *
  * Configuration:
- *   QNSP_API_KEY          - Required. Get one at https://cloud.qnsi.heossi.com/api-keys
- *   QNSP_PLATFORM_URL     - Optional. Defaults to https://api.qnsi.heossi.com
+ *   API-key compatibility variable - Required. Get one at https://cloud.qnsi.heossi.com/api-keys
+ *   Platform-URL compatibility variable - Optional. Defaults to https://api.qnsi.heossi.com
  */
 
 import { createRequire } from "node:module";
@@ -46,11 +46,23 @@ export const PACKAGE_VERSION: string = (() => {
 
 export function registerTools(server: McpServer, ctx: ToolContext): void {
 	server.tool(
+		"qnsi_list_operations",
+		"Search the manifest-declared QNSI operation catalog. This is source discovery, not live availability or authorization proof. Paginate with offset/limit.",
+		tools.listOperationsSchema.shape,
+		async (input) => tools.listOperations(tools.listOperationsSchema.parse(input)),
+	);
+	server.tool(
+		"qnsi_call_operation",
+		"Call an operation discovered by qnsi_list_operations, with encoded path parameters, JSON body, query options, and idempotency. Authentication, policy, tenant binding, and entitlements are enforced by the backend; writes can have persistent effects.",
+		tools.callOperationSchema.shape,
+		async (input) => tools.callOperation(ctx, tools.callOperationSchema.parse(input)),
+	);
+	server.tool(
 		"qnsp_kms_generate_key",
-		// The catalog is 87 algorithms (24 KEMs + 63 signatures across 13 families) - this said
+		// The catalog is 90 algorithms (27 KEMs + 63 signatures across 14 families) - this said
 		// 93. An MCP tool description is a PUBLIC, machine-readable surface: it is exactly what
 		// an AI agent reads to decide what QNSI can do, and then repeats to a user.
-		"Generate a new post-quantum cryptographic key pair. Supports ML-KEM (Kyber), ML-DSA (Dilithium), Falcon, SPHINCS+, and the full 87-algorithm QNSI PQC catalog.",
+		"Generate a new post-quantum cryptographic key pair. Supports the tenant-enabled 90-algorithm QNSI PQC catalog, including ML-KEM, HQC, BIKE, FrodoKEM, Classic McEliece, ML-DSA, SLH-DSA, MAYO, CROSS, and Falcon/FN-DSA.",
 		{
 			algorithm: tools.kmsGenerateKeySchema.shape.algorithm,
 			label: tools.kmsGenerateKeySchema.shape.label,
@@ -169,9 +181,97 @@ export function registerTools(server: McpServer, ctx: ToolContext): void {
 	);
 	server.tool(
 		"qnsp_platform_health",
-		"Check QNSP platform health status across all services.",
+		"Check QNSI platform health status across all services.",
 		{},
 		async (input) => tools.platformHealth(ctx, tools.platformHealthSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_storage_list_buckets",
+		"List encrypted storage buckets in your tenant (PQC envelope-encrypted at rest).",
+		{},
+		async (input) => tools.storageListBuckets(ctx, tools.storageListBucketsSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_storage_list_objects",
+		"List objects in an encrypted storage bucket.",
+		{
+			bucket: tools.storageListObjectsSchema.shape.bucket,
+			limit: tools.storageListObjectsSchema.shape.limit,
+		},
+		async (input) => tools.storageListObjects(ctx, tools.storageListObjectsSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_storage_put_object",
+		"Store an object (base64 payload) under quantum-safe envelope encryption in a bucket.",
+		{
+			bucket: tools.storagePutObjectSchema.shape.bucket,
+			key: tools.storagePutObjectSchema.shape.key,
+			dataB64: tools.storagePutObjectSchema.shape.dataB64,
+			contentType: tools.storagePutObjectSchema.shape.contentType,
+		},
+		async (input) => tools.storagePutObject(ctx, tools.storagePutObjectSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_storage_get_object",
+		"Fetch an object (decrypted, base64) from an encrypted storage bucket.",
+		{
+			bucket: tools.storageGetObjectSchema.shape.bucket,
+			key: tools.storageGetObjectSchema.shape.key,
+		},
+		async (input) => tools.storageGetObject(ctx, tools.storageGetObjectSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_search_list_indexes",
+		"List encrypted search indexes in your tenant.",
+		{},
+		async (input) => tools.searchListIndexes(ctx, tools.searchListIndexesSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_search_vector_query",
+		"Run a vector similarity query against an encrypted search index.",
+		{
+			indexName: tools.searchVectorQuerySchema.shape.indexName,
+			vector: tools.searchVectorQuerySchema.shape.vector,
+			topK: tools.searchVectorQuerySchema.shape.topK,
+			filter: tools.searchVectorQuerySchema.shape.filter,
+		},
+		async (input) => tools.searchVectorQuery(ctx, tools.searchVectorQuerySchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_access_list_roles",
+		"List access-control roles in your tenant.",
+		{},
+		async (input) => tools.accessListRoles(ctx, tools.accessListRolesSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_billing_entitlements",
+		"Get your tenant's resolved entitlements (tier, limits, enabled features).",
+		{},
+		async (input) => tools.billingEntitlements(ctx, tools.billingEntitlementsSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_billing_list_invoices",
+		"List your tenant's billing invoices.",
+		{ limit: tools.billingListInvoicesSchema.shape.limit },
+		async (input) => tools.billingListInvoices(ctx, tools.billingListInvoicesSchema.parse(input)),
+	);
+	server.tool(
+		"qnsp_conformance_stats",
+		"Get your tenant's L0-L3 cryptographic conformance posture against pinned NIST ACVP vectors.",
+		{},
+		async (input) => tools.conformanceStats(ctx, tools.conformanceStatsSchema.parse(input)),
+	);
+	server.tool(
+		"qnsi_api_request",
+		"Full-surface passthrough: call any customer-facing QNSI edge route (/proxy/...). The edge gateway enforces authentication, tenant scoping, and billing entitlements per route exactly as for the cloud portal.",
+		{
+			method: tools.apiRequestSchema.shape.method,
+			path: tools.apiRequestSchema.shape.path,
+			body: tools.apiRequestSchema.shape.body,
+			query: tools.apiRequestSchema.shape.query,
+			idempotencyKey: tools.apiRequestSchema.shape.idempotencyKey,
+		},
+		async (input) => tools.apiRequest(ctx, tools.apiRequestSchema.parse(input)),
 	);
 }
 
@@ -200,7 +300,7 @@ export function createSandboxServer(): McpServer {
 			vaultEnabled: true,
 		},
 	};
-	const server = new McpServer({ name: "qnsp", version: PACKAGE_VERSION });
+	const server = new McpServer({ name: "qnsi", version: PACKAGE_VERSION });
 	registerTools(server, { api: noopApi, gate: sandboxGate });
 	return server;
 }
@@ -217,8 +317,8 @@ export function getRequiredEnv(name: string): string {
 }
 
 export async function main(): Promise<void> {
-	const apiKey = getRequiredEnv("QNSP_API_KEY");
-	const platformUrl = process.env["QNSP_PLATFORM_URL"] ?? "https://api.qnsi.heossi.com";
+	const apiKey = getRequiredEnv("QNSI_API_KEY");
+	const platformUrl = process.env["QNSI_PLATFORM_URL"] ?? "https://api.qnsi.heossi.com";
 
 	// Activate SDK session - resolves API key → tenant ID → tier → limits
 	const session = new SessionManager({ apiKey, platformUrl });
@@ -233,7 +333,7 @@ export async function main(): Promise<void> {
 
 	const ctx: ToolContext = { api, gate };
 
-	const server = new McpServer({ name: "qnsp", version: PACKAGE_VERSION });
+	const server = new McpServer({ name: "qnsi", version: PACKAGE_VERSION });
 	registerTools(server, ctx);
 
 	// Start stdio transport
@@ -241,13 +341,13 @@ export async function main(): Promise<void> {
 	await server.connect(transport);
 }
 
-// Only run the stdio server when QNSP_API_KEY is set.
+// Only run the stdio server when the canonical API-key variable is set.
 // When Smithery imports this module for capability scanning, it calls
 // createSandboxServer() instead - no API key needed for tool discovery.
-if (process.env["QNSP_API_KEY"]) {
+if (process.env["QNSI_API_KEY"]) {
 	main().catch((error) => {
 		process.stderr.write(
-			`QNSP MCP Server fatal error: ${error instanceof Error ? error.message : String(error)}\n`,
+			`QNSI MCP Server fatal error: ${error instanceof Error ? error.message : String(error)}\n`,
 		);
 		process.exit(1);
 	});

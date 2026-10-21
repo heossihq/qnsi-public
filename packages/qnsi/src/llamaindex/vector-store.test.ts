@@ -1,7 +1,7 @@
 /**
  * QnsiVectorStore unit tests.
  *
- * Folded in from the former standalone `@heossihq/qnsi-llamaindex-qnsp`; the
+ * Folded in from the former standalone `former standalone LlamaIndex integration package`; the
  * search-service HTTP is now inlined, so these tests mock `globalThis.fetch`
  * (the real seam) rather than the former `@heossihq/qnsi-search-sdk` client.
  * Same behaviors asserted.
@@ -82,8 +82,22 @@ const BASE_CONFIG: QnsiVectorStoreConfig = {
 	tenantId: "tenant-uuid-1234",
 };
 
-function makeStore(overrides?: Partial<QnsiVectorStoreConfig>): QnsiVectorStore {
-	return new QnsiVectorStore({ ...BASE_CONFIG, ...overrides });
+/**
+ * Overrides may set a key to `undefined` to clear the BASE_CONFIG default. The
+ * config's optional fields are declared without `| undefined`, so a cleared key is
+ * removed rather than assigned undefined, which is what omitting it means.
+ */
+function makeStore(
+	overrides?: {
+		[K in keyof QnsiVectorStoreConfig]?: QnsiVectorStoreConfig[K] | undefined;
+	},
+): QnsiVectorStore {
+	const merged: Record<string, unknown> = { ...BASE_CONFIG };
+	for (const [key, value] of Object.entries(overrides ?? {})) {
+		if (value === undefined) delete merged[key];
+		else merged[key] = value;
+	}
+	return new QnsiVectorStore(merged as unknown as QnsiVectorStoreConfig);
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────

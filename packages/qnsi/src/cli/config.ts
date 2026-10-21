@@ -1,7 +1,7 @@
 import { config as loadDotenv } from "dotenv";
 import { bridgeQnsiEnv } from "../internal/env-aliases.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 const shouldLoadDotenv =

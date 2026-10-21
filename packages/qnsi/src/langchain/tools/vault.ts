@@ -1,8 +1,8 @@
 /**
- * QNSP Vault Tools for LangChain
+ * QNSI Vault Tools for LangChain
  *
  * Provides governed agents with PQC-encrypted secret storage.
- * Every read and write is automatically audited via the QNSP audit trail.
+ * Every read and write is automatically audited via the QNSI audit trail.
  */
 
 import { StructuredTool, type ToolParams } from "@langchain/core/tools";
@@ -16,12 +16,12 @@ const readSecretSchema = z.object({
 });
 
 /**
- * LangChain tool that reads a PQC-encrypted secret from QNSP Vault.
+ * LangChain tool that reads a PQC-encrypted secret from QNSI Vault.
  */
 export class QnsiReadSecretTool extends StructuredTool {
 	override readonly name = "qnsp_read_secret";
 	override readonly description =
-		"Read a PQC-encrypted secret from QNSP Vault. Returns the secret name and encrypted envelope. Use this when an agent needs to retrieve a stored credential, API key, or sensitive value.";
+		"Read a PQC-encrypted secret from QNSI Vault. Returns the secret name and encrypted envelope. Use this when an agent needs to retrieve a stored credential, API key, or sensitive value.";
 	override readonly schema = readSecretSchema;
 
 	readonly #vault: VaultClient;
@@ -57,12 +57,12 @@ const writeSecretSchema = z.object({
 });
 
 /**
- * LangChain tool that stores a PQC-encrypted secret in QNSP Vault.
+ * LangChain tool that stores a PQC-encrypted secret in QNSI Vault.
  */
 export class QnsiWriteSecretTool extends StructuredTool {
 	override readonly name = "qnsp_write_secret";
 	override readonly description =
-		"Store a PQC-encrypted secret in QNSP Vault. The payload must be base64-encoded. Returns the created secret ID. Use this when an agent needs to persist a credential, token, or sensitive value securely.";
+		"Store a PQC-encrypted secret in QNSI Vault. The payload must be base64-encoded. Returns the created secret ID. Use this when an agent needs to persist a credential, token, or sensitive value securely.";
 	override readonly schema = writeSecretSchema;
 
 	readonly #vault: VaultClient;
@@ -98,12 +98,12 @@ const rotateSecretSchema = z.object({
 });
 
 /**
- * LangChain tool that rotates a secret in QNSP Vault with a new value.
+ * LangChain tool that rotates a secret in QNSI Vault with a new value.
  */
 export class QnsiRotateSecretTool extends StructuredTool {
 	override readonly name = "qnsp_rotate_secret";
 	override readonly description =
-		"Rotate a secret in QNSP Vault with a new PQC-encrypted value. The previous version is retained for rollback. Use this when an agent needs to update a credential after rotation.";
+		"Rotate a secret in QNSI Vault with a new PQC-encrypted value. The previous version is retained for rollback. Use this when an agent needs to update a credential after rotation.";
 	override readonly schema = rotateSecretSchema;
 
 	readonly #vault: VaultClient;

@@ -43,10 +43,18 @@ impl ServiceClient {
         let tenant_id = self.activation.get().await?.tenant_id;
 
         let resp = self
-            .send(method.clone(), path, body, query, idempotency_key, &tenant_id)
+            .send(
+                method.clone(),
+                path,
+                body,
+                query,
+                idempotency_key,
+                &tenant_id,
+            )
             .await?;
 
         let resp = if resp.status() == StatusCode::UNAUTHORIZED {
+            drop(resp);
             self.activation.invalidate();
             let tenant_id = self.activation.get().await?.tenant_id;
             self.send(method, path, body, query, idempotency_key, &tenant_id)
@@ -71,12 +79,13 @@ impl ServiceClient {
             return Ok(Value::Object(serde_json::Map::new()));
         }
 
-        let parsed: Value = serde_json::from_str(&body_text).map_err(|_| crate::errors::ApiError {
-            status_code: status.as_u16(),
-            code: None,
-            message: "response is not valid JSON".into(),
-            body: None,
-        })?;
+        let parsed: Value =
+            serde_json::from_str(&body_text).map_err(|_| crate::errors::ApiError {
+                status_code: status.as_u16(),
+                code: None,
+                message: "response is not valid JSON".into(),
+                body: None,
+            })?;
 
         Ok(parsed)
     }

@@ -162,7 +162,7 @@ function resolveAlgorithm(
 
 /**
  * Scan a single file's content. Exported for tests, the CLI's single-file
- * mode, and future host integrations (qnsp-agent).
+ * mode, and future host integrations (legacy host agent).
  */
 export function scanFileContent(
 	relativePath: string,

@@ -298,9 +298,9 @@ public:
 
 	/**
 	 * Algorithm-detail introspection for signatures. Mirrors KEMWrapper::Details.
-	 * Note: liboqs 0.15.0 does NOT expose OQS_SIG_keypair_derand; the C library
-	 * lacks a seed-controlled keypair API for ML-DSA / SLH-DSA. Upstream PR
-	 * pending - until then, ACVP signature-keyGen tests are deferred. See
+	 * Note: liboqs 0.16.0 still does not expose OQS_SIG_keypair_derand; the C
+	 * library lacks a seed-controlled keypair API for ML-DSA / SLH-DSA. Until
+	 * upstream adds one, ACVP signature-keyGen tests are deferred. See
 	 * https://qnsi.heossi.com/verify/conformance scopeNotes.
 	 */
 	Napi::Value Details(const Napi::CallbackInfo& info) {

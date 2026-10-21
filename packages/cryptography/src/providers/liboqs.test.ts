@@ -15,6 +15,7 @@ type CapturedOperation = {
 
 describe("liboqs provider factory", () => {
 	const decapsulationCalls: CapturedOperation[] = [];
+	const signatureAlgorithms: string[] = [];
 	let freedKemInstances = 0;
 	let freedSignatureInstances = 0;
 
@@ -55,6 +56,7 @@ describe("liboqs provider factory", () => {
 
 		constructor(algorithm: string) {
 			this.algorithm = algorithm;
+			signatureAlgorithms.push(algorithm);
 		}
 
 		generateKeypair() {
@@ -94,7 +96,7 @@ describe("liboqs provider factory", () => {
 			"Falcon-512",
 			"Falcon-1024",
 			"SPHINCS+-SHAKE-128f-simple",
-			"SPHINCS+-SHAKE-256f-simple",
+			"SLH_DSA_PURE_SHAKE_256F",
 		],
 	};
 
@@ -102,6 +104,7 @@ describe("liboqs provider factory", () => {
 
 	beforeEach(() => {
 		decapsulationCalls.length = 0;
+		signatureAlgorithms.length = 0;
 		freedKemInstances = 0;
 		freedSignatureInstances = 0;
 	});
@@ -187,6 +190,17 @@ describe("liboqs provider factory", () => {
 
 		expect(freedKemInstances).toBeGreaterThanOrEqual(3);
 		expect(freedSignatureInstances).toBeGreaterThanOrEqual(3);
+	});
+
+	it("uses the liboqs 0.16 identifier for SLH-DSA signatures", async () => {
+		const factory = createLiboqsProviderFactory({ loadModule });
+		const provider = await factory.create({
+			algorithms: ["sphincs-shake-256f-simple"],
+		});
+
+		await provider.generateKeyPair({ algorithm: "sphincs-shake-256f-simple" });
+
+		expect(signatureAlgorithms).toContain("SLH_DSA_PURE_SHAKE_256F");
 	});
 
 	it("rejects unsupported algorithms", async () => {

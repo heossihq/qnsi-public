@@ -45,10 +45,12 @@ from qnsi.crypto._registry import (
     is_supported_kem,
     is_supported_signature,
 )
-from qnsi.crypto.kem import KemKeyPair, KemEncapsulation, MlKem
+from qnsi.crypto.kem import KemEncapsulation, KemKeyPair, MlKem
 from qnsi.crypto.sig import Falcon, MlDsa, SigKeyPair, SlhDsa
 
 __all__ = [
+    "SUPPORTED_KEMS",
+    "SUPPORTED_SIGNATURES",
     "Falcon",
     "KemEncapsulation",
     "KemKeyPair",
@@ -56,8 +58,6 @@ __all__ = [
     "MlKem",
     "SigKeyPair",
     "SlhDsa",
-    "SUPPORTED_KEMS",
-    "SUPPORTED_SIGNATURES",
     "is_supported_kem",
     "is_supported_signature",
 ]

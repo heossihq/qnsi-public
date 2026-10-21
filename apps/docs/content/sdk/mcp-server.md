@@ -1,7 +1,7 @@
 ---
 title: MCP Server (@heossihq/qnsi-mcp)
-version: 0.2.0
-last_updated: 2026-07-26
+version: 0.4.1
+last_updated: 2026-09-06
 copyright: © 2025-2026 HEOSSI. All rights reserved.
 license: Apache-2.0
 source_files:
@@ -21,8 +21,8 @@ The MCP server is not just a convenience wrapper. It is one of the supported con
 
 - npm package: `@heossihq/qnsi-mcp`
 - binary: `qnsi-mcp`
-- current version: `0.2.0`
-- runtime: Node.js `>= 22.0.0`
+- current version: `0.4.1` (28 tools: 27 compatibility-prefixed `qnsp_*` tools plus `qnsi_api_request`)
+- runtime: Node.js `>= 24.18.0`
 
 ## Supported deployment modes
 
@@ -31,10 +31,13 @@ The MCP server is not just a convenience wrapper. It is one of the supported con
 Use the installed binary with Kiro, Claude Desktop, VS Code, or another
 MCP-compatible client.
 
+Prefer an editor install? The QNSI extension is published on the VS Code
+Marketplace as [Heossi.qnsi](https://marketplace.visualstudio.com/items?itemName=Heossi.qnsi).
+
 ```bash
-pnpm add --global @heossihq/qnsi-mcp@0.2.0
-export QNSP_API_KEY="YOUR_API_KEY"
-export QNSP_PLATFORM_URL="https://api.qnsi.heossi.com"
+pnpm add --global @heossihq/qnsi-mcp@0.4.1
+export QNSI_API_KEY="YOUR_API_KEY"
+export QNSI_PLATFORM_URL="https://api.qnsi.heossi.com"
 qnsi-mcp
 ```
 
@@ -44,11 +47,11 @@ keys out of committed workspace files.
 
 Required environment variables:
 
-- `QNSP_API_KEY`
+- `QNSI_API_KEY`
 
 Optional environment variables:
 
-- `QNSP_PLATFORM_URL`
+- `QNSI_PLATFORM_URL`
   Default: `https://api.qnsi.heossi.com`
 
 ### 2. Hosted Streamable HTTP endpoint
@@ -63,11 +66,19 @@ Use this when the MCP client supports remote HTTP transport.
 
 ## Tool surface
 
-The MCP server currently registers **17 tenant-scoped tools**. Tool names retain the `qnsp_` namespace for wire compatibility with existing MCP clients; the package, product, and current API-key prefix use the QNSI name.
+The existing 0.4.1 release contract lists **28 tenant-scoped tools**: 27 tools retain the `qnsp_` namespace for wire compatibility with existing MCP clients, and `qnsi_api_request` provides the full-surface passthrough. The package, product, and current API-key prefix use the QNSI name.
+
+The unreleased repository source registers 30 tools, adding `qnsi_list_operations`
+and `qnsi_call_operation` for manifest operation discovery and execution. The
+catalog describes 880 declarations, not live availability or complete payload
+schemas. Query options and idempotency keys are supported by the new execution
+tool and raw API tool. Backend authentication, tenant policy and entitlements
+remain authoritative. Publication and production acceptance of these additions
+are **NOT VERIFIED**; installing 0.4.1 does not establish their availability.
 
 | Tool | Area | Description | Minimum tier |
 |---|---|---|---|
-| `qnsp_kms_generate_key` | KMS | Generate a PQC keypair from QNSI's 87-algorithm policy catalog. | Dev |
+| `qnsp_kms_generate_key` | KMS | Generate a PQC keypair from QNSI's 90-algorithm policy catalog. | Dev |
 | `qnsp_kms_list_keys` | KMS | List keys in the current tenant. | Dev |
 | `qnsp_kms_get_key` | KMS | Retrieve a key's public metadata. | Dev |
 | `qnsp_kms_rotate_key` | KMS | Rotate a key; previous version retained for verification. | Dev |
@@ -84,6 +95,17 @@ The MCP server currently registers **17 tenant-scoped tools**. Tool names retain
 | `qnsp_tenant_info` | Tenant | Show current tenant configuration. | Dev |
 | `qnsp_billing_status` | Billing | Show tier, limits, and upgrade URL. | Any |
 | `qnsp_platform_health` | Platform | Show platform liveness and regional posture. | Any |
+| `qnsp_storage_list_buckets` | Storage | List encrypted storage buckets in the tenant. | Pro |
+| `qnsp_storage_list_objects` | Storage | List objects in an encrypted bucket. | Pro |
+| `qnsp_storage_put_object` | Storage | Store an object (base64) under PQC envelope encryption. | Pro |
+| `qnsp_storage_get_object` | Storage | Fetch an object (decrypted, base64) from a bucket. | Pro |
+| `qnsp_search_list_indexes` | Search | List encrypted search indexes. | Business |
+| `qnsp_search_vector_query` | Search | Vector similarity query against an encrypted index. | Business |
+| `qnsp_access_list_roles` | Access | List access-control roles in the tenant. | Business |
+| `qnsp_billing_entitlements` | Billing | Resolved entitlements (tier, limits, enabled features). | Any |
+| `qnsp_billing_list_invoices` | Billing | List the tenant's invoices. | Any |
+| `qnsp_conformance_stats` | Conformance | L0-L3 conformance posture against pinned NIST ACVP vectors. | Dev |
+| `qnsi_api_request` | Platform | Full-surface passthrough to any customer-facing edge route (/proxy/...). | Any |
 
 If the tenant's plan does not include the feature the tool needs, the call returns a structured "upgrade required" message with a deep link to `https://cloud.qnsi.heossi.com/billing` - the same billing gate that protects the portal and SDKs. The edge-gateway enforces entitlements server-side as well, so the client-side check is a UX optimization and not the security boundary.
 
@@ -131,8 +153,8 @@ For shared or durable enterprise automation, prefer a service-account-backed or 
     "qnsi": {
       "command": "qnsi-mcp",
       "env": {
-        "QNSP_API_KEY": "qnsi_pqc_api_...",
-        "QNSP_PLATFORM_URL": "https://api.qnsi.heossi.com"
+        "QNSI_API_KEY": "qnsi_pqc_api_...",
+        "QNSI_PLATFORM_URL": "https://api.qnsi.heossi.com"
       }
     }
   }

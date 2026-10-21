@@ -8,9 +8,9 @@
  *   - apps/web/scripts/run-nist-acvp-conformance.ts - ACVP runner
  *   - apps/web/public/pqc-evidence/acvp-latest.json - pass/fail counts
  *
- * Source-of-truth for the broader liboqs surface (BIKE, McEliece,
+ * Source-of-truth for the broader liboqs surface (HQC, BIKE, McEliece,
  * FrodoKEM, NTRU, NTRU-Prime, Falcon, MAYO, CROSS, UOV, SNOVA):
- *   - github.com/open-quantum-safe/liboqs @ 0.15.0 - src/kem/kem.h + src/sig/sig.h
+ *   - github.com/open-quantum-safe/liboqs @ 0.16.0 - src/kem/kem.h + src/sig/sig.h
  *   - tooling/liboqs-src/ (local clone for inspection)
  *
  * Keep ACVP-status fields aligned with /verify/conformance evidence
@@ -33,6 +33,11 @@ export type CryptoPolicyTier = "default" | "strict" | "maximum" | "government";
 export interface AlgorithmVariant {
 	readonly name: string; // canonical NIST / liboqs name, e.g. "ML-KEM-768"
 	readonly securityLevel: 1 | 2 | 3 | 4 | 5;
+	/**
+	 * Set when one catalog row collapses several parameter sets of the same family:
+	 * the row then spans these NIST categories rather than just `securityLevel`.
+	 */
+	readonly securityLevels?: readonly (1 | 2 | 3 | 4 | 5)[];
 	readonly publicKeyBytes: number;
 	readonly secretKeyBytes: number;
 	readonly ciphertextBytes?: number; // KEMs only
@@ -52,7 +57,7 @@ export interface AlgorithmFamily {
 	readonly summary: string; // 1-2 sentence positioning
 	readonly mechanism: string; // 1 paragraph - how it works at a high level
 	readonly variants: readonly AlgorithmVariant[];
-	readonly qnspSupport: {
+	readonly qnsiSupport: {
 		readonly providers: readonly ("noble" | "liboqs")[];
 		readonly minimumTier: CryptoPolicyTier;
 		readonly defaultForTier?: CryptoPolicyTier;
@@ -112,7 +117,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				note: "Maximum + Government crypto policy default. Required for `government` tier.",
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["noble", "liboqs"],
 			minimumTier: "default",
 			defaultForTier: "default",
@@ -120,7 +125,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		acvp: {
 			nobleStatus: "passing",
 			liboqsStatus: "passing",
-			note: "Both providers pass all 240 ML-KEM ACVP tests (keyGen 75 + encapsulation AFT 75 + decapsulation VAL 30 + §7.2/§7.3 key-validation 60). liboqs driven via OQS_KEM_keypair_derand + OQS_KEM_encaps_derand bindings shipped in @heossihq/liboqs-native 0.15.1.",
+			note: "Both providers pass all 240 ML-KEM ACVP tests (keyGen 75 + encapsulation AFT 75 + decapsulation VAL 30 + §7.2/§7.3 key-validation 60). liboqs driven via OQS_KEM_keypair_derand + OQS_KEM_encaps_derand bindings shipped in @heossihq/liboqs-native 0.16.0.",
 		},
 		useCases: [
 			"Hybrid TLS key-agreement target with X25519; production negotiation requires observed evidence",
@@ -181,7 +186,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				note: "Maximum + Government default. Required for `government` tier.",
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["noble", "liboqs"],
 			minimumTier: "default",
 			defaultForTier: "default",
@@ -189,7 +194,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		acvp: {
 			nobleStatus: "passing",
 			liboqsStatus: "deferred",
-			note: "noble passes all 75 ML-DSA keyGen ACVP tests. liboqs keyGen tests deferred because liboqs C library 0.15.0 does not yet expose OQS_SIG_keypair_derand. Sign / verify operations run against test vectors that provide the keypair, so signature correctness is independently exercised at runtime by the cross-verification service on Maximum and Government policy tiers.",
+			note: "noble passes all 75 ML-DSA keyGen ACVP tests. liboqs keyGen tests deferred because liboqs C library 0.16.0 does not yet expose OQS_SIG_keypair_derand. Sign / verify operations run against test vectors that provide the keypair, so signature correctness is independently exercised at runtime by the cross-verification service on Maximum and Government policy tiers.",
 		},
 		useCases: [
 			"JWT signing (auth-service default)",
@@ -265,7 +270,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				note: "SHAKE-based variants (6 additional). Identical security categories; SHAKE provides constant-time XOF for environments where SHA-2 acceleration is unavailable.",
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["noble", "liboqs"],
 			minimumTier: "default",
 		},
@@ -304,7 +309,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		fipsStandard: "FIPS 206 (pending)",
 		fipsStatus: "FIPS-pending",
 		summary:
-			"NIST's fourth standardised PQC signature scheme, formally FN-DSA under FIPS 206 - the initial public draft is still pending as of mid-2026. Falcon's signatures are the most compact of the lattice-based PQC schemes, making it preferred for size-constrained transport.",
+			"NIST's fourth standardised PQC signature scheme, formally FN-DSA under FIPS 206 - the initial public draft is still the current publication as of October 2026. Falcon's signatures are the most compact of the lattice-based PQC schemes, making it preferred for size-constrained transport.",
 		mechanism:
 			"Falcon uses the GPV trapdoor framework over NTRU lattices, with signatures generated via a discrete Gaussian sampler over the lattice. The result is signatures roughly 1/4 the size of equivalent-security ML-DSA signatures. The implementation complexity is higher than ML-DSA (floating-point Gaussian sampling requires care to avoid side-channels and rounding errors), which is why ML-DSA shipped first.",
 		variants: [
@@ -325,7 +330,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				note: "High-security Falcon. Government workloads requiring compact signatures but not strictly limited to FIPS-finalised algorithms.",
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "default",
 		},
@@ -337,7 +342,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		useCases: [
 			"Size-constrained transport (where every byte counts - embedded, IoT, mobile)",
 			"Standalone QNSI signatures when bandwidth dominates over CPU cost",
-			"Future government / defence workloads pending FIPS 206 finalisation",
+			"Government / defence workloads once FIPS 206 is finalised; today government tier excludes it",
 		],
 		tradeoffs: [
 			"Smallest signatures among lattice-based PQC schemes",
@@ -350,7 +355,65 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		},
 	},
 
-	// ────────────────────────── Non-FIPS code-based KEMs ──────────────────────────
+	// ────────────────────────── Code-based KEMs ──────────────────────────
+	{
+		slug: "hqc",
+		name: "HQC",
+		longName: "Hamming Quasi-Cyclic Key Encapsulation",
+		aliases: ["HQC-128", "HQC-192", "HQC-256", "HQC-1", "HQC-3", "HQC-5"],
+		type: "KEM",
+		familyKind: "code-based",
+		fipsStatus: "FIPS-pending",
+		summary:
+			"NIST-selected code-based backup KEM (selected March 2025); its draft standard is still pending as of October 2026. QNSI offers HQC as an explicit diversity option with liboqs 0.16.0, which updates the implementation to the 20250822 specification; ML-KEM remains the FIPS-final default.",
+		mechanism:
+			"HQC is based on quasi-cyclic syndrome decoding. It gives QNSI a code-based hedge against lattice-only concentration while retaining larger public keys and ciphertexts than ML-KEM.",
+		variants: [
+			{
+				name: "HQC-128 / HQC-1",
+				securityLevel: 1,
+				publicKeyBytes: 2241,
+				secretKeyBytes: 2321,
+				ciphertextBytes: 4433,
+			},
+			{
+				name: "HQC-192 / HQC-3",
+				securityLevel: 3,
+				publicKeyBytes: 4514,
+				secretKeyBytes: 4602,
+				ciphertextBytes: 8978,
+			},
+			{
+				name: "HQC-256 / HQC-5",
+				securityLevel: 5,
+				publicKeyBytes: 7237,
+				secretKeyBytes: 7333,
+				ciphertextBytes: 14421,
+			},
+		],
+		qnsiSupport: {
+			providers: ["liboqs"],
+			minimumTier: "default",
+		},
+		acvp: {
+			nobleStatus: "non-addressable",
+			liboqsStatus: "non-addressable",
+			note: "NIST selected HQC for standardization in March 2025, but final FIPS and ACVP coverage are not yet published.",
+		},
+		useCases: [
+			"Explicit code-based KEM diversity where a backup to ML-KEM is required",
+			"Migration and interoperability evaluation ahead of the future HQC standard",
+		],
+		tradeoffs: [
+			"Not FIPS-final today - excluded from government finalized-only policy tiers",
+			"Larger public keys and ciphertexts than ML-KEM",
+		],
+		references: {
+			upstreamCode: "https://github.com/open-quantum-safe/liboqs/tree/main/src/kem/hqc",
+			designPaper: "https://pqc-hqc.org/",
+		},
+	},
+
 	{
 		slug: "bike",
 		name: "BIKE",
@@ -386,7 +449,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				ciphertextBytes: 5154,
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "default",
 		},
@@ -431,7 +494,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				note: "5 parameter sets covering NIST security categories 1, 3, and 5. Public keys range 261 KB - 1.36 MB.",
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "maximum",
 		},
@@ -490,7 +553,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				ciphertextBytes: 21632,
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "maximum",
 		},
@@ -540,7 +603,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				ciphertextBytes: 1138,
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "default",
 		},
@@ -580,7 +643,7 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 				note: "Default post-quantum KEM in OpenSSH 9.0+. Recognisable name to network security buyers.",
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "default",
 		},
@@ -609,19 +672,20 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		familyKind: "multivariate",
 		fipsStatus: "non-FIPS",
 		summary:
-			"Multivariate quadratic signature scheme in the NIST PQC additional-signatures track. Short signatures and small public keys; trades signing speed against parameter size.",
+			"Multivariate quadratic signature scheme advanced to Round 3 of NIST's additional digital signature process (NIST IR 8610, October 2026). Short signatures and small public keys; trades signing speed against parameter size.",
 		mechanism:
 			"MAYO is based on the hardness of solving systems of multivariate quadratic polynomial equations (MQ problem). Uses the Whipping technique to amplify a weak underlying signature into a secure construction.",
 		variants: [
 			{
 				name: "MAYO-1 / MAYO-2 / MAYO-3 / MAYO-5",
 				securityLevel: 5,
+				securityLevels: [1, 3, 5],
 				publicKeyBytes: 1168,
 				secretKeyBytes: 24,
 				signatureBytes: 321,
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "default",
 		},
@@ -649,19 +713,20 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		familyKind: "code-based",
 		fipsStatus: "non-FIPS",
 		summary:
-			"Code-based signature using the MPC-in-the-head paradigm over restricted syndrome decoding. NIST PQC additional-signatures track candidate.",
+			"Code-based signature using the MPC-in-the-head paradigm over restricted syndrome decoding. Reached Round 2 of NIST's additional digital signature process but was not among the nine candidates advanced to Round 3 (October 2026), so it remains research and diversity only.",
 		mechanism:
 			"CROSS combines syndrome decoding with the MPC-in-the-head zero-knowledge proof system to produce signatures whose security reduces to the hardness of decoding random codes. Multiple parameter sets balance signature size against signing speed.",
 		variants: [
 			{
 				name: "CROSS-RSDP / CROSS-RSDPG (multiple param sets)",
 				securityLevel: 5,
+				securityLevels: [1, 3, 5],
 				publicKeyBytes: 77,
 				secretKeyBytes: 32,
 				signatureBytes: 13152,
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "default",
 		},
@@ -692,19 +757,20 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		familyKind: "multivariate",
 		fipsStatus: "non-FIPS",
 		summary:
-			"Multivariate signature scheme based on the Unbalanced Oil and Vinegar (UOV) construction, one of the longest-studied multivariate schemes.",
+			"Multivariate signature scheme based on the Unbalanced Oil and Vinegar (UOV) construction, one of the longest-studied multivariate schemes. Advanced to Round 3 of NIST's additional digital signature process (NIST IR 8610, October 2026).",
 		mechanism:
 			"UOV is built on the difficulty of solving structured systems of multivariate quadratic equations where some variables are 'oil' (random) and others are 'vinegar' (chosen). The asymmetric structure enables efficient signing while preserving the MQ hardness.",
 		variants: [
 			{
 				name: "OV-Is / Ip / III / V (multiple param sets)",
 				securityLevel: 5,
+				securityLevels: [1, 3, 5],
 				publicKeyBytes: 412160,
 				secretKeyBytes: 348704,
 				signatureBytes: 96,
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "default",
 		},
@@ -735,19 +801,20 @@ export const ALGORITHM_CATALOG: readonly AlgorithmFamily[] = [
 		familyKind: "multivariate",
 		fipsStatus: "non-FIPS",
 		summary:
-			"Multivariate signature scheme using a non-commutative ring structure to reduce public-key size relative to plain UOV. NIST PQC additional-signatures track candidate.",
+			"Multivariate signature scheme using a non-commutative ring structure to reduce public-key size relative to plain UOV. Advanced to Round 3 of NIST's additional digital signature process (NIST IR 8610, October 2026).",
 		mechanism:
 			"SNOVA modifies UOV's underlying field to a non-commutative matrix ring, dramatically reducing public-key size while preserving multivariate hardness.",
 		variants: [
 			{
 				name: "SNOVA (multiple param sets at NIST levels 1, 3, 5)",
 				securityLevel: 5,
+				securityLevels: [1, 3, 5],
 				publicKeyBytes: 2456,
 				secretKeyBytes: 48,
 				signatureBytes: 168,
 			},
 		],
-		qnspSupport: {
+		qnsiSupport: {
 			providers: ["liboqs"],
 			minimumTier: "default",
 		},
@@ -788,14 +855,14 @@ export function algorithmSlugs(): readonly string[] {
 //               here because apps/web cannot bundle the native crypto package.
 //               Guarded by verify:facts and verify:fact-drift.
 // NOTE: the catalog above lists display variants only - do NOT sum them to get the
-// total (that yields 27, not 87). The 24/63 is the policy-engine surface.
-const PQC_KEMS = 24;
+// total (that yields a smaller display-family count, not the full policy surface).
+const PQC_KEMS = 27;
 const PQC_SIGNATURES = 63;
 
 export const PQC = {
-	families: ALGORITHM_CATALOG.length, // 13 (derived from the catalog)
+	families: ALGORITHM_CATALOG.length, // derived from the catalog
 	kems: PQC_KEMS,
 	signatures: PQC_SIGNATURES,
-	total: PQC_KEMS + PQC_SIGNATURES, // 87
+	total: PQC_KEMS + PQC_SIGNATURES, // 90
 	policyTiers: 4, // default · strict · maximum · government
 } as const;

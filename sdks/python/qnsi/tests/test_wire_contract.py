@@ -50,7 +50,10 @@ class _Activation:
 
     base_url = "https://api.qnsi.heossi.com"
     tenant_id = TENANT
-    api_key_header = {"authorization": "Bearer test"}
+
+    @property
+    def api_key_header(self) -> dict[str, str]:
+        return {"authorization": "Bearer test"}
 
     def get_activation(self) -> None:
         return None
@@ -84,7 +87,9 @@ class _HttpSpy:
         json: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
         timeout: Any = None,
+        follow_redirects: bool,
     ) -> _Response:
+        assert follow_redirects is False
         self.url, self.json = url, json
         return _Response()
 
@@ -101,7 +106,7 @@ def _wire(cls: Any) -> tuple[Any, _HttpSpy]:
     return cls(activation=_Activation(), http_client=spy, timeout=5), spy
 
 
-def test_create_secret_sends_payload_not_payloadBase64() -> None:
+def test_create_secret_sends_payload_not_payload_base64() -> None:
     """createSecretSchema requires `payload`. `payloadBase64` produced a production 500."""
     client, spy = _wire(VaultClient)
     payload = base64.b64encode(b"value").decode()
@@ -127,7 +132,7 @@ def test_create_secret_puts_algorithm_in_metadata_not_top_level() -> None:
     assert spy.json["metadata"]["algorithm"] == "ml-kem-1024"
 
 
-def test_rotate_secret_sends_newPayload_not_newPayloadBase64() -> None:
+def test_rotate_secret_sends_new_payload_not_new_payload_base64() -> None:
     """rotateSecretSchema requires `newPayload`. Same defect as create_secret."""
     client, spy = _wire(VaultClient)
     payload = base64.b64encode(b"v2").decode()
@@ -138,7 +143,7 @@ def test_rotate_secret_sends_newPayload_not_newPayloadBase64() -> None:
     assert "newPayloadBase64" not in spy.json
 
 
-def test_tenant_id_is_injected_even_when_the_key_is_present_as_None() -> None:
+def test_tenant_id_is_injected_even_when_the_key_is_present_as_none() -> None:
     """The bug: `"tenantId" not in query` saw the KEY and skipped injection.
 
     kms.list_keys always builds {"tenantId": None, "limit": None, "cursor": None}, so the

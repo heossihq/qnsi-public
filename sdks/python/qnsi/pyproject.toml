@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qnsi"
-version = "0.4.2"
+version = "0.4.3"
 description = "Official Python SDK for the QNSI Quantum-Native Security Infrastructure - post-quantum cryptography (ML-KEM, ML-DSA, SLH-DSA, Falcon via liboqs), PQC-encrypted vault, KMS, and immutable audit trails. Mirrors the @heossihq/qnsi-* TypeScript SDKs."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
 authors = [
-  { name = "HEOSSI (PTE.) LTD." },
+  { name = "HEOSSI (PTE.) LTD" },
 ]
 keywords = [
   "qnsi",
@@ -55,16 +55,14 @@ dependencies = [
 
 [project.optional-dependencies]
 # Local PQC primitives - wraps liboqs via the open-quantum-safe Python binding.
-# `liboqs-python` 0.12.0 expects the liboqs C library to be discoverable on the
-# system. Inside the QNSI monorepo this is satisfied automatically by
-# `tooling/liboqs-src/build/`. End users install via:
+# The binding requires a discoverable shared liboqs C library. Static archives
+# alone do not satisfy this requirement. End users install via:
 #   - macOS:   brew install liboqs   &&  pip install 'qnsi[crypto]'
 #   - Debian:  apt install liboqs-dev && pip install 'qnsi[crypto]'
 #   - Other:   build liboqs from source (see https://github.com/open-quantum-safe/liboqs)
-# A v0.3.x follow-up will ship cibuildwheel-built wheels that bundle a fully
-# self-contained liboqs binary - same model as @heossihq/liboqs-native's prebuilds/.
+# 0.16.0.1 fixes GHSA-pw23-r5gj-42g8 and declares Python >=3.10 support.
 crypto = [
-  "liboqs-python==0.12.0",
+  "liboqs-python==0.16.0.1",
 ]
 dev = [
   "pytest>=8.0",
@@ -78,7 +76,8 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://cloud.qnsi.heossi.com"
+Homepage = "https://qnsi.heossi.com"
+Console = "https://cloud.qnsi.heossi.com"
 Documentation = "https://docs.qnsi.heossi.com/sdk/python"
 Repository = "https://github.com/heossihq/qnsi-public"
 Issues = "https://github.com/heossihq/qnsi-public/issues"

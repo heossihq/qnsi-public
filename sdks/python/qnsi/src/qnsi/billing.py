@@ -14,13 +14,15 @@ class BillingClient(_ServiceClient):
     PATH_PREFIX = "/billing/v1"
 
     def get_entitlements(self) -> dict[str, Any]:
-        return self._request("GET", "/entitlements")
+        tenant_id = self._segment(self._activation.tenant_id)
+        return self._request("GET", f"/entitlements/resolved/{tenant_id}")
 
     def ingest_meter(
         self,
         *,
-        meter_id: str,
-        quantity: float,
+        meter_id: str | None = None,
+        quantity: float | None = None,
+        request: dict[str, Any] | None = None,
         occurred_at: str | None = None,
         metadata: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
@@ -30,7 +32,15 @@ class BillingClient(_ServiceClient):
             body["occurredAt"] = occurred_at
         if metadata is not None:
             body["metadata"] = metadata
-        return self._request("POST", "/meters", json=body, idempotency_key=idempotency_key)
+        body.update(request or {})
+        missing = [
+            field
+            for field in ("source", "meterType", "quantity", "unit", "recordedAt", "security")
+            if body.get(field) is None
+        ]
+        if missing:
+            raise ValueError(f"Required meter request fields are missing: {', '.join(missing)}")
+        return self.ingest_meters([body], idempotency_key=idempotency_key)
 
     def ingest_meters(
         self,
@@ -38,15 +48,19 @@ class BillingClient(_ServiceClient):
         *,
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
+        tenant_id = self._activation.tenant_id
         return self._request(
-            "POST", "/meters/batch", json={"meters": meters}, idempotency_key=idempotency_key
+            "POST",
+            "/meters",
+            json={"meters": [{**meter, "tenantId": tenant_id} for meter in meters]},
+            idempotency_key=idempotency_key,
         )
 
     def list_invoices(self, **query: Any) -> dict[str, Any]:
         return self._request("GET", "/invoices", query=query or None)
 
     def get_invoice(self, invoice_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/invoices/{invoice_id}")
+        return self._request("GET", f"/invoices/{self._segment(invoice_id)}")
 
     def get_credit_balance(self, tenant_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/credits/balance/{tenant_id}")
+        return self._request("GET", f"/credits/balance/{self._segment(tenant_id)}")

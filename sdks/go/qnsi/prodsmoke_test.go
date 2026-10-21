@@ -25,15 +25,14 @@ import (
 //   - vault payload/newPayload (was payloadB64, stripped by the schema → empty secret);
 //   - storage /proxy/storage/v1 (was the double /storage/storage/v1 → 404).
 //
-// Gated on the persistent synthetic-canary free-tenant key (provided via the
-// QNSP_CANARY_KEY env var); skips cleanly when unset so a normal `go test ./...` never hits
-// the network:
+// Requires the persistent synthetic-canary free-tenant key through QNSP_CANARY_KEY.
+// Missing credentials fail closed instead of reporting a skipped production verifier:
 //
-//	QNSP_CANARY_KEY=… go test . -run TestProdSmokeServiceClients -v
+//	QNSP_CANARY_KEY=<redacted> go test . -run TestProdSmokeServiceClients -v
 func TestProdSmokeServiceClients(t *testing.T) {
 	key := os.Getenv("QNSP_CANARY_KEY")
 	if key == "" {
-		t.Skip("QNSP_CANARY_KEY not set - skipping prod smoke")
+		t.Fatal("QNSP_CANARY_KEY is required for the production smoke verifier")
 	}
 	baseURL := os.Getenv("QNSP_E2E_API")
 	if baseURL == "" {

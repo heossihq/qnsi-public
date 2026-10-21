@@ -161,7 +161,7 @@ QNSI publishes one unified SDK per supported language:
 - **Go:** `github.com/heossihq/qnsi-public/sdks/go/qnsi`.
 - **Rust:** `qnsi` 0.3.0 on crates.io.
 - **JVM / Android:** `com.heossi:qnsi` 0.4.0 on Maven Central.
-- **AI tooling:** `@heossihq/qnsi-mcp` 0.2.0 on npm.
+- **AI tooling:** `@heossihq/qnsi-mcp` 0.4.0 on npm.
 
 The original TypeScript per-service packages remain available only for migration compatibility; new integrations should use `@heossihq/qnsi`. Host-agent deployment artifacts are provided through tenant onboarding rather than advertised as a public npm install. See the [SDK overview](/sdk/) for registry links and installation commands.
 
@@ -206,7 +206,7 @@ All enclaves provide hardware-backed isolation and attestation. Available on Ent
 QNSI supports PKCS#11 integration with major HSM vendors:
 - **Thales Luna** - Network HSM and PCIe HSM
 - **Entrust nShield** - Connect and Edge HSMs
-- **AWS CloudHSM** - FIPS 140-2 Level 3 validated
+- **AWS CloudHSM** - FIPS 140-3 Level 3 validated for supported hsm2m.medium deployments
 - **Azure Dedicated HSM** - Thales Luna-based
 
 The certification level depends on your selected HSM and deployment environment. Root keys can be HSM-backed for high-security deployments. HSM integration is configured via environment variables in KMS service.
@@ -256,7 +256,7 @@ SSE ensures the search service never sees plaintext data. Available on Dev Pro t
 QNSI provides tamper-evident audit trails with:
 
 **Event Logging**:
-- 59 crypto-critical event types across 12 services
+- Catalog: 63 crypto-critical event types across 12 services; deployed per-service coverage remains NOT VERIFIED
 - Structured JSON format with requestId/traceId propagation
 - Severity levels: info → critical
 
@@ -409,7 +409,7 @@ HEOSSI has selected three company compliance frameworks:
 - Data Encryption Standards: core cryptographic components verified under ISO/IEC 19790:2025.
 
 These are internal posture statements, not accredited certifications or
-independent conformity assessments. HEOSSI (PTE.) LTD. owns and administers the
+independent conformity assessments. HEOSSI (PTE.) LTD owns and administers the
 programme and is the prospective certificate holder. QNSI is a HEOSSI product
 that may be included within the documented scope; it is not a separate
 certificate holder. ISO/IEC 19790 applies only to specifically identified

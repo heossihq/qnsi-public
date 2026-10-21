@@ -1,7 +1,7 @@
 /**
- * QNSP webhook signature verification + typed event parsing.
+ * QNSI webhook signature verification + typed event parsing.
  *
- * Every QNSP webhook is signed with HMAC-SHA-256 over the raw request
+ * Every QNSI webhook is signed with HMAC-SHA-256 over the raw request
  * body. Always verify the **raw bytes** before parsing JSON.
  */
 

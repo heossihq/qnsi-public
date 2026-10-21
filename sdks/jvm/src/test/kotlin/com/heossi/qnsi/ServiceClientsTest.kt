@@ -8,6 +8,11 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class ServiceClientsTest {
     private lateinit var server: MockWebServer
@@ -35,18 +40,126 @@ class ServiceClientsTest {
     private fun enqueueActivation() = server.enqueue(MockResponse().setBody(activation()))
 
     @Test
+    fun inventorySourceAndExplicitTenantsArePreserved() {
+        enqueueActivation()
+        val inventory = client().cryptoInventory
+        server.enqueue(MockResponse().setBody("""{"runs":[]}"""))
+        inventory.discoverAssetsFromSource("code_repo", "owned-discovery")
+        server.takeRequest()
+        val discovery = server.takeRequest()
+        assertEquals("POST", discovery.method)
+        assertEquals("owned-discovery", discovery.getHeader("idempotency-key"))
+        assertTrue(discovery.body.readUtf8().contains("\"source\":\"code_repo\""))
+        for (tenant in listOf("explicit-tenant", "")) {
+            server.enqueue(MockResponse().setBody("""{"stats":{}}"""))
+            inventory.getAssetStats(tenant)
+            assertEquals(tenant, server.takeRequest().requestUrl!!.queryParameter("tenantId"))
+            server.enqueue(MockResponse().setBody("""{"readiness":{}}"""))
+            inventory.getReadinessScore(tenant)
+            assertEquals(tenant, server.takeRequest().requestUrl!!.queryParameter("tenantId"))
+        }
+    }
+
+    @Test
+    fun dynamicVaultConfigurationWireContract() {
+        enqueueActivation()
+        val vault = client().vault
+        server.enqueue(MockResponse().setBody("""{"engines":[]}"""))
+        vault.listDynamicSecretEngines()
+        server.takeRequest()
+        assertTrue(server.takeRequest().path!!.startsWith("/proxy/vault/v1/dynamic-secrets/engines?"))
+        for (full in listOf(false, true)) {
+            server.enqueue(MockResponse().setResponseCode(201).setBody("""{"id":"owned-config"}"""))
+            vault.createDynamicSecretConfig(DynamicSecretConfigRequest(
+                name = "owned", engineType = "postgresql", connectionRef = "approved-test-reference",
+                secretType = if (full) "database" else null, roleTemplate = if (full) JsonObject(emptyMap()) else null,
+                defaultTtlSeconds = if (full) 60 else null, maxTtlSeconds = if (full) 120 else null,
+                tenantId = if (full) "explicit-tenant" else null,
+            ), "owned-config-idempotency")
+            val request = server.takeRequest()
+            assertEquals("POST", request.method)
+            assertEquals("owned-config-idempotency", request.getHeader("idempotency-key"))
+            val body = Json.parseToJsonElement(request.body.readUtf8()) as JsonObject
+            assertEquals("postgresql", body["engineType"]!!.jsonPrimitive.content)
+            assertEquals("approved-test-reference", body["connectionRef"]!!.jsonPrimitive.content)
+            assertEquals(if (full) "explicit-tenant" else "11111111-1111-1111-1111-111111111111", body["tenantId"]!!.jsonPrimitive.content)
+            assertEquals(full, body.containsKey("defaultTtlSeconds"))
+            assertEquals(full, body.containsKey("roleTemplate"))
+        }
+        for (full in listOf(false, true)) {
+            server.enqueue(MockResponse().setBody("""{"configs":[]}"""))
+            vault.listDynamicSecretConfigs(if (full) "postgresql" else null, if (full) "database" else null)
+            assertEquals(if (full) "postgresql" else null, server.takeRequest().requestUrl!!.queryParameter("engineType"))
+        }
+        server.enqueue(MockResponse().setResponseCode(503).setBody("""{"error":"DYNAMIC_SECRET_STATS_UNAVAILABLE"}"""))
+        assertFailsWith<QnsiApiException> { vault.getDynamicSecretStats() }
+        server.takeRequest()
+    }
+
+    @Test
+    fun dynamicVaultCredentialsRenewalAndQueueAcknowledgements() {
+        enqueueActivation()
+        val vault = client().vault
+        for (full in listOf(false, true)) {
+            server.enqueue(MockResponse().setResponseCode(201).setBody("""{"credentials":{"sessionToken":"owned-test-session"},"leaseId":"owned-lease"}"""))
+            val result = vault.requestCredentials("config/encoded", if (full) 60 else null, if (full) buildJsonObject { put("scope", "owned") } else null, "owned-issue")
+            assertTrue((result["credentials"] as JsonObject).containsKey("sessionToken"))
+            if (!full) server.takeRequest()
+            val request = server.takeRequest()
+            assertTrue(request.path!!.startsWith("/proxy/vault/v1/dynamic-secrets/configs/config%2Fencoded/credentials?"))
+            val body = Json.parseToJsonElement(request.body.readUtf8()) as JsonObject
+            assertEquals(full, body.containsKey("ttlSeconds"))
+            assertEquals(full, body.containsKey("metadata"))
+        }
+        for (include in listOf(null, false, true)) {
+            server.enqueue(MockResponse().setBody("""{"leases":[{"status":"revoking","metadata":null}]}"""))
+            val leases = vault.listLeases("config/encoded", include)
+            assertTrue(leases.containsKey("leases"))
+            assertEquals(include?.toString(), server.takeRequest().requestUrl!!.queryParameter("includeAllStatuses"))
+        }
+        for (ttl in listOf(null, 120)) {
+            server.enqueue(MockResponse().setBody("""{"leaseId":"owned-lease","ttlSeconds":120}"""))
+            vault.renewLease("lease/encoded", ttl)
+            val request = server.takeRequest()
+            assertTrue(request.path!!.startsWith("/proxy/vault/v1/dynamic-secrets/leases/lease%2Fencoded/renew?"))
+            assertEquals(ttl != null, (Json.parseToJsonElement(request.body.readUtf8()) as JsonObject).containsKey("ttlSeconds"))
+        }
+        server.enqueue(MockResponse().setResponseCode(202).setBody("""{"leaseId":"owned-lease","status":"revoking"}"""))
+        assertEquals("revoking", vault.revokeLease("lease/encoded")["status"]!!.jsonPrimitive.content)
+        assertEquals("POST", server.takeRequest().method)
+    }
+
+    @Test
+    fun invalidVaultResourcesFailBeforeActivation() {
+        val vault = client().vault
+        for (id in listOf("", ".", "..")) {
+            val operations = listOf<() -> JsonObject>(
+                { vault.getSecret(id) }, { vault.getSecretVersion(id, 1) },
+                { vault.rotateSecret(id, "Zg==") }, { vault.deleteSecret(id) }, { vault.listSecretVersions(id) },
+                { vault.requestCredentials(id) }, { vault.listLeases(id) }, { vault.renewLease(id) }, { vault.revokeLease(id) },
+            )
+            for (operation in operations) assertFailsWith<IllegalArgumentException> { operation() }
+        }
+        assertFailsWith<IllegalArgumentException> { vault.getSecretVersion("owned-secret", 0) }
+        assertEquals(0, server.requestCount)
+    }
+
+    @Test
     fun kmsCreateKeyPostsToKeysPathWithBody() {
         enqueueActivation()
         server.enqueue(MockResponse().setBody("""{"keyId":"k1","algorithm":"ml-dsa-65"}"""))
 
-        val resp = client().kms.createKey(CreateKeyRequest(algorithm = "ml-dsa-65", purpose = "signing"))
+        val resp = client().kms.createKey(CreateKeyRequest(algorithm = "ml-dsa-65", purpose = "signing", exportable = false, custodyEnforcement = "service"))
 
         assertEquals("k1", resp["keyId"]!!.jsonPrimitive.content)
         server.takeRequest() // activation
         val req = server.takeRequest()
         assertEquals("POST", req.method)
         assertEquals("/proxy/kms/v1/keys?tenantId=11111111-1111-1111-1111-111111111111", req.path)
-        assertTrue(req.body.readUtf8().contains(""""algorithm":"ml-dsa-65""""))
+        val body = req.body.readUtf8()
+        assertTrue(body.contains(""""algorithm":"ml-dsa-65""""))
+        assertTrue(body.contains(""""exportable":false"""))
+        assertTrue(body.contains(""""custodyEnforcement":"service""""))
     }
 
     @Test

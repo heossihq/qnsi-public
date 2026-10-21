@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"strings"
 	"sync"
@@ -99,12 +100,11 @@ func (a *Activator) HTTPClient() *http.Client { return a.httpClient }
 
 func (a *Activator) Get(ctx context.Context) (*ActivationResult, error) {
 	a.cache.mu.Lock()
+	defer a.cache.mu.Unlock()
 	cached := a.cache.cached
 	if cached != nil && time.Until(cached.ExpiresAt) > expiryBuffer {
-		a.cache.mu.Unlock()
 		return cached, nil
 	}
-	a.cache.mu.Unlock()
 	return a.refresh(ctx)
 }
 
@@ -134,17 +134,20 @@ func (a *Activator) refresh(ctx context.Context) (*ActivationResult, error) {
 	req.Header.Set("content-type", "application/json")
 	req.Header.Set("accept", "application/json")
 
-	resp, err := a.httpClient.Do(req)
+	resp, err := doWithoutRedirects(a.httpClient, req)
 	if err != nil {
 		return nil, &NetworkError{Op: http.MethodPost, URL: url, Err: err}
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, &NetworkError{Op: http.MethodPost, URL: url, Err: err}
+	}
 
 	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
 		return nil, ParseAuthError(resp.StatusCode, respBody)
 	}
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= 300 {
 		return nil, ParseAPIError(resp.StatusCode, respBody)
 	}
 
@@ -158,9 +161,7 @@ func (a *Activator) refresh(ctx context.Context) (*ActivationResult, error) {
 		return nil, err
 	}
 
-	a.cache.mu.Lock()
 	a.cache.cached = result
-	a.cache.mu.Unlock()
 	return result, nil
 }
 
@@ -178,15 +179,22 @@ func decodeActivation(raw map[string]any) (*ActivationResult, error) {
 
 	var expires time.Time
 	if expRaw, ok := raw["expiresAt"]; ok {
-		if expStr, ok := expRaw.(string); ok {
-			parsed, err := time.Parse(time.RFC3339, expStr)
-			if err == nil {
-				expires = parsed
-			}
+		expStr, valid := expRaw.(string)
+		parsed, err := time.Parse(time.RFC3339, expStr)
+		if !valid || err != nil || !parsed.After(time.Now()) {
+			return nil, &APIError{StatusCode: 200, Message: "activation response has invalid expiresAt"}
 		}
-	}
-	if expires.IsZero() {
-		expires = time.Now().Add(5 * time.Minute)
+		expires = parsed
+	} else {
+		seconds, valid := raw["expiresInSeconds"].(float64)
+		if !valid || math.IsNaN(seconds) || math.IsInf(seconds, 0) || seconds <= 0 || seconds >= float64(math.MaxInt64)/float64(time.Second) {
+			return nil, &APIError{StatusCode: 200, Message: "activation response has invalid expiresInSeconds"}
+		}
+		lifetime := time.Duration(seconds * float64(time.Second))
+		if lifetime <= 0 {
+			return nil, &APIError{StatusCode: 200, Message: "activation response has invalid expiresInSeconds"}
+		}
+		expires = time.Now().Add(lifetime)
 	}
 
 	return &ActivationResult{

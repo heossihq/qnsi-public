@@ -1,5 +1,5 @@
 /**
- * QNSP AI Orchestrator - model registry, AI workloads with enclave
+ * QNSI AI Orchestrator - model registry, AI workloads with enclave
  * attestation, inference, bias / prompt-injection monitoring. Wraps
  * `apps/ai-orchestrator` (`/ai/v1`).
  */

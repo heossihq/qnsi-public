@@ -41,9 +41,9 @@ For migration work, the SDKs are the application cutover surface. Discovery typi
 | Language | Package | Version | Source | Activation `sdkId` |
 |---|---|---|---|---|
 | TypeScript / Node.js | [`@heossihq/qnsi`](https://www.npmjs.com/package/@heossihq/qnsi) | 0.6.0 | [`packages/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/packages/qnsi) | `qnsi` |
-| Python | [`qnsi`](https://pypi.org/project/qnsi/) | 0.4.2 | [`sdks/python/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi) | `qnsi-python` |
+| Python | [`qnsi`](https://pypi.org/project/qnsi/) | 0.4.3 | [`sdks/python/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/python/qnsi) | `qnsi-python` |
 | Go | `github.com/heossihq/qnsi-public/sdks/go/qnsi` | latest module revision | [`sdks/go/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/go/qnsi) | `qnsi-go` |
-| Rust | [`qnsi`](https://crates.io/crates/qnsi) | 0.3.0 | [`sdks/rust/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/rust/qnsi) | `qnsi-rust` |
+| Rust | [`qnsi`](https://crates.io/crates/qnsi) | 0.3.1 | [`sdks/rust/qnsi/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/rust/qnsi) | `qnsi-rust` |
 | JVM / Android (Kotlin + Java) | [`com.heossi:qnsi`](https://central.sonatype.com/artifact/com.heossi/qnsi) | 0.4.0 | [`sdks/jvm/`](https://github.com/heossihq/qnsi-public/tree/main/sdks/jvm) | `qnsi-jvm` |
 
 Each package exposes the same 11 service modules - vault, kms, audit, auth, tenant, access, billing, crypto-inventory, storage, search, ai - plus webhook signature verification and (where the language supports it) local PQC primitives via the language's liboqs binding.
@@ -73,7 +73,7 @@ The published npm integration tooling is:
 | Package | Version | Description |
 |---------|---------|-------------|
 | `@heossihq/qnsi` | 0.6.0 | Unified Node.js SDK and `qnsi` CLI for automation, source scanning, and CI/CD |
-| `@heossihq/qnsi-mcp` | 0.2.0 | Official MCP server for AI assistants using QNSI tools |
+| `@heossihq/qnsi-mcp` | 0.4.0 | Official MCP server for AI assistants using QNSI tools |
 
 The TypeScript package also exports `@heossihq/qnsi/browser`, `@heossihq/qnsi/langchain`, `@heossihq/qnsi/llamaindex`, `@heossihq/qnsi/autogen`, `@heossihq/qnsi/activation`, and `@heossihq/qnsi/code-scan`. Install `@heossihq/qnsi` once, then import the required subpath; these are not separate packages.
 
@@ -110,7 +110,7 @@ If workloads are still calling the old KMS, old secret store, or old certificate
 
 ## Requirements
 
-- **Node.js**: 24.12.0
+- **Node.js**: 24.18.0
 - **License**: Apache-2.0
 
 ## Features
@@ -264,7 +264,7 @@ All SDKs now support tenant crypto policy integration. This allows services to:
 
 ### Algorithm Name Conversion
 
-All SDKs export the NIST name mapping covering 13 PQC families: ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
+All SDKs export the NIST name mapping covering 14 PQC families: ML-KEM (FIPS 203), HQC, ML-DSA (FIPS 204), SLH-DSA (FIPS 205), FN-DSA (FIPS 206 draft), BIKE, Classic McEliece, FrodoKEM, NTRU, NTRU-Prime, MAYO, CROSS, UOV, and SNOVA.
 
 ```typescript
 import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
@@ -273,7 +273,7 @@ import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"
 const sigName = toNistAlgorithmName("dilithium-3"); // "ML-DSA-65"
 
-// Full mapping covers all 87 PQC algorithms. Representative entries:
+// Full mapping covers all 90 PQC algorithms. Representative entries:
 console.log(ALGORITHM_TO_NIST);
 // {
 //   "kyber-512": "ML-KEM-512",        // FIPS 203
@@ -295,7 +295,7 @@ console.log(ALGORITHM_TO_NIST);
 //   "cross-rsdp-128-balanced": "CROSS-RSDP-128-balanced",
 //   "ov-Is": "UOV-Is",
 //   "snova-24-5-4": "SNOVA-24-5-4",
-//   ... // 87 algorithms total
+//   ... // 90 algorithms total
 // }
 ```
 

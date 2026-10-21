@@ -1,12 +1,10 @@
 """Algorithm name registry - display names ↔ liboqs identifiers.
 
-liboqs-python 0.12.0 accepts the FIPS-canonical names for the standardised
-schemes (`ML-KEM-768`, `ML-DSA-65`) and the legacy names from earlier liboqs
-versions (`Kyber768`, `Dilithium3`). Some round-2 SLH-DSA variants in 0.12.0
-still ship under their internal underscore-uppercase identifier
-(``SLH_DSA_PURE_SHA2_128F``) - this module hides that from callers so they
-can use ``"SLH-DSA-SHA2-128f"`` and the wrapper picks the correct internal
-name automatically.
+liboqs-python 0.16.0.1 accepts the FIPS-canonical names for ML-KEM / ML-DSA and
+loads whatever liboqs C library is available on the host. liboqs 0.16.0 exposes
+SLH-DSA under underscore-uppercase identifiers such as
+``SLH_DSA_PURE_SHA2_128F`` and HQC under ``HQC-1`` / ``HQC-3`` / ``HQC-5``;
+this module hides those runtime names from callers.
 
 Mirrors the TypeScript `packages/cryptography/src/providers/liboqs.ts`
 mapping so the two SDKs accept identical algorithm strings.
@@ -21,7 +19,9 @@ KEM_ALGORITHMS: dict[str, tuple[str, ...]] = {
     "ML-KEM-768": ("ML-KEM-768", "Kyber768"),
     "ML-KEM-1024": ("ML-KEM-1024", "Kyber1024"),
     # NIST round 4 + others (KEMs only)
-    # HQC omitted - disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+    "HQC-128": ("HQC-1", "HQC-128"),
+    "HQC-192": ("HQC-3", "HQC-192"),
+    "HQC-256": ("HQC-5", "HQC-256"),
     "BIKE-L1": ("BIKE-L1",),
     "BIKE-L3": ("BIKE-L3",),
     "BIKE-L5": ("BIKE-L5",),
@@ -41,37 +41,55 @@ SIGNATURE_ALGORITHMS: dict[str, tuple[str, ...]] = {
     "ML-DSA-44": ("ML-DSA-44", "Dilithium2"),
     "ML-DSA-65": ("ML-DSA-65", "Dilithium3"),
     "ML-DSA-87": ("ML-DSA-87", "Dilithium5"),
-    # FIPS 205 - SLH-DSA. liboqs 0.12.0 ships these under the underscore-
-    # uppercase internal identifiers; some FIPS-canonical aliases work too.
+    # FIPS 205 - SLH-DSA. liboqs 0.16.0 ships these under the underscore-
+    # uppercase internal identifiers. Older builds may still expose SPHINCS+.
     "SLH-DSA-SHA2-128f": (
-        "SLH-DSA-SHA2-128f",
         "SLH_DSA_PURE_SHA2_128F",
         "SPHINCS+-SHA2-128f-simple",
     ),
     "SLH-DSA-SHA2-128s": (
-        "SLH-DSA-SHA2-128s",
         "SLH_DSA_PURE_SHA2_128S",
         "SPHINCS+-SHA2-128s-simple",
     ),
     "SLH-DSA-SHA2-192f": (
-        "SLH-DSA-SHA2-192f",
         "SLH_DSA_PURE_SHA2_192F",
         "SPHINCS+-SHA2-192f-simple",
     ),
+    "SLH-DSA-SHA2-192s": (
+        "SLH_DSA_PURE_SHA2_192S",
+        "SPHINCS+-SHA2-192s-simple",
+    ),
     "SLH-DSA-SHA2-256f": (
-        "SLH-DSA-SHA2-256f",
         "SLH_DSA_PURE_SHA2_256F",
         "SPHINCS+-SHA2-256f-simple",
     ),
+    "SLH-DSA-SHA2-256s": (
+        "SLH_DSA_PURE_SHA2_256S",
+        "SPHINCS+-SHA2-256s-simple",
+    ),
     "SLH-DSA-SHAKE-128f": (
-        "SLH-DSA-SHAKE-128f",
         "SLH_DSA_PURE_SHAKE_128F",
         "SPHINCS+-SHAKE-128f-simple",
     ),
+    "SLH-DSA-SHAKE-128s": (
+        "SLH_DSA_PURE_SHAKE_128S",
+        "SPHINCS+-SHAKE-128s-simple",
+    ),
+    "SLH-DSA-SHAKE-192f": (
+        "SLH_DSA_PURE_SHAKE_192F",
+        "SPHINCS+-SHAKE-192f-simple",
+    ),
+    "SLH-DSA-SHAKE-192s": (
+        "SLH_DSA_PURE_SHAKE_192S",
+        "SPHINCS+-SHAKE-192s-simple",
+    ),
     "SLH-DSA-SHAKE-256f": (
-        "SLH-DSA-SHAKE-256f",
         "SLH_DSA_PURE_SHAKE_256F",
         "SPHINCS+-SHAKE-256f-simple",
+    ),
+    "SLH-DSA-SHAKE-256s": (
+        "SLH_DSA_PURE_SHAKE_256S",
+        "SPHINCS+-SHAKE-256s-simple",
     ),
     # Falcon (NIST PQC selection)
     "Falcon-512": ("Falcon-512",),
@@ -106,8 +124,7 @@ def resolve_kem_candidates(algorithm: str) -> tuple[str, ...]:
     candidates = KEM_ALGORITHMS.get(algorithm)
     if not candidates:
         raise ValueError(
-            f"Unknown KEM algorithm '{algorithm}'. Supported: "
-            f"{sorted(SUPPORTED_KEMS)[:5]}…"
+            f"Unknown KEM algorithm '{algorithm}'. Supported: {sorted(SUPPORTED_KEMS)[:5]}…"
         )
     return candidates
 

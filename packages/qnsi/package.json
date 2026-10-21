@@ -1,6 +1,6 @@
 {
 	"name": "@heossihq/qnsi",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -47,14 +47,16 @@
 		"build": "tsc --project tsconfig.build.json",
 		"lint": "biome check .",
 		"test": "vitest run",
-		"typecheck": "tsc --project tsconfig.json --noEmit && tsc --project examples/tsconfig.json --noEmit"
+		"typecheck": "tsc --project tsconfig.json --noEmit && tsc --project examples/tsconfig.json --noEmit",
+		"test:integration:live": "vitest run --config vitest.integration.config.ts",
+		"verify:production": "pnpm test:integration:live"
 	},
 	"dependencies": {
-		"@noble/hashes": "^2.0.1",
-		"@noble/post-quantum": "^0.6.1",
-		"commander": "^14.0.3",
-		"dotenv": "^17.4.0",
-		"zod": "^4.3.6"
+		"@noble/hashes": "^2.4.0",
+		"@noble/post-quantum": "^0.7.1",
+		"commander": "^15.0.0",
+		"dotenv": "^18.0.1",
+		"zod": "^4.6.5"
 	},
 	"peerDependencies": {
 		"@langchain/core": ">=0.3.0",
@@ -70,16 +72,16 @@
 	},
 	"devDependencies": {
 		"@heossihq/qnsi-enforcement-contract": "workspace:*",
-		"@langchain/core": "^0.3.80",
-		"@types/node": "^25.5.2",
-		"typescript": "^6.0.3",
-		"vitest": "4.1.2"
+		"@langchain/core": "^1.2.12",
+		"@types/node": "^26.6.2",
+		"typescript": "^7.0.2",
+		"vitest": "5.0.1"
 	},
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=24.18.0"
 	},
 	"keywords": [
-		"qnsp",
+		"qnsi",
 		"sdk",
 		"post-quantum",
 		"pqc",

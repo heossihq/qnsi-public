@@ -9,6 +9,13 @@ import { join } from "node:path";
 import { clearActivationCache } from "@heossihq/qnsi-sdk-activation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 const TENANT = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 const ID = "11111111-1111-4111-a111-111111111111";
 
@@ -35,6 +42,17 @@ const SECURITY_FULL = {
 	hardwareProvider: "nitro",
 	attestationStatus: "verified",
 	attestationProof: "p".repeat(100),
+	attestationEnvelope: {
+		version: "qnsi.verified-workload-attestation-envelope.v1",
+		status: "verified",
+		proof: "p".repeat(100),
+		signature: "signature",
+		provider: "liboqs",
+		algorithm: "ml-dsa-65",
+		keyId: "launcher-key-2026-08",
+		issuedAt: "2026-08-19T00:00:00.000Z",
+		challengeNonce: "nonce",
+	},
 	pqcSignatures: [{ provider: "liboqs", algorithm: "ml-dsa-65" }],
 };
 
@@ -216,7 +234,9 @@ describe("deploy-model", () => {
 			"spot",
 		);
 		const submit = fetchMock.mock.calls.find(([u]) => String(u).endsWith("/ai/v1/workloads"));
-		const body = JSON.parse(String((submit?.[1] as RequestInit).body)) as {
+		const body = JSON.parse(
+			String((required(submit?.[1], "the workload submit request init") as RequestInit).body),
+		) as {
 			env: Record<string, string>;
 			resources: { cpu: number; gpu: number; acceleratorType: string };
 			command: string[];
@@ -246,7 +266,9 @@ describe("deploy-model", () => {
 			"img",
 		);
 		const submit = fetchMock.mock.calls.find(([u]) => String(u).endsWith("/ai/v1/workloads"));
-		const body = JSON.parse(String((submit?.[1] as RequestInit).body)) as {
+		const body = JSON.parse(
+			String((required(submit?.[1], "the workload submit request init") as RequestInit).body),
+		) as {
 			name: string;
 			resources: { cpu: number; memoryGiB: number; gpu: number; acceleratorType: string };
 			command: string[];
@@ -281,7 +303,9 @@ describe("deploy-model", () => {
 			"nvidia-a10g",
 		);
 		const submit = fetchMock.mock.calls.find(([u]) => String(u).endsWith("/ai/v1/workloads"));
-		const body = JSON.parse(String((submit?.[1] as RequestInit).body)) as {
+		const body = JSON.parse(
+			String((required(submit?.[1], "the workload submit request init") as RequestInit).body),
+		) as {
 			resources: { gpu: number };
 		};
 		expect(body.resources.gpu).toBe(1);
@@ -305,7 +329,8 @@ describe("submit-workload", () => {
 		);
 		await runCli("submit-workload", "--spec", specPath, "--idempotency-key", "from-cli");
 		const submit = fetchMock.mock.calls.find(([u]) => String(u).endsWith("/ai/v1/workloads"));
-		const headers = (submit?.[1] as RequestInit).headers as Headers;
+		const headers = (required(submit?.[1], "the workload submit request init") as RequestInit)
+			.headers as Headers;
 		expect(headers.get("idempotency-key")).toBe("from-cli");
 
 		stdout.length = 0;
@@ -314,26 +339,63 @@ describe("submit-workload", () => {
 		const second = fetchMock.mock.calls
 			.filter(([u]) => String(u).endsWith("/ai/v1/workloads"))
 			.at(-1);
-		expect(((second?.[1] as RequestInit).headers as Headers).get("idempotency-key")).toBe(
-			"from-spec",
-		);
+		expect(
+			(
+				(required(second?.[1], "the second workload submit request init") as RequestInit)
+					.headers as Headers
+			).get("idempotency-key"),
+		).toBe("from-spec");
 	});
 });
 
 describe("status", () => {
-	it("prints the security envelope and writes the attestation proof", async () => {
+	it("preserves proof export and writes complete envelopes separately", async () => {
 		const proofPath = join(dir, "proof.txt");
+		const envelopePath = join(dir, "envelope.json");
 		armGateway(() => jsonResponse({ id: ID, status: "running", security: SECURITY_FULL }));
-		await runCli("status", ID, "--attestation-proof-file", proofPath);
+		await runCli(
+			"status",
+			ID,
+			"--attestation-proof-file",
+			proofPath,
+			"--attestation-envelope-file",
+			envelopePath,
+		);
 		const out = stdout.join("");
 		expect(out).toContain("Security Envelope");
 		expect(out).toContain("nitro");
-		expect(out).toContain("…");
+		expect(out).toContain("Evidence Envelope    : complete");
+		expect(out).toContain("Evidence Provider    : liboqs");
+		expect(out).toContain("Evidence Algorithm   : ml-dsa-65");
+		expect(out).toContain("Evidence Key ID      : launcher-key-2026-08");
 		expect(out).toContain("- liboqs (ml-dsa-65)");
-		expect(readFileSync(proofPath, "utf8")).toBe("p".repeat(100));
+		expect(out).not.toContain(SECURITY_FULL.attestationProof);
+		expect(out).not.toContain(SECURITY_FULL.attestationEnvelope.signature);
+		expect(out).not.toContain(SECURITY_FULL.attestationEnvelope.challengeNonce);
+		expect(readFileSync(proofPath, "utf8")).toBe(SECURITY_FULL.attestationProof);
+		expect(JSON.parse(readFileSync(envelopePath, "utf8"))).toEqual(
+			SECURITY_FULL.attestationEnvelope,
+		);
 	});
 
-	it("reports defaults for a sparse envelope and skips proof writing without one", async () => {
+	it("truncates long legacy proof previews without exposing the full proof", async () => {
+		const proof = "p".repeat(100);
+		armGateway(() =>
+			jsonResponse({
+				id: ID,
+				status: "running",
+				security: { pqcSignatures: [], attestationProof: proof },
+			}),
+		);
+
+		await runCli("status", ID);
+
+		const out = stdout.join("");
+		expect(out).toContain(`Legacy Proof         : ${proof.slice(0, 77)}...`);
+		expect(out).not.toContain(proof);
+	});
+
+	it("reports sparse legacy evidence and skips proof writing without evidence", async () => {
 		const proofPath = join(dir, "missing-proof.txt");
 		armGateway(() =>
 			jsonResponse({
@@ -346,15 +408,38 @@ describe("status", () => {
 		const out = stdout.join("");
 		expect(out).toContain("Control Plane Digest : none");
 		expect(out).toContain("Hardware Provider    : unknown");
+		expect(out).toContain("Evidence Envelope    : not available");
 		expect(out).toContain("PQC Signatures       : none");
-		expect(out).toContain("Attestation Proof    : short");
+		expect(out).toContain("Legacy Proof         : short");
 
 		stdout.length = 0;
 		stderr.length = 0;
 		clearActivationCache();
+		const envelopePath = join(dir, "missing-envelope.json");
 		armGateway(() => jsonResponse({ id: ID, status: "running", security: null }));
-		await runCli("status", ID, "--attestation-proof-file", proofPath);
+		await runCli(
+			"status",
+			ID,
+			"--attestation-proof-file",
+			proofPath,
+			"--attestation-envelope-file",
+			envelopePath,
+		);
 		expect(stderr.join("")).toContain("Attestation proof not available");
+		expect(stderr.join("")).toContain("Complete attestation envelope not available");
+
+		stderr.length = 0;
+		clearActivationCache();
+		armGateway(() => jsonResponse({ id: ID, status: "running", security: SECURITY_FULL }));
+		await runCli(
+			"status",
+			ID,
+			"--attestation-proof-file",
+			proofPath,
+			"--attestation-envelope-file",
+			proofPath,
+		);
+		expect(stderr.join("")).toContain("proof and envelope output paths must be different");
 	});
 });
 
@@ -369,8 +454,12 @@ describe("list and cancel", () => {
 			}),
 		);
 		await runCli("list", "--tenant", TENANT, "--status", "running", "--limit", "5");
-		expect(stdout.join("")).toContain("Security Envelope (w1)");
-		expect(stdout.join("")).not.toContain("(w2)");
+		const out = stdout.join("");
+		expect(out).toContain("Security Envelope (w1)");
+		expect(out).not.toContain("(w2)");
+		expect(out).not.toContain(SECURITY_FULL.attestationProof);
+		expect(out).not.toContain(SECURITY_FULL.attestationEnvelope.signature);
+		expect(out).not.toContain(SECURITY_FULL.attestationEnvelope.challengeNonce);
 	});
 
 	it("cancels with and without a reason", async () => {
@@ -422,6 +511,9 @@ describe("infer", () => {
 		expect(out).toContain('"workloadId"');
 		expect(out).toContain("workload.status");
 		expect(out).toContain(`Security Envelope (${ID})`);
+		expect(out).not.toContain(SECURITY_FULL.attestationProof);
+		expect(out).not.toContain(SECURITY_FULL.attestationEnvelope.signature);
+		expect(out).not.toContain(SECURITY_FULL.attestationEnvelope.challengeNonce);
 	});
 
 	it("reads the payload from --input-file (previously silently ignored)", async () => {
@@ -430,7 +522,9 @@ describe("infer", () => {
 		armGateway(() => jsonResponse({ workloadId: ID, status: "scheduled" }));
 		await runCli("infer", "--tenant", TENANT, "--deployment", ID, "--input-file", payloadPath);
 		const call = fetchMock.mock.calls.find(([u]) => String(u).endsWith("/ai/v1/inference"));
-		const body = JSON.parse(String((call?.[1] as RequestInit).body)) as {
+		const body = JSON.parse(
+			String((required(call?.[1], "the inference request init") as RequestInit).body),
+		) as {
 			input: { prompt: string };
 		};
 		expect(body.input.prompt).toBe("from-file");
@@ -516,7 +610,7 @@ describe("remaining command tails", () => {
 	});
 
 	it("status without a proof file skips proof handling and prints a bare header for missing ids", async () => {
-		armGateway(() => jsonResponse({ status: "running", security: SECURITY_FULL }));
+		armGateway(() => jsonResponse({ status: "running", security: { pqcSignatures: [] } }));
 		await runCli("status", ID);
 		const out = stdout.join("");
 		expect(out).toContain("Security Envelope:\n");

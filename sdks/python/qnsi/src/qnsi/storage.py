@@ -38,14 +38,16 @@ class StorageClient(_ServiceClient):
             body["metadata"] = metadata
         return self._request(
             "PUT",
-            f"/buckets/{bucket}/objects/{key}",
+            f"/buckets/{self._segment(bucket)}/objects/{self._segment(key)}",
             json=body,
             idempotency_key=idempotency_key,
         )
 
     def get_object(self, bucket: str, key: str) -> tuple[bytes, dict[str, Any]]:
         """Return ``(plaintext_bytes, descriptor_json)``."""
-        resp = self._request("GET", f"/buckets/{bucket}/objects/{key}")
+        resp = self._request(
+            "GET", f"/buckets/{self._segment(bucket)}/objects/{self._segment(key)}"
+        )
         data_b64 = resp.get("dataB64")
         if not isinstance(data_b64, str):
             raise QnsiApiError(
@@ -54,13 +56,15 @@ class StorageClient(_ServiceClient):
                 code=None,
                 body=resp,
             )
-        return base64.b64decode(data_b64), resp
+        return base64.b64decode(data_b64, validate=True), resp
 
     def delete_object(self, bucket: str, key: str) -> None:
-        self._request("DELETE", f"/buckets/{bucket}/objects/{key}")
+        self._request("DELETE", f"/buckets/{self._segment(bucket)}/objects/{self._segment(key)}")
 
     def list_objects(self, bucket: str, **query: Any) -> dict[str, Any]:
-        return self._request("GET", f"/buckets/{bucket}/objects", query=query or None)
+        return self._request(
+            "GET", f"/buckets/{self._segment(bucket)}/objects", query=query or None
+        )
 
     def list_buckets(self) -> dict[str, Any]:
         return self._request("GET", "/buckets")

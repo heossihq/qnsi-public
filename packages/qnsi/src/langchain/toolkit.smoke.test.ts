@@ -1,11 +1,11 @@
 /**
- * Smoke tests for @heossihq/qnsi-langchain-qnsp
+ * Smoke tests for former standalone LangChain integration package
  *
  * Verifies that the package exports are importable and classes can be instantiated.
  * No real API key or network access required - `@heossihq/qnsi-sdk-activation` is mocked
  * so the activation handshake resolves immediately. Catches build regressions.
  *
- * Run: pnpm --filter @heossihq/qnsi-langchain-qnsp test
+ * Run: pnpm --filter @heossihq/qnsi exec vitest run src/langchain/toolkit.smoke.test.ts
  */
 
 import { describe, expect, it, vi } from "vitest";

@@ -39,7 +39,7 @@ await storage.completeUpload(upload.uploadId);
 
 ## Requirements
 
-- Node.js >= 24.12.0 (`engines` in `package.json`; QNSI monorepo baseline)
+- Node.js >= 24.18.0 (`engines` in `package.json`; QNSI monorepo baseline)
 - A QNSI account and API key - [sign up free](https://cloud.qnsi.heossi.com/auth) with GitHub, Google, or email
 
 ## License

@@ -6,9 +6,9 @@
 		"composite": true,
 		"tsBuildInfoFile": "tsconfig.tsbuildinfo",
 		"paths": {
-			"@heossihq/qnsi-observability": ["packages/observability/dist/index.d.ts"],
-			"@heossihq/qnsi-*": ["packages/*/src"],
-			"@heossihq/qnsi-app/*": ["apps/*/src"]
+			"@heossihq/qnsi-observability": ["../observability/dist/index.d.ts"],
+			"@heossihq/qnsi-*": ["../*/src"],
+			"@heossihq/qnsi-app/*": ["../../apps/*/src"]
 		}
 	},
 	"include": ["src/**/*.ts"],

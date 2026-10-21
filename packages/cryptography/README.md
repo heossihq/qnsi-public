@@ -47,7 +47,7 @@ v0.2.0 adds a one-shot activation handshake against `https://api.qnsi.heossi.com
 
 That's it. No other code changes.
 
-**If you do not want activation:** the underlying primitives this package wraps are upstream open-source projects that you can use directly - no QNSI signup required. Use [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) for the pure-JS surface, or build [`liboqs`](https://github.com/open-quantum-safe/liboqs) yourself for the full 87-algorithm native surface. `@heossihq/qnsi-cryptography` adds the activation gate, telemetry, attestation receipts, and integration with the rest of the QNSI platform - that is what the API key tracks.
+**If you do not want activation:** the underlying primitives this package wraps are upstream open-source projects that you can use directly - no QNSI signup required. Use [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) for the pure-JS surface, or build [`liboqs`](https://github.com/open-quantum-safe/liboqs) yourself for the full native surface. `@heossihq/qnsi-cryptography` adds the activation gate, telemetry, attestation receipts, and integration with the rest of the QNSI platform - that is what the API key tracks.
 
 ## Providers
 
@@ -58,7 +58,7 @@ one that matches their deployment profile.
 
 The `noble` provider is backed by [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum)
 and ships as a regular `dependency`. It has no native build step, runs on every
-Node.js `>= 22` target, and is always available after `npm install @heossihq/qnsi-cryptography`.
+Node.js `>= 24.18.0` target, and is always available after `npm install @heossihq/qnsi-cryptography`.
 
 ```ts
 import { initializeExternalPqcProvider } from "@heossihq/qnsi-cryptography/providers";
@@ -69,8 +69,8 @@ const { keyPair } = await noble.generateKeyPair({ algorithm: "ml-kem-768" });
 
 ### `liboqs` provider (optional, native, opt-in)
 
-For workloads that require the full 87-algorithm NIST PQC surface (FN-DSA,
-every SLH-DSA variant, Classic McEliece), the `liboqs` provider bridges to a native binding of the
+For workloads that require the full 90-algorithm PQC surface (ML-KEM, HQC,
+FN-DSA, every SLH-DSA variant, Classic McEliece, and the additional liboqs families), the `liboqs` provider bridges to a native binding of the
 [Open Quantum Safe liboqs](https://openquantumsafe.org/) library via the private
 package `@heossihq/liboqs-native`. This native binding is published **only to
 GitHub Packages** (not the public npm registry) and is declared as an

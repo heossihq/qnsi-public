@@ -1,10 +1,10 @@
 /**
- * Smoke tests for @heossihq/qnsi-llamaindex-qnsp
+ * Smoke tests for former standalone LlamaIndex integration package
  *
  * Verifies that the package exports are importable and classes can be instantiated.
  * No API key or network access required - catches build regressions.
  *
- * Run: pnpm --filter @heossihq/qnsi-llamaindex-qnsp test
+ * Run: pnpm --filter @heossihq/qnsi exec vitest run src/llamaindex/vector-store.smoke.test.ts
  */
 
 import { describe, expect, it } from "vitest";

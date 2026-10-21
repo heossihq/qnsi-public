@@ -1,9 +1,10 @@
-// Package vault is the QNSP Vault client - PQC-encrypted secret storage
+// Package vault is the QNSI Vault client - PQC-encrypted secret storage
 // with versioning, rotation, and deletion.
 package vault
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,7 +14,7 @@ import (
 
 const pathPrefix = "/proxy/vault/v1"
 
-// Client is the QNSP vault client.
+// Client is the QNSI vault client.
 type Client struct {
 	base *qnsicore.ServiceClient
 }
@@ -52,28 +53,51 @@ func (c *Client) CreateSecret(ctx context.Context, req CreateSecretRequest, idem
 }
 
 func (c *Client) GetSecret(ctx context.Context, secretID string) (map[string]any, error) {
-	return c.base.Do(ctx, http.MethodGet, "/secrets/"+secretID, nil, nil, "")
+	segment, err := dynamicPathSegment(secretID)
+	if err != nil {
+		return nil, err
+	}
+	return c.base.Do(ctx, http.MethodGet, "/secrets/"+segment, nil, nil, "")
 }
 
 func (c *Client) GetSecretVersion(ctx context.Context, secretID string, version int) (map[string]any, error) {
-	return c.base.Do(ctx, http.MethodGet, "/secrets/"+secretID+"/versions/"+strconv.Itoa(version), nil, nil, "")
+	segment, err := dynamicPathSegment(secretID)
+	if err != nil {
+		return nil, err
+	}
+	if version < 1 {
+		return nil, errors.New("qnsi: secret version must be positive")
+	}
+	return c.base.Do(ctx, http.MethodGet, "/secrets/"+segment+"/versions/"+strconv.Itoa(version), nil, nil, "")
 }
 
 func (c *Client) RotateSecret(ctx context.Context, secretID string, payloadB64, algorithm string, idempotencyKey string) (map[string]any, error) {
+	segment, err := dynamicPathSegment(secretID)
+	if err != nil {
+		return nil, err
+	}
 	// Wire contract: rotateSecretSchema = { tenantId(auto), newPayload?, metadata?, rotationPolicy? }.
 	// Map payloadB64 -> newPayload; fold algorithm into metadata.
 	body := map[string]any{"newPayload": payloadB64}
 	if algorithm != "" {
 		body["metadata"] = map[string]any{"algorithm": algorithm}
 	}
-	return c.base.Do(ctx, http.MethodPost, "/secrets/"+secretID+"/rotate", body, nil, idempotencyKey)
+	return c.base.Do(ctx, http.MethodPost, "/secrets/"+segment+"/rotate", body, nil, idempotencyKey)
 }
 
 func (c *Client) DeleteSecret(ctx context.Context, secretID string) error {
-	_, err := c.base.Do(ctx, http.MethodDelete, "/secrets/"+secretID, nil, nil, "")
+	segment, err := dynamicPathSegment(secretID)
+	if err != nil {
+		return err
+	}
+	_, err = c.base.Do(ctx, http.MethodDelete, "/secrets/"+segment, nil, nil, "")
 	return err
 }
 
 func (c *Client) ListSecretVersions(ctx context.Context, secretID string) (map[string]any, error) {
-	return c.base.Do(ctx, http.MethodGet, "/secrets/"+secretID+"/versions", nil, nil, "")
+	segment, err := dynamicPathSegment(secretID)
+	if err != nil {
+		return nil, err
+	}
+	return c.base.Do(ctx, http.MethodGet, "/secrets/"+segment+"/versions", nil, nil, "")
 }

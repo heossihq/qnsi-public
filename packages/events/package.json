@@ -3,15 +3,15 @@
 	"version": "0.1.4",
 	"license": "Apache-2.0",
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=24.18.0"
 	},
 	"publishConfig": {
 		"access": "public"
 	},
 	"type": "module",
-	"description": "Event envelope schemas and cloud-native messaging contracts for the QNSP post-quantum security platform. Get a free API key at cloud.qnsi.heossi.com.",
+	"description": "Event envelope schemas and cloud-native messaging contracts for the QNSI quantum-native security infrastructure. Get a free API key at cloud.qnsi.heossi.com.",
 	"keywords": [
-		"qnsp",
+		"qnsi",
 		"pqc",
 		"post-quantum",
 		"post-quantum-cryptography",
@@ -56,13 +56,13 @@
 		"typecheck": "tsc --project tsconfig.json --noEmit"
 	},
 	"dependencies": {
-		"@opentelemetry/api": "^1.9.1",
 		"@heossihq/qnsi-observability": "workspace:*",
-		"zod": "^4.3.6"
+		"@opentelemetry/api": "^1.9.1",
+		"zod": "^4.6.5"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2",
-		"vitest": "4.1.2"
+		"@types/node": "^26.6.2",
+		"vitest": "5.0.1"
 	},
 	"private": true
 }

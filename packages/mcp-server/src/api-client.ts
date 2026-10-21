@@ -1,7 +1,7 @@
 /**
- * QNSP API Client
+ * QNSI API Client
  *
- * Thin HTTP client for calling QNSP platform APIs through the edge gateway.
+ * Thin HTTP client for calling QNSI platform APIs through the edge gateway.
  * All requests include the API key as Bearer token and tenant ID header.
  * The edge gateway handles entitlement enforcement, quota checks, and PQC signing.
  */
@@ -21,6 +21,11 @@ export interface ApiResponse<T = unknown> {
 	readonly data: T;
 }
 
+export interface ApiRequestOptions {
+	readonly query?: Readonly<Record<string, string | number | boolean | undefined>>;
+	readonly idempotencyKey?: string;
+}
+
 export class ApiClient {
 	private readonly baseUrl: string;
 	private readonly apiKey: string;
@@ -34,24 +39,52 @@ export class ApiClient {
 		this.timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 	}
 
-	async get<T = unknown>(path: string): Promise<ApiResponse<T>> {
-		return this.request<T>("GET", path);
+	async get<T = unknown>(path: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
+		return this.request<T>("GET", path, undefined, options);
 	}
 
-	async post<T = unknown>(path: string, body?: unknown): Promise<ApiResponse<T>> {
-		return this.request<T>("POST", path, body);
+	async post<T = unknown>(
+		path: string,
+		body?: unknown,
+		options?: ApiRequestOptions,
+	): Promise<ApiResponse<T>> {
+		return this.request<T>("POST", path, body, options);
 	}
 
-	async patch<T = unknown>(path: string, body?: unknown): Promise<ApiResponse<T>> {
-		return this.request<T>("PATCH", path, body);
+	async put<T = unknown>(
+		path: string,
+		body?: unknown,
+		options?: ApiRequestOptions,
+	): Promise<ApiResponse<T>> {
+		return this.request<T>("PUT", path, body, options);
 	}
 
-	async del<T = unknown>(path: string): Promise<ApiResponse<T>> {
-		return this.request<T>("DELETE", path);
+	async patch<T = unknown>(
+		path: string,
+		body?: unknown,
+		options?: ApiRequestOptions,
+	): Promise<ApiResponse<T>> {
+		return this.request<T>("PATCH", path, body, options);
 	}
 
-	private async request<T>(method: string, path: string, body?: unknown): Promise<ApiResponse<T>> {
-		const url = `${this.baseUrl}${path}`;
+	async del<T = unknown>(
+		path: string,
+		body?: unknown,
+		options?: ApiRequestOptions,
+	): Promise<ApiResponse<T>> {
+		return this.request<T>("DELETE", path, body, options);
+	}
+
+	private async request<T>(
+		method: string,
+		path: string,
+		body?: unknown,
+		options?: ApiRequestOptions,
+	): Promise<ApiResponse<T>> {
+		const url = new URL(`${this.baseUrl}${path}`);
+		for (const [name, value] of Object.entries(options?.query ?? {})) {
+			if (value !== undefined) url.searchParams.set(name, String(value));
+		}
 		const headers: Record<string, string> = {
 			authorization: `Bearer ${this.apiKey}`,
 			"x-qnsp-tenant": this.tenantId,
@@ -60,9 +93,11 @@ export class ApiClient {
 			"content-type": "application/json",
 			"user-agent": "qnsi-mcp-server/0.2.0",
 		};
+		if (options?.idempotencyKey) headers["idempotency-key"] = options.idempotencyKey;
 
-		const response = await fetch(url, {
+		const response = await fetch(url.toString(), {
 			method,
+			redirect: "error",
 			headers,
 			...(body !== undefined ? { body: JSON.stringify(body) } : {}),
 			signal: AbortSignal.timeout(this.timeoutMs),
@@ -81,20 +116,20 @@ export class ApiClient {
 				typeof data === "object" && data !== null && "message" in data
 					? String((data as Record<string, unknown>)["message"])
 					: `HTTP ${response.status}`;
-			throw new QnspApiError(msg, response.status, data);
+			throw new QnsiApiError(msg, response.status, data);
 		}
 
 		return { ok: true, status: response.status, data };
 	}
 }
 
-export class QnspApiError extends Error {
+export class QnsiApiError extends Error {
 	readonly statusCode: number;
 	readonly body: unknown;
 
 	constructor(message: string, statusCode: number, body: unknown) {
 		super(message);
-		this.name = "QnspApiError";
+		this.name = "QnsiApiError";
 		this.statusCode = statusCode;
 		this.body = body;
 	}

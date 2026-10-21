@@ -54,6 +54,27 @@ export const javascriptRules: readonly CryptoDetectionRule[] = [
 		library: "node:crypto",
 	},
 	{
+		id: "js-node-crypto-generate-keypair-pqc",
+		languages: LANGS,
+		pattern: /generateKeyPair(?:Sync)?\s*\(\s*["'`](ml[-_]dsa[-_](?:44|65|87))["'`]/i,
+		algorithm: (match) => (match[1] ?? "").toLowerCase().replace(/_/g, "-"),
+		category: "asymmetric",
+		classification: "pqc",
+		confidence: "high",
+		library: "node:crypto",
+	},
+	{
+		id: "js-node-crypto-encapsulate-pqc",
+		languages: LANGS,
+		pattern:
+			/(?:encapsulate|decapsulate)(?:Sync)?\s*\(\s*["'`](ml[-_]kem[-_](?:512|768|1024))["'`]/i,
+		algorithm: (match) => (match[1] ?? "").toLowerCase().replace(/_/g, "-"),
+		category: "asymmetric",
+		classification: "pqc",
+		confidence: "high",
+		library: "node:crypto",
+	},
+	{
 		id: "js-node-crypto-weak-hash",
 		languages: LANGS,
 		pattern: /createHash\s*\(\s*["'`](md5|sha1)["'`]/i,

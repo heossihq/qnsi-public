@@ -149,6 +149,12 @@ export interface TopQueriesResponse {
  * Synonym Management Types
  */
 
+export type SynonymSerializationFormat = "csv" | "json" | "solr";
+
+/**
+ * Stable SDK synonym representation. The client maps the service's `terms` and
+ * `enabled` fields to the published `synonyms` and `isExpanded` fields.
+ */
 export interface SynonymGroup {
 	readonly id: string;
 	readonly tenantId: string;
@@ -182,6 +188,7 @@ export interface ListSynonymGroupsRequest {
 	readonly tenantId: string;
 	readonly language?: string;
 	readonly limit?: number;
+	/** Nonnegative decimal offset encoded as a cursor. */
 	readonly cursor?: string;
 }
 
@@ -204,7 +211,8 @@ export interface ExpandTermResponse {
 
 export interface ImportSynonymsRequest {
 	readonly tenantId: string;
-	readonly format: "csv" | "json" | "solr";
+	readonly format: SynonymSerializationFormat;
+	/** JSON imports contain a nonempty array of mounted service group objects. */
 	readonly data: string;
 	readonly replaceExisting?: boolean;
 	readonly language?: string;
@@ -218,79 +226,125 @@ export interface ImportSynonymsResponse {
 
 export interface ExportSynonymsRequest {
 	readonly tenantId: string;
-	readonly format: "csv" | "json" | "solr";
+	readonly format: SynonymSerializationFormat;
 	readonly language?: string;
 }
 
 export interface ExportSynonymsResponse {
 	readonly data: string;
 	readonly count: number;
-	readonly format: "csv" | "json" | "solr";
+	readonly format: SynonymSerializationFormat;
 }
 
 /**
  * Index Health Types
  */
 
-export type IndexHealthStatus = "healthy" | "degraded" | "unhealthy" | "unknown";
-export type HealthAlertSeverity = "info" | "warning" | "critical";
+export type IndexHealthStatus = "unknown";
+export type ReportedIndexAssessment = "healthy" | "degraded" | "unhealthy";
+export type HealthAlertSeverity = "critical" | "high" | "medium" | "low" | "info";
 export type HealthAlertStatus = "active" | "acknowledged" | "resolved";
+export type IndexAlertType =
+	| "high_fragmentation"
+	| "slow_query"
+	| "index_lag"
+	| "size_threshold"
+	| "error_rate"
+	| "replication_lag"
+	| "memory_pressure"
+	| "disk_usage"
+	| "custom";
 
 export interface IndexHealthSnapshot {
+	readonly id: string;
 	readonly tenantId: string;
-	readonly timestamp: string;
-	readonly status: IndexHealthStatus;
-	readonly metrics: {
-		readonly documentCount: number;
-		readonly indexSizeBytes: number;
-		readonly avgQueryLatencyMs: number;
-		readonly queryThroughput: number;
-		readonly indexingThroughput: number;
-		readonly segmentCount: number;
-		readonly deletedDocumentCount: number;
-		readonly fragmentationPercent: number;
-	};
-	readonly shards: readonly {
-		readonly shardId: string;
-		readonly status: IndexHealthStatus;
-		readonly documentCount: number;
-		readonly sizeBytes: number;
-		readonly primary: boolean;
-	}[];
+	readonly indexId: string;
+	readonly indexName: string;
+	readonly healthStatus: "unknown";
+	readonly actualHealthStatus: "unknown";
+	readonly reportedAssessment: ReportedIndexAssessment;
+	readonly verificationStatus: "unverified";
+	readonly measurementSource: "client_reported";
+	readonly totalDocuments: number | null;
+	readonly totalDocumentsExact: string;
+	readonly totalSizeBytes: number | null;
+	readonly totalSizeBytesExact: string;
+	readonly indexSizeBytes: number | null;
+	readonly indexSizeBytesExact: string;
+	readonly fragmentationPercent: number;
+	readonly avgDocumentSizeBytes: number | null;
+	readonly lastIndexedAt: string | null;
+	readonly lastOptimizedAt: string | null;
+	readonly searchLatencyP50Ms: number | null;
+	readonly searchLatencyP95Ms: number | null;
+	readonly searchLatencyP99Ms: number | null;
+	readonly indexLatencyP50Ms: number | null;
+	readonly indexLatencyP95Ms: number | null;
+	readonly errorRate: number | null;
+	readonly metadata: Readonly<Record<string, unknown>>;
+	readonly collectedAt: string;
 }
 
 export interface RecordHealthSnapshotRequest {
 	readonly tenantId: string;
-	readonly metrics: {
-		readonly documentCount: number;
-		readonly indexSizeBytes: number;
-		readonly avgQueryLatencyMs: number;
-		readonly queryThroughput?: number;
-		readonly indexingThroughput?: number;
-		readonly segmentCount?: number;
-		readonly deletedDocumentCount?: number;
-		readonly fragmentationPercent?: number;
-	};
+	readonly indexId: string;
+	readonly indexName: string;
+	readonly totalDocuments: number | string;
+	readonly totalSizeBytes: number | string;
+	readonly indexSizeBytes: number | string;
+	readonly fragmentationPercent: number;
+	readonly avgDocumentSizeBytes?: number | null;
+	readonly lastIndexedAt?: string | null;
+	readonly lastOptimizedAt?: string | null;
+	readonly searchLatencyP50Ms?: number | null;
+	readonly searchLatencyP95Ms?: number | null;
+	readonly searchLatencyP99Ms?: number | null;
+	readonly indexLatencyP50Ms?: number | null;
+	readonly indexLatencyP95Ms?: number | null;
+	readonly errorRate?: number | null;
+	readonly metadata?: Readonly<Record<string, unknown>>;
 }
 
 export interface GetIndexHealthRequest {
 	readonly tenantId: string;
 }
 
+export interface CurrentIndexHealth {
+	readonly tenantId: string;
+	readonly overallStatus: "unknown";
+	readonly actualHealthStatus: "unknown";
+	readonly verificationStatus: "unverified";
+	readonly summary: {
+		readonly totalIndices: number;
+		readonly actualHealthStatus: "unknown";
+		readonly reportedAssessmentCounts: Readonly<Record<ReportedIndexAssessment, number>>;
+		readonly activeReportedAlerts: number;
+	};
+	readonly indices: readonly IndexHealthSnapshot[];
+	readonly alerts: readonly HealthAlert[];
+}
+
 export interface HealthAlert {
 	readonly id: string;
 	readonly tenantId: string;
+	readonly indexId: string | null;
+	readonly indexName: string;
+	readonly alertType: IndexAlertType;
 	readonly severity: HealthAlertSeverity;
 	readonly status: HealthAlertStatus;
-	readonly title: string;
-	readonly description: string;
-	readonly metric?: string;
-	readonly threshold?: number;
-	readonly currentValue?: number;
-	readonly createdAt: string;
-	readonly acknowledgedAt?: string;
-	readonly acknowledgedBy?: string;
-	readonly resolvedAt?: string;
+	readonly message: string;
+	readonly thresholdValue: number | null;
+	readonly currentValue: number | null;
+	readonly metadata: Readonly<Record<string, unknown>>;
+	readonly reportingSource: "client_reported";
+	readonly verificationStatus: "unverified";
+	readonly triggeredAt: string;
+	readonly acknowledgedAt: string | null;
+	readonly acknowledgedBy: string | null;
+	readonly acknowledgedNotes: string | null;
+	readonly resolvedAt: string | null;
+	readonly resolvedBy: string | null;
+	readonly resolutionNotes: string | null;
 }
 
 export interface ListHealthAlertsRequest {
@@ -308,31 +362,54 @@ export interface ListHealthAlertsResponse {
 
 export interface AcknowledgeAlertRequest {
 	readonly alertId: string;
-	readonly acknowledgedBy: string;
-	readonly note?: string;
+	readonly tenantId: string;
+	readonly notes?: string;
 }
+
+export type MaintenanceType =
+	| "optimize"
+	| "reindex"
+	| "vacuum"
+	| "compact"
+	| "analyze"
+	| "backup"
+	| "restore";
+export type MaintenanceScheduleStatus =
+	| "scheduled"
+	| "overdue"
+	| "cancelled"
+	| "recorded_in_progress"
+	| "recorded_completed";
 
 export interface MaintenanceWindow {
 	readonly id: string;
 	readonly tenantId: string;
-	readonly name: string;
-	readonly description?: string;
-	readonly startsAt: string;
-	readonly endsAt: string;
-	readonly suppressAlerts: boolean;
-	readonly operations: readonly string[];
+	readonly indexId: string | null;
+	readonly indexName: string | null;
+	readonly maintenanceType: MaintenanceType;
+	readonly scheduledAt: string;
+	readonly estimatedDurationMinutes: number | null;
+	readonly scheduleStatus: MaintenanceScheduleStatus;
+	readonly executionStatus: "unavailable" | "unverified_record";
+	readonly executionStatusReason: string;
+	readonly recordedStartedAt: string | null;
+	readonly recordedCompletedAt: string | null;
+	readonly metadata: Readonly<Record<string, unknown>>;
 	readonly createdAt: string;
-	readonly createdBy: string;
+	readonly createdBy: string | null;
+	readonly cancelledAt: string | null;
+	readonly cancelledBy: string | null;
+	readonly observedAt: string;
 }
 
 export interface CreateMaintenanceWindowRequest {
 	readonly tenantId: string;
-	readonly name: string;
-	readonly description?: string;
-	readonly startsAt: string;
-	readonly endsAt: string;
-	readonly suppressAlerts?: boolean;
-	readonly operations?: readonly string[];
+	readonly indexId: string;
+	readonly indexName: string;
+	readonly maintenanceType: MaintenanceType;
+	readonly scheduledAt: string;
+	readonly estimatedDurationMinutes?: number;
+	readonly metadata?: Readonly<Record<string, unknown>>;
 }
 
 /**

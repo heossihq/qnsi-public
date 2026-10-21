@@ -56,16 +56,28 @@ Configure rotation schedule:
 
 ## Re-encryption
 
-After rotation, existing ciphertext can be re-encrypted:
+After rotation, existing ciphertext can be wrapped under the active key version:
+
 ```
-POST /kms/v1/reencrypt
+POST /kms/v1/keys/{keyId}/wrap
 {
-  "keyId": "key-uuid",
-  "ciphertext": "old-ciphertext"
+  "tenantId": "<tenant-uuid>",
+  "dataKey": "<base64-data-key>",
+  "associatedData": "<optional-base64-aad>"
 }
 ```
 
-Returns ciphertext encrypted with current version.
+Returns `{ keyId, wrappedKey, algorithm, provider }` with the ciphertext
+encrypted under the current key version. To migrate a key to the tenant's PQC
+default algorithm, use the upgrade endpoint:
+
+```
+POST /kms/v1/keys/{keyId}/upgrade
+{
+  "tenantId": "<tenant-uuid>",
+  "reason": "pqc-migration"
+}
+```
 
 ## Rotation audit
 

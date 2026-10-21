@@ -49,6 +49,8 @@ class KmsClient(_ServiceClient):
         tenant_id: str | None = None,
         metadata: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
+        exportable: bool | None = None,
+        custody_enforcement: str | None = None,
     ) -> dict[str, Any]:
         """Create a new tenant-scoped key.
 
@@ -81,6 +83,10 @@ class KmsClient(_ServiceClient):
             body["tenantId"] = tenant_id
         if merged_metadata:
             body["metadata"] = merged_metadata
+        if exportable is not None:
+            body["exportable"] = exportable
+        if custody_enforcement is not None:
+            body["custodyEnforcement"] = custody_enforcement
         return self._request("POST", "/keys", json=body, idempotency_key=idempotency_key)
 
     def list_keys(
@@ -97,9 +103,7 @@ class KmsClient(_ServiceClient):
         )
 
     def get_key(self, key_id: str, *, tenant_id: str | None = None) -> dict[str, Any]:
-        return self._request(
-            "GET", f"/keys/{key_id}", query={"tenantId": tenant_id}
-        )
+        return self._request("GET", f"/keys/{self._segment(key_id)}", query={"tenantId": tenant_id})
 
     def rotate_key(
         self,
@@ -108,11 +112,11 @@ class KmsClient(_ServiceClient):
         idempotency_key: str | None = None,
     ) -> dict[str, Any]:
         return self._request(
-            "POST", f"/keys/{key_id}/rotate", idempotency_key=idempotency_key
+            "POST", f"/keys/{self._segment(key_id)}/rotate", idempotency_key=idempotency_key
         )
 
     def delete_key(self, key_id: str, *, tenant_id: str) -> None:
-        self._request("DELETE", f"/keys/{key_id}", query={"tenantId": tenant_id})
+        self._request("DELETE", f"/keys/{self._segment(key_id)}", query={"tenantId": tenant_id})
 
     # ── crypto operations ────────────────────────────────────────────────
 
@@ -134,14 +138,14 @@ class KmsClient(_ServiceClient):
         body = {"data": base64.b64encode(bytes(data)).decode()}
         result = self._request(
             "POST",
-            f"/keys/{key_id}/sign",
+            f"/keys/{self._segment(key_id)}/sign",
             json=body,
             idempotency_key=idempotency_key,
         )
         sig_b64 = result.get("signature")
         if not isinstance(sig_b64, str):
             raise ValueError("KMS sign response missing 'signature'")
-        return base64.b64decode(sig_b64)
+        return base64.b64decode(sig_b64, validate=True)
 
     def verify(self, key_id: str, data: bytes, signature: bytes) -> bool:
         """Verify ``signature`` over ``data`` against the named server-side key."""
@@ -155,8 +159,11 @@ class KmsClient(_ServiceClient):
             "data": base64.b64encode(bytes(data)).decode(),
             "signature": base64.b64encode(bytes(signature)).decode(),
         }
-        result = self._request("POST", f"/keys/{key_id}/verify", json=body)
-        return bool(result.get("valid", False))
+        result = self._request("POST", f"/keys/{self._segment(key_id)}/verify", json=body)
+        valid = result.get("valid")
+        if not isinstance(valid, bool):
+            raise ValueError("KMS verify response missing boolean 'valid'")
+        return valid
 
     def wrap(self, key_id: str, plaintext: bytes) -> bytes:
         """Wrap (encrypt) plaintext using the named server-side key.
@@ -169,11 +176,11 @@ class KmsClient(_ServiceClient):
         # Wire contract: wrapKeySchema = { tenantId, dataKey(base64), associatedData? };
         # response { keyId, wrappedKey(base64), algorithm, provider }.
         body = {"dataKey": base64.b64encode(bytes(plaintext)).decode()}
-        result = self._request("POST", f"/keys/{key_id}/wrap", json=body)
+        result = self._request("POST", f"/keys/{self._segment(key_id)}/wrap", json=body)
         wrapped_b64 = result.get("wrappedKey") or result.get("ciphertextB64")
         if not isinstance(wrapped_b64, str):
             raise ValueError("KMS wrap response missing 'wrappedKey'")
-        return base64.b64decode(wrapped_b64)
+        return base64.b64decode(wrapped_b64, validate=True)
 
     def unwrap(self, key_id: str, wrapped: bytes) -> bytes:
         """Unwrap a previously-wrapped blob to recover the plaintext."""
@@ -182,8 +189,8 @@ class KmsClient(_ServiceClient):
         # Wire contract: unwrapKeySchema = { tenantId, wrappedKey(base64),
         # associatedData?, providerHint? }; response { dataKey(base64) }.
         body = {"wrappedKey": base64.b64encode(bytes(wrapped)).decode()}
-        result = self._request("POST", f"/keys/{key_id}/unwrap", json=body)
+        result = self._request("POST", f"/keys/{self._segment(key_id)}/unwrap", json=body)
         plain_b64 = result.get("dataKey") or result.get("plaintextB64")
         if not isinstance(plain_b64, str):
             raise ValueError("KMS unwrap response missing 'dataKey'")
-        return base64.b64decode(plain_b64)
+        return base64.b64decode(plain_b64, validate=True)

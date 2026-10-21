@@ -60,9 +60,9 @@ services:
       - qnsi-net
 
   clamav:
-    image: clamav/clamav:1.5.1
+    # Multi-arch official ClamAV image (amd64 + arm64), matching the Graviton fleet.
+    image: clamav/clamav-debian:1.5
     container_name: qnsi-clamav
-    platform: linux/amd64
     restart: unless-stopped
     ports:
       - "3310:3310"

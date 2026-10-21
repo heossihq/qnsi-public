@@ -1,18 +1,24 @@
 /**
- * Integration tests for @heossihq/qnsi-llamaindex-qnsp
+ * Live integration tests for the @heossihq/qnsi/llamaindex subpath.
  *
- * These tests hit the real QNSP search-service API via edge gateway.
+ * These tests hit the real QNSI search-service API via edge gateway.
  * Requires QNSI_API_KEY env var - the API key resolves tenant, tier, and policy automatically.
  *
- * Run: QNSI_API_KEY=qnsp_... pnpm --filter @heossihq/qnsi-llamaindex-qnsp test:integration
+ * Run: QNSI_API_KEY=... pnpm --filter @heossihq/qnsi test:integration:live
  */
 
 import { describe, expect, it } from "vitest";
 import { QnsiVectorStore } from "./vector-store.js";
 
-const QNSI_API_KEY = process.env["QNSI_API_KEY"];
+const QNSI_API_KEY = process.env["QNSI_API_KEY"]?.trim();
 
-describe.skipIf(!QNSI_API_KEY)("QnsiVectorStore integration", () => {
+if (!QNSI_API_KEY) {
+	throw new Error(
+		"QNSI live integration requires QNSI_API_KEY. Set it before running: pnpm --filter @heossihq/qnsi test:integration:live",
+	);
+}
+
+describe("QnsiVectorStore integration", () => {
 	it("instantiates with only an API key", () => {
 		const store = new QnsiVectorStore({ apiKey: QNSI_API_KEY! });
 		expect(store).toBeDefined();
@@ -39,7 +45,7 @@ describe.skipIf(!QNSI_API_KEY)("QnsiVectorStore integration", () => {
 	it("add indexes a document or surfaces a service error", async () => {
 		const store = new QnsiVectorStore({ apiKey: QNSI_API_KEY! });
 		const uniqueId = `integration-test-${Date.now()}`;
-		const uniqueText = `QNSP integration test document ${uniqueId} post-quantum cryptography`;
+		const uniqueText = `QNSI integration test document ${uniqueId} post-quantum cryptography`;
 
 		try {
 			const ids = await store.add([{ id_: uniqueId, text: uniqueText, metadata: { test: true } }]);

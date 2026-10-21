@@ -172,7 +172,7 @@ describe("@heossihq/qnsi-browser", () => {
 				await initializePqcProvider({ apiKey: "test-key" });
 				const keyPair = await generateEncryptionKeyPair(algorithm);
 
-				const plaintext = new TextEncoder().encode("QNSP browser-side PQC encryption test");
+				const plaintext = new TextEncoder().encode("QNSI browser-side PQC encryption test");
 
 				const envelope = await encryptBeforeUpload(plaintext, keyPair.publicKey, algorithm);
 				expect(envelope.algorithm).toBe(algorithm);
@@ -276,7 +276,7 @@ describe("@heossihq/qnsi-browser", () => {
 		it("ML-DSA sign → verify round-trip", async () => {
 			await initializePqcProvider({ apiKey: "test-key" });
 			const keyPair = await generateSigningKeyPair("dilithium-3");
-			const data = new TextEncoder().encode("QNSP document integrity verification");
+			const data = new TextEncoder().encode("QNSI document integrity verification");
 
 			const envelope = await signData(data, keyPair.privateKey, "dilithium-3");
 			expect(envelope.algorithm).toBe("dilithium-3");

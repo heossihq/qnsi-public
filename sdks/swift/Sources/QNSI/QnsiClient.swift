@@ -56,6 +56,7 @@ public final class QnsiClient: Sendable {
 
     /// AI workload orchestration, inference, model registry (ai-orchestrator).
     public let ai: AiClient
+    public let surface: SurfaceClient
 
     /// Create a client. Throws `QnsiError.auth` when the API key is blank.
     public init(
@@ -70,7 +71,7 @@ public final class QnsiClient: Sendable {
                 code: "MISSING_API_KEY"
             )
         }
-        let transport = Transport(
+        let transport = try Transport(
             apiKey: apiKey, baseUrl: baseUrl, timeout: timeout, configuration: sessionConfiguration
         )
         self.transport = transport
@@ -85,6 +86,7 @@ public final class QnsiClient: Sendable {
         storage = StorageClient(transport: transport)
         search = SearchClient(transport: transport)
         ai = AiClient(transport: transport)
+        surface = SurfaceClient(transport: transport)
     }
 
     /// Force the activation handshake now; surfaces an invalid API key eagerly.

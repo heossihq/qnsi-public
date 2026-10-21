@@ -102,6 +102,8 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/access/v1/capabilities` |  |
 | POST | `/access/v1/capabilities/:tokenId/revoke` |  |
 | POST | `/access/v1/capabilities/introspect` |  |
+| GET | `/access/v1/capabilities/revocation-operations/:operationId` |  |
+| POST | `/access/v1/capabilities/revoke-by-criteria` |  |
 | POST | `/access/v1/check` | Check whether a subject has a permission (optionally within a scope) |
 | POST | `/access/v1/cross-tenant/anomalies` | Detect access anomalies across tenants |
 | POST | `/access/v1/cross-tenant/compare` | Compare policies across tenants |
@@ -210,7 +212,8 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/auth/email/team-invitation` |  |
 | POST | `/auth/email/welcome` | Send welcome email to newly registered user. Called by billing-service after successful signup provisioning. |
 | GET | `/auth/federation/:providerId/metadata` | Get federation metadata |
-| GET | `/auth/federation/audit/cross-tenant` | Cross-tenant federation activity (for admin) |
+| GET | `/auth/federation/audit/activity` | Federation activity bound to the authenticated workspace |
+| GET | `/auth/federation/audit/cross-tenant` | Cross-tenant federation activity (verified human ops_admin only) |
 | POST | `/auth/federation/audit/query` | Query federated audit events |
 | GET | `/auth/federation/audit/reports` | List generated reports |
 | POST | `/auth/federation/audit/reports` | Generate compliance report |
@@ -284,7 +287,7 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/api/marketplace/aws/resolve-customer` | AWS Marketplace. The registration token is passed as a query parameter by AWS Marketplace to the fulfillment URL. |
 | POST | `/api/marketplace/aws/webhook` | AWS Marketplace webhook endpoint Handles subscription events from AWS Marketplace |
 | GET | `/api/marketplace/azure/entitlement/:subscriptionId` | Get subscription entitlement by Azure subscription ID. GET /api/marketplace/azure/entitlement/:subscriptionId |
-| POST | `/api/marketplace/azure/resolve` | Called when a customer clicks through from Azure Marketplace to the QNSP landing page. The marketplace token is passed as a query parameter. |
+| POST | `/api/marketplace/azure/resolve` | Called when a customer clicks through from Azure Marketplace to the QNSI landing page. The marketplace token is passed as a query parameter. |
 | POST | `/api/marketplace/azure/webhook` | Must respond with HTTP 200 to acknowledge receipt. For ChangePlan/ChangeQuantity, must PATCH the operation within 10 seconds. |
 | GET | `/api/marketplace/vercel/oauth/callback` | OAuth callback (user-initiated install flow) ======================================================================= |
 | GET | `/api/marketplace/vercel/sso` | SSO deep link ======================================================================= |
@@ -307,7 +310,7 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/billing/v1/admin/addons/enable` | Auth: same BILLING_ADMIN_TOKEN as provision-tier. Body: { tenantId: string (uuid), addonId: AddOnId, reason?: string } |
 | POST | `/billing/v1/admin/addons/requests/complete` |  |
 | GET | `/billing/v1/admin/funnel` |  |
-| POST | `/billing/v1/admin/provision-tier` | This bypasses Stripe entirely - no payment required. Use for internal validation and non-production environments. |
+| POST | `/billing/v1/admin/provision-tier` | Tenant, entitlement, access-state, receipt, and outbox writes are performed atomically through TierEntitlementService's persisted saga. |
 | POST | `/billing/v1/admin/signup/cleanup` | Admin endpoint to cleanup failed signups (requires admin token) |
 | POST | `/billing/v1/admin/signup/complete-provisioning` |  |
 | POST | `/billing/v1/admin/signup/retry-provisioning` | Admin endpoint to retry provisioning for failed signups |
@@ -349,6 +352,7 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | DELETE | `/billing/v1/internal/tenant/:tenantId` |  |
 | GET | `/billing/v1/invoices` |  |
 | POST | `/billing/v1/invoices` |  |
+| GET | `/billing/v1/invoices/:invoiceId` |  |
 | POST | `/billing/v1/invoices/generate` |  |
 | GET | `/billing/v1/marketplace/gcp/entitlement/:entitlementId` | Get entitlement details by GCP entitlement ID. GET /api/marketplace/gcp/entitlement/:entitlementId |
 | POST | `/billing/v1/marketplace/gcp/resolve` | Resolve a GCP Marketplace procurement token from the landing page. POST /api/marketplace/gcp/resolve |
@@ -426,11 +430,6 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/crypto/v1/assets/rotate-bulk` |  |
 | GET | `/crypto/v1/assets/stats` |  |
 | GET | `/crypto/v1/cbom` | KMS, Vault, Edge Gateway, external, host agents, etc. Requires at least tenant_viewer role. |
-| POST | `/crypto/v1/certificates/auto-renewal/bulk-enable` | Bulk enable auto-renewal |
-| POST | `/crypto/v1/certificates/auto-renewal/check` | Trigger renewal check (scheduled job endpoint) |
-| POST | `/crypto/v1/certificates/auto-renewal/disable` | Disable auto-renewal |
-| POST | `/crypto/v1/certificates/auto-renewal/enable` | Database-backed auto-renewal management (if pool is available) Enable auto-renewal for a certificate |
-| GET | `/crypto/v1/certificates/auto-renewal/status` | Get auto-renewal status |
 | GET | `/crypto/v1/certificates/expiring` |  |
 | GET | `/crypto/v1/certificates/expiry` |  |
 | POST | `/crypto/v1/certificates/renew` |  |
@@ -475,10 +474,6 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/crypto/v1/hardware/:hardwareId/health` |  |
 | GET | `/crypto/v1/hardware/summary` |  |
 | DELETE | `/crypto/v1/internal/tenant/:tenantId` | route-coverage check can statically detect this registration. The const is still used for the JWT-hook exemption prefix in server.ts. |
-| GET | `/crypto/v1/managed-migration/credentials` |  |
-| POST | `/crypto/v1/managed-migration/credentials` |  |
-| DELETE | `/crypto/v1/managed-migration/credentials/:id` |  |
-| POST | `/crypto/v1/managed-migration/credentials/:id/validate` |  |
 | GET | `/crypto/v1/migration-plan` | crypto assets. Returns deprecated algorithms, phased timeline, and effort breakdown. Requires authenticated tenant context (x-qnsp-tenant header or JWT tenantId). |
 | POST | `/crypto/v1/migration/asset-actions/:id/confirm-cutover` |  |
 | POST | `/crypto/v1/migration/asset-actions/:id/reconcile` |  |
@@ -533,6 +528,10 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/api/marketplace/aws/resolve-customer` | POST /api/marketplace/aws/resolve-customer Proxies customer resolution requests from the fulfillment page to billing service. |
 | GET | `/api/v1/tenants/:tenantId/infrastructure/activations` | Get all infrastructure activations for a tenant GET /api/v1/tenants/:tenantId/infrastructure/activations |
 | GET | `/api/v1/tenants/:tenantId/infrastructure/status` | Get infrastructure status for a tenant GET /api/v1/tenants/:tenantId/infrastructure/status |
+| POST | `/edge/auth/federation/oidc/callback` |  |
+| GET | `/edge/auth/federation/public/providers` |  |
+| POST | `/edge/auth/federation/public/start` |  |
+| POST | `/edge/auth/federation/saml/acs` |  |
 | POST | `/edge/auth/forgot-account` |  |
 | POST | `/edge/auth/forgot-password` |  |
 | POST | `/edge/auth/login` |  |
@@ -544,6 +543,7 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/edge/auth/oauth/identity` |  |
 | POST | `/edge/auth/oauth/session` |  |
 | GET | `/edge/auth/oauth/user-by-email` | route the edge returned 404 (route-not-found) -> the BFF treated it as "no user" -> every existing-user OAuth login got "sign up first". |
+| POST | `/edge/auth/reset-password` |  |
 | POST | `/edge/auth/revoke-all-sessions` | revokeAll path) silently failed to revoke other sessions - a security action that appeared to succeed. Authenticated (user JWT validated by auth-service). |
 | POST | `/edge/auth/switch-tenant` | policy-bundle-hash) and Tier B headers (entitlement-decision-id, audit-intent-id) are forwarded so auth-service can include them in its structured audit receipt. |
 | POST | `/edge/auth/token/refresh` | the 15-min access token expired mid-session and users were silently logged out (~10-12 min) with no warning. (2026-05-31) |
@@ -683,6 +683,15 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | DELETE | `/kms/v1/rotation-schedules/:scheduleId` |  |
 | GET | `/kms/v1/rotation-schedules/:scheduleId` |  |
 | GET | `/kms/v1/rotation-schedules/upcoming` |  |
+| POST | `/kms/v2/custody/legacy-archives/:archivedKeyId/import` |  |
+| GET | `/kms/v2/custody/legacy-classifications` |  |
+| POST | `/kms/v2/custody/records` |  |
+| GET | `/kms/v2/custody/recovery-requests` |  |
+| POST | `/kms/v2/custody/recovery-requests` |  |
+| GET | `/kms/v2/custody/recovery-requests/:requestId` |  |
+| POST | `/kms/v2/custody/recovery-requests/:requestId/approve` |  |
+| POST | `/kms/v2/custody/recovery-requests/:requestId/execute` |  |
+| POST | `/kms/v2/custody/recovery-requests/:requestId/reject` |  |
 
 ## Observability
 
@@ -737,6 +746,8 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 
 ## Search
 
+The index telemetry API is versioned separately at `/search/v2/health`. Version 1 health paths are retired and return `410 API_VERSION_RETIRED` because that contract represented client reports as measured operational health.
+
 | Method | Path | Description |
 |--------|------|-------------|
 | POST | `/search/v1/analytics/feedback` |  |
@@ -749,16 +760,18 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | GET | `/search/v1/analytics/summary` |  |
 | GET | `/search/v1/documents` |  |
 | POST | `/search/v1/documents/index` | both redundant and wrong for api-key callers - their tenant is in x-qnsp-api-key-* headers, not a JWT - sweep 2026-06-13 F40.) |
-| POST | `/search/v1/health/alerts` |  |
-| POST | `/search/v1/health/alerts/:alertId/acknowledge` |  |
-| POST | `/search/v1/health/alerts/:alertId/resolve` |  |
-| GET | `/search/v1/health/current` |  |
-| GET | `/search/v1/health/indices/:indexName/trends` |  |
-| POST | `/search/v1/health/maintenance` |  |
-| DELETE | `/search/v1/health/maintenance/:windowId` |  |
-| GET | `/search/v1/health/snapshots` |  |
-| POST | `/search/v1/health/snapshots` |  |
-| GET | `/search/v1/health/summary` |  |
+| POST | `/search/v2/health/alerts` | Record an unverified client-reported alert. |
+| GET | `/search/v2/health/alerts` | List unverified client-reported alerts using an opaque keyset cursor. |
+| POST | `/search/v2/health/alerts/:alertId/acknowledge` | Acknowledge a reported alert as the authenticated actor. |
+| POST | `/search/v2/health/alerts/:alertId/resolve` | Resolve a reported alert as the authenticated actor. |
+| GET | `/search/v2/health/current` | Get current reported assessments; actual health is unknown. |
+| GET | `/search/v2/health/indices/:indexName/trends` | Get unverified client-reported observation trends. |
+| POST | `/search/v2/health/maintenance` | Create a schedule record; maintenance execution is unavailable. |
+| GET | `/search/v2/health/maintenance` | List schedule records using an opaque keyset cursor. |
+| DELETE | `/search/v2/health/maintenance/:windowId` | Cancel a schedule record as the authenticated actor. |
+| GET | `/search/v2/health/snapshots` | List unverified client-reported observations. |
+| POST | `/search/v2/health/snapshots` | Record an unverified client-reported observation. |
+| GET | `/search/v2/health/summary` | Summarize reported data; actual health and uptime are unavailable. |
 | GET | `/search/v1/indexes` |  |
 | POST | `/search/v1/indexes` |  |
 | DELETE | `/search/v1/indexes/:indexName` |  |
@@ -964,6 +977,8 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/tenant/v1/health/snapshots` |  |
 | GET | `/tenant/v1/health/snapshots/:snapshotId` |  |
 | GET | `/tenant/v1/health/summary` |  |
+| GET | `/tenant/v1/internal/entitlements/:tenantId` |  |
+| POST | `/tenant/v1/internal/entitlements/:tenantId/apply` |  |
 | POST | `/tenant/v1/invitations/accept` | Accept an invitation by its one-time token (used by the signup/onboarding flow). |
 | POST | `/tenant/v1/isolation/audits` |  |
 | GET | `/tenant/v1/isolation/audits/:auditId` |  |
@@ -1069,4 +1084,3 @@ This page is auto-generated from statically visible `server.get/post/put/delete/
 | POST | `/vault/v1/versioned-secrets/retention-policies` | ── Named retention policies: create ── |
 | DELETE | `/vault/v1/versioned-secrets/retention-policies/:policyId` | ── Named retention policies: delete (clears the link from referencing secrets) ── |
 | GET | `/vault/v1/versioned-secrets/stats` |  |
-

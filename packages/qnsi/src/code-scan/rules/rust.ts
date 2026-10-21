@@ -79,4 +79,14 @@ export const rustRules: readonly CryptoDetectionRule[] = [
 		confidence: "medium",
 		library: "rust pqc crates",
 	},
+	{
+		id: "rs-pqc-hybrid-tls-crates",
+		languages: LANGS,
+		pattern: /\buse\s+(?:aws_lc_rs|rustls_post_quantum)\b/,
+		algorithm: "x25519mlkem768",
+		category: "protocol",
+		classification: "hybrid",
+		confidence: "medium",
+		library: "rust hybrid PQC TLS crates",
+	},
 ];

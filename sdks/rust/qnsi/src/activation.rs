@@ -33,6 +33,7 @@ pub struct Activation {
     base_url: String,
     http: reqwest::Client,
     cache: Mutex<Option<ActivationResult>>,
+    refresh_lock: tokio::sync::Mutex<()>,
 }
 
 impl Activation {
@@ -42,6 +43,7 @@ impl Activation {
             base_url: base_url.trim_end_matches('/').to_string(),
             http,
             cache: Mutex::new(None),
+            refresh_lock: tokio::sync::Mutex::new(()),
         }
     }
 
@@ -54,12 +56,18 @@ impl Activation {
     }
 
     /// Return the current activation, refreshing if expired or near
-    /// expiry. Concurrent callers may both observe a refresh; the result
-    /// is only meaningful as a cache hint.
+    /// expiry. Concurrent refreshes are serialized and recheck the cache.
     pub async fn get(&self) -> Result<ActivationResult, Error> {
         if let Some(cached) = self.cache.lock().unwrap().clone() {
-            let still_fresh = (cached.expires_at - Utc::now()).num_seconds() > EXPIRY_BUFFER_SECONDS;
+            let still_fresh =
+                (cached.expires_at - Utc::now()).num_seconds() > EXPIRY_BUFFER_SECONDS;
             if still_fresh {
+                return Ok(cached);
+            }
+        }
+        let _refresh_guard = self.refresh_lock.lock().await;
+        if let Some(cached) = self.cache.lock().unwrap().clone() {
+            if (cached.expires_at - Utc::now()).num_seconds() > EXPIRY_BUFFER_SECONDS {
                 return Ok(cached);
             }
         }
@@ -132,6 +140,7 @@ fn decode_activation(raw: Value) -> Result<ActivationResult, ApiError> {
     let tenant_id = obj
         .get("tenantId")
         .and_then(|v| v.as_str())
+        .filter(|value| !value.trim().is_empty())
         .ok_or_else(|| ApiError {
             status_code: 200,
             code: None,
@@ -158,12 +167,31 @@ fn decode_activation(raw: Value) -> Result<ActivationResult, ApiError> {
         .unwrap_or("")
         .to_string();
 
-    let expires_at = obj
-        .get("expiresAt")
-        .and_then(|v| v.as_str())
-        .and_then(|s| DateTime::parse_from_rfc3339(s).ok())
-        .map(|dt| dt.with_timezone(&Utc))
-        .unwrap_or_else(|| Utc::now() + Duration::minutes(5));
+    let invalid_expiry = || ApiError {
+        status_code: 200,
+        code: None,
+        message: "activation response has invalid lifetime".into(),
+        body: Some(raw.clone()),
+    };
+    let now = Utc::now();
+    let expires_at = if let Some(expiry) = obj.get("expiresAt") {
+        expiry
+            .as_str()
+            .and_then(|s| DateTime::parse_from_rfc3339(s).ok())
+            .map(|dt| dt.with_timezone(&Utc))
+            .filter(|dt| *dt > now)
+            .ok_or_else(invalid_expiry)?
+    } else {
+        let seconds = obj
+            .get("expiresInSeconds")
+            .and_then(Value::as_f64)
+            .filter(|seconds| {
+                seconds.is_finite() && *seconds >= 0.001 && *seconds < i64::MAX as f64 / 1000.0
+            })
+            .ok_or_else(invalid_expiry)?;
+        now.checked_add_signed(Duration::milliseconds((seconds * 1000.0) as i64))
+            .ok_or_else(invalid_expiry)?
+    };
 
     Ok(ActivationResult {
         tenant_id,
@@ -176,10 +204,7 @@ fn decode_activation(raw: Value) -> Result<ActivationResult, ApiError> {
 
 pub(crate) fn parse_auth_error(status: StatusCode, raw: &str) -> AuthError {
     let value: Value = serde_json::from_str(raw).unwrap_or(Value::Null);
-    let code = value
-        .get("code")
-        .and_then(|v| v.as_str())
-        .map(String::from);
+    let code = value.get("code").and_then(|v| v.as_str()).map(String::from);
     let message = value
         .get("message")
         .and_then(|v| v.as_str())
@@ -190,10 +215,7 @@ pub(crate) fn parse_auth_error(status: StatusCode, raw: &str) -> AuthError {
 
 pub(crate) fn parse_api_error(status: StatusCode, raw: &str) -> ApiError {
     let value: Value = serde_json::from_str(raw).unwrap_or(Value::Null);
-    let code = value
-        .get("code")
-        .and_then(|v| v.as_str())
-        .map(String::from);
+    let code = value.get("code").and_then(|v| v.as_str()).map(String::from);
     let message = value
         .get("message")
         .or_else(|| value.get("error"))

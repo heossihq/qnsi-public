@@ -1,9 +1,14 @@
 //! Local PQC primitives via the `oqs` crate (0.11).
 //!
+//! As of 2026-09-01, `oqs` 0.11 is the latest upstream Rust binding release
+//! and its `oqs-sys` dependency vendors liboqs 0.13.0. The TypeScript/Node and
+//! Go runtime bindings are on liboqs 0.16.0; Rust keeps this compatibility
+//! layer until open-quantum-safe/liboqs-rust cuts a 0.16-aligned release.
+//!
 //! Available only with the `crypto` feature enabled. The algorithm-name
 //! surface mirrors `@heossihq/qnsi` (TypeScript), `qnsi.crypto`
-//! (Python), and `qnsi/crypto` (Go), so an algorithm string that works
-//! in one SDK works everywhere.
+//! (Python), and `qnsi/crypto` (Go). Actual availability and byte-level
+//! compatibility depend on the linked upstream release and platform.
 
 use oqs::{kem, sig};
 use thiserror::Error;
@@ -33,7 +38,7 @@ pub fn kem_algorithm(name: &str) -> Result<kem::Algorithm, CryptoError> {
         "Kyber512" => Kyber512,
         "Kyber768" => Kyber768,
         "Kyber1024" => Kyber1024,
-        // HQC omitted - disabled upstream (liboqs OQS_ENABLE_KEM_HQC=OFF; CVE-2025-48946).
+        // HQC omitted here until liboqs-rust exposes the 0.16.0 HQC-1/3/5 identifiers.
         "BIKE-L1" => BikeL1,
         "BIKE-L3" => BikeL3,
         "BIKE-L5" => BikeL5,
@@ -60,8 +65,9 @@ pub fn kem_algorithm(name: &str) -> Result<kem::Algorithm, CryptoError> {
 
 /// Resolves a canonical QNSI signature name to a `oqs::sig::Algorithm`.
 ///
-/// SLH-DSA names map to the FIPS-205 names (`SphincsSha2*`, `SphincsShake*`)
-/// in oqs 0.11.
+/// Historical SLH-DSA aliases map to the upstream SPHINCS+ variants
+/// (`SphincsSha2*`, `SphincsShake*`) in oqs 0.11. This alias does not
+/// establish FIPS 205 conformance or interoperability with native SLH-DSA.
 pub fn sig_algorithm(name: &str) -> Result<sig::Algorithm, CryptoError> {
     use sig::Algorithm::*;
     Ok(match name {

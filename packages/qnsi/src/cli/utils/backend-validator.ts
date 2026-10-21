@@ -2,7 +2,7 @@ import { bridgeQnsiEnv } from "../../internal/env-aliases.js";
 import { EXIT_CODES } from "../config.js";
 import { printError } from "./output.js";
 
-// Accept both QNSI_* (canonical) and legacy QNSP_* user env vars.
+// Accept canonical environment variables and legacy-prefixed aliases.
 bridgeQnsiEnv();
 
 const CLOUD_PORTAL_URL = process.env["QNSI_CLOUD_PORTAL_URL"] ?? "https://cloud.qnsi.heossi.com";

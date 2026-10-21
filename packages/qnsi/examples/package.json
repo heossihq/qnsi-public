@@ -1,6 +1,9 @@
 {
 	"name": "@heossihq/qnsi-public-examples",
 	"version": "0.0.0",
+	"engines": {
+		"node": ">=24.18.0"
+	},
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -15,8 +18,8 @@
 		"@heossihq/qnsi": "^0.6.0"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2",
-		"tsx": "^4.21.0",
-		"typescript": "^6.0.2"
+		"@types/node": "^26.6.2",
+		"tsx": "^4.23.15",
+		"typescript": "^7.0.2"
 	}
 }

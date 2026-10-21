@@ -1,9 +1,8 @@
 ---
 title: Changelog
-last_updated: 2026-08-04
+last_updated: 2026-08-28
 copyright: © 2026 HEOSSI (PTE.) LTD. All rights reserved.
 ---
-
 # Changelog
 
 Curated, high-signal changes to the QNSI platform, SDKs, and developer surfaces.
@@ -12,6 +11,14 @@ Curated, high-signal changes to the QNSI platform, SDKs, and developer surfaces.
 > `apps/web/lib/changelog.json` and run `pnpm gen:changelog-docs`.
 
 ## Recent changes
+
+### 2026-08-28 - Cloud Portal service topology and PQC status verification
+
+**Release.** Shipped live Service Operation Graph mapping the 18 production services and edge proxy routes, enhanced fail-closed PQC readiness normalization, and refined Edge Gateway metering precision to isolate customer API key and personal access token traffic from internal control-plane communications.
+
+### 2026-08-26 - QNSI MCP Server 0.4.0 and Agent CLI configuration unification
+
+**Release.** Expanded @heossihq/qnsi-mcp to 28 tenant-scoped tools spanning KMS, HSPK custody, encrypted Vault, Storage, SSE-X Search, Access Control, and L0-L3 Conformance. Unified agent configuration with canonical qnsi-agent paths and CLI binaries.
 
 ### 2026-08-04 - Enterprise evaluation and public provenance surface
 
@@ -55,7 +62,7 @@ Curated, high-signal changes to the QNSI platform, SDKs, and developer surfaces.
 
 ### 2025-11-01 - QNSI monorepo bootstrapped
 
-**Release.** Consolidated the platform into the current monorepo; established the @heossihq/qnsi-\* namespace and Changesets-based semantic versioning.
+**Release.** Consolidated the platform into the current monorepo; established the @heossihq/qnsi-* namespace and Changesets-based semantic versioning.
 
 ## Versioning
 

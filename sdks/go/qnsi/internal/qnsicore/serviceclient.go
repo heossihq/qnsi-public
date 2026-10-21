@@ -46,6 +46,9 @@ func (c *ServiceClient) Do(ctx context.Context, method, path string, body any, q
 	}
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		if err := resp.Body.Close(); err != nil {
+			return nil, &NetworkError{Op: method, URL: c.Activator.BaseURL() + c.PathPrefix + path, Err: err}
+		}
 		c.Activator.Invalidate()
 		reAct, rerr := c.Activator.Get(ctx)
 		if rerr != nil {
@@ -58,9 +61,12 @@ func (c *ServiceClient) Do(ctx context.Context, method, path string, body any, q
 	}
 
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, &NetworkError{Op: method, URL: c.Activator.BaseURL() + c.PathPrefix + path, Err: err}
+	}
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= 300 {
 		var raw map[string]any
 		_ = json.Unmarshal(respBody, &raw)
 		code, _ := raw["code"].(string)
@@ -135,14 +141,17 @@ func (c *ServiceClient) SessionDo(ctx context.Context, method, path string, body
 	req.Header.Set("content-type", "application/json")
 	req.Header.Set("accept", "application/json")
 
-	resp, err := c.HTTPClient.Do(req)
+	resp, err := doWithoutRedirects(c.HTTPClient, req)
 	if err != nil {
 		return nil, &NetworkError{Op: method, URL: target, Err: err}
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, &NetworkError{Op: method, URL: target, Err: err}
+	}
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= 300 {
 		var raw map[string]any
 		_ = json.Unmarshal(respBody, &raw)
 		code, _ := raw["code"].(string)
@@ -216,7 +225,7 @@ func (c *ServiceClient) send(ctx context.Context, method, path string, body any,
 		req.Header.Set("idempotency-key", idempotencyKey)
 	}
 
-	resp, err := c.HTTPClient.Do(req)
+	resp, err := doWithoutRedirects(c.HTTPClient, req)
 	if err != nil {
 		return nil, &NetworkError{Op: method, URL: target, Err: err}
 	}

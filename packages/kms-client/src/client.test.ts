@@ -9,6 +9,13 @@ vi.mock("@heossihq/qnsi-sdk-activation", () => ({
 
 import { createKmsClient, HttpKmsServiceClient } from "./index.js";
 
+function required<T>(value: T | null | undefined, label: string): T {
+	if (value === null || value === undefined) {
+		throw new Error(`Expected ${label} to have been recorded, but it was absent`);
+	}
+	return value;
+}
+
 function stubFetch(impl: (...args: unknown[]) => unknown) {
 	const fetchMock = vi.fn(impl);
 	vi.stubGlobal("fetch", fetchMock);
@@ -56,14 +63,14 @@ describe("transport security", () => {
 		expect(String(fetchMock.mock.calls[0]?.[0])).toMatch(/^https:\/\/kms\.example\/kms\/v1\//);
 	});
 
-	it.each([
-		"http://localhost:8080",
-		"http://127.0.0.1:8080",
-	])("allows %s in a development environment", (url) => {
-		vi.stubEnv("NODE_ENV", "development");
+	it.each(["http://localhost:8080", "http://127.0.0.1:8080"])(
+		"allows %s in a development environment",
+		(url) => {
+			vi.stubEnv("NODE_ENV", "development");
 
-		expect(() => new HttpKmsServiceClient(url, "token")).not.toThrow();
-	});
+			expect(() => new HttpKmsServiceClient(url, "token")).not.toThrow();
+		},
+	);
 
 	it("rejects plain http against a public host", () => {
 		vi.stubEnv("NODE_ENV", "production");
@@ -200,6 +207,18 @@ describe("activation", () => {
 			expect.objectContaining({ apiKey: "tok-123", sdkId: "kms-client" }),
 		);
 	});
+
+	it("refuses a custody read for a tenant other than the activated one, before any request", async () => {
+		const fetchMock = stubFetch(() => jsonResponse({}));
+		activateSdk.mockResolvedValue({ tenantId: "22222222-2222-4222-8222-222222222222" });
+		const client = new HttpKmsServiceClient("https://kms.example", "tok-123");
+
+		await expect(
+			client.getKey({ tenantId: "11111111-1111-4111-8111-111111111111", keyId: "key-1" }),
+		).rejects.toThrow("KMS tenant authority mismatch");
+		expect(activateSdk).toHaveBeenCalledTimes(1);
+		expect(fetchMock).not.toHaveBeenCalled();
+	});
 });
 
 describe("rate limiting", () => {
@@ -319,13 +338,20 @@ describe("wrapKey", () => {
 		const client = new HttpKmsServiceClient("https://kms.example", "tok");
 
 		await client.wrapKey({ tenantId: TENANT, dataKey: "dk", keyId: "k", associatedData: "aad" });
-		expect(JSON.parse((fetchMock.mock.calls[0]?.[1] as { body: string }).body)).toMatchObject({
+		expect(
+			JSON.parse(
+				(required(fetchMock.mock.calls[0]?.[1], "the first request init") as { body: string }).body,
+			),
+		).toMatchObject({
 			associatedData: "aad",
 		});
 
 		await client.wrapKey({ tenantId: TENANT, dataKey: "dk", keyId: "k" });
 		expect(
-			JSON.parse((fetchMock.mock.calls[1]?.[1] as { body: string }).body).associatedData,
+			JSON.parse(
+				(required(fetchMock.mock.calls[1]?.[1], "the second request init") as { body: string })
+					.body,
+			).associatedData,
 		).toBeUndefined();
 	});
 
@@ -460,7 +486,11 @@ describe("unwrapKey error reporting", () => {
 			providerHint: "liboqs",
 		});
 
-		expect(JSON.parse((fetchMock.mock.calls[0]?.[1] as { body: string }).body)).toMatchObject({
+		expect(
+			JSON.parse(
+				(required(fetchMock.mock.calls[0]?.[1], "the first request init") as { body: string }).body,
+			),
+		).toMatchObject({
 			associatedData: "aad",
 			providerHint: "liboqs",
 		});

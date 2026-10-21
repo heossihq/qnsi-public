@@ -94,7 +94,7 @@ import { toNistAlgorithmName, ALGORITHM_TO_NIST } from "@heossihq/qnsi";
 // Convert internal to NIST name
 const nistName = toNistAlgorithmName("kyber-768"); // "ML-KEM-768"
 
-// Full mapping covers all 87 PQC algorithms. Representative entries:
+// Full mapping covers all 90 PQC algorithms. Representative entries:
 console.log(ALGORITHM_TO_NIST);
 // {
 //   "kyber-512": "ML-KEM-512",        // FIPS 203
@@ -113,7 +113,7 @@ console.log(ALGORITHM_TO_NIST);
 //   "cross-rsdp-128-balanced": "CROSS-RSDP-128-balanced",
 //   "ov-Is": "UOV-Is",
 //   "snova-24-5-4": "SNOVA-24-5-4",
-//   ... // 87 algorithms total
+//   ... // 90 algorithms total
 // }
 ```
 

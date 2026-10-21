@@ -1,5 +1,5 @@
 /**
- * QNSP Billing - entitlement queries, usage meters, invoice listing,
+ * QNSI Billing - entitlement queries, usage meters, invoice listing,
  * credit balance. Wraps `apps/billing-service` (`/billing/v1`).
  */
 
@@ -41,6 +41,16 @@ export interface ListInvoicesQuery {
 
 export class BillingClient {
 	constructor(private readonly internal: Internal) {}
+
+	/** Read the activated workspace's paginated credit ledger; this does not purchase credits. */
+	async listCustomerCredits(offset = 0) {
+		if (!Number.isInteger(offset) || offset < 0 || offset > 1_000_000)
+			throw new RangeError("Credit offset must be an integer between 0 and 1000000");
+		const tenantId = encodeURIComponent(await this.internal.resolveTenantId());
+		return this.internal.request("GET", `${PATH_PREFIX}/customer-credits/${tenantId}`, undefined, {
+			query: { offset },
+		});
+	}
 
 	async getEntitlements() {
 		// reaudit 2026-06-13 #30: the bare /entitlements path does not exist on billing-service.

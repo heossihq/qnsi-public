@@ -57,6 +57,14 @@ function queueActivation(): void {
 	vi.mocked(fetch).mockResolvedValueOnce(json(ACTIVATION));
 }
 
+function lastRequestInit(calls: readonly Parameters<typeof fetch>[]): RequestInit {
+	const init = calls[calls.length - 1]?.[1];
+	if (!init) {
+		throw new Error("expected a recorded fetch call carrying a request init");
+	}
+	return init;
+}
+
 function client(overrides: Record<string, unknown> = {}): BillingClient {
 	return new BillingClient({
 		baseUrl: "https://billing.example.com",
@@ -319,10 +327,9 @@ describe("remaining branch tails", () => {
 		await c.getCreditBalance(TENANT);
 
 		const calls = vi.mocked(fetch).mock.calls;
-		const lastHeaders = (calls[calls.length - 1]?.[1] as RequestInit).headers as Record<
-			string,
-			string
-		>;
+		const lastInit = calls[calls.length - 1]?.[1];
+		if (!lastInit) throw new Error("expected a recorded fetch call");
+		const lastHeaders = lastInit.headers as Record<string, string>;
 		expect(lastHeaders["x-qnsp-tenant-id"]).toBe(TENANT);
 	});
 
@@ -343,14 +350,14 @@ describe("remaining branch tails", () => {
 			signature: { provider: "p", algorithm: "a", value: "v", publicKey: "k" },
 		});
 		let calls = vi.mocked(fetch).mock.calls;
-		const invoiceBody = JSON.parse(String((calls[calls.length - 1]?.[1] as RequestInit).body));
+		const invoiceBody = JSON.parse(String(lastRequestInit(calls).body));
 		expect(invoiceBody).toMatchObject({ currency: "USD", taxesCents: 9, metadata: { m: 1 } });
 		expect(invoiceBody.signature.provider).toBe("p");
 
 		vi.mocked(fetch).mockResolvedValueOnce(json({ id: PAYMENT }));
 		await c.resolveDunning({ paymentId: PAYMENT, resolution: "waived", note: "customer call" });
 		calls = vi.mocked(fetch).mock.calls;
-		const dunningBody = JSON.parse(String((calls[calls.length - 1]?.[1] as RequestInit).body));
+		const dunningBody = JSON.parse(String(lastRequestInit(calls).body));
 		expect(dunningBody.note).toBe("customer call");
 
 		vi.mocked(fetch).mockResolvedValueOnce(json({ total: 0 }));

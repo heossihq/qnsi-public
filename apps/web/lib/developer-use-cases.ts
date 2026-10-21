@@ -74,24 +74,24 @@ export const DEVELOPER_PATTERNS: readonly DeveloperPattern[] = [
 				label: "Store a contract + index for clause search",
 				code: `import { QnsiClient } from "@heossihq/qnsi";
 
-const qnsp = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
 // Source-linked Vault call; PQC envelope execution is NOT VERIFIED
-const secret = await qnsp.vault.createSecret({
+const secret = await qnsi.vault.createSecret({
   name: \`contract:\${contractId}\`,
   payloadB64: pdfBase64,
   retention: { lockUntil: "2055-12-31" },
 });
 
 // 2. Extract + index clauses for encrypted search
-await qnsp.search.upsertVectors("contracts", [{
+await qnsi.search.upsertVectors("contracts", [{
   id: contractId,
   vector: clauseEmbedding,
   metadata: { counterparty, signedAt },
 }]);
 
 // 3. Audit
-await qnsp.audit.logEvent({
+await qnsi.audit.logEvent({
   eventType: "contract.created",
   payload: { contractId, secretId: secret.id },
 });`,
@@ -99,7 +99,7 @@ await qnsp.audit.logEvent({
 			{
 				language: "typescript",
 				label: "Clause search across encrypted index",
-				code: `const hits = await qnsp.search.query("contracts", {
+				code: `const hits = await qnsi.search.query("contracts", {
   vector: queryEmbedding,
   topK: 20,
   filter: { counterparty: "Acme Corp" },
@@ -107,7 +107,7 @@ await qnsp.audit.logEvent({
 
 // hits[].id maps back to vault secret IDs - fetch under access control
 for (const hit of hits.matches) {
-  const secret = await qnsp.vault.getSecret(\`contract:\${hit.id}\`);
+  const secret = await qnsi.vault.getSecret(\`contract:\${hit.id}\`);
   // decrypted plaintext is in secret.payloadB64
 }`,
 			},
@@ -149,17 +149,17 @@ for (const hit of hits.matches) {
 				code: `from qnsi import QnsiClient
 import os, base64, json
 
-qnsp = QnsiClient(api_key=os.environ["QNSI_API_KEY"])
+qnsi = QnsiClient(api_key=os.environ["QNSI_API_KEY"])
 
 # Vault PHI under per-patient key (ML-KEM-768-wrapped AES-256-GCM)
-secret = qnsp.vault.create_secret(
+secret = qnsi.vault.create_secret(
     name=f"phi:{patient_mrn}",
     payload_b64=base64.b64encode(json.dumps(phi_record).encode()).decode(),
     metadata={"pqcAlgorithm": "ml-kem-768"},
 )
 
 # Cohort search: index a de-identified embedding for cohort discovery
-qnsp.search.upsert_vectors(
+qnsi.search.upsert_vectors(
     index_name="cohorts",
     vectors=[{
         "id": patient_mrn,
@@ -168,7 +168,7 @@ qnsp.search.upsert_vectors(
     }],
 )
 
-qnsp.audit.log_event(
+qnsi.audit.log_event(
     event_type="phi.created",
     payload={"mrn": patient_mrn, "secret_id": secret["id"]},
 )`,
@@ -206,10 +206,10 @@ qnsp.audit.log_event(
 				label: "WORM-style retention with SEC 17a-4 compliance",
 				code: `import { QnsiClient } from "@heossihq/qnsi";
 
-const qnsp = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
 // Vault with retention lock (immutable until expiry)
-const secret = await qnsp.vault.createSecret({
+const secret = await qnsi.vault.createSecret({
   name: \`trade-confirm:\${tradeId}\`,
   payloadB64: confirmDocBase64,
   retention: {
@@ -223,7 +223,7 @@ const secret = await qnsp.vault.createSecret({
 });
 
 // Source-linked Audit call; ML-DSA signing and ingestion are NOT VERIFIED
-await qnsp.audit.logEvent({
+await qnsi.audit.logEvent({
   eventType: "trade.confirm.archived",
   payload: { tradeId, secretId: secret.id, retainUntil: "2030-12-31" },
 });`,
@@ -265,10 +265,10 @@ await qnsp.audit.logEvent({
 				label: "Provision a tenant + set its crypto policy at signup",
 				code: `import { QnsiClient } from "@heossihq/qnsi";
 
-const qnsp = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
 // Self-serve tenant creation (called from your signup handler)
-const tenant = await qnsp.tenant.createTenant({
+const tenant = await qnsi.tenant.createTenant({
   slug: workspace.slug,
   name: workspace.name,
   // Healthcare/finance customers get strict tier; others default
@@ -276,12 +276,12 @@ const tenant = await qnsp.tenant.createTenant({
 });
 
 // Subsequent SDK calls scoped to this tenant via the tenant token
-const tenantQnsp = new QnsiClient({
+const tenantQnsi = new QnsiClient({
   apiKey: process.env.QNSI_API_KEY!,
   tenantId: tenant.id,
 });
 
-await tenantQnsp.vault.createSecret({
+await tenantQnsi.vault.createSecret({
   name: "first-secret",
   payloadB64: payload,
 });`,
@@ -318,17 +318,17 @@ await tenantQnsp.vault.createSecret({
 				label: "Encrypt a transcript + index for instructor search",
 				code: `import { QnsiClient } from "@heossihq/qnsi";
 
-const qnsp = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
 // Source-linked Vault call; FERPA alignment and key protection are NOT VERIFIED
-const transcript = await qnsp.vault.createSecret({
+const transcript = await qnsi.vault.createSecret({
   name: \`transcript:\${studentId}:\${termId}\`,
   payloadB64: transcriptPdfBase64,
   retention: { lockUntil: "permanent" }, // FERPA: indefinite
 });
 
 // Selective index: only de-identified course outcomes, not grades
-await qnsp.search.upsertVectors("course-outcomes", [{
+await qnsi.search.upsertVectors("course-outcomes", [{
   id: \`\${studentId}:\${termId}\`,
   vector: outcomeEmbedding,
   metadata: { courseCode, term: termId }, // no PII
@@ -361,17 +361,17 @@ await qnsp.search.upsertVectors("course-outcomes", [{
 				label: "FOIA-style request: gate access via RBAC + audit",
 				code: `import { QnsiClient } from "@heossihq/qnsi";
 
-const qnsp = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
+const qnsi = new QnsiClient({ apiKey: process.env.QNSI_API_KEY! });
 
 // Check access via QNSI access-control-service
-const allowed = await qnsp.access.check({
+const allowed = await qnsi.access.check({
   principal: requesterId,
   resource: \`record:\${recordId}\`,
   action: "read",
 });
 
 if (!allowed.granted) {
-  await qnsp.audit.logEvent({
+  await qnsi.audit.logEvent({
     eventType: "foia.access.denied",
     payload: { requesterId, recordId, reason: allowed.reason },
   });
@@ -379,12 +379,12 @@ if (!allowed.granted) {
 }
 
 // Source-linked Audit call; ordering and evidence ingestion are NOT VERIFIED
-await qnsp.audit.logEvent({
+await qnsi.audit.logEvent({
   eventType: "foia.access.granted",
   payload: { requesterId, recordId, foiaRequestId },
 });
 
-const record = await qnsp.vault.getSecret(\`record:\${recordId}\`);
+const record = await qnsi.vault.getSecret(\`record:\${recordId}\`);
 return { payload: record.payloadB64 };`,
 			},
 		],
@@ -425,27 +425,11 @@ return { payload: record.payloadB64 };`,
       "command": "pnpm",
       "args": ["dlx", "@heossihq/qnsi-mcp"],
       "env": {
-        "QNSI_API_KEY": "qnsp_pqc_api_..."
+        "QNSP_API_KEY": "YOUR_QNSI_API_KEY"
       }
     }
   }
 }`,
-			},
-			{
-				language: "typescript",
-				label: "Programmatic MCP client contract",
-				code: `import { QnspMcpClient } from "@heossihq/qnsi-mcp";
-
-const mcp = new QnspMcpClient({ apiKey: process.env.QNSI_API_KEY! });
-
-// Source-linked MCP call; ML-DSA signing and audit effects are NOT VERIFIED
-const tools = await mcp.listTools();
-// → [{ name: "qnsp_vault_get", ... }, { name: "qnsp_kms_sign", ... }]
-
-const result = await mcp.callTool("qnsp_vault_get", {
-  secretId: "openai-key",
-});
-// Returned payload protection and plaintext handling are NOT VERIFIED`,
 			},
 		],
 		relatedSolutions: [
